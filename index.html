@@ -890,6 +890,22 @@
 .lane.done .keyHint{opacity:.35;filter:grayscale(.6);}
 @media (pointer:coarse){.keyHint{opacity:.55;}}
 
+
+/* power crisis flow 2026-06-03 */
+.caseCard.powerCrisisCase{
+  border-color:#ff6142!important;
+  background:linear-gradient(180deg,#fff0d8,#f0b69a)!important;
+  box-shadow:0 0 0 4px rgba(255,97,66,.28),0 7px 0 rgba(0,0,0,.24),inset 0 0 20px rgba(255,97,66,.12)!important;
+}
+.caseCard.powerCrisisCase::before{
+  content:"王権維持";
+  position:absolute;left:12px;top:10px;
+  background:#4a0906;color:#ffe0d7;border:2px solid #ff6142;border-radius:999px;
+  padding:3px 10px;font-size:11px;font-weight:1000;letter-spacing:.05em;
+  box-shadow:0 0 12px rgba(255,97,66,.55);
+}
+.caseCard.powerCrisisCase .caseTitle{padding-left:82px;}
+
 </style>
 </head>
 <body><div id="game"><section id="screenOpening" class="screen active"></section><section id="screenMapNews" class="screen"></section><section id="screenMain" class="screen"></section><section id="screenAssign" class="screen"></section><section id="screenBattle" class="screen"></section><section id="screenResult" class="screen"></section></div>
@@ -1071,6 +1087,7 @@ const IMG={
   deadKing:'https://lh3.googleusercontent.com/d/1330yeKB5Q1z91NtZHi3NNKyQ-FshnZ0b',
   plague:'https://lh3.googleusercontent.com/d/1R9VVN8Jwo0b35BbkB0uRERuNb93bOL2A',
   witch:'https://lh3.googleusercontent.com/d/1D2lX5BU5NqFdlblxxEC09VJgsHfShAm1',
+  rock:'https://lh3.googleusercontent.com/d/1WW5apsZ3XpFKnmqCeaGLbpFGgY33q87_',
   soldier:'https://lh3.googleusercontent.com/d/1_WlnmhRqDAP0g8UrKPuIhogtUNbbyPol'
 };
 const BG={grass:'https://lh3.googleusercontent.com/d/1aiVytIEyVwUKCx8Jb3_sKsN7OTh4BYeD',palace:'https://lh3.googleusercontent.com/d/1Yqiw0PqEoC4kSN5Iqezkig0unLVnIu01',village:'https://lh3.googleusercontent.com/d/1fWwutBWUn-f8CnY3v0xCT6gbZPolNSgu',forest:'https://lh3.googleusercontent.com/d/10scmrke8oOEwAqq-uhnSDQLBX5NnKE5E',port:'https://lh3.googleusercontent.com/d/15ZiXnvQQPP7Nb76-oy5CCZzNy9E7qlWv'};
@@ -1300,7 +1317,7 @@ cases:[
 {id:'seafeara',title:'セーフェアラの貿易',category:'商業・外交',difficulty:'normal',ignoreType:'くすぶる',enemy:'セーフェアラ商業使節',lineName:'交易条件',enemyImg:'seafearaKing',initialLine:0,intro:'海の商業連盟セーフェアラが、港湾使用権と引き換えに大規模な交易協定を持ちかけてきた。利益は大きいが、主導権を渡せば王国の商人は飲み込まれる。',effects:makeEffects({win:{treasury:10,diplomacy:4,citySupport:3,tension:{azraqLoire:-1}},loss:{treasury:-3,diplomacy:-4,citySupport:-5,influence:{azraqLoire:20},tension:{azraqLoire:1}},ignored:{treasury:-1},stories:['交易協定は王国側の条件でまとまった。港には新しい帆が並ぶ。','利益は出たが、商人たちはセーフェアラのしたたかさを思い知った。','港の商人たちは機会を逃したと不満げに帳簿を閉じた。']})},
 
 // ===== 第1波追加案件：五選帝侯 =====
-{id:'elector_leopold_mine_collapse',title:'銀山の落盤',category:'財政・民心',difficulty:'easy',ignoreType:'悪化注意',enemy:'レオポルトの鉱山代官',lineName:'救助と補償',enemyImg:'peasant',initialLine:0,intro:'ヴァイセンブルク銀山で坑道が崩れ、鉱夫たちが閉じ込められた。代官は採掘再開を急ぐが、遺族たちは救助と補償を求めて坑口を囲んでいる。',effects:makeEffects({win:{stability:5,citySupport:4,treasury:-2},loss:{stability:-3,treasury:-2},ignored:{stability:-2},stories:['救助と補償が行われ、鉱夫たちは王の名を覚えた。銀は減ったが、人心は王の側へ戻った。','救助は遅れ、銀山労働者の不満が残った。坑道の奥に残った怒りは、まだ消えていない。','「王は銀だけを見て人を見ない」という噂が、銀山地帯に広がった。']})},
+{id:'elector_leopold_mine_collapse',title:'銀山の落盤',category:'財政・民心',difficulty:'easy',ignoreType:'悪化注意',enemy:'レオポルトの鉱山代官',lineName:'救助と補償',enemyImg:'rock',initialLine:0,intro:'ヴァイセンブルク銀山で坑道が崩れ、鉱夫たちが閉じ込められた。代官は採掘再開を急ぐが、遺族たちは救助と補償を求めて坑口を囲んでいる。',effects:makeEffects({win:{stability:5,citySupport:4,treasury:-2},loss:{stability:-3,treasury:-2},ignored:{stability:-2},stories:['救助と補償が行われ、鉱夫たちは王の名を覚えた。銀は減ったが、人心は王の側へ戻った。','救助は遅れ、銀山労働者の不満が残った。坑道の奥に残った怒りは、まだ消えていない。','「王は銀だけを見て人を見ない」という噂が、銀山地帯に広がった。']})},
 {id:'elector_leopold_bad_coin',title:'悪貨の流入',category:'財政・交易',difficulty:'normal',ignoreType:'悪化注意',enemy:'レオポルト・フォン・ヴァイセンブルク',lineName:'貨幣信用',enemyImg:'rutheniaKing',initialLine:-5,intro:'東方から粗悪な銀貨が流れ込み、王都の商人たちが良貨を隠し始めた。レオポルトは即時回収を主張するが、強引に進めれば市場が凍りつく。',effects:makeEffects({win:{treasury:4,prestige:3,influence:{altrantRuthenia:15}},loss:{treasury:-4,citySupport:-4,influence:{altrantRuthenia:-20}},ignored:{treasury:-2,tension:{altrantRuthenia:1}},stories:['悪貨の流通は抑え込まれ、王国貨幣への信頼が守られた。商人たちは再び銀貨を秤に乗せる。','商人たちは銀貨を信用しなくなり、物価と不満が同時に上がった。','ルテニア商人は市場の混乱に乗じ、東方貨幣の影響力を広げた。']})},
 {id:'elector_leopold_war_tax',title:'軍資金の臨時税',category:'財政・軍事',difficulty:'hard',ignoreType:'放置不可',enemy:'反対する都市代表',lineName:'課税承認',enemyImg:'peasant',initialLine:-15,intro:'国境の緊張が高まり、兵の維持費が膨らんだ。レオポルトは臨時税を提案するが、都市代表は「王の戦争を市民の財布で払わせるのか」と反発している。',effects:makeEffects({win:{treasury:8,troops:80,nobleSupport:2,citySupport:-2},loss:{citySupport:-7,stability:-4,prestige:-3},ignored:{treasury:-3,troops:-60},stories:['税は限定的に認められ、軍資金が確保された。都市は不満を残したが、国境の兵は給金を受け取った。','都市の反発が強まり、選帝侯会議でも王の財政運営が疑われた。','兵の維持費は国庫を削り、次の軍事案件に暗い影を落とした。']})},
 {id:'elector_emil_dormitory_fire_tax',title:'学寮の暖炉税',category:'大学・内政',difficulty:'easy',ignoreType:'くすぶる',enemy:'エーミール・フォン・シュテルンベルク',lineName:'学寮支援',enemyImg:'peasant',initialLine:0,intro:'シュテルンベルク大学の学寮で冬の燃料費が払えず、貧しい学生たちが講義を欠席し始めた。財務官は「学生は兵にも税にもならぬ」と切り捨てるが、エーミールは静かに王へ陳情する。',effects:makeEffects({win:{prestige:3,stability:2,treasury:-1},loss:{prestige:-2},ignored:{prestige:-1},stories:['学生支援が認められ、王に仕える若い書記官候補が育ち始めた。','大学側は王宮の冷淡さを記録し、学者たちの協力は鈍った。','貧しい学生が大学を去り、官僚育成の芽は細った。']})},
@@ -1312,7 +1329,7 @@ cases:[
 {id:'elector_rosen_first_ball',title:'薔薇宮の初舞踏会',category:'宮廷・威信',difficulty:'easy',ignoreType:'機会損失',enemy:'コンラート・フォン・ローゼンフェルト',lineName:'宮廷の視線',enemyImg:'elector4',initialLine:0,intro:'ローゼンフェルト宮で、若き王を迎える初めての大舞踏会が開かれる。コンラートは笑顔で招待状を差し出したが、その場には王を値踏みする貴族たちが集まっていた。',effects:makeEffects({win:{prestige:4,nobleSupport:3},loss:{prestige:-3,nobleSupport:-2},ignored:{prestige:-2},stories:['アルブレヒトはぎこちなさを見せながらも、王として場を制した。貴族たちは若王を侮れない存在として見た。','舞踏会での小さな失態が大げさに語られ、宮廷中の笑い話になった。','ローゼンフェルト宮は王抜きで華やかに盛り上がり、王宮の存在感は薄れた。']})},
 {id:'elector_rosen_loire_etiquette',title:'ロアール式礼法の流行',category:'宮廷・文化外交',difficulty:'normal',ignoreType:'悪化注意',enemy:'エレオノーラ・フォン・ローゼンフェルト',lineName:'宮廷様式',enemyImg:'loireKing',initialLine:-5,intro:'王都の若い貴族たちの間で、ロアール式の礼法、服飾、詩作が流行し始めた。文化交流にも見えるが、エレオノーラは「憧れは、時に従属より深く人を縛ります」と警告する。',effects:makeEffects({win:{prestige:4,nobleSupport:2,influence:{altrantLoire:15}},loss:{prestige:-4,nobleSupport:-3,influence:{altrantLoire:-20}},ignored:{prestige:-2,influence:{altrantLoire:-10}},stories:['ロアール文化は取り入れられたが、アルトラント独自の宮廷様式として再構成された。','王都貴族はロアール宮廷を上位の手本と見なし始めた。','宮廷でアルトラント風の作法は古臭いものとして扱われた。']})},
 {id:'elector_rosen_bride_slander',title:'王妃候補への中傷文書',category:'婚姻・宮廷',difficulty:'hard',ignoreType:'放置不可',enemy:'宮廷婦人派閥',lineName:'噂の出所',enemyImg:'elector4',initialLine:-15,intro:'王妃候補の一人を貶める中傷文書が、宮廷の控室に置かれていた。筆跡は巧妙に隠されているが、背後には他国の使節、貴族婦人、選帝侯家の利害が絡んでいるらしい。',effects:makeEffects({win:{prestige:5,nobleSupport:3,diplomacy:2},loss:{prestige:-5,diplomacy:-3},ignored:{nobleSupport:-2,diplomacy:-2},stories:['エレオノーラの助けで噂の出所を探り、婚姻外交は守られた。','中傷は広がり、候補者との関係に傷がついた。','宮廷は王妃候補を品定めする噂で満ち、婚姻案件の空気は悪化した。']})},
-{id:'elector_gerhard_fort_repair',title:'冬前の砦補修',category:'辺境・軍事',difficulty:'easy',ignoreType:'悪化注意',enemy:'ゲルハルト・フォン・アイゼンヴァルト',lineName:'砦の備え',enemyImg:'altrantSoldier',initialLine:0,intro:'東方国境の小砦では、冬を前に外壁の石が崩れ始めていた。王都の財務官は「小さな砦に金をかけすぎる」と渋るが、ゲルハルトは泥のついた手袋を机に置き、短く言った。「落ちる時は、まず小さい砦からだ」',effects:makeEffects({win:{troops:60,prestige:2,treasury:-1,influence:{altrantRuthenia:10}},loss:{troops:-40,prestige:-2},ignored:{troops:-60,influence:{altrantRuthenia:-10}},stories:['砦は冬を越える備えを得た。辺境の兵たちは、王都が自分たちを見捨てていないと知った。','補修は半端に終わり、守備兵の不満が残った。','冬の間に砦の一部が崩れ、国境防衛に不安が残った。']})},
+{id:'elector_gerhard_fort_repair',title:'冬前の砦補修',category:'辺境・軍事',difficulty:'easy',ignoreType:'悪化注意',enemy:'ゲルハルト・フォン・アイゼンヴァルト',lineName:'砦の備え',enemyImg:'rock',initialLine:0,intro:'東方国境の小砦では、冬を前に外壁の石が崩れ始めていた。王都の財務官は「小さな砦に金をかけすぎる」と渋るが、ゲルハルトは泥のついた手袋を机に置き、短く言った。「落ちる時は、まず小さい砦からだ」',effects:makeEffects({win:{troops:60,prestige:2,treasury:-1,influence:{altrantRuthenia:10}},loss:{troops:-40,prestige:-2},ignored:{troops:-60,influence:{altrantRuthenia:-10}},stories:['砦は冬を越える備えを得た。辺境の兵たちは、王都が自分たちを見捨てていないと知った。','補修は半端に終わり、守備兵の不満が残った。','冬の間に砦の一部が崩れ、国境防衛に不安が残った。']})},
 {id:'elector_gerhard_conscription_list',title:'徴兵名簿の焼却',category:'徴兵・農村',difficulty:'normal',ignoreType:'悪化注意',enemy:'辺境村の村長',lineName:'徴兵調整',enemyImg:'peasant',initialLine:-5,intro:'アイゼンヴァルト領の村で、徴兵名簿が焼かれた。村人たちは「畑を守る男まで奪われれば、冬を越せない」と訴える。ゲルハルトは厳罰を求めるが、村の事情もまた現実だった。',effects:makeEffects({win:{troops:90,stability:3,citySupport:1},loss:{stability:-5,troops:-50},ignored:{troops:-80,stability:-3},stories:['徴兵数を調整し、村の防衛民兵として組み込んだ。王命と生活の折り合いがついた。','処罰だけが先に立ち、村人たちは王国軍を恨むようになった。','名簿焼却は他の村にも広がり始めた。']})},
 {id:'elector_gerhard_ruthenia_scouts',title:'ルテニア斥候の越境',category:'国境・諜報',difficulty:'hard',ignoreType:'放置不可',enemy:'ルテニア斥候隊',lineName:'国境主導権',enemyImg:'rutheniaSoldier',initialLine:-15,intro:'東方の森で、ルテニア斥候が捕らえられた。持っていた地図には、砦の井戸、穀倉、退路まで印が付けられている。ゲルハルトは即時報復を主張するが、軽率に動けば国境衝突へ発展する。',effects:makeEffects({win:{prestige:6,troops:80,influence:{altrantRuthenia:30},tension:{altrantRuthenia:-1}},loss:{prestige:-5,troops:-80,influence:{altrantRuthenia:-35},tension:{altrantRuthenia:2}},ignored:{influence:{altrantRuthenia:-25},tension:{altrantRuthenia:1}},stories:['斥候を交渉材料にし、ルテニアの出方を封じた。国境の主導権は王国側に残った。','報復と抗議が噛み合わず、ルテニアは逆にアルトラントの挑発だと主張した。','ルテニアは地形情報を得たまま、次の圧力を強めた。']})},
 
@@ -1322,7 +1339,7 @@ cases:[
 {id:'local_capital_fire',title:'王都の大火',category:'内政・災害',difficulty:'normal',ignoreType:'放置不可',enemy:'消防組と市民代表',lineName:'消火指揮',enemyImg:'peasant',initialLine:-5,intro:'乾いた夜風の中、王都の職人街で火が上がった。倉庫、宿屋、教会裏の貧民小屋まで火の手が迫っている。',effects:makeEffects({win:{stability:4,citySupport:4,treasury:-2},loss:{treasury:-4,citySupport:-5},ignored:{stability:-5},stories:['消火と避難は進み、被害は最小限に抑えられた。','職人街は焼け、税収と民心が落ちた。','王都には大きな傷が残り、焼け跡の煙は数日消えなかった。']})},
 {id:'local_sewer_plague',title:'下水溝の疫病臭',category:'福祉・都市',difficulty:'normal',ignoreType:'悪化注意',enemy:'王都医師団',lineName:'疫病封じ',enemyImg:'plague',initialLine:-5,intro:'王都の下水溝から悪臭が立ち、貧民街で熱病が広がり始めた。医師団は清掃と隔離を求めるが、商人たちは店を閉じることに反対している。',effects:makeEffects({win:{stability:5,citySupport:3,treasury:-2},loss:{stability:-5},ignored:{stability:-3,churchSupport:-2},stories:['清掃と施療が進み、疫病は広がる前に封じ込められた。','病は残り、民衆不安が広がった。','悪臭は消えず、次の疫病の影が王都に残った。']})},
 {id:'local_seed_shortage',title:'春の種籾不足',category:'農村・食糧',difficulty:'easy',ignoreType:'悪化注意',enemy:'農村代表',lineName:'作付け支援',enemyImg:'peasant',initialLine:0,intro:'長雨で保存していた種籾が傷み、春の播種が危ぶまれている。村々は貸与を求めるが、財務官は国庫負担を嫌がっている。',effects:makeEffects({win:{stability:3,treasury:-1},loss:{treasury:-2},ignored:{treasury:-3,stability:-2},stories:['種籾は貸し出され、秋の収穫は守られた。','一部の村は作付けを諦め、畑には空白が残った。','翌年の税収低下が避けられなくなった。']})},
-{id:'local_bridge_collapse',title:'橋の崩落',category:'街道・交易',difficulty:'normal',ignoreType:'悪化注意',enemy:'街道監督官',lineName:'橋の修復',enemyImg:'peasant',initialLine:-5,intro:'王都と銀山を結ぶ橋が崩れ、荷馬車が川辺に足止めされている。商人は修復を急かし、村人は通行税の免除を求めている。',effects:makeEffects({win:{treasury:3,citySupport:2},loss:{treasury:-3},ignored:{treasury:-4},stories:['橋は修復され、交易路は守られた。','輸送は滞り、国庫収入が落ちた。','商人たちは別ルートへ流れ始めた。']})},
+{id:'local_bridge_collapse',title:'橋の崩落',category:'街道・交易',difficulty:'normal',ignoreType:'悪化注意',enemy:'街道監督官',lineName:'橋の修復',enemyImg:'rock',initialLine:-5,intro:'王都と銀山を結ぶ橋が崩れ、荷馬車が川辺に足止めされている。商人は修復を急かし、村人は通行税の免除を求めている。',effects:makeEffects({win:{treasury:3,citySupport:2},loss:{treasury:-3},ignored:{treasury:-4},stories:['橋は修復され、交易路は守られた。','輸送は滞り、国庫収入が落ちた。','商人たちは別ルートへ流れ始めた。']})},
 {id:'local_road_bandits',title:'街道の盗賊団',category:'治安・軍事',difficulty:'normal',ignoreType:'放置不可',enemy:'仮面の盗賊団',lineName:'街道治安',enemyImg:'peasant',initialLine:-5,intro:'王都へ向かう街道で、仮面をつけた盗賊団が荷馬車を襲っている。旅籠には商人と巡礼者が足止めされ、不安が広がっている。',effects:makeEffects({win:{treasury:2,churchSupport:2,stability:3},loss:{troops:-40,stability:-3},ignored:{treasury:-2,churchSupport:-2},stories:['盗賊は討たれ、街道の信用は取り戻された。','討伐は不十分で、襲撃は続いた。','交易と巡礼に悪影響が出始めた。']})},
 {id:'local_port_smuggling',title:'港の密輸倉庫',category:'港・商業',difficulty:'normal',ignoreType:'悪化注意',enemy:'港湾役人',lineName:'密輸摘発',enemyImg:'seafearaKing',initialLine:-5,intro:'港の倉庫から、関税を逃れた香辛料と武器部品が見つかった。背後にはセーフェアラ商人の影があるが、証拠は薄い。',effects:makeEffects({win:{treasury:4,citySupport:2,influence:{azraqLoire:-10}},loss:{treasury:-2,influence:{azraqLoire:15}},ignored:{treasury:-3},stories:['密輸網は摘発され、港湾税は守られた。','商人たちは証拠を隠し、港の帳簿には穴が残った。','外国商館は港で力を増した。']})},
 {id:'local_fort_dry_well',title:'砦の井戸枯れ',category:'国境・軍事',difficulty:'normal',ignoreType:'悪化注意',enemy:'砦守備隊長',lineName:'補給維持',enemyImg:'altrantSoldier',initialLine:-5,intro:'東方小砦の井戸が枯れ、兵たちは雪解け水に頼っている。ルテニア斥候が近いという噂もあり、補給の遅れは命取りになる。',effects:makeEffects({win:{troops:60,influence:{altrantRuthenia:10}},loss:{troops:-60,prestige:-2},ignored:{influence:{altrantRuthenia:-15}},stories:['補給路は整い、砦は維持された。','守備隊の士気は下がり、兵たちは王都の遅さを嘆いた。','国境防衛は薄くなり、東方の森は不穏さを増した。']})},
@@ -1393,7 +1410,7 @@ cases:[
 {id:'country_ruthenia_sergei_envoy',title:'セルゲイ内廷長官の密使',category:'ルテニア・宮廷工作',difficulty:'hard',ignoreType:'悪化注意',enemy:'セルゲイ・バリシェフ',lineName:'密使処理',enemyImg:'rutheniaKing',initialLine:-15,intro:'ルテニア内廷長官セルゲイの密使が、王宮の侍女を通じて接触してきた。弟ルートヴィヒ、姪エリーゼ、王家の将来に関わる情報をちらつかせている。',effects:makeEffects({win:{prestige:4,diplomacy:4,influence:{altrantRuthenia:25}},loss:{prestige:-5,nobleSupport:-4,influence:{altrantRuthenia:-30}},ignored:{nobleSupport:-3,influence:{altrantRuthenia:-20}},stories:['密使の情報を利用しつつ、王宮内部への侵入を防いだ。','王家の私的情報がルテニアへ流れた。','宮廷の女官や小姓の間に東方の噂が入り込んだ。']})},
 {id:'country_ruthenia_grigory_drill',title:'グリゴリーの国境演習',category:'ルテニア・軍事圧力',difficulty:'hard',ignoreType:'放置不可',enemy:'グリゴリー・オルロフ',lineName:'演習対処',enemyImg:'rutheniaSoldier',initialLine:-15,intro:'ルテニア近衛軍総司令グリゴリーが、国境近くで大規模な冬季演習を始めた。公式には防衛訓練だが、砲列の向きは明らかにアルトラント側を向いている。',effects:makeEffects({win:{troops:100,prestige:6,influence:{altrantRuthenia:30},tension:{altrantRuthenia:-1}},loss:{troops:-120,prestige:-5,influence:{altrantRuthenia:-35},tension:{altrantRuthenia:2}},ignored:{influence:{altrantRuthenia:-25},tension:{altrantRuthenia:2}},stories:['軍を整えつつ外交抗議を行い、演習を圧力として固定させなかった。','ルテニアは国境で優位を示し、辺境村が動揺した。','演習は常態化し、国境の緊張が上がった。']})},
 {id:'country_ruthenia_old_deed',title:'ミハイル先代王の古証文',category:'ルテニア・係争地危機',difficulty:'desperate',ignoreType:'放置不可',enemy:'ミハイル・ロマノフスキーの古証文',lineName:'古権主張',enemyImg:'rutheniaKing',initialLine:-30,intro:'ルテニア先代王ミハイルの名で、東方係争地がかつてルテニア王家の庇護下にあったとする古い証文が提示された。イリーナ女大公は沈黙しているが、その沈黙こそ承認のように見えた。',effects:makeEffects({win:{prestige:12,diplomacy:5,influence:{altrantRuthenia:55},tension:{altrantRuthenia:-2}},loss:{prestige:-10,diplomacy:-6,influence:{altrantRuthenia:-60},tension:{altrantRuthenia:2}},ignored:{map:{altrantRuthenia:-1},prestige:-6,tension:{altrantRuthenia:2}},stories:['証文の矛盾を突き、係争地の主権を守った。','古証文は外交の武器となり、保護権主張が強まった。','係争地の村々は、紫の旗を現実的な選択肢として見始めた。']})},
-{id:'country_solia_avalanche_road',title:'山岳路の雪崩復旧',category:'ソリア・山岳路',difficulty:'easy',ignoreType:'悪化注意',enemy:'ソリア山岳商人',lineName:'街道復旧',enemyImg:'soliaKing',initialLine:0,intro:'アルトラントとソリアを結ぶ山岳路で雪崩が起き、商隊と伝令が足止めされた。道が閉じれば交易だけでなく、傭兵契約や外交文書の往来も滞る。',effects:makeEffects({win:{treasury:2,diplomacy:2,influence:{altrantSolia:10}},loss:{treasury:-2,influence:{altrantSolia:-10}},ignored:{diplomacy:-2,influence:{altrantSolia:-15}},stories:['復旧隊を出し、山岳路の信用を守った。','復旧が遅れ、商隊が別ルートへ流れた。','ソリアとの往来が細り、傭兵契約にも影が出た。']})},
+{id:'country_solia_avalanche_road',title:'山岳路の雪崩復旧',category:'ソリア・山岳路',difficulty:'easy',ignoreType:'悪化注意',enemy:'ソリア山岳商人',lineName:'街道復旧',enemyImg:'rock',initialLine:0,intro:'アルトラントとソリアを結ぶ山岳路で雪崩が起き、商隊と伝令が足止めされた。道が閉じれば交易だけでなく、傭兵契約や外交文書の往来も滞る。',effects:makeEffects({win:{treasury:2,diplomacy:2,influence:{altrantSolia:10}},loss:{treasury:-2,influence:{altrantSolia:-10}},ignored:{diplomacy:-2,influence:{altrantSolia:-15}},stories:['復旧隊を出し、山岳路の信用を守った。','復旧が遅れ、商隊が別ルートへ流れた。','ソリアとの往来が細り、傭兵契約にも影が出た。']})},
 {id:'country_solia_stunt_festival',title:'スタント教徒の冬祭り',category:'ソリア・宗教共存',difficulty:'normal',ignoreType:'悪化注意',enemy:'ミラ・ヴァイス',lineName:'祭礼監督',enemyImg:'stuntBeliever',initialLine:-5,intro:'ソリアから来たスタント教徒たちが、王都近郊で冬祭りを開きたいと願い出た。歌と祈りの祭りだが、トリック司祭たちは「異端の示威だ」と抗議している。',effects:makeEffects({win:{stability:4,citySupport:2,influence:{altrantSolia:15},tension:{altrantRick:1}},loss:{stability:-5,churchSupport:-4,tension:{altrantRick:1}},ignored:{stability:-3,tension:{altrantRick:1}},stories:['祭りは王国法の監督下で認められ、衝突は避けられた。','祭りは混乱し、両派の不信が深まった。','無許可の集会が広がった。']})},
 {id:'country_solia_claudia_contract',title:'クラウディアの傭兵契約書',category:'ソリア・傭兵契約',difficulty:'normal',ignoreType:'悪化注意',enemy:'クラウディア・フォン・アルテンブルク',lineName:'契約整理',enemyImg:'soliaSoldier',initialLine:-5,intro:'ソリアの軍制担当クラウディアが、新しい傭兵契約書を持参した。兵は精強だが、支払い期日、補給責任、撤退条件まで細かく定められている。',effects:makeEffects({win:{troops:160,diplomacy:2,treasury:-3,influence:{altrantSolia:20}},loss:{troops:80,treasury:-5,diplomacy:-3},ignored:{troops:-60,influence:{altrantSolia:-15}},stories:['契約条件を整理し、兵力を確保した。','不利な条項が残り、国庫と軍事信用に傷がついた。','契約は流れ、必要な時に傭兵を呼べなくなった。']})},
 {id:'country_solia_neutral_mediation',title:'レナート若公の中立仲裁',category:'ソリア・中立外交',difficulty:'hard',ignoreType:'悪化注意',enemy:'レナート・ベルナッチ',lineName:'仲裁会議',enemyImg:'soliaKing',initialLine:-15,intro:'ソリア若公レナートが、ロアールとルテニアの使節を招いた小会議にアルトラントを誘った。席順、発言順、署名の位置まで、小国の生存術で組まれている。',effects:makeEffects({win:{diplomacy:6,prestige:4,influence:{altrantSolia:25},tension:{altrantLoire:-1,altrantRuthenia:-1}},loss:{diplomacy:-5,prestige:-4,influence:{altrantSolia:-25}},ignored:{diplomacy:-3,influence:{altrantSolia:-15}},stories:['ソリアの仲裁を利用し、大国間で発言権を保った。','アルトラントは会議で脇役にされた。','ソリアは別の相手と均衡を作った。']})},
@@ -1519,6 +1536,12 @@ cases:[
 {id:'dynasty_princess_betrothal_offer',title:'王女への婚約打診',category:'婚姻外交・王朝',difficulty:'hard',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:2,enemy:'王宮関係者',lineName:'王女への婚約打診',enemyImg:'loireKing',initialLine:-15,intro:"外国使節が、幼い王女との将来婚約をほのめかした。返答の仕方ひとつで同盟にも侮辱にもなる。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["婚約打診には礼を尽くしつつ即答を避けた。王女の未来は守られ、相手国との関係も傷つかなかった。", "返答は曖昧で、相手国は期待を残したまま帰った。王女の名は次の交渉でも持ち出されるだろう。", "打診を放置したことで、相手国は軽視されたと受け取った。王女の名は外交上の失点として語られた。"]})},
 {id:'dynasty_prince_study_abroad',title:'王子の留学招待',category:'教育・外交',difficulty:'hard',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:2,enemy:'王宮関係者',lineName:'王子の留学招待',enemyImg:'rutheniaKing',initialLine:-15,intro:"外国宮廷から、王子を短期間招きたいという申し出が届いた。教育機会と人質外交の境目にある。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["留学は人質にならぬ短期訪問として再設計された。王子は異国を知り、王国は面子を保った。", "招待は受けたが、滞在条件に不安が残った。教育と拘束の境目はまだ細い。", "返答を曖昧にしたまま時が過ぎ、相手国は王子を信用していない証と受け取った。"]})},
 {id:'dynasty_twins_succession',title:'双子の継承順位',category:'継承法・王朝危機',difficulty:'desperate',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:3,enemy:'王宮関係者',lineName:'双子の継承順位',enemyImg:'elector2',initialLine:-30,intro:"王家に双子が生まれた場合、どちらが先に継承権を持つのか。祝福の鐘は法学論争へ変わった。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["双子の継承順位は明文化され、祝福は法の不安に飲まれずに済んだ。王朝は難題を制度へ変えた。", "暫定解釈は示されたが、成人後の再協議という危うい余白が残った。双子の成長とともに火種も育つ。", "継承順位は曖昧なまま残り、祝いの鐘の下で貴族たちは未来の争いを数え始めた。"]})},
+
+{id:'crisis_recovery_treasury',title:'銀庫の立て直し',category:'王権維持・財政',difficulty:'hard',ignoreType:'放置不可',danger:3,enemy:'支払いを迫る債権者',lineName:'銀庫の信用',enemyImg:'elector1',initialLine:-18,intro:'銀庫の底が見え、傭兵隊長と職人頭が支払いを求めて王宮へ詰めかけた。ここで信用をつなぎ直せなければ、王命は銀貨より軽くなる。',effects:makeEffects({win:{treasury:9,stability:4,nobleSupport:3,prestige:2},loss:{treasury:-1,stability:-5,nobleSupport:-4,prestige:-4},ignored:{stability:-6,nobleSupport:-5,prestige:-5},stories:['王は支払い順と臨時融資を整理し、銀庫の信用をかろうじて取り戻した。まだ豊かではないが、命令は再び動き始めた。','帳簿は閉じられなかった。いくつかの支払いは先送りされ、王宮には不安な沈黙が残った。','債権者は王宮を去り、職人と傭兵は別の雇い主を探し始めた。銀庫の空白は王権の空白へ変わった。']})},
+{id:'crisis_recovery_troops',title:'王旗の再召集',category:'王権維持・軍事',difficulty:'hard',ignoreType:'放置不可',danger:3,enemy:'離散しかけた兵団',lineName:'王旗への結集',enemyImg:'altrantSoldier',initialLine:-18,intro:'国境の砦から兵が減り、王旗の下に集まる足音は細くなった。今すぐ再召集に成功しなければ、守るべき国を動かす軍勢は失われる。',effects:makeEffects({win:{troops:420,prestige:4,stability:3},loss:{troops:-80,prestige:-5,stability:-4},ignored:{troops:-120,prestige:-5,stability:-5},stories:['王旗のもとに兵が戻った。数はまだ十分ではないが、砦の旗は降ろされずに済んだ。','再召集は半ば成功したが、兵たちは俸給と補給を疑っている。軍の足元はまだ揺れている。','兵は集まらなかった。王の名を聞いても、村の若者たちは鍬を置かなかった。']})},
+{id:'crisis_recovery_stability',title:'民心の鎮撫',category:'王権維持・内政',difficulty:'hard',ignoreType:'放置不可',danger:3,enemy:'王令を拒む群衆',lineName:'民心の鎮静',enemyImg:'peasant',initialLine:-18,intro:'市場は王令を疑い、村は徴税官を追い返し始めた。王が民の前に立ち、怒りをほどかなければ、王国は王なしで動き始める。',effects:makeEffects({win:{stability:10,citySupport:5,prestige:3,treasury:-2},loss:{stability:-4,citySupport:-4,prestige:-4},ignored:{stability:-7,citySupport:-5,prestige:-5},stories:['王は民の前に立ち、処罰より先に救済と説明を示した。怒りは完全には消えないが、王令は再び門を越えた。','群衆は散ったが、納得ではなく疲労による沈黙だった。次の失策で再び火がつくだろう。','市場と村は王宮に背を向けた。命令は届かず、噂だけが王国を走った。']})},
+{id:'crisis_recovery_authority',title:'選帝侯会議の再掌握',category:'王権維持・政争',difficulty:'desperate',ignoreType:'放置不可',danger:3,enemy:'王命を止める選帝侯たち',lineName:'王権の承認',enemyImg:'elector1',initialLine:-24,intro:'選帝侯たちは反逆を叫ばず、ただ王命への返事を遅らせている。ここで議場を取り戻せなければ、玉座と王冠は残っても王権とは呼ばれなくなる。',effects:makeEffects({win:{prestige:9,nobleSupport:9,stability:3},loss:{prestige:-6,nobleSupport:-7,stability:-3},ignored:{prestige:-8,nobleSupport:-8,stability:-4},stories:['王は議場の沈黙を破り、選帝侯たちに王命への署名をさせた。王冠はまだ力を失っていない。','会議は決裂こそ避けたが、選帝侯たちは譲歩の代償を帳簿に記した。','選帝侯たちは立ち上がらなかった。ただ従わなくなった。その静けさが、王権の終わりを告げた。']})},
+
 {id:'dynasty_child_of_fate',title:'運命の日を継ぐ子',category:'予言・王朝',difficulty:'desperate',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:3,enemy:'王宮関係者',lineName:'運命の日を継ぐ子',enemyImg:'deadKing',initialLine:-30,intro:"アルブレヒトの三十六歳の運命の日が近づくにつれ、宮廷の視線は子どもへ向かい始めた。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["王は子を「運命の代用品」ではなく、未来を選ぶ者として守ると宣言した。宮廷は初めて予言より教育を語った。", "子への期待は整理されたが、予言の日が近づくほど大人たちの視線は重くなった。", "運命の不安は子へ押し寄せ、宮廷では幼い継承者を旗印にする動きが強まった。"]})},],
 
 events:[{id:'butler_report',when:1,speaker:'老執事',title:'朝食前の報告',text:'「陛下。即位して最初の半年でございます。すべてを裁こうとなさらず、どこへ王命を下すかをお選びください」',choices:[{label:'うなずく',result:'老執事は一礼し、今日届いた訴状を静かに机へ並べた。',flags:{butlerAdvice:true}}]},{id:'butler_retirement_notice',when:'butlerRetirement',speaker:'老執事',title:'老執事の引退',text:'「陛下。私の助言を頼もしく思っていただけたなら、この老骨には過ぎた誉れでございます。ですが、そろそろ若き方々だけで御旗を支える時でございましょう」老執事は深く一礼し、静かに宮廷の第一線を退いた。',choices:[{label:'見送る',result:'老執事の助言カードは失われた。だが、その言葉は王の胸に残り続ける。'}]}]
@@ -1788,6 +1811,9 @@ const State={
   // エンディング状態。36歳到達・戦死・病没などで通常進行を止める。
   gameOver:false,
   ending:null,
+  // 途中王権危機。警告→危機→最後の猶予→治世の終わり、の流れを管理する。
+  powerCrisis:{type:null,level:null,count:0,noticeShownFor:null},
+  pendingPowerCrisisNotice:null,
 
   // 半期進行と画面選択状態。現行使用。
   turn:1,
@@ -2344,6 +2370,7 @@ function maxSelectableCases(){return clamp(availableActorIds().length||1,1,3)}
 function isMarriageOpen(){return State.marriage?.state==='single'||(State.marriage?.state==='widower'&&State.turn>=(State.marriage?.mourningUntil||0))}
 function caseBlockedByProgress(c){
   if(!c)return true;
+  if(String(c.id||'').startsWith('crisis_recovery_')&&c.id!==currentPowerCrisisCaseId())return true;
   if(c.requiresActor&&!actorIsUnlocked(c.requiresActor))return true;
   if(c.requiresActor&&actorIsDead(c.requiresActor))return true;
   if(c.requiresSpouse&&!State.marriage?.spouseId)return true;
@@ -2549,6 +2576,7 @@ function visibleCases(){
     out=out.slice(0,count);
     out=ensureLandBorderSkirmishCase(out,all,count);
     out=ensureEarlyDangerCase(out,count);
+    out=ensurePowerCrisisCase(out,count);
   }
   const captiveCases=activeCaptiveCases();
   if(captiveCases.length){
@@ -2575,6 +2603,69 @@ function visibleCases(){
   State.caseCache={turn:State.turn,cases:out.map(c=>c.id)};
   return out;
 }
+
+function currentPowerCrisisType(){return State.powerCrisis?.type||null}
+function currentPowerCrisisCaseId(){const t=currentPowerCrisisType();return t?`crisis_recovery_${t}`:null}
+function powerCrisisLabel(type){return {treasury:'国庫破綻',troops:'兵力崩壊',stability:'国内崩壊',authority:'王権崩壊'}[type]||'王権危機'}
+function powerCrisisTitle(type){return {treasury:'銀庫の危機',troops:'王旗の危機',stability:'民心の危機',authority:'王冠の危機'}[type]||'王権の危機'}
+function powerCrisisText(type,level){
+  const last=level==='last';
+  const crisis=level==='crisis'||last;
+  const map={
+    treasury:{warn:'銀庫の底が見え始めた。傭兵隊長は支払いを尋ね、職人たちは次の仕事を渋っている。まだ王国は倒れていない。だが、このまま次の半期を迎えれば、王の命令は銀貨より軽くなる。',crisis:'会計官は帳簿を閉じ、債権者は王宮の控えの間に並び始めた。アルブレヒトはまだ玉座にいる。だが、銀貨の裏付けを失えば、命令は門の外へ届かない。',last:'老執事は飾らずに告げた。「陛下。次で銀庫を立て直せねば、王国は陛下を待ちませぬ」帳簿の空白は、王権の空白になりかけていた。'},
+    troops:{warn:'兵数は心細く、国境の砦では一人ひとりの名まで数えられている。今ならまだ再召集できる。だが次の半期に失敗すれば、王旗は守る者を失い始める。',crisis:'砦からの報告は短くなった。兵は足りず、補給も細い。王が剣を取っても、その名に集まる軍勢がなければ国境は支えられない。',last:'老執事は静かに軍報を置いた。「陛下。次で王旗の下に兵を戻せねば、旗は布に戻ります」最後の再召集が始まろうとしていた。'},
+    stability:{warn:'市場はざわめき、村では王令より噂が速く走っている。まだ民は王を見捨ててはいない。だが、怒りを放置すれば国は王なしで動き始める。',crisis:'村は徴税官を追い返し、都市は門を閉ざし始めた。反乱の旗はまだ立っていない。だが、王令はすでに軽くなっている。',last:'老執事は人払いを命じ、低く言った。「陛下。次で民心を戻せねば、王宮だけが国ではなくなります」最後の鎮撫が迫っていた。'},
+    authority:{warn:'選帝侯たちは王の失点を数え、議場の沈黙は以前より冷たい。まだ彼らは従っている。だが王の威信がさらに痩せれば、返事の遅れは服従拒否へ変わる。',crisis:'選帝侯たちは反逆を叫ばず、ただ王命への返答を先延ばしにした。玉座と王冠は残っている。だが、それを王権と呼ぶ者は減り始めている。',last:'老執事は議場の扉を見つめて言った。「陛下。次で会議を取り戻せねば、王冠は飾りになります」最後の評議が始まる。'}
+  };
+  return map[type]?.[last?'last':crisis?'crisis':'warn']||'王国に危機の兆しがある。';
+}
+function assessPowerCrisis(){
+  const p=State.params||{};
+  const items=[];
+  const push=(type,level,score)=>items.push({type,level,score});
+  if((p.treasury||0)<=0)push('treasury','crisis',100); else if((p.treasury||0)<3000)push('treasury','warn',30);
+  if((p.troops||0)<=0)push('troops','crisis',95); else if((p.troops||0)<300)push('troops','warn',28);
+  if((p.stability||50)<=10)push('stability','crisis',90); else if((p.stability||50)<20)push('stability','warn',26);
+  if((p.prestige||50)<=10&&(p.nobleSupport||50)<=15)push('authority','crisis',88); else if((p.prestige||50)<20&&(p.nobleSupport||50)<25)push('authority','warn',24);
+  return items.sort((a,b)=>b.score-a.score)[0]||null;
+}
+function updatePowerCrisisState(){
+  const a=assessPowerCrisis();
+  if(!a){State.powerCrisis={type:null,level:null,count:0,noticeShownFor:null};return null;}
+  const pc=State.powerCrisis||{type:null,level:null,count:0};
+  let count=0;
+  if(a.level==='crisis')count=(pc.type===a.type&&pc.level==='crisis')?(pc.count||0)+1:1;
+  State.powerCrisis={type:a.type,level:a.level,count,noticeShownFor:null};
+  const protectedEarly=State.turn<=4;
+  const immediate=(a.type==='stability'&&(State.params.stability||0)<=0)||((State.params.treasury||0)<=0&&State.turn>8&&count>=2)||((State.params.troops||0)<=0&&State.turn>8&&count>=2);
+  if(!protectedEarly&&(immediate||count>=2))return {action:'ending',type:a.type};
+  const level=a.level==='crisis'&&count>=1?'last':a.level;
+  return {action:'notice',type:a.type,level};
+}
+function ensurePowerCrisisCase(out,count=5){
+  const id=currentPowerCrisisCaseId();
+  if(!id)return out;
+  const c=getCase(id);
+  if(!c||caseBlockedByProgress(c))return out;
+  const without=out.filter(x=>x.id!==id);
+  return [c,...without].slice(0,count);
+}
+function clearPowerCrisisIfRecovered(type){
+  if(!State.powerCrisis||State.powerCrisis.type!==type)return;
+  State.powerCrisis={type:null,level:null,count:0,noticeShownFor:null};
+  State.caseCache=null;
+}
+function collapseEndingData(type){
+  const data={
+    treasury:{epithet:'銀庫を閉ざされた王',title:'治世の終わり：銀庫を閉ざされた王',text:'国庫は尽きた。兵の靴音は遠ざかり、職人たちは王宮の門を振り返らずに去った。アルブレヒトは玉座に座っていたが、命令を動かす銀貨はもうなかった。\n\n予言の年を待たず、彼の治世は帳簿の空白に沈んだ。',comment:'財政破綻により、王命を実行する力を失いました。'},
+    troops:{epithet:'旗を守れなかった王',title:'治世の終わり：旗を守れなかった王',text:'国境の砦から、旗が降ろされたという報せが届いた。王は剣を取ったが、その名に集まる軍勢はもうなかった。\n\nアルブレヒトは敗死したのではない。ただ、守るべき国を動かす力を失った。',comment:'兵力崩壊により、王国を守る実力を失いました。'},
+    stability:{epithet:'民に見放された王',title:'治世の終わり：民に見放された王',text:'市場は王令を聞かず、村は徴税官を追い返し、都市は自らの門を閉じた。アルブレヒトの名はまだ祈りに残っていたが、命令としては届かなかった。\n\n王国は静かに、王なしで動き始めた。',comment:'国内崩壊により、王令が民へ届かなくなりました。'},
+    authority:{epithet:'王冠なき王',title:'治世の終わり：王冠なき王',text:'選帝侯たちはついに沈黙を破った。彼らは反逆を叫ばず、ただ王の命令に従わなくなった。玉座も王冠も残っている。\n\nだが、それを王権と呼ぶ者は、もう宮廷にはいなかった。',comment:'威信と選帝侯支持を失い、王権が空洞化しました。'}
+  }[type];
+  return {type:'collapse',title:data.title,epithet:data.epithet,epithetText:data.text,comment:data.comment,text:data.text,traits:[data.comment]};
+}
+function triggerCollapseEnding(type){State.gameOver=true;startEnding(collapseEndingData(type));}
+
 function storyAge(){return 16+Math.floor((State.turn-1)/2)}
 function storySeason(){return State.turn%2?'春':'秋'}
 function storyStageName(){const age=storyAge();if(age<=17)return '若鷲の試練';if(age<=19)return '王家再編の季節';if(age<=24)return '選帝侯と婚姻外交の時代';if(age<=29)return '制度と大陸外交の時代';if(age<=34)return '大陸危機の時代';return '予言の冬へ向かう時代'}
@@ -2808,7 +2899,7 @@ function startGameFromOpening(withEnter=false){
    ========================================================= */
 const View={
 main(){if((State.mapNews||[]).length&&!(State.suppressMapNews)){showMapNews();return}setScreen('screenMain');const event=Flow.pendingEvent();if(event){View.event(event);return}const vis=visibleCases();while(State.selected.length>maxSelectableCases()){const removed=State.selected.pop();delete State.assignments[removed];refundCaseBudget(removed);if(State.cardAssignment?.caseId===removed)State.cardAssignment=null}const picked=State.selected.map(getCase).filter(Boolean);const area=vis.map(View.caseCard).join('');$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}${borderMoodHud()}</div><div class="pick"><div class="map revealed"><div class="mapTitle">アルトラント周辺</div>${renderMapHtml()}</div><div class="casePanel revealList">${area}</div><div class="slots" id="mainSlots" style="--slotCount:${maxSelectableCases()}">${View.slotsHtml(picked)}</div><div class="count" id="caseCount">${State.selected.length}/${maxSelectableCases()}</div><div id="toastHost">${State.warn?'<div class="toast">これ以上は選べません</div>':''}</div></div>`;if(!State.hudIntroDone){State.hudIntroDone=true;setTimeout(()=>{document.querySelectorAll('#screenMain .resourceParam').forEach(el=>el.classList.add('hudIntroPulse'));sfx('summary');},80);setTimeout(()=>{document.querySelectorAll('#screenMain .resourceParam').forEach(el=>el.classList.remove('hudIntroPulse'));},1700)}if(State.warn)setTimeout(()=>{State.warn=false;View.updateMainSelection&&View.updateMainSelection()},700)},
-caseCard(c){const idx=State.selected.indexOf(c.id);const sel=idx>=0?'selected':'';const locked=idx<0&&State.selected.length>=maxSelectableCases()?'locked':'';return `<div class="caseCard ${c.difficulty} ${sel} ${locked}" data-case-id="${c.id}" data-order="${idx>=0?idx+1:''}" onclick="Flow.toggleCase('${c.id}')"><div class="caseTitle">${c.title}</div><div class="caseStory">${c.intro}</div></div>`},
+caseCard(c){const idx=State.selected.indexOf(c.id);const sel=idx>=0?'selected':'';const locked=idx<0&&State.selected.length>=maxSelectableCases()?'locked':'';return `<div class="caseCard ${c.difficulty} ${String(c.id||'').startsWith('crisis_recovery_')?'powerCrisisCase':''} ${sel} ${locked}" data-case-id="${c.id}" data-order="${idx>=0?idx+1:''}" onclick="Flow.toggleCase('${c.id}')"><div class="caseTitle">${c.title}</div><div class="caseStory">${c.intro}</div></div>`},
 slotsHtml(picked){const max=maxSelectableCases();return `${Array.from({length:max},(_,i)=>View.slot(picked[i],i,true)).join('')}<button class="next ${State.selected.length?'pulse':''}" ${State.selected.length?'':'disabled'} onclick="Flow.toAssign()">次へ</button>`},
 updateMainSelection(){const picked=State.selected.map(getCase).filter(Boolean);for(const c of visibleCases()){const el=document.querySelector(`[data-case-id="${c.id}"]`);if(!el)continue;const idx=State.selected.indexOf(c.id);el.classList.toggle('selected',idx>=0);el.classList.toggle('locked',idx<0&&State.selected.length>=maxSelectableCases());el.dataset.order=idx>=0?String(idx+1):'';}const slots=document.getElementById('mainSlots');if(slots){slots.style.setProperty('--slotCount',maxSelectableCases());slots.innerHTML=View.slotsHtml(picked);}const count=document.getElementById('caseCount');if(count)count.textContent=`${State.selected.length}/${maxSelectableCases()}`;const toast=document.getElementById('toastHost');if(toast)toast.innerHTML=State.warn?'<div class="toast">これ以上は選べません</div>':'';},
 slot(c,i,enabled=true){return c?`<div class="slot filled" onclick="Flow.toggleCase('${c.id}')"><div class="slotNo">戦線${i+1}</div><div class="slotTitle">${c.title}</div></div>`:`<div class="slot ${enabled?'':'locked'}"><div class="slotNo">戦線${i+1}</div><div class="slotEmpty">${enabled?'空き':'未解禁'}</div></div>`},
@@ -2905,6 +2996,116 @@ function applySpouseDeath(id){
   setActorStatus(id,'dead');
   removeCaptive(id);
 }
+
+function cloneBattleEffect(e){
+  return {
+    params:{...(e?.params||{})},
+    tension:{...(e?.tension||{})},
+    influence:{...(e?.influence||{})},
+    map:{...(e?.map||{})},
+    story:e?.story||''
+  };
+}
+function addEffectParam(e,key,delta){
+  if(!e.params)e.params={};
+  e.params[key]=(e.params[key]||0)+(Number(delta)||0);
+}
+function actorRoleBonusText(actorId,rank,tags,scale){
+  const success=isSuccessRank(rank);
+  const hardFail=isHardFailureRank(rank);
+  const minorFail=rank==='minorLoss';
+  const big=rank==='completeWin'||rank==='completeLoss'||scale>=4;
+  if(actorId==='albrecht'){
+    if(success)return big?'王自ら難局を押し返したことで、王威は大きく高まった。':'王自ら采配に立ったことで、王宮と地方は若き王の力を見直した。';
+    if(hardFail)return '王自ら出ても押し返された事実は、王宮に重く響いた。敗北は戦線だけでなく、王威そのものを削った。';
+    if(minorFail)return '王本人の小さな敗北は噂となり、宮廷の空気を少し冷やした。';
+  }
+  if(isSpouseActorId(actorId)){
+    if(success){
+      if(tags.includes('dynasty')||tags.includes('marriage')||tags.includes('family'))return '王妃の采配は、王朝の結び目を強くした。宮廷は王家が二人で国を支えていることを見た。';
+      if(tags.includes('welfare')||tags.includes('people'))return '王妃の働きは民の不安を和らげ、王国の足元を静かに整えた。';
+      return '王妃の調整は、宮廷と外交の空気をやわらげた。';
+    }
+    if(hardFail)return '王妃の失敗は王朝の弱さとして見られ、宮廷には小さな不和が広がった。';
+    if(minorFail)return '王妃のつまずきは大事には至らなかったが、宮廷の視線は少し厳しくなった。';
+  }
+  if(actorId==='brother'){
+    if(success){
+      if(tags.includes('military')||tags.includes('border')||tags.includes('security')||tags.includes('war'))return '王弟の武名は戦場で広がり、兵たちはその勢いに引き寄せられた。';
+      return '弟の活躍は王家の力を示したが、同時に彼自身の存在感も増した。';
+    }
+    if(hardFail)return '王弟の敗北は、継承をめぐる不安と弟派のざわめきを呼び起こした。';
+    if(minorFail)return '弟の後退は小さな傷で済んだが、宮廷には比較と噂が残った。';
+  }
+  return '';
+}
+function applyActorRoleBonus(r){
+  if(!r||!r.actor||!r.case||DATA.supportActors?.[r.actor.id])return r;
+  const id=r.actor.id;
+  if(!(id==='albrecht'||id==='brother'||isSpouseActorId(id)))return r;
+  const tags=caseMeta(r.case).tags||[];
+  const scale=Number(caseMeta(r.case).scale||1);
+  const success=isSuccessRank(r.rank);
+  const hardFail=isHardFailureRank(r.rank);
+  const minorFail=r.rank==='minorLoss';
+  if(!(success||hardFail||minorFail))return r;
+  r.effect=cloneBattleEffect(r.effect);
+  const big=r.rank==='completeWin'||r.rank==='completeLoss'||scale>=4||r.case.difficulty==='desperate';
+  const relevant={
+    albrecht:tags.some(t=>['politics','noble','military','border','war','crisis','succession','royal','late'].includes(t)),
+    wife:tags.some(t=>['welfare','people','court','marriage','dynasty','family','diplomacy','religion','church','refugee'].includes(t)),
+    brother:tags.some(t=>['military','border','security','war','fort','treuval','ruthenia','rebellion','crisis'].includes(t))
+  };
+  if(id==='albrecht'){
+    if(success){
+      addEffectParam(r.effect,'prestige',big?8:(relevant.albrecht?5:3));
+      addEffectParam(r.effect,'nobleSupport',big?3:(relevant.albrecht?2:1));
+      if(relevant.albrecht)addEffectParam(r.effect,'stability',2);
+    }else if(hardFail){
+      addEffectParam(r.effect,'prestige',big?-8:-6);
+      addEffectParam(r.effect,'nobleSupport',big?-4:-3);
+      addEffectParam(r.effect,'stability',big?-3:-2);
+    }else if(minorFail){
+      addEffectParam(r.effect,'prestige',-3);
+      addEffectParam(r.effect,'nobleSupport',-1);
+    }
+  }else if(isSpouseActorId(id)){
+    if(success){
+      addEffectParam(r.effect,'stability',big?5:(relevant.wife?4:3));
+      if(tags.includes('welfare')||tags.includes('people')||tags.includes('refugee'))addEffectParam(r.effect,'citySupport',2);
+      if(tags.includes('diplomacy')||tags.includes('loire')||tags.includes('azraq')||tags.includes('ruthenia'))addEffectParam(r.effect,'diplomacy',2);
+      if(tags.includes('religion')||tags.includes('church')||tags.includes('rick'))addEffectParam(r.effect,'churchSupport',2);
+      if(tags.includes('court')||tags.includes('marriage')||tags.includes('dynasty')||tags.includes('family'))addEffectParam(r.effect,'nobleSupport',2);
+    }else if(hardFail){
+      addEffectParam(r.effect,'stability',big?-5:-3);
+      addEffectParam(r.effect,'nobleSupport',-2);
+      if(tags.includes('dynasty')||tags.includes('marriage')||tags.includes('family'))addEffectParam(r.effect,'prestige',-2);
+    }else if(minorFail){
+      addEffectParam(r.effect,'stability',-2);
+      if(tags.includes('court')||tags.includes('dynasty'))addEffectParam(r.effect,'nobleSupport',-1);
+    }
+  }else if(id==='brother'){
+    if(success){
+      addEffectParam(r.effect,'troops',big?160:(relevant.brother?110:70));
+      addEffectParam(r.effect,'prestige',relevant.brother?2:1);
+      if(relevant.brother)addEffectParam(r.effect,'stability',1);
+    }else if(hardFail){
+      addEffectParam(r.effect,'troops',big?-140:-90);
+      addEffectParam(r.effect,'nobleSupport',big?-3:-2);
+      addEffectParam(r.effect,'prestige',big?-3:-2);
+    }else if(minorFail){
+      addEffectParam(r.effect,'troops',-45);
+      addEffectParam(r.effect,'nobleSupport',-1);
+    }
+  }
+  const line=actorRoleBonusText(id,r.rank,tags,scale);
+  if(line){
+    r.specialLines=r.specialLines||[];
+    r.specialLines.push(line);
+  }
+  return r;
+}
+
 function applyActorConsequences(lanes=[]){
   const lines=[];
   const touched=new Set();
@@ -2924,14 +3125,8 @@ function applyActorConsequences(lanes=[]){
     }
     if(hard){
       if(id==='albrecht'){
-        if(Math.random()<.12){
-          State.pendingDeathEnding='battle';
-          setActorStatus(id,'dead');
-          line='アルブレヒトは戦場で致命傷を負いました。王国はこの半期の総括ののち、別の結末へ向かいます。';
-        }else{
-          setActorStatus(id,'tired',1);
-          line=`${r.actor.name}は深く消耗し、次の半期は力を十分に発揮できません。`;
-        }
+        setActorStatus(id,'tired',1);
+        line='アルブレヒトは戦場で倒れはしませんでした。だが、王自らが押し返された光景は兵と宮廷に焼きつき、次の半期は疲労を抱えて采配に臨むことになります。';
       }else if(isSpouseActorId(id)){
         const eligible=spouseDeathEligible(r);
         const roll=Math.random();
@@ -3229,6 +3424,18 @@ function applySpecialCaseResult(r){
   const c=r.case;
   if(!c)return r;
   const lines=[];
+
+  if(String(c.id||'').startsWith('crisis_recovery_')){
+    const type=c.id.replace('crisis_recovery_','');
+    if(isSuccessRank(r.rank)){
+      clearPowerCrisisIfRecovered(type);
+      lines.push('王権危機はひとまず退きました。次の半期、王国は通常の火種へ向き合えます。');
+    }else if(isHardFailureRank(r.rank)){
+      if(!State.powerCrisis)State.powerCrisis={type,level:'crisis',count:1};
+      State.powerCrisis.type=type;State.powerCrisis.level='crisis';State.powerCrisis.count=Math.max(1,State.powerCrisis.count||1);
+      lines.push('立て直しは失敗しました。王国は最後の猶予をほとんど使い果たしました。');
+    }
+  }
 
   if(c.id==='brother_persuasion'){
     if(isSuccessRank(r.rank)){
@@ -4191,7 +4398,7 @@ View.endingStory=function(ending){
   setScreen('screenResult');
   sfx('summary');
   const body=(ending.text||'').split('\n\n').map(t=>`<p>${t}</p>`).join('');
-  const kicker=ending.type==='battle'?'戦場の終わり':ending.type==='illness'?'病床の終わり':'運命の日';
+  const kicker=ending.type==='battle'?'戦場の終わり':ending.type==='illness'?'病床の終わり':ending.type==='collapse'?'治世の終わり':'運命の日';
   $('screenResult').innerHTML=`<div class="topbar"><b>最終章</b>${paramHud()}</div><div class="endingScreen"><div class="endingCard"><div class="endingKicker">${currentAge()}歳　${kicker}</div><div class="endingTitle">${ending.title}</div><div class="endingText">${body}</div><button class="primary pulse" onclick="View.endingResult()">最終称号とリザルトへ</button></div></div>`;
 };
 View.endingResult=function(){
@@ -4297,7 +4504,48 @@ function applyVictorySidePressure(r){
   return `${r.case.title}での強い勝利により、${mapDef(key)?.label||key}方面がこちらを警戒した。`;
 }
 
-const Flow={pendingEvent(){if(State.butlerRetirementPending&&!State.shownEvents.butler_retirement_notice)return DATA.events.find(e=>e.id==='butler_retirement_notice');return DATA.events.find(e=>!['butler_report','butler_retirement_notice'].includes(e.id)&&e.when===State.turn&&!State.shownEvents[e.id])},chooseEvent(id,idx){audio();sfx("next");const ev=DATA.events.find(e=>e.id===id),ch=ev.choices[idx];State.shownEvents[id]=true;if(id==='butler_retirement_notice')State.butlerRetirementPending=false;if(ch.hidden)for(const[k,v]of Object.entries(ch.hidden))State.params[k]=(State.params[k]||0)+v;if(ch.flags)Object.assign(State,ch.flags);$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div><div class="modalShade"><div class="modalBox"><h2>${ev.title}</h2><div class="dialogText">${ch.result}</div><div class="choices"><button onclick="View.main()">続ける</button></div></div></div>`},revealYear(){audio();sfx('reveal');State.yearStoryRead=true;State.justRevealed=true;View.main()},toggleCase(id){audio();const wasSelected=State.selected.includes(id);if(wasSelected){sfx('cancel');State.selected=State.selected.filter(x=>x!==id);delete State.assignments[id];refundCaseBudget(id);if(State.cardAssignment?.caseId===id)State.cardAssignment=null}else{if(State.selected.length>=maxSelectableCases()){State.warn=true;sfx('warn')}else{State.selected.push(id);sfx('select')}}const liveList=document.querySelector('.casePanel.revealList');if(liveList&&View.updateMainSelection){View.updateMainSelection();if(State.warn)setTimeout(()=>{State.warn=false;View.updateMainSelection()},700)}else{View.main()}},toAssign(){if(!State.selected.length)return;audio();sfx("next");State.cursor=State.selected.findIndex(id=>!State.assignments[id]);if(State.cursor<0)State.cursor=0;View.assign()},chooseLane(i){audio();if(State.cursor!==i)sfx("lane");State.cursor=i;View.assign()},assignActor(id){audio();const cid=State.selected[State.cursor];if(!cid)return;const used=Object.entries(State.assignments).filter(([c])=>c!==cid).map(([,a])=>a);if(used.includes(id)||!actorIsSelectableForCase(id,cid))return;sfx('assign');State.assignments[cid]=id;State.assignFlash={kind:'actor',id,caseId:cid};const next=State.selected.findIndex(x=>!State.assignments[x]);if(next>=0)State.cursor=next;View.assign()},assignCard(id){audio();const cid=State.selected[State.cursor];if(!cid)return;if(State.cardAssignment?.caseId===cid&&State.cardAssignment?.cardId===id){State.cardAssignment=null;State.assignFlash={kind:'card',id,caseId:cid};sfx('cancel')}else{State.cardAssignment={caseId:cid,cardId:id};State.assignFlash={kind:'card',id,caseId:cid};sfx('card')}View.assign()},allAssigned(){return State.selected.every(id=>State.assignments[id])},startBattle(){if(!Flow.allAssigned())return;audio();sfx("next");Battle.start()},effectText(p={}){const a=[];if(p.treasury)a.push(`国庫 ${p.treasury>0?'+':''}${fmt(Math.abs(p.treasury)<100?p.treasury*ECONOMY.treasuryUnit:p.treasury)}`);if(p.troops)a.push(`兵数 ${p.troops>0?'+':''}${fmt(p.troops)}`);return a.join('<br>')||'大きな表面変化なし'},effectWorldText(e={}){const a=[];for(const[k,v]of Object.entries(e.influence||{})){if(v)a.push(`${mapDef(k)?.label||k} 影響 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.tension||{})){if(v)a.push(`${mapDef(k)?.label||k} 緊張 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.map||{})){if(v)a.push(`${mapDef(k)?.label||k} 勢力圏 ${v>0?'+':''}${v}`)}return a.join('<br>')},applyEffect(e){for(const[k,raw]of Object.entries(e.params||{})){let v=raw;if(k==='treasury'&&Math.abs(v)<100)v*=ECONOMY.treasuryUnit;State.params[k]=Math.round((State.params[k]||0)+v)}applyWorldEffect(e);State.params.treasury=clamp(State.params.treasury,0,ECONOMY.treasuryMax);State.params.troops=clamp(State.params.troops,0,ECONOMY.troopsMax)},publicSnapshot(){return{treasury:State.params.treasury,troops:State.params.troops}},publicDelta(a,b){return{treasury:b.treasury-a.treasury,troops:b.troops-a.troops}},moneyValue(params={}){const v=params.treasury||0;return Math.round(Math.abs(v)<100?v*ECONOMY.treasuryUnit:v)},troopValue(params={}){return Math.round(params.troops||0)},economyLine(label,treasury=0,troops=0){return{label,treasury:Math.round(treasury),troops:Math.round(troops)}},economyBreakdownHtml(data){const lines=[];for(const r of data.lanes){const money=Flow.moneyValue(r.effect.params);const troops=Flow.troopValue(r.effect.params)+(r.extraTroopLoss||0);if(money||troops)lines.push(Flow.economyLine(`${r.case.title}：${r.label}`,money,troops));}for(const r of data.ignored||[]){if(!['放置不可','悪化注意'].includes(r.case.ignoreType))continue;const money=Flow.moneyValue(r.effect.params),troops=Flow.troopValue(r.effect.params);if(money||troops)lines.push(Flow.economyLine(`未対応：${r.case.title}`,money,troops));}if(data.yearEnd){lines.push(Flow.economyLine('年末税収',data.yearEnd.tax,0));lines.push(Flow.economyLine('兵維持費',-data.yearEnd.upkeepBase||-data.yearEnd.upkeep,0));if(data.yearEnd.upkeepSurcharge)lines.push(Flow.economyLine('大軍維持の追加負担',-data.yearEnd.upkeepSurcharge,0));lines.push(Flow.economyLine('年末補充',0,data.yearEnd.recruit));if(data.yearEnd.desert)lines.push(Flow.economyLine('離脱・脱走',0,data.yearEnd.desert));}if(!lines.length)return'';const row=x=>`<div class="econRow"><span>${x.label}</span><b class="${x.treasury<0?'neg':x.treasury>0?'pos':''}">${x.treasury?`${x.treasury>0?'+':''}${fmt(x.treasury)}`:'—'}</b><b class="${x.troops<0?'neg':x.troops>0?'pos':''}">${x.troops?`${x.troops>0?'+':''}${fmt(x.troops)}`:'—'}</b></div>`;return `<div class="economyBreakdown"><h3>国庫・兵数の内訳</h3><div class="econRow"><span></span><b>国庫</b><b>兵数</b></div>${lines.map(row).join('')}</div>`},battleTroopLoss(r){const base={completeWin:.003,majorWin:.007,minorWin:.014,draw:.024,minorLoss:.045,majorLoss:.075,completeLoss:.115}[r.rank]||0;const tags=caseMeta(r.case).tags||[];let mod=0;if(tags.includes('greatPower'))mod=1.15;else if(tags.includes('border'))mod=.9;else if(tags.includes('security'))mod=.55;else if(tags.includes('diplomacy')||tags.includes('politics')||tags.includes('religion'))mod=.16;if(mod<=0)return 0;const scale=caseMeta(r.case).scale||1;const pressure=1+(scale-1)*.18;return -Math.max(1,Math.round(State.params.troops*base*mod*pressure))},applyYearEnd(){const tax=Math.round(ECONOMY.yearTaxBase+(State.params.stability||50)*ECONOMY.stabilityTax+(State.params.citySupport||50)*ECONOMY.cityTax+(State.params.prestige||50)*ECONOMY.prestigeTax);const upkeepDetail=calcUpkeepDetail();const upkeep=upkeepDetail.total;let recruit=Math.round(ECONOMY.recruitBase+(State.params.prestige||50)*ECONOMY.prestigeRecruit+(State.params.stability||50)*ECONOMY.stabilityRecruit);let desert=0;State.params.treasury+=tax-upkeep;if(State.params.treasury<0){const shortage=Math.abs(State.params.treasury);State.params.treasury=0;desert-=Math.round(shortage/10);State.params.stability=clamp((State.params.stability||50)-Math.ceil(shortage/1000),0,100);recruit=Math.floor(recruit/2)}if((State.params.stability||50)<20)desert-=Math.round(State.params.troops*.07);else if((State.params.stability||50)<30)desert-=Math.round(State.params.troops*.03);State.params.troops=clamp(State.params.troops+recruit+desert,0,ECONOMY.troopsMax);State.params.treasury=clamp(State.params.treasury,0,ECONOMY.treasuryMax);return{tax,upkeep,recruit,desert,netTreasury:tax-upkeep,upkeepBase:upkeepDetail.base,upkeepSurcharge:upkeepDetail.surcharge}},finishBattle(){const before=Flow.publicSnapshot();const ignored=visibleCases().filter(c=>!State.selected.includes(c.id)).map(c=>({case:c,effect:c.effects.ignored}));const lanes=battle.lanes.map(Battle.result).map(applySpecialCaseResult);const actorConsequences=applyActorConsequences(lanes);updateIllnessStrainFromResults(lanes,ignored);const actorGrowthLines=applyActorGrowth(lanes);handleUsedCards(lanes.map(r=>r.cardUsed));lanes.forEach(r=>{Flow.applyEffect(r.effect);const loss=Flow.battleTroopLoss(r);if(loss)State.params.troops=clamp(State.params.troops+loss,0,ECONOMY.troopsMax),r.extraTroopLoss=loss});const pressureNotes=[];ignored.forEach(r=>{if(['放置不可','悪化注意'].includes(r.case.ignoreType)){Flow.applyEffect(r.effect);const note=applyNeglectConsequence(r.case);if(note){r.neglectNote=note;pressureNotes.push(`${r.case.title}：${note}`)}}});lanes.forEach(r=>{const note=applyVictorySidePressure(r);if(note)pressureNotes.push(note)});const yearEnd=State.turn%2===0?Flow.applyYearEnd():null;const after=Flow.publicSnapshot();const cardRewards=evaluateCardRewards({lanes,ignored,yearEnd,publicDelta:Flow.publicDelta(before,after)});State.lastSummary={lanes,ignored,yearEnd,cardRewards,actorGrowthLines,actorConsequences,pressureNotes,publicDelta:Flow.publicDelta(before,after)};State.queue=[...lanes.map(r=>({type:'lane',data:r})),{type:'summary',data:State.lastSummary}];State.selected=[];State.assignments={};State.caseBudgets={};State.cardAssignment=null;Flow.nextResult()},nextResult(){audio();sfx("next");const item=State.queue.shift();if(!item){Flow.nextPeriod();return}if(item.type==='lane')View.resultLane(item.data);else View.summary(item.data)},nextPeriod(){audio();sfx("next");State.turn++;advanceActorStatuses();if(State.pendingDeathEnding){const kind=State.pendingDeathEnding;State.pendingDeathEnding=null;triggerDeathEnding(kind);return}if(maybeTriggerIllnessEnding()){const kind=State.pendingDeathEnding;State.pendingDeathEnding=null;triggerDeathEnding(kind);return}if(isFateTurn()){triggerFateEnding();return}maybeAdvanceButlerRetirement();worldSituationTick();const brotherNote=maybeTriggerBrotherRebellion();if(brotherNote){State.worldLog=State.worldLog||[];State.worldLog.push({turn:State.turn,label:brotherNote});}State.yearStoryRead=false;State.caseCache=null;View.main()},summaryStory(data){const wins=data.lanes.filter(r=>r.finalLine>=15).map(r=>r.case.title);const losses=data.lanes.filter(r=>r.finalLine<-14).map(r=>r.case.title);const ignoredBad=data.ignored.filter(x=>['放置不可','悪化注意'].includes(x.case.ignoreType)).map(x=>x.case.title);let s='この半年、王は選んだ火種に向き合った。';if(wins.length)s+=` ${wins.join('、')}では王命が届き、宮廷には安堵が広がった。`;if(losses.length)s+=` 一方で${losses.join('、')}では苦い結果が残った。`;if(ignoredBad.length)s+=` 未対応の${ignoredBad.join('、')}は、静かに次の季節へ影を落としている。`;if(!wins.length&&!losses.length)s+=' 大きな勝敗はなかったが、国の歯車は確かに動いた。';if(data.yearEnd){s+=` 年末には税収${fmt(data.yearEnd.tax)}、兵維持費${fmt(data.yearEnd.upkeep)}、補充兵${fmt(data.yearEnd.recruit)}が処理された。`;if(data.yearEnd.desert<0)s+=` ただし不安や財政不足により${fmt(Math.abs(data.yearEnd.desert))}人が離脱した。`;}if(data.cardRewards&&data.cardRewards.length)s+=` その働きは新たな切り札として宮廷に記録された。`;if(data.pressureNotes&&data.pressureNotes.length)s+=` ただし、未処理の火種や強い勝利の余波は次の季節にも残った。`;return s},deltaText(d){const a=[];if(d.treasury)a.push(`国庫 ${d.treasury>0?'+':''}${fmt(d.treasury)}`);if(d.troops)a.push(`兵数 ${d.troops>0?'+':''}${fmt(d.troops)}`);return a.length?a.join(' / '):'表面変化なし'}};
+
+// 未対応処理は全件ではなく「最重要の1件だけ」に限定する。
+// 案件数が増えたこと自体を罰にしないため、通常案件の未対応被害は代表1件のみ発生する。
+function neglectPriority(c){
+  if(!c)return -999;
+  if(String(c.id||'').startsWith('crisis_recovery_'))return 1000;
+  let score=0;
+  if(c.ignoreType==='放置不可')score+=80;
+  else if(c.ignoreType==='悪化注意')score+=55;
+  else return -999;
+  const meta=caseMeta(c)||{};
+  const tags=meta.tags||[];
+  score+=(Number(c.danger)||0)*18;
+  score+=(Number(meta.scale)||1)*8;
+  if(c.difficulty==='desperate')score+=28;
+  else if(c.difficulty==='hard')score+=18;
+  else if(c.difficulty==='normal')score+=8;
+  if(tags.includes('crisis')||tags.includes('late'))score+=26;
+  if(tags.includes('border')||tags.includes('war')||tags.includes('greatPower'))score+=16;
+  if(tags.includes('military')||tags.includes('security'))score+=10;
+  if(tags.includes('finance')||tags.includes('tax')||tags.includes('trade'))score+=8;
+  if(tags.includes('welfare')||tags.includes('plague')||tags.includes('people'))score+=8;
+  return score;
+}
+function selectNeglectCases(unselected){
+  const candidates=(unselected||[]).filter(c=>neglectPriority(c)>-999);
+  if(!candidates.length)return [];
+  const max=Math.max(...candidates.map(neglectPriority));
+  const top=candidates.filter(c=>neglectPriority(c)===max);
+  const idx=Math.abs(((State.turn||1)*7 + top.length*3))%top.length;
+  return [top[idx]];
+}
+
+
+View.powerCrisisNotice=function(n){
+  setScreen('screenResult');
+  const heading=n.level==='warn'?'王国に危機の兆し':n.level==='last'?'最後の半期':'王権危機';
+  const lead=n.level==='last'?'次の半期、立て直し案件が最上段に出ます。失敗か無視なら、治世はそこで終わります。':n.level==='crisis'?'次の半期、立て直し案件が必ず出ます。成功すれば危機は解除されます。':'次の半期から、立て直しの火種が出やすくなります。まだ終わりではありません。';
+  $('screenResult').innerHTML=`<div class="topbar"><b>${periodLabel()}　${heading}</b>${paramHud()}</div><div class="endingScreen"><div class="endingCard"><div class="endingKicker">${powerCrisisLabel(n.type)}</div><div class="endingTitle">${powerCrisisTitle(n.type)}</div><div class="endingText"><p>${powerCrisisText(n.type,n.level)}</p><p>${lead}</p></div><button class="primary pulse" onclick="Flow.afterPowerCrisisNotice()">次の半期へ</button></div></div>`;
+};
+
+const Flow={pendingEvent(){if(State.butlerRetirementPending&&!State.shownEvents.butler_retirement_notice)return DATA.events.find(e=>e.id==='butler_retirement_notice');return DATA.events.find(e=>!['butler_report','butler_retirement_notice'].includes(e.id)&&e.when===State.turn&&!State.shownEvents[e.id])},chooseEvent(id,idx){audio();sfx("next");const ev=DATA.events.find(e=>e.id===id),ch=ev.choices[idx];State.shownEvents[id]=true;if(id==='butler_retirement_notice')State.butlerRetirementPending=false;if(ch.hidden)for(const[k,v]of Object.entries(ch.hidden))State.params[k]=(State.params[k]||0)+v;if(ch.flags)Object.assign(State,ch.flags);$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div><div class="modalShade"><div class="modalBox"><h2>${ev.title}</h2><div class="dialogText">${ch.result}</div><div class="choices"><button onclick="View.main()">続ける</button></div></div></div>`},revealYear(){audio();sfx('reveal');State.yearStoryRead=true;State.justRevealed=true;View.main()},toggleCase(id){audio();const wasSelected=State.selected.includes(id);if(wasSelected){sfx('cancel');State.selected=State.selected.filter(x=>x!==id);delete State.assignments[id];refundCaseBudget(id);if(State.cardAssignment?.caseId===id)State.cardAssignment=null}else{if(State.selected.length>=maxSelectableCases()){State.warn=true;sfx('warn')}else{State.selected.push(id);sfx('select')}}const liveList=document.querySelector('.casePanel.revealList');if(liveList&&View.updateMainSelection){View.updateMainSelection();if(State.warn)setTimeout(()=>{State.warn=false;View.updateMainSelection()},700)}else{View.main()}},toAssign(){if(!State.selected.length)return;audio();sfx("next");State.cursor=State.selected.findIndex(id=>!State.assignments[id]);if(State.cursor<0)State.cursor=0;View.assign()},chooseLane(i){audio();if(State.cursor!==i)sfx("lane");State.cursor=i;View.assign()},assignActor(id){audio();const cid=State.selected[State.cursor];if(!cid)return;const used=Object.entries(State.assignments).filter(([c])=>c!==cid).map(([,a])=>a);if(used.includes(id)||!actorIsSelectableForCase(id,cid))return;sfx('assign');State.assignments[cid]=id;State.assignFlash={kind:'actor',id,caseId:cid};const next=State.selected.findIndex(x=>!State.assignments[x]);if(next>=0)State.cursor=next;View.assign()},assignCard(id){audio();const cid=State.selected[State.cursor];if(!cid)return;if(State.cardAssignment?.caseId===cid&&State.cardAssignment?.cardId===id){State.cardAssignment=null;State.assignFlash={kind:'card',id,caseId:cid};sfx('cancel')}else{State.cardAssignment={caseId:cid,cardId:id};State.assignFlash={kind:'card',id,caseId:cid};sfx('card')}View.assign()},allAssigned(){return State.selected.every(id=>State.assignments[id])},startBattle(){if(!Flow.allAssigned())return;audio();sfx("next");Battle.start()},effectText(p={}){const a=[];if(p.treasury)a.push(`国庫 ${p.treasury>0?'+':''}${fmt(Math.abs(p.treasury)<100?p.treasury*ECONOMY.treasuryUnit:p.treasury)}`);if(p.troops)a.push(`兵数 ${p.troops>0?'+':''}${fmt(p.troops)}`);return a.join('<br>')||'大きな表面変化なし'},effectWorldText(e={}){const a=[];for(const[k,v]of Object.entries(e.influence||{})){if(v)a.push(`${mapDef(k)?.label||k} 影響 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.tension||{})){if(v)a.push(`${mapDef(k)?.label||k} 緊張 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.map||{})){if(v)a.push(`${mapDef(k)?.label||k} 勢力圏 ${v>0?'+':''}${v}`)}return a.join('<br>')},applyEffect(e){for(const[k,raw]of Object.entries(e.params||{})){let v=raw;if(k==='treasury'&&Math.abs(v)<100)v*=ECONOMY.treasuryUnit;State.params[k]=Math.round((State.params[k]||0)+v)}applyWorldEffect(e);State.params.treasury=clamp(State.params.treasury,0,ECONOMY.treasuryMax);State.params.troops=clamp(State.params.troops,0,ECONOMY.troopsMax)},publicSnapshot(){return{treasury:State.params.treasury,troops:State.params.troops}},publicDelta(a,b){return{treasury:b.treasury-a.treasury,troops:b.troops-a.troops}},moneyValue(params={}){const v=params.treasury||0;return Math.round(Math.abs(v)<100?v*ECONOMY.treasuryUnit:v)},troopValue(params={}){return Math.round(params.troops||0)},economyLine(label,treasury=0,troops=0){return{label,treasury:Math.round(treasury),troops:Math.round(troops)}},economyBreakdownHtml(data){const lines=[];for(const r of data.lanes){const money=Flow.moneyValue(r.effect.params);const troops=Flow.troopValue(r.effect.params)+(r.extraTroopLoss||0);if(money||troops)lines.push(Flow.economyLine(`${r.case.title}：${r.label}`,money,troops));}for(const r of data.ignored||[]){if(!['放置不可','悪化注意'].includes(r.case.ignoreType))continue;const money=Flow.moneyValue(r.effect.params),troops=Flow.troopValue(r.effect.params);if(money||troops)lines.push(Flow.economyLine(`未対応：${r.case.title}`,money,troops));}if(data.yearEnd){lines.push(Flow.economyLine('年末税収',data.yearEnd.tax,0));lines.push(Flow.economyLine('兵維持費',-data.yearEnd.upkeepBase||-data.yearEnd.upkeep,0));if(data.yearEnd.upkeepSurcharge)lines.push(Flow.economyLine('大軍維持の追加負担',-data.yearEnd.upkeepSurcharge,0));lines.push(Flow.economyLine('年末補充',0,data.yearEnd.recruit));if(data.yearEnd.desert)lines.push(Flow.economyLine('離脱・脱走',0,data.yearEnd.desert));}if(!lines.length)return'';const row=x=>`<div class="econRow"><span>${x.label}</span><b class="${x.treasury<0?'neg':x.treasury>0?'pos':''}">${x.treasury?`${x.treasury>0?'+':''}${fmt(x.treasury)}`:'—'}</b><b class="${x.troops<0?'neg':x.troops>0?'pos':''}">${x.troops?`${x.troops>0?'+':''}${fmt(x.troops)}`:'—'}</b></div>`;return `<div class="economyBreakdown"><h3>国庫・兵数の内訳</h3><div class="econRow"><span></span><b>国庫</b><b>兵数</b></div>${lines.map(row).join('')}</div>`},battleTroopLoss(r){const base={completeWin:.003,majorWin:.007,minorWin:.014,draw:.024,minorLoss:.045,majorLoss:.075,completeLoss:.115}[r.rank]||0;const tags=caseMeta(r.case).tags||[];let mod=0;if(tags.includes('greatPower'))mod=1.15;else if(tags.includes('border'))mod=.9;else if(tags.includes('security'))mod=.55;else if(tags.includes('diplomacy')||tags.includes('politics')||tags.includes('religion'))mod=.16;if(mod<=0)return 0;const scale=caseMeta(r.case).scale||1;const pressure=1+(scale-1)*.18;return -Math.max(1,Math.round(State.params.troops*base*mod*pressure))},applyYearEnd(){const tax=Math.round(ECONOMY.yearTaxBase+(State.params.stability||50)*ECONOMY.stabilityTax+(State.params.citySupport||50)*ECONOMY.cityTax+(State.params.prestige||50)*ECONOMY.prestigeTax);const upkeepDetail=calcUpkeepDetail();const upkeep=upkeepDetail.total;let recruit=Math.round(ECONOMY.recruitBase+(State.params.prestige||50)*ECONOMY.prestigeRecruit+(State.params.stability||50)*ECONOMY.stabilityRecruit);let desert=0;State.params.treasury+=tax-upkeep;if(State.params.treasury<0){const shortage=Math.abs(State.params.treasury);State.params.treasury=0;desert-=Math.round(shortage/10);State.params.stability=clamp((State.params.stability||50)-Math.ceil(shortage/1000),0,100);recruit=Math.floor(recruit/2)}if((State.params.stability||50)<20)desert-=Math.round(State.params.troops*.07);else if((State.params.stability||50)<30)desert-=Math.round(State.params.troops*.03);State.params.troops=clamp(State.params.troops+recruit+desert,0,ECONOMY.troopsMax);State.params.treasury=clamp(State.params.treasury,0,ECONOMY.treasuryMax);return{tax,upkeep,recruit,desert,netTreasury:tax-upkeep,upkeepBase:upkeepDetail.base,upkeepSurcharge:upkeepDetail.surcharge}},finishBattle(){const before=Flow.publicSnapshot();const unselected=visibleCases().filter(c=>!State.selected.includes(c.id));const neglectedCases=selectNeglectCases(unselected);const ignored=neglectedCases.map(c=>({case:c,effect:c.effects.ignored}));const lanes=battle.lanes.map(Battle.result).map(applySpecialCaseResult).map(applyActorRoleBonus);const actorConsequences=applyActorConsequences(lanes);updateIllnessStrainFromResults(lanes,ignored);const actorGrowthLines=applyActorGrowth(lanes);handleUsedCards(lanes.map(r=>r.cardUsed));lanes.forEach(r=>{Flow.applyEffect(r.effect);const loss=Flow.battleTroopLoss(r);if(loss)State.params.troops=clamp(State.params.troops+loss,0,ECONOMY.troopsMax),r.extraTroopLoss=loss});const pressureNotes=[];ignored.forEach(r=>{if(['放置不可','悪化注意'].includes(r.case.ignoreType)||String(r.case.id||'').startsWith('crisis_recovery_')){Flow.applyEffect(r.effect);const note=applyNeglectConsequence(r.case);if(note){r.neglectNote=note;pressureNotes.push(`${r.case.title}：${note}`)}}});if(unselected.length>ignored.length)pressureNotes.push(`未対応案件は${ignored.length?`「${ignored[0].case.title}」のみが悪化し、他の${unselected.length-ignored.length}件は地方・家臣・時間経過により当面収まった。`:`地方・家臣・時間経過により当面収まった。`}`);lanes.forEach(r=>{const note=applyVictorySidePressure(r);if(note)pressureNotes.push(note)});const yearEnd=State.turn%2===0?Flow.applyYearEnd():null;const after=Flow.publicSnapshot();const cardRewards=evaluateCardRewards({lanes,ignored,yearEnd,publicDelta:Flow.publicDelta(before,after)});State.lastSummary={lanes,ignored,yearEnd,cardRewards,actorGrowthLines,actorConsequences,pressureNotes,publicDelta:Flow.publicDelta(before,after)};State.queue=[...lanes.map(r=>({type:'lane',data:r})),{type:'summary',data:State.lastSummary}];State.selected=[];State.assignments={};State.caseBudgets={};State.cardAssignment=null;Flow.nextResult()},nextResult(){audio();sfx("next");const item=State.queue.shift();if(!item){Flow.nextPeriod();return}if(item.type==='lane')View.resultLane(item.data);else View.summary(item.data)},nextPeriod(){audio();sfx("next");const pc=updatePowerCrisisState();if(pc&&pc.action==='ending'){triggerCollapseEnding(pc.type);return}if(pc&&pc.action==='notice'){State.pendingPowerCrisisNotice=pc;View.powerCrisisNotice(pc);return}Flow.advancePeriodCore();},afterPowerCrisisNotice(){audio();sfx("next");State.pendingPowerCrisisNotice=null;Flow.advancePeriodCore()},advancePeriodCore(){State.turn++;advanceActorStatuses();if(State.pendingDeathEnding){const kind=State.pendingDeathEnding;State.pendingDeathEnding=null;triggerDeathEnding(kind);return}if(maybeTriggerIllnessEnding()){const kind=State.pendingDeathEnding;State.pendingDeathEnding=null;triggerDeathEnding(kind);return}if(isFateTurn()){triggerFateEnding();return}maybeAdvanceButlerRetirement();worldSituationTick();const brotherNote=maybeTriggerBrotherRebellion();if(brotherNote){State.worldLog=State.worldLog||[];State.worldLog.push({turn:State.turn,label:brotherNote});}State.yearStoryRead=false;State.caseCache=null;View.main()},summaryStory(data){const wins=data.lanes.filter(r=>r.finalLine>=15).map(r=>r.case.title);const losses=data.lanes.filter(r=>r.finalLine<-14).map(r=>r.case.title);const ignoredBad=data.ignored.filter(x=>['放置不可','悪化注意'].includes(x.case.ignoreType)).map(x=>x.case.title);let s='この半年、王は選んだ火種に向き合った。';if(wins.length)s+=` ${wins.join('、')}では王命が届き、宮廷には安堵が広がった。`;if(losses.length)s+=` 一方で${losses.join('、')}では苦い結果が残った。`;if(ignoredBad.length)s+=` 未対応の${ignoredBad.join('、')}は、静かに次の季節へ影を落としている。`;if(!wins.length&&!losses.length)s+=' 大きな勝敗はなかったが、国の歯車は確かに動いた。';if(data.yearEnd){s+=` 年末には税収${fmt(data.yearEnd.tax)}、兵維持費${fmt(data.yearEnd.upkeep)}、補充兵${fmt(data.yearEnd.recruit)}が処理された。`;if(data.yearEnd.desert<0)s+=` ただし不安や財政不足により${fmt(Math.abs(data.yearEnd.desert))}人が離脱した。`;}if(data.cardRewards&&data.cardRewards.length)s+=` その働きは新たな切り札として宮廷に記録された。`;if(data.pressureNotes&&data.pressureNotes.length)s+=` ただし、未処理の火種や強い勝利の余波は次の季節にも残った。`;return s},deltaText(d){const a=[];if(d.treasury)a.push(`国庫 ${d.treasury>0?'+':''}${fmt(d.treasury)}`);if(d.troops)a.push(`兵数 ${d.troops>0?'+':''}${fmt(d.troops)}`);return a.length?a.join(' / '):'表面変化なし'}};
 
 
 /* =========================================================
