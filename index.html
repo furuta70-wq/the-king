@@ -2329,7 +2329,14 @@ function caseSupportActorIds(c){
     country_treuval_guest_law:['support_treuval'],
     country_treuval_great_council:['support_treuval']
   };
-  return (explicit[id]||[]).filter(x=>DATA.supportActors?.[x]&&supportActorAvailable(x));
+  return (explicit[id]||[]).filter(x=>{
+    const a=DATA.supportActors?.[x];
+    if(!a||!supportActorAvailable(x))return false;
+    // 同じグラフィックが敵側にも出る案件では、臨時助力者候補から外す。
+    // 依頼者・選帝侯・相手国代表が、味方と敵に同時表示される違和感を防ぐ安全弁。
+    if(a.img && c.enemyImg && a.img===c.enemyImg)return false;
+    return true;
+  });
 }
 function actorIsSupportForCase(actorId,caseId){return caseSupportActorIds(getCase(caseId)).includes(actorId)}
 function actorIsSelectableForCase(actorId,caseId){if(caseId==='brother_rebellion'&&actorId==='brother')return false;return actorIsUsable(actorId)||actorIsSupportForCase(actorId,caseId)}
