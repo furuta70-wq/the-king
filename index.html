@@ -3476,6 +3476,104 @@ Bad:{laneClass:'fxBad',label:'崩された!'},
 
 /* ===== 03. 画像アセット定義 ===== */
 
+
+/* =========================================================
+   CHARACTER_CANON / 2026-06-07
+   このブロックは実行されない設定台帳。ゲーム内ロジックには影響しない。
+   目的: IMGキーとキャラクター設定の正しい照応を固定し、enemyImg/采配者/案件表示の誤割当を防ぐ。
+
+   [運用ルール]
+   - ここに書かれた人物名・所属・役割を正とする。
+   - 案件の enemyImg を直す時は、まずこの台帳の画像キーを確認する。
+   - ネームドではない「農民・兵士・部隊長・トリック信者・スタント信者・商人・司教・貴族」は汎用絵として扱う。
+   - 専用画像が未登録の人物は、勝手に別人物の画像へ割り当てない。必要ならIMGキーを追加する。
+
+   [主人公・王家]
+   albrecht = アルブレヒト・フォン・ライヒェンベルク。16歳で即位した若き国王。予言「二十度目の冬を越さぬ」を背負う。
+   brother / brotherEarly / brotherLate = ルートヴィヒ・フォン・ライヒェンベルク。腹違いの弟。中盤で帰還する王位継承権者。
+   butler = 老執事。王家・チュートリアル・人生案件の導線役。
+   princeLeopold = 王子。アルブレヒトの実子として扱う。年齢条件を満たすまで教育・公務案件を出さない。
+   princessElise = 王女エリーゼ。アルブレヒトの実子として扱う。亡姉の娘・姪の設定は使わない。
+   horse = シュトルム。アルブレヒトの愛馬。
+
+   [王妃候補]
+   wife1 / wife = ヘレーネ・ヴィンター。幼馴染、地方伯爵家の娘。
+   wife2 = エレオノール・ド・ヴァルロワ。ロアール王国の王女、文化・芸術・外交に秀でる。
+   wife3 = ベアトリーチェ・ディ・モンテリック。リックの有力貴族令嬢、信仰と慈善。
+   wife4 = アナスタシア・ミロヴナ・ルテノーヴァ。ルテニア大公家の姫、軍事・国際情勢に明るい。
+   wife5 = サフィーラ・ビント・ナスリム。アズラクの王女、交易と学問を重視する。
+   wife6 = ブリギッド・オ・ルーア。トレウヴァル族長の娘、豪放で自由奔放。
+
+   [選帝侯]
+   elector1 = レオポルト・フォン・ヴァイセンブルク。最古参の選帝侯。伝統と格式を重んじる保守派の重鎮。
+   elector2 = エーミール・フォン・シュテルンベルク。商業都市を支配する選帝侯。利益を最優先する現実主義者。
+   elector3 = クラリッサ・フォン・ハイリヒブルン。宗教領を治める女選帝侯。敬虔で民衆人気が高い。
+   elector4 = コンラート・フォン・ローゼンフェルト。軍事貴族の長。勇猛だが短気で強硬派。
+   elector5 = ゲルハルト・フォン・アイゼンヴァルト。東部辺境を守る老将。国防と治安を最優先する。
+   未登録注意: エレオノーラ・フォン・ローゼンフェルト専用画像は現時点で独立IMGキーなし。
+
+   [ロアール王国]
+   loireKing = アルマン・ド・ヴァロワール。ロアール国王。芸術保護と国威発揚を好む。
+   isabellaLoire = イザベル・ディ・サン＝ヴェリオ。ロアール屈指の貴婦人、宮廷文化の象徴。
+   celestineLoire = セレスティーヌ・ド・ヴァロワ。王家の近親、王女候補として噂される人物。
+   loireSoldier = ロアールの兵士・部隊長・銃士隊などの汎用絵。
+
+   [リック神聖国]
+   rickKing = 聖王ロレンツォ・アルベルティ。リック最高権威、大陸宗教界の指導者。
+   lorenzoBelcaro = マルチェロ・ヴィスコンティ。若き枢機卿、宗教改革派の中心人物。
+   rickSoldier = リックの兵士・宗教騎士・警備隊の汎用絵。
+   trickBeliever = トリック信者。宗教対立・民衆運動・巡礼案件で使用。
+   stuntBeliever = スタント信者。宗教対立・民衆運動・礼拝堂案件で使用。
+
+   [ルテニア大公国]
+   rutheniaKing = イリーナ・ヴェリカヤ。女王。国家の威信を背負う姫君。
+   veraZakharova = ヴェラ・ザハロワ。宮廷女官長。情報収集能力に長ける。
+   grigoryOrlov = グリゴリー・オルロフ。軍司令官。国境問題で登場する。
+   rutheniaSoldier = ルテニアの兵士・部隊長・測量護衛兵の汎用絵。
+
+   [ソリア]
+   soliaKing = ヴォルフラム・アイゼンハルト。傭兵団長。ソリアの王格として扱う。
+   claudiaAltenburg = クラウディア・フォン・アルテンブルク。銀行家一族の当主。金融面の重要人物。
+   wolframEisenhardt = 現在の実装上の画像キー名。注意: レナート・ベルナッチ画像のURLが入っている可能性があるため、後で照合する。
+   soliaSoldier = ソリアの傭兵・兵士・部隊長の汎用絵。
+   未登録注意: レナート・ベルナッチは発明家。専用IMGキー renatoBernacci を追加する候補。
+
+   [アズラク帝国]
+   azraqKing = サファル・アル＝ハーディル。アズラク皇帝。聖地問題に強い関心を持つ。
+   ibrahimPasha = カラ・ムスタファ・アガ。大宰相、対外政策の実力者。
+   wife5 = サフィーラ・ビント・ナスリム。王妃候補。
+   未登録注意: ザフラ・ハトゥン専用画像は現時点で独立IMGキーなし。
+
+   [セーフェアラ商業連合]
+   seafearaKing = アルバロ・デ・メンドーサ。大商船団の総帥。セーフェアラの王格として扱う。
+   marcoVerdera = マルチェロ・ヴァン・オルセオ。金融同盟の代表。大陸経済に影響力を持つ。
+
+   [トレウヴァル]
+   treuvalKing / dagdanMacLochran = ダグダン・マク・ロクラン。部族連合の大族長。王格。
+   treuvalSoldier = トレウヴァルの兵士・若き戦士長の汎用絵。
+   dagdanMacLochran = 現在の実装上の画像キー名。注意: フィンガル画像のURLが入っている可能性があるため、後で照合する。
+   未登録注意: フィンガル・マク・ローワンは若き戦士長。専用IMGキー fingalMacRowan を追加する候補。
+
+   [国内汎用]
+   merchantRep = 国内の商人。商業・港湾・価格・融資案件で使用。
+   bishopAltrant = 国内の司教。教会・信仰・宗教裁定案件で使用。
+   courtNoble = 国内の貴族。特権・反発・宮廷陰謀・地方貴族案件で使用。
+   citizenRep = 国内の市民代表。都市・民衆・市場案件で使用。
+   peasant = 農民。農村・徴税・飢饉・一揆案件で使用。
+   altrantSoldier / soldier = アルトラント兵士。国内軍事・砦・治安案件で使用。
+
+   [怪異・動物]
+   deer = 白鹿など吉兆・森の怪異。
+   boar = 黒猪など不吉な狩猟・森の怪異。
+   dragon = 沼竜・古い伝承。
+   ghost = 幽霊一般。
+   deadKing = 先王・死せる王の幻影。
+   plague = 疫病・瘴気の象徴。
+   witch = 魔女・異端審問・民間信仰。
+   rock = 岩・山・鉱山事故の象徴。
+   flame = 火災・焼き討ち・暴動の象徴。
+   ========================================================= */
+
 /* =========================================================
    PASS8 DATA MAP 08: キャラクター・素材画像URL
    王族、選帝侯、外国王、兵士、怪異、背景などの画像リンク。
@@ -3557,6 +3655,53 @@ const IMG={
 };
 
 /* ===== 04. 背景・地図・世界状態 ===== */
+
+/* =========================================================
+   MAP_CANON / 2026-06-07
+   このブロックは実行されない設定台帳。地図・国境・背景の意味を固定する。
+
+   [国名]
+   アルトラント公国 = 主人公アルブレヒトの国。中央王権、選帝侯、宗教対立、国境防衛が軸。
+   ロアール王国 = 西方の宮廷文化国家。芸術・礼法・婚姻外交・国威発揚。
+   リック神聖国 = 宗教権威国家。聖王、枢機卿、トリック/スタント信仰問題。
+   ルテニア大公国 = 東方大国。測量・古文書・砦線・軍事圧力。
+   ソリア = 金融・傭兵・中立交渉・発明技術の国。
+   アズラク帝国 = 南方帝国。交易・学問・聖地問題・大宰相外交。
+   セーフェアラ商業連合 = 海上交易・金融・封鎖・債務外交。
+   トレウヴァル = 北方部族連合。氏族法、戦士長、辺境襲撃、自由な価値観。
+
+   [地図レイヤー]
+   MAP_LAYER_URLS.base.bottom/top = 地図の基礎レイヤー。
+   altrantRick = アルトラント対リックの勢力変動。
+   altrantLoire = アルトラント対ロアールの勢力変動。
+   altrantRuthenia = アルトラント対ルテニアの勢力変動。
+   altrantSolia = アルトラント対ソリアの勢力変動。
+   altrantTreuval = アルトラント対トレウヴァルの勢力変動。
+   azraqRick / azraqLoire / azraqRuthenia / azraqSolia = 他国間の勢力変動。
+
+   [背景キーの使い分け]
+   palace = 王宮・宮廷・外交謁見・婚姻・王家案件。
+   council = 評議会・法制度・選帝侯会議・重臣協議。
+   privateRoom = 王の私室・王妃・子ども・王弟との個人的会話。
+   village = 農村・民衆・救貧・避難民・地方不満。
+   market = 市場・都市・物価・商人・職人争議。
+   port = 港・交易・セーフェアラ・アズラク隊商・海上封鎖。
+   church = 教会・聖堂・リック・宗教裁定・巡礼。
+   infirmary = 施療院・疫病・怪我・看護。
+   fort = 砦・国境防衛・駐屯地・軍事準備。
+   forest = 森・辺境・トレウヴァル・山道・野外戦。
+   grass = 平原・街道・国境線・測量・橋・移動。
+   rock = 岩場・山岳・鉱山・雪崩・難路。
+   occult = 怪異・予言・魔女・幽霊。現在はforest画像流用なので、将来専用背景を追加する候補。
+
+   [割当ルール]
+   - ネームド案件は、できる限りネームド画像を使う。
+   - 抽象的な敵は、国内汎用または各国汎用画像を使う。
+   - 敵が「国」ではなく「国内勢力」の場合、外国王画像を使わない。
+   - 戦争段階では、国王/王格・No.2・兵士・部隊長を段階ごとに使い分ける。
+   - 背景は案件の舞台を優先し、敵の所属国だけで決めない。
+   ========================================================= */
+
 const BG={grass:'https://lh3.googleusercontent.com/d/1aiVytIEyVwUKCx8Jb3_sKsN7OTh4BYeD',palace:'https://lh3.googleusercontent.com/d/1Yqiw0PqEoC4kSN5Iqezkig0unLVnIu01',village:'https://lh3.googleusercontent.com/d/1fWwutBWUn-f8CnY3v0xCT6gbZPolNSgu',forest:'https://lh3.googleusercontent.com/d/10scmrke8oOEwAqq-uhnSDQLBX5NnKE5E',port:'https://lh3.googleusercontent.com/d/15ZiXnvQQPP7Nb76-oy5CCZzNy9E7qlWv',occult:'https://lh3.googleusercontent.com/d/10scmrke8oOEwAqq-uhnSDQLBX5NnKE5E',rock:'https://lh3.googleusercontent.com/d/13PHZWSKb8cqi0iBkGsVgngO5jZzxGdZB',church:'https://lh3.googleusercontent.com/d/1eUyRkp_fBB9LNP7E7xcrwC-WjA0V_Lkn',council:'https://lh3.googleusercontent.com/d/1poIqRB4dMEZ5LmFDK2QZ-XliRoQrvpGx',market:'https://lh3.googleusercontent.com/d/1yaV3Ket_Z54p7-veovWZEDjEG4mddfov',infirmary:'https://lh3.googleusercontent.com/d/1GPeIauOgyw7v2axmRB_l53w-eiIUsiNo',fort:'https://lh3.googleusercontent.com/d/1u2cxhd5qWtBO9U2LPM6Gtw7kOlh_ZYBX',privateRoom:'https://lh3.googleusercontent.com/d/1cCEsRwxxQVbk0NwR5zZTu4_QlhsiI5c_'};
 const CASE_BG={tutorial_butler:'palace',peasant_revolt:'village',hospital:'village',loire_border:'grass',horse:'forest',training_sword_tournament:'palace',training_dawn_council:'palace',training_brother_spar:'palace',training_queen_first_command:'palace',training_star_fort_inspection:'forest',training_university_lecture:'palace',training_occult_inquiry:'forest',landlord:'village',elector:'palace',rick:'palace',ruthenia:'palace',seafeara:'port',brother_return_01:'palace',brother_return_02:'palace',brother_persuasion:'palace',brother_rebellion:'palace',marriage_wife1_childhood:'palace',marriage_wife2_loire:'palace',marriage_wife3_rick:'palace',marriage_wife4_ruthenia:'palace',marriage_wife5_azraq:'port',marriage_wife6_treuval:'forest',elector_leopold_mine_collapse:'rock',elector_leopold_bad_coin:'port',elector_leopold_war_tax:'palace',elector_emil_dormitory_fire_tax:'palace',elector_emil_satire_pamphlet:'palace',elector_emil_royal_law_commentary:'palace',elector_clarissa_orphan_food:'village',elector_clarissa_pilgrim_bandits:'forest',elector_clarissa_azraq_refugees:'village',elector_rosen_first_ball:'palace',elector_rosen_loire_etiquette:'palace',elector_rosen_bride_slander:'palace',elector_gerhard_fort_repair:'rock',elector_gerhard_conscription_list:'village',elector_gerhard_ruthenia_scouts:'forest',local_market_prices:'village',local_guild_dispute:'village',local_capital_fire:'village',local_sewer_plague:'village',local_seed_shortage:'village',local_bridge_collapse:'rock',local_road_bandits:'forest',local_port_smuggling:'port',local_fort_dry_well:'forest',local_treuval_signal_fire:'forest',
 elector_leopold_seafeara_loan:'port',elector_leopold_secret_pact:'palace',elector_leopold_silver_league_pressure:'palace',
@@ -6030,7 +6175,7 @@ cases:[
 {id:'country_ruthenia_road_tax',title:'雪解け街道の通行税',category:'ルテニア・交易',difficulty:'normal',ignoreType:'悪化注意',enemy:'ルテニア商人団',lineName:'通行税',enemyImg:'rutheniaKing',initialLine:-5,intro:'雪解けとともに東方街道が開き、ルテニア商人団が毛皮と蝋を運び込んできた。彼らは古い通商特権を盾に、通行税の免除を求めている。',effects:makeEffects({win:{treasury:3,diplomacy:2,influence:{altrantRuthenia:15}},loss:{treasury:-3,influence:{altrantRuthenia:-20}},ignored:{treasury:-2,influence:{altrantRuthenia:-15}},stories:['特権を一部認めつつ、王国側の税収を守った。','ルテニア商人が東方街道の商流を握り始めた。','通行税の徴収は形骸化した。']})},
 {id:'country_ruthenia_irina_letter',title:'イリーナ女大公の冷たい親書',category:'ルテニア・大国外交',difficulty:'normal',ignoreType:'悪化注意',enemy:'イリーナ・ヴェリカヤ',lineName:'対等返書',enemyImg:'rutheniaKing',initialLine:-5,intro:'ルテニア女大公イリーナから、丁寧だが冷たい親書が届いた。文面は友好を装うが、即位儀礼、国境管理、婚姻方針にまで口を挟んでいる。',effects:makeEffects({win:{prestige:5,diplomacy:3,influence:{altrantRuthenia:20}},loss:{prestige:-4,diplomacy:-3,influence:{altrantRuthenia:-20}},ignored:{prestige:-3,tension:{altrantRuthenia:1}},stories:['若き王として対等な返書を送り、大国の見下しを退けた。','ルテニア宮廷はアルブレヒトを未熟な王として記録した。','沈黙は弱さと解釈された。']})},
 {id:'country_ruthenia_vera_prophecy',title:'ヴェラの予言書',category:'ルテニア・宮廷不安',difficulty:'hard',ignoreType:'悪化注意',enemy:'ヴェラ・ザハロワ',lineName:'噂の出所',enemyImg:'witch',initialLine:-15,intro:'ルテニアの女神秘家ヴェラが記したという予言書の写しが、王都の貴族たちの間で密かに回覧されていた。そこには「若き鷲は、紫の冬に翼を折られる」とある。',effects:makeEffects({win:{prestige:5,nobleSupport:3,stability:2},loss:{prestige:-5,nobleSupport:-4,stability:-3},ignored:{prestige:-3,nobleSupport:-3},stories:['迷信を笑い飛ばさず、出所を探り、貴族の不安を鎮めた。','予言は王宮に広がり、王の運命への不安が増した。','三十度目の冬の運命の噂と結びつき、宮廷の空気は重くなった。']})},
-{id:'country_ruthenia_sergei_envoy',title:'セルゲイ内廷長官の密使',category:'ルテニア・宮廷工作',difficulty:'hard',ignoreType:'悪化注意',enemy:'セルゲイ・バリシェフ',lineName:'密使処理',enemyImg:'rutheniaKing',initialLine:-15,intro:'ルテニア内廷長官セルゲイの密使が、王宮の侍女を通じて接触してきた。弟ルートヴィヒ、姪エリーゼ、王家の将来に関わる情報をちらつかせている。',effects:makeEffects({win:{prestige:4,diplomacy:4,influence:{altrantRuthenia:25}},loss:{prestige:-5,nobleSupport:-4,influence:{altrantRuthenia:-30}},ignored:{nobleSupport:-3,influence:{altrantRuthenia:-20}},stories:['密使の情報を利用しつつ、王宮内部への侵入を防いだ。','王家の私的情報がルテニアへ流れた。','宮廷の女官や小姓の間に東方の噂が入り込んだ。']})},
+{id:'country_ruthenia_sergei_envoy',title:'セルゲイ内廷長官の密使',category:'ルテニア・宮廷工作',difficulty:'hard',ignoreType:'悪化注意',enemy:'セルゲイ・バリシェフ',lineName:'密使処理',enemyImg:'rutheniaKing',initialLine:-15,intro:'ルテニア内廷長官セルゲイの密使が、王宮の侍女を通じて接触してきた。弟ルートヴィヒ、王子・王女、王家の将来に関わる情報をちらつかせている。',effects:makeEffects({win:{prestige:4,diplomacy:4,influence:{altrantRuthenia:25}},loss:{prestige:-5,nobleSupport:-4,influence:{altrantRuthenia:-30}},ignored:{nobleSupport:-3,influence:{altrantRuthenia:-20}},stories:['密使の情報を利用しつつ、王宮内部への侵入を防いだ。','王家の私的情報がルテニアへ流れた。','宮廷の女官や小姓の間に東方の噂が入り込んだ。']})},
 {id:'country_ruthenia_grigory_drill',title:'グリゴリーの国境演習',category:'ルテニア・軍事圧力',difficulty:'hard',ignoreType:'放置不可',enemy:'グリゴリー・オルロフ',lineName:'演習対処',enemyImg:'rutheniaSoldier',initialLine:-15,intro:'ルテニア近衛軍総司令グリゴリーが、国境近くで大規模な冬季演習を始めた。公式には防衛訓練だが、砲列の向きは明らかにアルトラント側を向いている。',effects:makeEffects({win:{troops:100,prestige:6,influence:{altrantRuthenia:30},tension:{altrantRuthenia:-1}},loss:{troops:-120,prestige:-5,influence:{altrantRuthenia:-35},tension:{altrantRuthenia:2}},ignored:{influence:{altrantRuthenia:-25},tension:{altrantRuthenia:2}},stories:['軍を整えつつ外交抗議を行い、演習を圧力として固定させなかった。','ルテニアは国境で優位を示し、辺境村が動揺した。','演習は常態化し、国境の緊張が上がった。']})},
 {id:'country_ruthenia_old_deed',title:'ミハイル先代王の古証文',category:'ルテニア・係争地危機',difficulty:'desperate',ignoreType:'放置不可',enemy:'ミハイル・ロマノフスキーの古証文',lineName:'古権主張',enemyImg:'rutheniaKing',initialLine:-30,intro:'ルテニア先代王ミハイルの名で、東方係争地がかつてルテニア王家の庇護下にあったとする古い証文が提示された。イリーナ女大公は沈黙しているが、その沈黙こそ承認のように見えた。',effects:makeEffects({win:{prestige:12,diplomacy:5,influence:{altrantRuthenia:55},tension:{altrantRuthenia:-2}},loss:{prestige:-10,diplomacy:-6,influence:{altrantRuthenia:-60},tension:{altrantRuthenia:2}},ignored:{map:{altrantRuthenia:-1},prestige:-6,tension:{altrantRuthenia:2}},stories:['証文の矛盾を突き、係争地の主権を守った。','古証文は外交の武器となり、保護権主張が強まった。','係争地の村々は、紫の旗を現実的な選択肢として見始めた。']})},
 {id:'country_solia_avalanche_road',title:'山岳路の雪崩復旧',category:'ソリア・山岳路',difficulty:'easy',ignoreType:'悪化注意',enemy:'ソリア山岳商人',lineName:'街道復旧',enemyImg:'rock',initialLine:0,intro:'アルトラントとソリアを結ぶ山岳路で雪崩が起き、商隊と伝令が足止めされた。道が閉じれば交易だけでなく、傭兵契約や外交文書の往来も滞る。',effects:makeEffects({win:{treasury:2,diplomacy:2,influence:{altrantSolia:10}},loss:{treasury:-2,influence:{altrantSolia:-10}},ignored:{diplomacy:-2,influence:{altrantSolia:-15}},stories:['復旧隊を出し、山岳路の信用を守った。','復旧が遅れ、商隊が別ルートへ流れた。','ソリアとの往来が細り、傭兵契約にも影が出た。']})},
@@ -6111,7 +6256,7 @@ cases:[
 {id:'late_fate_apprentice',title:'占い師の弟子',category:'後半危機・偽預言',difficulty:'hard',ignoreType:'放置不可',danger:2,enemy:'占い師の弟子を名乗る人物',lineName:'偽書調査',enemyImg:'witch',initialLine:-20,intro:"かつてアルブレヒト誕生の日に予言を告げた占い師の弟子を名乗る人物が現れた。彼は「予言には続きがある」と語り、貴族たちが密かに会い始めている。",effects:makeEffects({win:{"prestige":6,"nobleSupport":3,"stability":2},loss:{"prestige":-6,"nobleSupport":-5},ignored:{"stability":-5},stories:["偽書と本物の伝承は切り分けられ、予言は政治工作に使われなかった。","「予言の続き」が広まり、王の判断に影が差した。","貴族たちは弟子の言葉を、王命以上に気にし始めた。"]})},
 {id:'late_fate_delayed_decrees',title:'王命の遅れ',category:'後半危機・王権空洞化',difficulty:'hard',ignoreType:'放置不可',danger:2,enemy:'王宮官僚と地方代官',lineName:'即時執行',enemyImg:'elector2',initialLine:-20,intro:"地方へ送られた王命が、以前より遅れて実行されるようになった。官僚たちは「確認に時間がかかった」と言う。だが本音は、運命の日が近い王の命令にどこまで従うべきか迷っているのかもしれない。",effects:makeEffects({win:{"prestige":7,"stability":5},loss:{"prestige":-7,"stability":-6},ignored:{"stability":-5,"influence":{"altrantLoire":-10,"altrantRuthenia":-10}},stories:["官僚制は再確認され、王命の即時執行が徹底された。","王命は形式だけ重く、実行は遅いものになった。","地方は王都の命令より、近くの有力者を優先し始めた。"]})},
 {id:'late_fate_brother_return',title:'弟派の再結集',category:'後半危機・継承派閥',difficulty:'desperate',ignoreType:'放置不可',danger:3,enemy:'ルートヴィヒ派貴族',lineName:'弟派整理',enemyImg:'brother',initialLine:-30,intro:"運命の日が近づくにつれ、弟ルートヴィヒを中心に据えようとする貴族たちが再び動き始めた。彼らは反逆を口にしない。ただ「王国には備えが必要だ」と言う。",effects:makeEffects({win:{"stability":8,"nobleSupport":5,"prestige":5},loss:{"stability":-10,"nobleSupport":-8,"prestige":-6},ignored:{"nobleSupport":-7,"stability":-7},stories:["ルートヴィヒは敵ではなく、正式な王族補佐として位置づけられた。","弟派は王の死後を見据えた別の宮廷を作り始めた。","兄弟の信頼そのものが政争の材料になった。"]})},
-{id:'late_fate_succession_law',title:'王位継承法案',category:'後半危機・継承法',difficulty:'desperate',ignoreType:'放置不可',danger:3,enemy:'五選帝侯と王族代表',lineName:'継承法制定',enemyImg:'elector2',initialLine:-30,intro:"王位継承の手続きを明文化する法案が提出された。王子、王女、弟、姪、選帝侯の承認権。誰もが納得する条文など存在しない。だが曖昧なままでは、運命の日の後に王国が裂ける。",effects:makeEffects({win:{"prestige":13,"stability":10,"nobleSupport":6},loss:{"prestige":-11,"stability":-9,"nobleSupport":-7},ignored:{"stability":-8,"nobleSupport":-5},stories:["継承順位と選帝侯承認の範囲が定められ、王国の未来は守られた。","法案は各派の利害で崩れ、継承不安がむしろ表面化した。","継承は慣習任せとなり、次代の火種が残った。"]})},
+{id:'late_fate_succession_law',title:'王位継承法案',category:'後半危機・継承法',difficulty:'desperate',ignoreType:'放置不可',danger:3,enemy:'五選帝侯と王族代表',lineName:'継承法制定',enemyImg:'elector2',initialLine:-30,intro:"王位継承の手続きを明文化する法案が提出された。王子、王女、弟、選帝侯の承認権。誰もが納得する条文など存在しない。だが曖昧なままでは、運命の日の後に王国が裂ける。",effects:makeEffects({win:{"prestige":13,"stability":10,"nobleSupport":6},loss:{"prestige":-11,"stability":-9,"nobleSupport":-7},ignored:{"stability":-8,"nobleSupport":-5},stories:["継承順位と選帝侯承認の範囲が定められ、王国の未来は守られた。","法案は各派の利害で崩れ、継承不安がむしろ表面化した。","継承は慣習任せとなり、次代の火種が残った。"]})},
 {id:'late_fate_eve_council',title:'運命の日の前夜評議',category:'最終章導線・運命の日',difficulty:'desperate',ignoreType:'放置不可',once:true,danger:3,enemy:'主要采配者と五選帝侯',lineName:'前夜評議',enemyImg:'deadKing',initialLine:-30,intro:"三十度目の冬を目前に、王宮で前夜評議が開かれた。予言を信じる者も、笑い飛ばす者も、利用しようとする者もいる。だが全員が知っている。明日以降、王国は同じではいられない。",effects:makeEffects({win:{"prestige":15,"stability":12,"nobleSupport":8,"diplomacy":5},loss:{"prestige":-14,"stability":-12,"nobleSupport":-8},ignored:{"stability":-10,"prestige":-8},stories:["アルブレヒトは恐れではなく、自分が築いた制度と人々への信頼で評議をまとめた。","評議は疑念と不安に包まれ、各派は最悪の未来へ備え始めた。","王の沈黙が、最も深い不安として残った。"]})},
 
 // ===== 第6波：王妃別案件＋王朝共通案件 =====
@@ -6158,7 +6303,7 @@ cases:[
 {id:'dynasty_prince_missing',title:'幼い王子の失踪騒ぎ',category:'警備・継承',difficulty:'hard',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:2,enemy:'王宮関係者',lineName:'幼い王子の失踪騒ぎ',enemyImg:'altrantSoldier',initialLine:-15,intro:"王宮の庭で遊んでいた王子の姿が一時的に見えなくなった。門の近くには見慣れない馬車の跡が残っている。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["王子は庭園の奥で無事に見つかり、門の警備は即日改められた。王宮は冷や汗とともに危機管理を学んだ。", "王子は戻ったが、馬車の跡の主は分からなかった。安堵の裏で、警備への不信が残った。", "失踪騒ぎの真相は曖昧にされ、宮廷には誘拐未遂の噂が消えずに残った。"]})},
 {id:'dynasty_bloodline_rumor',title:'血統を疑う噂',category:'醜聞・継承',difficulty:'hard',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:2,enemy:'王宮関係者',lineName:'血統を疑う噂',enemyImg:'elector4',initialLine:-15,intro:"王子または王女の血統を疑う下劣な噂が流れた。証拠のない噂こそ、王朝政治では最も厄介な毒になる。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["噂の出所は突き止められ、証拠なき中傷として公に退けられた。王妃と子の名誉は守られた。", "噂は否定されたが、完全には消えなかった。宮廷人は祝いの席でも血筋を数えるようになった。", "噂は放置され、酒場と礼拝堂で形を変えながら広がった。継承の根に毒が染み込んだ。"]})},
 {id:'dynasty_brother_faction_whisper',title:'弟派のささやき',category:'継承・派閥',difficulty:'hard',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:2,enemy:'王宮関係者',lineName:'弟派のささやき',enemyImg:'brother',initialLine:-15,intro:"王子がまだ幼いことを理由に、弟ルートヴィヒを万一の支えとして推す声が上がり始めた。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["弟ルートヴィヒには名誉ある役目が与えられ、王子の後ろ盾として位置づけられた。兄弟の絆は派閥の道具にされずに済んだ。", "弟派は表向き沈んだが、王子が幼い間の保険として語られ続けた。宮廷の視線は二つに割れたままだ。", "弟派の囁きは広がり、忠誠は王子と王弟の間で揺れ始めた。"]})},
-{id:'dynasty_elise_position',title:'エリーゼの立場',category:'家族・王朝',difficulty:'normal',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:1,enemy:'王宮関係者',lineName:'エリーゼの立場',enemyImg:'elector4',initialLine:-5,intro:"亡姉の娘エリーゼは、王子や王女が生まれたことで自分の立場が変わったことを感じ取っている。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["エリーゼには王家の一員として明確な席と役目が与えられた。幼い孤独は、王朝を支える静かな絆へ変わった。", "立場は示されたが、エリーゼは自分が脇へ追いやられたことを感じていた。笑顔の奥に寂しさが残った。", "エリーゼへの配慮は後回しにされ、彼女の周囲に同情と利用を狙う者が集まり始めた。"]})},
+{id:'dynasty_elise_position',title:'エリーゼの立場',category:'家族・王朝',difficulty:'normal',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:1,enemy:'王宮関係者',lineName:'エリーゼの立場',enemyImg:'elector4',initialLine:-5,intro:"幼いエリーゼ王女は、王宮の大人たちが自分を王朝の未来として見ていることを感じ取っている。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["エリーゼ王女には、王家の一員として明確な席と役目が与えられた。幼い不安は、王朝を支える静かな絆へ変わった。", "立場は示されたが、エリーゼ王女は自分が政略の駒として見られていることを感じていた。笑顔の奥に寂しさが残った。", "エリーゼ王女への配慮は後回しにされ、彼女の周囲に同情と利用を狙う者が集まり始めた。"]})},
 {id:'dynasty_prince_play_battle',title:'王子の初陣ごっこ',category:'軍事教育・王朝',difficulty:'easy',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:0,enemy:'王宮関係者',lineName:'王子の初陣ごっこ',enemyImg:'altrantSoldier',initialLine:0,intro:"幼い王子が木剣を持ち、近衛兵の前で初陣ごっこをした。微笑ましい行事だが、軍人たちは資質を見ている。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["王子の木剣遊びは、近衛兵との温かな儀礼になった。兵たちは次代の王に親しみと期待を抱いた。", "遊びは盛り上がったが、軍人たちは王子の資質を早くも論評し始めた。子どもの遊びに重い視線が集まった。", "行事は軽んじられ、近衛兵の間では王家が軍の心を知らないという不満が残った。"]})},
 {id:'dynasty_princess_betrothal_offer',title:'王女への婚約打診',category:'婚姻外交・王朝',difficulty:'hard',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:2,enemy:'王宮関係者',lineName:'王女への婚約打診',enemyImg:'loireKing',initialLine:-15,intro:"外国使節が、幼い王女との将来婚約をほのめかした。返答の仕方ひとつで同盟にも侮辱にもなる。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["婚約打診には礼を尽くしつつ即答を避けた。王女の未来は守られ、相手国との関係も傷つかなかった。", "返答は曖昧で、相手国は期待を残したまま帰った。王女の名は次の交渉でも持ち出されるだろう。", "打診を放置したことで、相手国は軽視されたと受け取った。王女の名は外交上の失点として語られた。"]})},
 {id:'dynasty_prince_study_abroad',title:'王子の留学招待',category:'教育・外交',difficulty:'hard',ignoreType:'くすぶる',requiresFlag:'dynasty_started',danger:2,enemy:'王宮関係者',lineName:'王子の留学招待',enemyImg:'rutheniaKing',initialLine:-15,intro:"外国宮廷から、王子を短期間招きたいという申し出が届いた。教育機会と人質外交の境目にある。",effects:makeEffects({"win": {"prestige": 4, "stability": 3}, "loss": {"prestige": -4, "stability": -3}, "ignored": {"stability": -2}, "stories": ["留学は人質にならぬ短期訪問として再設計された。王子は異国を知り、王国は面子を保った。", "招待は受けたが、滞在条件に不安が残った。教育と拘束の境目はまだ細い。", "返答を曖昧にしたまま時が過ぎ、相手国は王子を信用していない証と受け取った。"]})},
@@ -6571,7 +6716,7 @@ function advanceMapNews(){
   addCase({id:'brother_elector_approach',title:'選帝侯の王弟接近',category:'政局・兄弟',difficulty:'hard',ignoreType:'悪化注意',once:true,requiresActor:'brother',danger:2,enemy:'弟派の廷臣',lineName:'派閥化の抑制',enemyImg:'elector4',initialLine:-16,intro:'ある選帝侯の使者が、王ではなく弟へ先に挨拶をした。小さな礼法の乱れに見えるが、宮廷では「王弟を別の旗にできるか」を測る者たちがいる。',effects:makeEffects({win:{prestige:4,nobleSupport:3},loss:{prestige:-4,nobleSupport:-5,stability:-2},ignored:{nobleSupport:-3,prestige:-2},stories:['弟は兄の前で使者を退け、自分は王冠の影ではなく支えであると示した。選帝侯たちは計算を一度引っ込めた。','使者の非礼は処理されたが、弟が政治の駒になり得ることを宮廷は覚えてしまった。','接近は放置され、王弟の部屋には兄を通さない手紙が増え始めた。']})});
   addMeta('brother_elise_guardianship',2,8,sharedTags.concat(['succession','family']));
   addArch('brother_elise_guardianship','balanced','palace');
-  addCase({id:'brother_elise_guardianship',title:'エリーゼの後見をめぐって',category:'家族・継承',difficulty:'normal',ignoreType:'くすぶる',once:true,requiresActor:'brother',danger:1,enemy:'王家の後見人たち',lineName:'家族の均衡',enemyImg:'elector3',initialLine:-8,intro:'亡姉の娘エリーゼの教育方針をめぐり、弟が意見を述べた。血縁を思う優しさにも見えるが、王家の孤児を誰が守るかは、継承の空気にも関わる。',effects:makeEffects({win:{stability:4,prestige:2},loss:{stability:-3,nobleSupport:-2},ignored:{stability:-1},stories:['エリーゼの後見は王と弟が共に見守る形に整えられた。孤児の居場所は、兄弟の和解を映す小さな席となった。','後見はまとまったが、エリーゼは大人たちが自分を通して継承を語っていることに気づいてしまった。','後見は放置され、エリーゼの周囲に同情と利用を狙う者が集まり始めた。']})});
+  addCase({id:'brother_elise_guardianship',title:'エリーゼ王女の教育方針',category:'家族・継承',difficulty:'normal',ignoreType:'くすぶる',once:true,requiresActor:'brother',danger:1,enemy:'王家の後見人たち',lineName:'家族の均衡',enemyImg:'elector3',initialLine:-8,intro:'幼いエリーゼ王女の教育方針をめぐり、弟が意見を述べた。家族を思う優しさにも見えるが、次代の王族を誰が導くかは、継承の空気にも関わる。',effects:makeEffects({win:{stability:4,prestige:2},loss:{stability:-3,nobleSupport:-2},ignored:{stability:-1},stories:['エリーゼ王女の教育は王と弟が共に見守る形に整えられた。幼い王女の居場所は、兄弟の和解を映す小さな席となった。','教育方針はまとまったが、エリーゼ王女は大人たちが自分を通して継承を語っていることに気づいてしまった。','教育方針は放置され、エリーゼ王女の周囲に同情と利用を狙う者が集まり始めた。']})});
   addMeta('brother_independent_sortie',3,10,sharedTags.concat(['military','border','crisis']));
   addArch('brother_independent_sortie','rebelPrince','forest');
   addCase({id:'brother_independent_sortie',title:'王弟の独断出兵',category:'軍事・兄弟危機',difficulty:'desperate',ignoreType:'放置不可',once:true,requiresActor:'brother',danger:3,enemy:'ルートヴィヒ',lineName:'命令系統',enemyImg:'brotherLate',initialLine:-26,intro:'国境で小競り合いが起きた夜、弟は王命を待たずに騎兵を動かそうとしていた。成功すれば英雄、失敗すれば王命を破る危険な前例になる。兄は止めるのか、任せるのか、共に出るのかを迫られる。',effects:makeEffects({win:{troops:120,prestige:5,tension:{altrantRuthenia:1}},loss:{troops:-160,prestige:-7,nobleSupport:-5,tension:{altrantRuthenia:2}},ignored:{troops:-90,prestige:-5,nobleSupport:-4,tension:{altrantRuthenia:2}},stories:['王は弟の独断を王命の中に回収し、出兵は統制された勝利となった。ルートヴィヒは英雄ではなく、王の剣として名を上げた。','出兵は戦果を得たが、命令系統の危うさは残った。兵たちは王弟の速さを讃え、廷臣は兄王の顔色をうかがった。','独断出兵は宮廷を揺らした。王命より王弟の判断が速いという噂は、継承の火種へ変わり始めた。']})});
@@ -9292,8 +9437,8 @@ function applyBrotherRouteResult(r){
     else if(isHardFailureRank(r.rank)){changeBrotherAxis('ambition',10,'選帝侯の接近は弟に別の道を意識させました',lines);changeBrotherAxis('suspicion',14,'宮廷では弟派の存在が現実味を帯びました',lines);changeBrotherRelation(-8,'兄弟の政治的距離は大きく開きました',lines);}
     else{changeBrotherAxis('suspicion',5,'選帝侯の接近は火種として残りました',lines);}
   }else if(kind==='elise'){
-    if(isSuccessRank(r.rank)){changeBrotherAxis('trust',7,'エリーゼを共に守る役目が、兄弟に家族としての共通点を思い出させました',lines);changeBrotherAxis('suspicion',-3,'王家内の後見争いは少し落ち着きました',lines);changeBrotherRelation(4,'家族を守る合意が兄弟の距離を縮めました',lines);}
-    else if(isHardFailureRank(r.rank)){changeBrotherAxis('trust',-5,'エリーゼをめぐる不手際は、弟に兄の冷たさとして映りました',lines);changeBrotherAxis('suspicion',6,'後見問題は宮廷の派閥材料になりました',lines);changeBrotherRelation(-4,'王家の内側に小さな傷が残りました',lines);}
+    if(isSuccessRank(r.rank)){changeBrotherAxis('trust',7,'エリーゼ王女を共に導く役目が、兄弟に家族としての共通点を思い出させました',lines);changeBrotherAxis('suspicion',-3,'王家内の後見争いは少し落ち着きました',lines);changeBrotherRelation(4,'家族を守る合意が兄弟の距離を縮めました',lines);}
+    else if(isHardFailureRank(r.rank)){changeBrotherAxis('trust',-5,'エリーゼ王女をめぐる不手際は、弟に兄の冷たさとして映りました',lines);changeBrotherAxis('suspicion',6,'後見問題は宮廷の派閥材料になりました',lines);changeBrotherRelation(-4,'王家の内側に小さな傷が残りました',lines);}
     else{changeBrotherAxis('trust',2,'後見問題は最低限整えられました',lines);}
   }else if(kind==='sortie'){
     if(isSuccessRank(r.rank)){changeBrotherAxis('trust',6,'独断を王命へ収めたことで、弟は兄の器を認めました',lines);changeBrotherAxis('ambition',8,'ただし戦場の歓声は弟の名も大きくしました',lines);changeBrotherAxis('suspicion',3,'廷臣は王弟の武名を警戒しました',lines);changeBrotherRelation(5,'危険な前線経験は兄弟を戦友に近づけました',lines);}
@@ -22059,5 +22204,352 @@ LULL VARIATIONS + MARRIAGE INFLUENCE CHECK / phase20DI
   }
 
   window.phase20DIBuildLullCase = phase20DIBuildLullCase;
+})();
+
+
+/* =========================================================
+   phase20CZ: case visual story polish / 2026-06-07
+   目的: 案件本文を基準に、敵役画像・敵名・背景・臨時采配者の不自然な同席を補正する。
+   方針: 既存DATA.cases本体は直接書き換えない。末尾で表示用オーバーライドだけを追加する。
+   ========================================================= */
+(function(){
+  'use strict';
+  if(window.__phase20CZCaseVisualStoryPolishApplied)return;
+  window.__phase20CZCaseVisualStoryPolishApplied=true;
+
+  // 追加登録されたネームド画像。既存IMGにキーだけ足す。
+  if(typeof IMG==='object'){
+    Object.assign(IMG,{
+      renatoBernacci:'https://lh3.googleusercontent.com/d/1nGz1jgGxuGUQYxeRnCZDpuYwiz1iEgLs',
+      fingalMacRowan:'https://lh3.googleusercontent.com/d/1BT0oR9cBgi_U9hshgflAV4DqO84-nu3k'
+    });
+  }
+
+  const enemyImgPatch={
+    // 国内・内政。相手が病そのものではない案件は、市民・商人・司教・兵・貴族へ戻す。
+    early_well_contamination:'citizenRep',
+    early_winter_logistics_stop:'merchantRep',
+    hospital:'citizenRep',
+    local_seed_shortage:'peasant',
+    local_bridge_collapse:'merchantRep',
+    local_road_bandits:'altrantSoldier',
+    local_tax_collector_missing:'courtNoble',
+    local_livestock_disease:'peasant',
+    local_infirmary_herb_garden:'bishopAltrant',
+    infra_stone_bridge:'merchantRep',
+    infra_infirmary_wing:'bishopAltrant',
+    infra_drydock:'merchantRep',
+    dynasty_first_child_naming:'bishopAltrant',
+    dynasty_guardian_choice:'courtNoble',
+    dynasty_prince_fever:'princeLeopold',
+    dynasty_princess_first_duty:'princessElise',
+    dynasty_prince_tutor:'princeLeopold',
+    dynasty_princess_languages:'princessElise',
+    dynasty_prince_missing:'princeLeopold',
+    dynasty_bloodline_rumor:'courtNoble',
+    dynasty_brother_faction_whisper:'courtNoble',
+    dynasty_elise_position:'princessElise',
+    dynasty_prince_play_battle:'princeLeopold',
+    dynasty_princess_betrothal_offer:'princessElise',
+    dynasty_prince_study_abroad:'princeLeopold',
+    dynasty_twins_succession:'princeLeopold',
+
+    // 選帝侯。本人が相談相手の時は本人、反発勢力の時は貴族・市民・兵士にする。
+    elector_emil_dormitory_fire_tax:'elector2',
+    elector_clarissa_orphan_food:'elector3',
+    elector_gerhard_fort_repair:'elector5',
+    elector_rosen_loire_etiquette:'elector4',
+    infra_royal_library:'elector2',
+    infra_star_fort:'elector5',
+    infra_rose_theatre:'elector4',
+
+    // ロアール。
+    elector_emil_satire_pamphlet:'celestineLoire',
+    country_loire_gift:'isabellaLoire',
+    country_loire_isabel_charity:'isabellaLoire',
+    country_loire_celestine_letter:'celestineLoire',
+    country_loire_ultimatum:'loireKing',
+    late_war_loire_ruthenia_secret:'loireKing',
+
+    // リック。枢機卿・聖王・信者・聖騎士を分ける。
+    rick:'lorenzoBelcaro',
+    brother_return_01:'lorenzoBelcaro',
+    brother_return_02:'lorenzoBelcaro',
+    country_rick_pilgrims:'trickBeliever',
+    country_rick_cardinal_question:'lorenzoBelcaro',
+    country_rick_knight_guard:'rickSoldier',
+    country_rick_lorenzo_decree:'rickKing',
+    late_religion_religious_edict:'rickKing',
+
+    // ルテニア。
+    ruthenia:'grigoryOrlov',
+    country_ruthenia_road_tax:'merchantRep',
+    country_ruthenia_irina_letter:'rutheniaKing',
+    country_ruthenia_vera_prophecy:'veraZakharova',
+    country_ruthenia_sergei_envoy:'veraZakharova',
+    country_ruthenia_grigory_drill:'grigoryOrlov',
+    country_ruthenia_old_deed:'veraZakharova',
+    late_war_loire_ruthenia_secret:'rutheniaKing',
+
+    // ソリア。レナート画像を正式使用する。
+    country_solia_avalanche_road:'merchantRep',
+    country_solia_claudia_contract:'claudiaAltenburg',
+    country_solia_neutral_mediation:'renatoBernacci',
+    country_solia_wolfram_duel:'wolframEisenhardt',
+    country_solia_alliance_breach:'renatoBernacci',
+    late_war_solia_neutrality:'renatoBernacci',
+
+    // アズラク。王・大宰相・商人代表を分ける。
+    country_azraq_copper_caravan:'merchantRep',
+    country_azraq_prayer_time:'ibrahimPasha',
+    country_azraq_prisoner_exchange:'ibrahimPasha',
+    country_azraq_zahra_festival:'azraqKing',
+    country_azraq_water_fort:'ibrahimPasha',
+    country_azraq_safar_truce:'azraqKing',
+    late_war_holy_total:'azraqKing',
+
+    // セーフェアラ。商業同盟はアルバロ/マルチェロ/商人を使い分ける。
+    seafeara:'seafearaKing',
+    country_seafeara_trading_house:'merchantRep',
+    country_seafeara_exchange_rate:'seafearaKing',
+    country_seafeara_smuggling_fleet:'seafearaKing',
+    country_seafeara_debt_ledger:'courtNoble',
+    country_seafeara_insurance_refusal:'merchantRep',
+    country_seafeara_trade_sanction:'marcoVerdera',
+    late_war_seafeara_blockade:'marcoVerdera',
+    late_finance_currency_collapse:'marcoVerdera',
+
+    // トレウヴァル。フィンガル画像を正式使用する。
+    country_treuval_guest_law:'treuvalSoldier',
+    country_treuval_stolen_horn:'dagdanMacLochran',
+    country_treuval_winter_fleet:'fingalMacRowan',
+    country_treuval_war_princess_trial:'wife6',
+    country_treuval_black_wolf_raid:'fingalMacRowan',
+    country_treuval_great_council:'dagdanMacLochran',
+    late_war_treuval_campaign:'dagdanMacLochran',
+
+    // 王妃個別案件。妻本人を敵前面に出しすぎず、実際の摩擦相手を出す。
+    wife1_old_garden:'wife1',
+    wife1_kitchen_relief:'citizenRep',
+    wife1_household_accounts:'merchantRep',
+    wife1_village_visit:'peasant',
+    wife1_children_room:'princeLeopold',
+    wife2_ladies_arrival:'isabellaLoire',
+    wife2_prince_first_dance:'princeLeopold',
+    wife2_princess_portrait:'princessElise',
+    wife2_charity_salon:'citizenRep',
+    wife2_princess_betrothal:'princessElise',
+    wife3_baptism_name:'princeLeopold',
+    wife3_confessor:'lorenzoBelcaro',
+    wife3_cathedral:'bishopAltrant',
+    wife3_princess_convent:'princessElise',
+    wife3_godparent:'rickKing',
+    wife4_nurse:'veraZakharova',
+    wife4_second_name:'princeLeopold',
+    wife4_secret_tutor:'veraZakharova',
+    wife4_princess_betrothal:'princessElise',
+    wife4_dual_succession:'rutheniaKing',
+    wife5_lyam_nurse:'ibrahimPasha',
+    wife5_stargazer:'ibrahimPasha',
+    wife5_desert_name:'princessElise',
+    wife5_holy_truce_blessing:'azraqKing',
+    wife5_caravan_inheritance:'merchantRep',
+    wife6_warband_visit:'fingalMacRowan',
+    wife6_prince_shield_oath:'princeLeopold',
+    wife6_clan_fosterage:'dagdanMacLochran',
+    wife6_bards_song:'dagdanMacLochran',
+    wife6_princess_bow:'princessElise'
+  };
+
+  const enemyNamePatch={
+    // 正式名補正。旧名・仮名・画像流用名を正す。
+    rick:'マルチェロ・ヴィスコンティ',
+    brother_return_01:'マルチェロ・ヴィスコンティ',
+    brother_return_02:'マルチェロ・ヴィスコンティ',
+    country_rick_cardinal_question:'マルチェロ・ヴィスコンティ',
+    country_rick_knight_guard:'マルチェロ・ヴィスコンティ',
+    country_rick_lorenzo_decree:'聖王ロレンツォ・アルベルティ',
+    elector_emil_forbidden_books:'マルチェロ・ヴィスコンティ',
+    crisis_emil_holy_inquiry:'マルチェロ・ヴィスコンティ',
+    country_loire_isabel_charity:'イザベル・ディ・サン＝ヴェリオ',
+    country_loire_celestine_letter:'セレスティーヌ・ド・ヴァロワ',
+    country_loire_ultimatum:'アルマン・ド・ヴァロワール',
+    ruthenia:'グリゴリー・オルロフ',
+    country_ruthenia_irina_letter:'イリーナ・ヴェリカヤ',
+    country_ruthenia_vera_prophecy:'ヴェラ・ザハロワ',
+    country_ruthenia_sergei_envoy:'ヴェラ・ザハロワ',
+    country_ruthenia_grigory_drill:'グリゴリー・オルロフ',
+    country_ruthenia_old_deed:'ヴェラ・ザハロワ',
+    country_solia_neutral_mediation:'レナート・ベルナッチ',
+    country_solia_alliance_breach:'レナート・ベルナッチ',
+    late_war_solia_neutrality:'レナート・ベルナッチ',
+    country_azraq_prisoner_exchange:'カラ・ムスタファ・アガ',
+    country_azraq_water_fort:'カラ・ムスタファ・アガ',
+    country_azraq_safar_truce:'サファル・アル＝ハーディル',
+    country_seafeara_exchange_rate:'アルバロ・デ・メンドーサ',
+    country_seafeara_trade_sanction:'マルチェロ・ヴァン・オルセオ',
+    late_war_seafeara_blockade:'マルチェロ・ヴァン・オルセオ',
+    late_finance_currency_collapse:'マルチェロ・ヴァン・オルセオ',
+    country_treuval_winter_fleet:'フィンガル・マク・ローワン',
+    country_treuval_black_wolf_raid:'フィンガル・マク・ローワン',
+    country_treuval_great_council:'ダグダン・マク・ロクラン',
+    late_war_treuval_campaign:'ダグダン・マク・ロクラン',
+    dynasty_prince_fever:'レオポルト王子',
+    dynasty_princess_first_duty:'エリーゼ王女',
+    dynasty_prince_tutor:'レオポルト王子',
+    dynasty_princess_languages:'エリーゼ王女',
+    dynasty_prince_missing:'レオポルト王子',
+    dynasty_elise_position:'エリーゼ王女',
+    dynasty_prince_play_battle:'レオポルト王子',
+    dynasty_princess_betrothal_offer:'エリーゼ王女',
+    dynasty_prince_study_abroad:'レオポルト王子'
+  };
+
+  const bgPatch={
+    // 王宮内・私室・評議会。
+    early_private_judgement:'council',
+    training_sword_tournament:'palace',
+    training_brother_spar:'palace',
+    marriage_wife1_childhood:'privateRoom',
+    marriage_wife2_loire:'palace',
+    marriage_wife4_ruthenia:'palace',
+    dynasty_first_child_naming:'church',
+    dynasty_guardian_choice:'council',
+    dynasty_prince_fever:'privateRoom',
+    dynasty_princess_first_duty:'palace',
+    dynasty_prince_tutor:'privateRoom',
+    dynasty_princess_languages:'privateRoom',
+    dynasty_prince_missing:'palace',
+    dynasty_bloodline_rumor:'council',
+    dynasty_brother_faction_whisper:'council',
+    dynasty_elise_position:'privateRoom',
+    dynasty_prince_play_battle:'palace',
+    dynasty_princess_betrothal_offer:'palace',
+    dynasty_prince_study_abroad:'palace',
+    dynasty_twins_succession:'council',
+
+    // 国内都市・農村・港・砦。
+    early_grain_price_spike:'market',
+    early_tax_collector_embezzlement:'council',
+    early_barracks_food_shortage:'fort',
+    early_well_contamination:'infirmary',
+    early_winter_logistics_stop:'rock',
+    local_seed_shortage:'village',
+    local_road_bandits:'forest',
+    local_tax_collector_missing:'village',
+    local_livestock_disease:'village',
+    local_deserter_return:'village',
+    infra_stone_bridge:'rock',
+    infra_royal_library:'council',
+    infra_infirmary_wing:'infirmary',
+    infra_star_fort:'fort',
+    infra_rose_theatre:'palace',
+    infra_drydock:'port',
+
+    // 外国。
+    country_solia_neutral_mediation:'council',
+    country_solia_alliance_breach:'council',
+    country_treuval_winter_fleet:'port',
+    country_treuval_guest_law:'forest',
+    country_treuval_stolen_horn:'forest',
+    country_treuval_war_princess_trial:'forest',
+    country_treuval_black_wolf_raid:'fort',
+    country_treuval_great_council:'forest',
+    wife6_warband_visit:'palace',
+    wife6_prince_shield_oath:'palace',
+    wife6_clan_fosterage:'forest',
+    wife6_bards_song:'palace',
+    wife6_princess_bow:'forest'
+  };
+
+  if(typeof VISUAL_ENEMY_OVERRIDES==='object')Object.assign(VISUAL_ENEMY_OVERRIDES,enemyImgPatch);
+  if(typeof VISUAL_ENEMY_NAME_OVERRIDES==='object')Object.assign(VISUAL_ENEMY_NAME_OVERRIDES,enemyNamePatch);
+  if(typeof VISUAL_BG_OVERRIDES==='object')Object.assign(VISUAL_BG_OVERRIDES,bgPatch);
+
+  // 勢力圧力の古い無効画像キーを正規キーに補正。
+  if(typeof FACTION_PRESSURE_CASE_META==='object'){
+    if(FACTION_PRESSURE_CASE_META.church){FACTION_PRESSURE_CASE_META.church.enemyImg='bishopAltrant';FACTION_PRESSURE_CASE_META.church.enemy='国内司教';}
+    if(FACTION_PRESSURE_CASE_META.queen){FACTION_PRESSURE_CASE_META.queen.enemyImg='courtNoble';FACTION_PRESSURE_CASE_META.queen.enemy='王妃派の宮廷人';}
+    if(FACTION_PRESSURE_CASE_META.loire){FACTION_PRESSURE_CASE_META.loire.enemyImg='celestineLoire';FACTION_PRESSURE_CASE_META.loire.enemy='セレスティーヌ・ド・ヴァロワ';}
+    if(FACTION_PRESSURE_CASE_META.rick){FACTION_PRESSURE_CASE_META.rick.enemyImg='lorenzoBelcaro';FACTION_PRESSURE_CASE_META.rick.enemy='マルチェロ・ヴィスコンティ';}
+    if(FACTION_PRESSURE_CASE_META.solia){FACTION_PRESSURE_CASE_META.solia.enemyImg='claudiaAltenburg';FACTION_PRESSURE_CASE_META.solia.enemy='クラウディア・フォン・アルテンブルク';}
+    if(FACTION_PRESSURE_CASE_META.treuval){FACTION_PRESSURE_CASE_META.treuval.enemyImg='dagdanMacLochran';FACTION_PRESSURE_CASE_META.treuval.enemy='ダグダン・マク・ロクラン';}
+  }
+
+  // 臨時采配者の表示名も正規名へ寄せる。性能は変えない。
+  if(DATA&&DATA.supportActors){
+    Object.assign(DATA.supportActors.support_loire||{},{name:'イザベル・ディ・サン＝ヴェリオ'});
+    Object.assign(DATA.supportActors.support_rick||{},{name:'マルチェロ・ヴィスコンティ'});
+    Object.assign(DATA.supportActors.support_azraq||{},{name:'カラ・ムスタファ・アガ'});
+    Object.assign(DATA.supportActors.support_seafeara||{},{name:'マルチェロ・ヴァン・オルセオ'});
+    Object.assign(DATA.supportActors.support_treuval||{},{name:'ダグダン・マク・ロクラン'});
+  }
+
+  function caseTextForVisual(c){return `${c?.id||''} ${c?.title||''} ${c?.category||''} ${c?.enemy||''} ${c?.lineName||''} ${c?.intro||''}`;}
+  function isBrotherFacingCase(c){return /brother|弟|王弟|ルートヴィヒ/.test(caseTextForVisual(c));}
+  function wifeNumberFromActor(actorId){const m=String(actorId||'').match(/^wife([1-6])$/);return m?m[1]:'';}
+  function isWifeFacingCase(actorId,c){
+    const text=caseTextForVisual(c);
+    if(actorId==='wife')return /王妃|妻|婚姻|縁談|王妃候補|wife[1-6]/.test(text);
+    const n=wifeNumberFromActor(actorId);
+    if(!n)return false;
+    if(String(c?.id||'').startsWith(`marriage_wife${n}_`))return true;
+    if(String(c?.id||'').startsWith(`wife${n}_`))return true;
+    const names={1:'ヘレーネ',2:'エレオノール',3:'ベアトリーチェ',4:'アナスタシア',5:'サフィーラ',6:'ブリギッド'};
+    return text.includes(names[n]);
+  }
+  function actorImage(actorId){return DATA?.actors?.[actorId]?.img||DATA?.supportActors?.[actorId]?.img||'';}
+  function effectiveEnemyImageSafe(c){
+    try{return typeof effectiveEnemyImg==='function'?effectiveEnemyImg(c):(c?.enemyImg||'');}
+    catch(e){return c?.enemyImg||'';}
+  }
+
+  // レギュラー采配者の不自然同席を防ぐ。
+  const prevActorIsSelectableForCase=window.actorIsSelectableForCase||actorIsSelectableForCase;
+  window.actorIsSelectableForCase=actorIsSelectableForCase=function(actorId,caseId){
+    const c=typeof getCase==='function'?getCase(caseId):null;
+    if(c){
+      if(actorId==='brother'&&isBrotherFacingCase(c))return false;
+      if(isWifeFacingCase(actorId,c))return false;
+      const eimg=effectiveEnemyImageSafe(c);
+      if(eimg&&actorImage(actorId)&&eimg===actorImage(actorId))return false;
+    }
+    return prevActorIsSelectableForCase(actorId,caseId);
+  };
+
+  // 臨時采配者も、敵本人・相手国代表・依頼者本人として前面表示される時は出さない。
+  const prevCaseSupportActorIds=window.caseSupportActorIds||caseSupportActorIds;
+  window.caseSupportActorIds=caseSupportActorIds=function(c){
+    const base=(prevCaseSupportActorIds(c)||[]).slice();
+    const eimg=effectiveEnemyImageSafe(c);
+    const text=caseTextForVisual(c);
+    return base.filter(id=>{
+      const img=actorImage(id);
+      if(img&&eimg&&img===eimg)return false;
+      if(id==='support_rick'&&/マルチェロ|枢機卿|リック聖庁|聖庁特使/.test(text))return false;
+      if(id==='support_loire'&&/イザベル|セレスティーヌ|ロアール使節|ロアール宮廷/.test(text))return false;
+      if(id==='support_ruthenia'&&/グリゴリー|ルテニア近衛|ルテニア斥候|ルテニア外交団/.test(text))return false;
+      if(id==='support_solia'&&/クラウディア|レナート|ヴォルフラム|ソリア傭兵/.test(text))return false;
+      if(id==='support_azraq'&&/カラ・ムスタファ|イブラヒム|サファル|アズラク/.test(text))return false;
+      if(id==='support_seafeara'&&/マルチェロ・ヴァン|アルバロ|セーフェアラ/.test(text))return false;
+      if(id==='support_treuval'&&/ダグダン|フィンガル|トレウヴァル/.test(text))return false;
+      return true;
+    });
+  };
+
+  // 監査用。現在表示される敵画像・背景・支援者候補をコンソールから確認できる。
+  window.auditCaseVisualAssignments=function(){
+    const list=(DATA?.cases||[]).map(c=>({
+      id:c.id,title:c.title,category:c.category,
+      enemyName:typeof effectiveEnemyName==='function'?effectiveEnemyName(c):c.enemy,
+      enemyImg:effectiveEnemyImageSafe(c),
+      bg:typeof caseBgKey==='function'?caseBgKey(c):(VISUAL_BG_OVERRIDES[c.id]||CASE_BG[c.id]||''),
+      support:typeof caseSupportActorIds==='function'?caseSupportActorIds(c):[]
+    }));
+    console.table(list);
+    return list;
+  };
+
+  if(State)State.caseCache=null;
 })();
 </script>
