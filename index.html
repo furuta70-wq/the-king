@@ -31305,3 +31305,59 @@ phase20DL: early strong-case mix without touching brother/marriage routes
 })();
 </script>
 </script>
+
+<style id="phase20EC-trump-scroll-restore">
+/* phase20EC: phase20BQで潰れた切り札横スクロールを復旧。
+   既存CSSは触らず、末尾上書きだけで反映する。 */
+#screenAssign .trumpBar{
+  overflow:hidden!important;
+  max-width:100%!important;
+}
+
+#screenAssign .trumpCards{
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  justify-content:flex-start!important;
+  align-items:stretch!important;
+
+  margin-left:0!important;
+  margin-top:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+
+  padding:8px 8px 10px 0!important;
+
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  overscroll-behavior-x:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-x!important;
+
+  box-sizing:border-box!important;
+}
+
+#screenAssign .trumpCards::-webkit-scrollbar{
+  height:8px!important;
+}
+#screenAssign .trumpCards::-webkit-scrollbar-thumb{
+  background:#b78b32!important;
+  border-radius:99px!important;
+}
+#screenAssign .trumpCards::-webkit-scrollbar-track{
+  background:rgba(7,18,32,.38)!important;
+  border-radius:99px!important;
+}
+
+#screenAssign .trumpCard{
+  flex:0 0 148px!important;
+  width:148px!important;
+  min-width:148px!important;
+  max-width:148px!important;
+}
+
+#screenAssign .trumpCard.tutorialPulse{
+  overflow:visible!important;
+}
+</style>
+
