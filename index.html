@@ -22132,6 +22132,203 @@ function diplomacyBulletinHud(){
 }
 </style>
 
+
+
+<style id="phase20ED-fixes-css">
+/* phase20ED: 個別不具合の末尾差分修正。
+   既存CSS/JSを直接削らず、後段上書きで安全に直す。 */
+
+/* ④ 地図変動ニュース本文を、地図レイヤーより必ず前面に出す。 */
+.mapNewsBox{
+  isolation:isolate!important;
+}
+.mapNewsMap{
+  position:relative!important;
+  z-index:1!important;
+}
+.mapNewsText{
+  position:absolute!important;
+  z-index:40!important;
+  pointer-events:auto!important;
+}
+.mapNewsCue,
+.mapNewsCount,
+.mapNewsKicker,
+.mapNewsTitle{
+  position:relative!important;
+  z-index:45!important;
+}
+
+/* ⑥ 戦争枠・講和枠はバッジ1行分だけ縦を増やし、本文の盾枠を潰さない。 */
+.caseCard.borderWarSlot,
+.caseCard.borderGreatWarSlot,
+.caseCard.borderPeaceSlot{
+  min-height:152px!important;
+  padding-bottom:12px!important;
+}
+.caseCard.borderWarSlot.hasInfoBand,
+.caseCard.borderGreatWarSlot.hasInfoBand,
+.caseCard.borderPeaceSlot.hasInfoBand{
+  min-height:184px!important;
+}
+.caseCard.borderWarSlot .caseStory,
+.caseCard.borderGreatWarSlot .caseStory,
+.caseCard.borderPeaceSlot .caseStory{
+  height:56px!important;
+  min-height:56px!important;
+  max-height:56px!important;
+}
+.caseCard.borderWarSlot .warSlotBadge,
+.caseCard.borderGreatWarSlot .warSlotBadge,
+.caseCard.borderPeaceSlot .warSlotBadge{
+  flex:0 0 auto!important;
+  margin-bottom:7px!important;
+}
+</style>
+
+<script id="phase20ED-fixes-js">
+/* phase20ED: ①王妃表示同期、②切り札完全使い捨て、③切り札スクロール保持、⑤危機通知だけ後半抑制。 */
+(function(){
+  'use strict';
+
+  function currentSpouseIdED(){
+    try{
+      return (State && State.marriage && State.marriage.state==='married' && State.marriage.spouseId) ? State.marriage.spouseId : null;
+    }catch(e){return null;}
+  }
+
+  function isWifeCaseIdED(id){
+    return /^wife[1-6]_/.test(String(id||''));
+  }
+
+  function wifeIdFromCaseIdED(id){
+    const m=String(id||'').match(/^(wife[1-6])_/);
+    return m?m[1]:null;
+  }
+
+  /* ① 王妃汎用画像 wife は現在の王妃へ差し替える。wife1固定表示を避ける。 */
+  if(typeof effectiveEnemyImg==='function'){
+    const oldEffectiveEnemyImgED=effectiveEnemyImg;
+    effectiveEnemyImg=function(c){
+      const q=currentSpouseIdED();
+      if(q && c && c.enemyImg==='wife')return q;
+      return oldEffectiveEnemyImgED.apply(this,arguments);
+    };
+  }
+
+  /* ① 王妃個別案件は現在の王妃と一致するものだけ通す。既存のrequiresFlagも残す二重安全。 */
+  if(typeof caseAvailable==='function'){
+    const oldCaseAvailableED=caseAvailable;
+    caseAvailable=function(c,rank){
+      const wid=wifeIdFromCaseIdED(c&&c.id);
+      if(wid && currentSpouseIdED()!==wid)return false;
+      return oldCaseAvailableED.apply(this,arguments);
+    };
+  }
+
+  if(typeof caseBlockedByProgress==='function'){
+    const oldCaseBlockedByProgressED=caseBlockedByProgress;
+    caseBlockedByProgress=function(c){
+      const wid=wifeIdFromCaseIdED(c&&c.id);
+      if(wid && currentSpouseIdED()!==wid)return true;
+      return oldCaseBlockedByProgressED.apply(this,arguments);
+    };
+  }
+
+  /* ② 使った切り札は全て使い捨て。老執事の助言も再利用しない。 */
+  if(typeof isReusableCard==='function'){
+    isReusableCard=function(){return false;};
+  }
+
+  /* ② 複数枚投入時、最後の1枚だけでなく実際に発動した全カードを記録して消す。 */
+  if(typeof Battle!=='undefined' && Battle && typeof Battle.cardEffect==='function'){
+    const oldBattleCardEffectED=Battle.cardEffect;
+    Battle.cardEffect=function(l,card,judge){
+      if(card){
+        if(l){
+          l.usedCards=l.usedCards||[];
+          if(!l.usedCards.includes(card))l.usedCards.push(card);
+        }
+        State.phase20EDUsedCards=State.phase20EDUsedCards||[];
+        if(!State.phase20EDUsedCards.includes(card))State.phase20EDUsedCards.push(card);
+      }
+      return oldBattleCardEffectED.apply(this,arguments);
+    };
+  }
+
+  if(typeof handleUsedCards==='function'){
+    const oldHandleUsedCardsED=handleUsedCards;
+    handleUsedCards=function(cards){
+      const extra=Array.isArray(State.phase20EDUsedCards)?State.phase20EDUsedCards:[];
+      const merged=[...(cards||[]),...extra].filter(Boolean);
+      const unique=[...new Set(merged)];
+      const result=oldHandleUsedCardsED.call(this,unique);
+      State.phase20EDUsedCards=[];
+      return result;
+    };
+  }
+
+  /* ③ 切り札選択でView.assign()が再描画されても、横スクロール位置を戻す。 */
+  function getTrumpScrollED(){
+    const el=document.querySelector('#screenAssign .trumpCards');
+    return el?el.scrollLeft:0;
+  }
+  function restoreTrumpScrollED(x){
+    const apply=function(){
+      const el=document.querySelector('#screenAssign .trumpCards');
+      if(el)el.scrollLeft=x||0;
+    };
+    requestAnimationFrame(apply);
+    setTimeout(apply,0);
+    setTimeout(apply,60);
+  }
+  if(typeof Flow!=='undefined' && Flow && typeof Flow.assignCard==='function'){
+    const oldAssignCardED=Flow.assignCard;
+    Flow.assignCard=function(id){
+      const x=getTrumpScrollED();
+      const result=oldAssignCardED.apply(this,arguments);
+      restoreTrumpScrollED(x);
+      return result;
+    };
+  }
+
+  /* ⑤ 29歳上半期までは従来どおり。29歳下半期以降は危機状態を残し、警告ウインドウだけ出さない。 */
+  function allowPowerCrisisNoticeED(){
+    return (State&&typeof State.turn==='number') ? State.turn<=27 : true;
+  }
+  if(typeof Flow!=='undefined' && Flow && typeof Flow.nextPeriod==='function'){
+    Flow.nextPeriod=function(){
+      audio();
+      sfx('next');
+      const pc=updatePowerCrisisState();
+      if(pc&&pc.action==='ending'){
+        triggerCollapseEnding(pc.type);
+        return;
+      }
+      if(pc&&pc.action==='notice'&&allowPowerCrisisNoticeED()){
+        State.pendingPowerCrisisNotice=pc;
+        View.powerCrisisNotice(pc);
+        return;
+      }
+      if(pc&&pc.action==='notice'&&!allowPowerCrisisNoticeED()){
+        State.pendingPowerCrisisNotice=null;
+      }
+      Flow.advancePeriodCore();
+    };
+  }
+
+  window.auditPhase20EDFixes=function(){
+    return {
+      applied:true,
+      currentSpouse:currentSpouseIdED(),
+      allCardsDisposable:typeof isReusableCard==='function'?!isReusableCard('butler'):null,
+      storedUsedCards:State.phase20EDUsedCards||[],
+      powerNoticeAllowed:allowPowerCrisisNoticeED()
+    };
+  };
+})();
+</script>
+
 </body></html>
 
 <!--
@@ -31361,3 +31558,669 @@ phase20DL: early strong-case mix without touching brother/marriage routes
 }
 </style>
 
+
+<style id="phase20EE-actor-name-and-case-balance-css">
+/* phase20EE: 采配者名は表示専用略称で読ませる。正式名は本文・リザルト側に残す。 */
+#screenAssign .actorName,
+#screenAssign .assignedName{
+  max-width:100%!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+#screenAssign .actorSupportTag{
+  margin-left:3px!important;
+}
+</style>
+
+<script id="phase20EE-actor-name-and-case-balance-js">
+/* phase20EE: ①采配欄の略称表示、②No.2/君主級国境案件の優先表示、③通常案件の直近再表示抑制。 */
+(function(){
+  'use strict';
+  if(window.__phase20EEActorNameAndCaseBalanceApplied)return;
+  window.__phase20EEActorNameAndCaseBalanceApplied=true;
+
+  const n=v=>Number(v)||0;
+  const idOf=c=>String(c&&c.id||'');
+  const get=id=>typeof getCase==='function'?getCase(id):((DATA&&DATA.cases)||[]).find(c=>c&&c.id===id);
+  const turn=()=>n(State&&State.turn)||1;
+  const rank=()=>typeof nationalPowerRank==='function'?nationalPowerRank():1;
+  const tagsOf=c=>{
+    try{return (typeof caseMeta==='function'?(caseMeta(c).tags||[]):(c&&c.tags||[])).map(String);}catch(e){return[];}
+  };
+  const hasTag=(c,t)=>tagsOf(c).includes(t);
+  const borderKeys=()=>{
+    try{return Array.isArray(ALTRANT_BORDER_KEYS)?ALTRANT_BORDER_KEYS:['altrantLoire','altrantRick','altrantRuthenia','altrantSolia','altrantTreuval'];}
+    catch(e){return ['altrantLoire','altrantRick','altrantRuthenia','altrantSolia','altrantTreuval'];}
+  };
+
+  const SHORT_ACTOR_NAMES={
+    albrecht:'アルブレヒト',
+    brother:'ルートヴィヒ',
+    wife:'王妃',
+    wife1:'ヘレーネ',
+    wife2:'エレオノール',
+    wife3:'ベアトリーチェ',
+    wife4:'アナスタシア',
+    wife5:'サフィーラ',
+    wife6:'ブリギッド',
+    support_butler:'老執事',
+    support_leopold:'レオポルト',
+    support_emil:'エーミール',
+    support_clarissa:'クラリッサ',
+    support_rosen:'ローゼン伯',
+    support_gerhard:'ゲルハルト',
+    support_loire:'イザベラ',
+    support_rick:'ロレンツォ',
+    support_ruthenia:'グリゴリー',
+    support_solia:'クラウディア',
+    support_azraq:'イブラヒム',
+    support_seafeara:'マルコ銀行家',
+    support_treuval:'ダグダン'
+  };
+  function actorShortNameEE(aOrId){
+    const id=typeof aOrId==='string'?aOrId:String(aOrId&&aOrId.id||'');
+    const fallback=typeof aOrId==='object'&&aOrId ? String(aOrId.name||id) : id;
+    return SHORT_ACTOR_NAMES[id]||fallback;
+  }
+  window.actorShortName=actorShortNameEE;
+
+  if(typeof assignActorCardHtml==='function'){
+    const oldAssignActorCardHtmlEE=assignActorCardHtml;
+    assignActorCardHtml=function(a,current,used,currentCase){
+      const html=oldAssignActorCardHtmlEE.apply(this,arguments);
+      if(!a)return html;
+      const full=String(a.name||'');
+      const short=actorShortNameEE(a);
+      if(!full||full===short)return html;
+      return String(html).replace(`<div class="actorName">${full}`,`<div class="actorName" title="${full}">${short}`);
+    };
+  }
+  if(typeof assignedActorHtml==='function'){
+    const oldAssignedActorHtmlEE=assignedActorHtml;
+    assignedActorHtml=function(a){
+      const html=oldAssignedActorHtmlEE.apply(this,arguments);
+      if(!a)return html;
+      const full=String(a.name||'');
+      const short=actorShortNameEE(a);
+      if(!full||full===short)return html;
+      return String(html).replace(`<span class="assignedName">${full}<br>`,`<span class="assignedName" title="${full}">${short}<br>`);
+    };
+  }
+
+  function isProtectedCaseEE(c){
+    const id=idOf(c);
+    const tags=tagsOf(c);
+    if(!id)return true;
+    if(State&&State.phase20EEPriorityIds&&State.phase20EEPriorityIds[id])return true;
+    if(id==='tutorial_butler')return true;
+    if(id.startsWith('phase16_war_')||id.startsWith('phase16_greatwar_')||id.startsWith('phase16_peace_'))return true;
+    if(id.startsWith('crisis_')||id.startsWith('crisis_recovery_'))return true;
+    if(id.startsWith('finalcase_')||id.startsWith('finalprep_'))return true;
+    if(id.includes('brother')||id.includes('marriage')||id.includes('wife')||id.includes('child')||id.includes('prince')||id.includes('princess')||id.includes('birth'))return true;
+    if(c&&c.marriageCandidate)return true;
+    if(c&&c.childGate)return true;
+    if(tags.some(t=>['brother','marriage','dynasty','family','children','child','birth','final','war','greatWar','peace'].includes(t)))return true;
+    if(typeof warSlotKindForCase==='function'&&warSlotKindForCase(c))return true;
+    return false;
+  }
+
+  function caseGroupEE(c){
+    const id=idOf(c), tags=tagsOf(c);
+    if(tags.includes('border')||tags.includes('military')||tags.includes('security')||id.includes('border'))return 'military';
+    if(tags.includes('trade')||tags.includes('finance')||tags.includes('city')||tags.includes('economy'))return 'economy';
+    if(tags.includes('religion')||tags.includes('church')||tags.includes('welfare')||tags.includes('people'))return 'people';
+    if(tags.includes('court')||tags.includes('noble')||tags.includes('law')||tags.includes('university'))return 'court';
+    if(tags.includes('diplomacy')||tags.includes('country'))return 'foreign';
+    return 'general';
+  }
+
+  function uniqueCasesEE(list){
+    const seen=new Set(), out=[];
+    for(const c of list||[]){
+      const id=idOf(c);
+      if(!id||seen.has(id))continue;
+      seen.add(id);
+      out.push(c);
+    }
+    return out;
+  }
+
+  function recentMapEE(){
+    State.phase20EERecentShown=Array.isArray(State.phase20EERecentShown)?State.phase20EERecentShown:[];
+    const now=turn();
+    State.phase20EERecentShown=State.phase20EERecentShown.filter(x=>x&&now-n(x.turn)<=3);
+    const m={};
+    for(const x of State.phase20EERecentShown){
+      if(x&&x.id)m[x.id]=Math.max(m[x.id]||0,n(x.turn));
+    }
+    return m;
+  }
+
+  function candidatePoolEE(){
+    const all=(DATA&&DATA.cases)||[];
+    return all.filter(c=>{
+      if(!c)return false;
+      if(typeof isPhase16ReservedCase==='function'&&isPhase16ReservedCase(c))return false;
+      if(typeof caseAvailable==='function'&&!caseAvailable(c,rank()))return false;
+      if(typeof caseBlockedByProgress==='function'&&caseBlockedByProgress(c))return false;
+      if(typeof relationConflictGateOpen==='function'&&!relationConflictGateOpen(c))return false;
+      return true;
+    });
+  }
+
+  function replaceRecentOrdinaryEE(list){
+    const now=turn();
+    const recent=recentMapEE();
+    let out=uniqueCasesEE(list);
+    const used=new Set(out.map(idOf));
+    const pool=candidatePoolEE().filter(c=>!used.has(idOf(c))&&!isProtectedCaseEE(c));
+    for(let i=0;i<out.length;i++){
+      const c=out[i];
+      const id=idOf(c);
+      if(isProtectedCaseEE(c))continue;
+      const last=recent[id]||0;
+      if(!last||now-last>2)continue;
+      const g=caseGroupEE(c);
+      let repl=pool.find(x=>caseGroupEE(x)===g && !recent[idOf(x)]);
+      if(!repl)repl=pool.find(x=>!recent[idOf(x)]);
+      if(!repl)continue;
+      out[i]=repl;
+      used.delete(id);
+      used.add(idOf(repl));
+      const idx=pool.indexOf(repl);
+      if(idx>=0)pool.splice(idx,1);
+    }
+    return uniqueCasesEE(out);
+  }
+
+  function recordShownEE(list){
+    if(State.phase20EELastRecordedTurn===turn())return;
+    State.phase20EELastRecordedTurn=turn();
+    State.phase20EERecentShown=Array.isArray(State.phase20EERecentShown)?State.phase20EERecentShown:[];
+    const now=turn();
+    const add=(list||[]).filter(c=>!isProtectedCaseEE(c)).map(c=>({id:idOf(c),turn:now}));
+    State.phase20EERecentShown=[...State.phase20EERecentShown.filter(x=>x&&now-n(x.turn)<=3),...add].slice(-60);
+  }
+
+  function borderCandidateFromIdsEE(key,used,preferHigh){
+    const ids=typeof borderPressureCaseIds==='function'?borderPressureCaseIds(key):[];
+    const all=(DATA&&DATA.cases)||[];
+    let pool=ids.map(id=>all.find(c=>c&&c.id===id)).filter(Boolean).filter(c=>!used.has(idOf(c)));
+    pool=pool.filter(c=>{
+      if(typeof caseAvailable==='function'&&!caseAvailable(c,rank()))return false;
+      if(typeof caseBlockedByProgress==='function'&&caseBlockedByProgress(c))return false;
+      if(typeof relationConflictGateOpen==='function'&&!relationConflictGateOpen(c))return false;
+      return true;
+    });
+    pool.sort((a,b)=>{
+      const ma=typeof caseMeta==='function'?caseMeta(a):{};
+      const mb=typeof caseMeta==='function'?caseMeta(b):{};
+      const scale=(n(mb.scale)-n(ma.scale))*(preferHigh?1:-1);
+      if(scale)return scale;
+      const da={desperate:4,hard:3,normal:2,easy:1}[String(b.difficulty||'normal')]||2;
+      const db={desperate:4,hard:3,normal:2,easy:1}[String(a.difficulty||'normal')]||2;
+      return da-db;
+    });
+    return pool[0]||null;
+  }
+
+  function dedicatedWarCandidateEE(key,kind,used){
+    if(typeof pickBorderWarSlotCase==='function'){
+      try{
+        const oldAllow=State._allowPhase16ReservedCase;
+        State._allowPhase16ReservedCase=true;
+        const c=pickBorderWarSlotCase(key,kind,(DATA&&DATA.cases)||[],used,new Proxy({}, {get(){return 0;}}));
+        State._allowPhase16ReservedCase=oldAllow;
+        if(c)return c;
+      }catch(e){try{State._allowPhase16ReservedCase=false;}catch(_){} }
+    }
+    const ids=typeof dedicatedBorderWarCaseIds==='function'?dedicatedBorderWarCaseIds(key,kind):[];
+    for(const id of ids){
+      const c=get(id);
+      if(c&&!used.has(id)&&(!caseBlockedByProgress||!caseBlockedByProgress(c)))return c;
+    }
+    return null;
+  }
+
+  function borderPriorityRowsEE(){
+    return borderKeys().map(k=>{
+      let level=0, raw=0, pressure=0, rankName='';
+      try{level=typeof borderBossLevel==='function'?n(borderBossLevel(k)):0;}catch(e){}
+      try{raw=typeof rawBorderBossLevel==='function'?n(rawBorderBossLevel(k)):0;}catch(e){}
+      try{pressure=typeof ensureBorderPressure==='function'?n(ensureBorderPressure()[k]):0;}catch(e){}
+      try{rankName=typeof effectiveBorderWarRank==='function'?effectiveBorderWarRank(k):'';}catch(e){}
+      return {key:k,level,raw,pressure,rank:rankName,score:level*100+raw*20+pressure};
+    }).filter(r=>r.level>=3).sort((a,b)=>b.score-a.score);
+  }
+
+  function insertPriorityBordersEE(list){
+    let out=uniqueCasesEE(list);
+    const used=new Set(out.map(idOf));
+    State.phase20EEPriorityIds={};
+    State.phase20EEPriorityKeys={};
+    State.caseWarSlotKinds=State.caseWarSlotKinds||{};
+    const rows=borderPriorityRowsEE();
+    if(!rows.length)return out;
+    for(const row of rows){
+      const already=out.some(c=>{
+        const k=typeof borderKeyForCase==='function'?borderKeyForCase(c):'';
+        return k===row.key && (State.caseWarSlotKinds&&State.caseWarSlotKinds[idOf(c)] || (row.level>=4&&idOf(c).startsWith('phase16_')) || hasTag(c,'border'));
+      });
+      if(already)continue;
+      let c=null, kind='no2';
+      if(row.level>=4){
+        kind='ruler';
+        c=dedicatedWarCandidateEE(row.key,row.rank==='greatWar'?'greatWar':'war',used) || borderCandidateFromIdsEE(row.key,used,true);
+      }else{
+        c=borderCandidateFromIdsEE(row.key,used,true);
+      }
+      if(!c)continue;
+      const id=idOf(c);
+      State.phase20EEPriorityIds[id]=true;
+      State.phase20EEPriorityKeys[id]=row.key;
+      if(kind==='ruler'&&id.startsWith('phase16_'))State.caseWarSlotKinds[id]=row.rank==='greatWar'?'greatWar':'war';
+      else State.caseWarSlotKinds[id]=kind;
+      if(!used.has(id)){
+        out.push(c);
+        used.add(id);
+      }
+      break;
+    }
+    return out;
+  }
+
+  function canReplaceForPriorityEE(c){
+    if(!c)return false;
+    if(isProtectedCaseEE(c))return false;
+    const id=idOf(c);
+    if(id.startsWith('phase20EB_'))return false;
+    return true;
+  }
+  function trimWithPriorityEE(list){
+    const cap=8;
+    let out=uniqueCasesEE(list);
+    while(out.length>cap){
+      let idx=out.findIndex(c=>canReplaceForPriorityEE(c));
+      if(idx<0)idx=out.length-1;
+      out.splice(idx,1);
+    }
+    return out;
+  }
+
+  if(typeof warSlotBadge==='function'){
+    const oldWarSlotBadgeEE=warSlotBadge;
+    warSlotBadge=function(c){
+      const id=idOf(c);
+      const kind=State&&State.caseWarSlotKinds&&State.caseWarSlotKinds[id];
+      if(kind==='no2')return `<div class="warSlotBadge greatWar">国家中枢反撃</div>`;
+      if(kind==='ruler')return `<div class="warSlotBadge greatWar">君主親征</div>`;
+      return oldWarSlotBadgeEE.apply(this,arguments);
+    };
+  }
+  if(typeof warSlotDetail==='function'){
+    const oldWarSlotDetailEE=warSlotDetail;
+    warSlotDetail=function(c){
+      const id=idOf(c);
+      const kind=State&&State.caseWarSlotKinds&&State.caseWarSlotKinds[id];
+      if(kind==='no2'||kind==='ruler'){
+        const key=(State.phase20EEPriorityKeys&&State.phase20EEPriorityKeys[id]) || (typeof borderKeyForCase==='function'?borderKeyForCase(c):'');
+        const level=kind==='ruler'?4:3;
+        const name=typeof borderPressureLabel==='function'?borderPressureLabel(key):key;
+        const boss=typeof borderBossTitle==='function'?borderBossTitle(key,level):(kind==='ruler'?'敵国君主':'敵国中枢');
+        return `<div class="borderBossStageNote ${kind==='ruler'?'ruler':''}">${name}方面：${boss}が前面に出ています。通常抽選に押し出されない優先案件です。</div>`;
+      }
+      return oldWarSlotDetailEE.apply(this,arguments);
+    };
+  }
+
+  if(typeof visibleCases==='function'){
+    const oldVisibleCasesEE=visibleCases;
+    visibleCases=function(){
+      if(State.phase20EECaseCache&&State.phase20EECaseCache.turn===turn()){
+        State.caseWarSlotKinds={...(State.phase20EECaseCache.warSlotKinds||{})};
+        State.phase20EEPriorityIds={...(State.phase20EECaseCache.priorityIds||{})};
+        State.phase20EEPriorityKeys={...(State.phase20EECaseCache.priorityKeys||{})};
+        return State.phase20EECaseCache.cases.map(get).filter(Boolean);
+      }
+      let out=oldVisibleCasesEE.apply(this,arguments)||[];
+      out=uniqueCasesEE(out);
+      out=insertPriorityBordersEE(out);
+      out=replaceRecentOrdinaryEE(out);
+      out=trimWithPriorityEE(out);
+      recordShownEE(out);
+      State.phase20EECaseCache={
+        turn:turn(),
+        cases:out.map(idOf),
+        warSlotKinds:{...(State.caseWarSlotKinds||{})},
+        priorityIds:{...(State.phase20EEPriorityIds||{})},
+        priorityKeys:{...(State.phase20EEPriorityKeys||{})}
+      };
+      if(State.caseCache&&State.caseCache.turn===turn()){
+        State.caseCache.cases=out.map(idOf);
+        State.caseCache.warSlotKinds={...(State.caseWarSlotKinds||{})};
+      }
+      return out;
+    };
+  }
+
+  function clearEECache(){
+    if(State)State.phase20EECaseCache=null;
+  }
+  if(typeof Flow!=='undefined'&&Flow){
+    ['toggleCase','toAssign','nextPeriod','advancePeriodCore','chooseEvent'].forEach(name=>{
+      if(typeof Flow[name]!=='function')return;
+      const old=Flow[name];
+      Flow[name]=function(){
+        const r=old.apply(this,arguments);
+        if(name==='nextPeriod'||name==='advancePeriodCore'||name==='chooseEvent')clearEECache();
+        return r;
+      };
+    });
+  }
+
+  window.auditPhase20EECaseBalance=function(){
+    let rows=[];
+    try{rows=borderPriorityRowsEE();}catch(e){}
+    return {
+      applied:true,
+      turn:turn(),
+      shortNames:SHORT_ACTOR_NAMES,
+      priorityRows:rows,
+      visible:(typeof visibleCases==='function'?visibleCases():[]).map(c=>({id:idOf(c),title:c&&c.title,warKind:State.caseWarSlotKinds&&State.caseWarSlotKinds[idOf(c)],priority:!!(State.phase20EEPriorityIds&&State.phase20EEPriorityIds[idOf(c)]),group:caseGroupEE(c)})),
+      recent:State.phase20EERecentShown||[]
+    };
+  };
+})();
+
+
+/* =========================================================
+   phase20EF: 愛馬イベント再出現・切り札全面改修
+   目的:
+   1) 愛馬の乗りこなしが turn===6 の一度きりで消えないようにする。
+   2) 切り札の表示名・説明を直感的に刷新する。
+   3) 切り札に速度上昇、敵鈍化、敵圧力低下、強弱差、超強カードを追加する。
+   既存ID・所持処理・報酬処理は維持する。
+   ========================================================= */
+(function(){
+  const PHASE='phase20EF';
+
+  function cardTagsEF(l){try{return (caseMeta(l?.case).tags||[]).map(String);}catch(e){return [];}}
+  function hasTagEF(l,arr){
+    const t=cardTagsEF(l);
+    return arr.some(x=>t.includes(x));
+  }
+  function warEF(l){
+    try{return typeof isPhase16WarSlotCase==='function'&&isPhase16WarSlotCase(l?.case);}catch(e){return false;}
+  }
+  function peaceEF(l){
+    try{return typeof phase16WarSlotKind==='function'&&phase16WarSlotKind(l?.case)==='peace';}catch(e){return false;}
+  }
+  function borderPressedEF(l){
+    try{
+      if(typeof borderKeyForCase!=='function')return false;
+      const k=borderKeyForCase(l?.case);
+      return Array.isArray(ALTRANT_BORDER_KEYS)&&ALTRANT_BORDER_KEYS.includes(k)&&Number(State.map?.[k]||0)<0;
+    }catch(e){return false;}
+  }
+  function jpos(j){return j==='Perfect!'||j==='Good';}
+  function jbad(j){return j==='Bad';}
+  function jnorm(j){return j==='Normal';}
+
+  const CARD_TEXT={
+    step:{name:'先駆けの一歩',short:'先駆',desc:'弱：自軍速度を少し上げる。最初のNormalを小さな勝機に変える。'},
+    assault:{name:'突撃命令',short:'突撃',desc:'強：速度と押し込みを上げる。Good以上で大きく前進、Badなら反動。'},
+    guard:{name:'防壁陣形',short:'防壁',desc:'中：敵の圧力を下げ、Bad時の後退を大きく軽減する。'},
+    royal:{name:'王の総進撃',short:'総進撃',desc:'超強：王の戦線で速度・押し込み・崩れ耐性をまとめて上げる。'},
+    wifeAdvice:{name:'王妃の一言',short:'王妃',desc:'中：敵の勢いを鈍らせる。最初のBadを立て直しやすくする。'},
+    butler:{name:'老執事の支度',short:'支度',desc:'中：敵を鈍らせ、Normal以下でも崩れにくくする。'},
+    silverVault:{name:'銀貨の雨',short:'銀貨',desc:'強：金で一気に押す。効果は大きいが、使用後に国庫を削る。'},
+    legalEdict:{name:'王令公布',short:'王令',desc:'中：敵の圧力を下げる。法・政争・宗教で特に安定する。'},
+    springOath:{name:'救恤の誓い',short:'救恤',desc:'中：民心系で強い守勢札。Bad時ほど大きく踏みとどまる。'},
+    roseInvite:{name:'宮廷の招待状',short:'招待',desc:'中：敵の勢いを削ぐ。宮廷・婚姻・外交でGood以上の押し込みが伸びる。'},
+    ironwoodMobilization:{name:'鉄森の進軍',short:'鉄森',desc:'強：軍事・国境で速度と押し込みを上げる。兵と国庫を消耗する。'},
+    healingDecree:{name:'施療隊派遣',short:'施療',desc:'弱：敵圧力を下げる。福祉・疫病では敗勢の立て直しに強い。'},
+    tradePatent:{name:'商人組合の協力',short:'商人',desc:'中：自軍速度を上げる。交易・財政で勝っている時の押し込みが伸びる。'},
+    envoySeal:{name:'密使の封蝋',short:'密使',desc:'強：敵速度を大きく下げる。外交・大国交渉ではBadも交渉材料にする。'},
+    holyBanner:{name:'聖別の旗',short:'聖旗',desc:'中：敵圧力を下げる。宗教・巡礼・教会で敗勢を支える。'},
+    frontierCall:{name:'辺境召集',short:'召集',desc:'強：軍事・国境で速度と押し込みを上げる。使用後に兵を消耗する。'},
+    marketCharter:{name:'市場開放',short:'市場',desc:'弱：自軍速度を少し上げる。都市・交易なら使用後に国庫も得る。'},
+    royalVow:{name:'王家の誓約',short:'誓約',desc:'中：家族・婚姻・王朝で強い守勢札。Badを大きく軽減する。'},
+    forestTalisman:{name:'森の護り札',short:'護札',desc:'中：敵圧力を大きく下げる。怪異・動物・森の案件で特に強い。'},
+    masterBuilder:{name:'石工団投入',short:'石工',desc:'中：敵の粘りを下げる。建設・街道・改革で堅実に押す。'},
+    lastReserve:{name:'最後の予備隊',short:'予備隊',desc:'超強：劣勢時ほど大きく押し返す。勝っている時は控えめ。'},
+    pilgrimPass:{name:'巡礼路の保護',short:'巡礼',desc:'弱：敵速度を下げる。宗教・巡礼・講和で後退を軽くする。'},
+    caravanRight:{name:'隊商の先導',short:'隊商',desc:'中：自軍速度を上げる。交易・港湾で成功すると国庫が増える。'},
+    soliaDiscount:{name:'傭兵隊の先触れ',short:'傭兵',desc:'中：軍事・護衛で速度を上げる。押し込みも安定する。'},
+    cultureMission:{name:'祝宴の使節',short:'祝宴',desc:'弱：敵の勢いを下げる。外交・宮廷で場を整える。'},
+    creditLine:{name:'銀行家の融資',short:'融資',desc:'強：敵の粘りを崩して大きく押す。使用後に小さな緊張を残す。'},
+    ceasefireFlag:{name:'白旗の余地',short:'白旗',desc:'強：敵速度と圧力を下げる。戦争・講和でBadを救う。'},
+    lostLandEdict:{name:'失地奪還令',short:'奪還',desc:'超強：押し込まれた国境ほど強い。領土危機を一気に押し返す。'},
+    frontierPledge:{name:'辺境伯の誓紙',short:'誓紙',desc:'強：国境・軍事で速度と押し込みを上げる。兵を消耗する。'},
+    grandPeaceDoc:{name:'大講和草案',short:'大講和',desc:'超強：戦争・大戦争・講和で敵速度、圧力、粘りをまとめて下げる。'},
+    princeRide:{name:'王弟の騎行',short:'王弟',desc:'超強：弟の軍事・国境戦線で速度と押し込みを大きく上げる。'}
+  };
+
+  if(typeof DATA!=='undefined'&&DATA.cards){
+    for(const [id,txt] of Object.entries(CARD_TEXT)){
+      if(DATA.cards[id])Object.assign(DATA.cards[id],txt,{phase20EFRank:(txt.desc.match(/^(超強|強|中|弱)/)||[])[1]||''});
+    }
+  }
+
+  function horseWindowOpenEF(){
+    const done=(State.completedCases||[]).includes('horse')||!!State.caseFlags?.horseMastered;
+    return !done && State.turn>=5 && State.turn<=10;
+  }
+
+  if(typeof caseAvailable==='function'){
+    const oldCaseAvailableEF=caseAvailable;
+    caseAvailable=function(c,rank){
+      if(c&&c.id==='horse'){
+        if(!horseWindowOpenEF())return false;
+        const oldTurn=State.turn;
+        try{
+          State.turn=6;
+          return oldCaseAvailableEF.call(this,c,rank);
+        }finally{
+          State.turn=oldTurn;
+        }
+      }
+      return oldCaseAvailableEF.apply(this,arguments);
+    };
+  }
+
+  if(typeof visibleCases==='function'){
+    const oldVisibleCasesEF=visibleCases;
+    visibleCases=function(){
+      let list=oldVisibleCasesEF.apply(this,arguments)||[];
+      if(horseWindowOpenEF()){
+        const horse=(DATA.cases||[]).find(c=>c.id==='horse');
+        if(horse&&!list.some(c=>c&&c.id==='horse')){
+          const protectedIds=new Set(['tutorial_butler']);
+          const removeIndex=[...list].reverse().findIndex(c=>c&&!protectedIds.has(c.id)&&!String(c.id||'').includes('brother')&&!String(c.id||'').includes('marriage')&&!String(c.id||'').includes('wife'));
+          if(list.length>=7&&removeIndex>=0)list.splice(list.length-1-removeIndex,1);
+          list=[horse,...list];
+        }
+      }
+      return list;
+    };
+  }
+
+  const PRE={
+    step:{ps:1.08},assault:{ps:1.06},guard:{press:.86},royal:{ps:1.18,press:.88,actor:'albrecht'},wifeAdvice:{es:.88,press:.92},butler:{es:.90,press:.93},
+    silverVault:{stab:.90},legalEdict:{press:.88},springOath:{press:.88},roseInvite:{es:.90},ironwoodMobilization:{ps:1.15,stab:.88},healingDecree:{press:.90},
+    tradePatent:{ps:1.12},envoySeal:{es:.82},holyBanner:{press:.82},frontierCall:{ps:1.14},marketCharter:{ps:1.08},royalVow:{press:.84},forestTalisman:{press:.78},
+    masterBuilder:{stab:.82},pilgrimPass:{es:.88},caravanRight:{ps:1.11},soliaDiscount:{ps:1.13},cultureMission:{es:.90},creditLine:{stab:.80},
+    ceasefireFlag:{es:.80,press:.84},lostLandEdict:{ps:1.10,stab:.76},frontierPledge:{ps:1.16},grandPeaceDoc:{es:.72,press:.78,stab:.75},princeRide:{ps:1.22,actor:'brother'}
+  };
+
+  function applyPreCardModsEF(l){
+    if(!l||!Array.isArray(l.queuedCards))return l;
+    let ps=1, es=1, press=1, stab=1;
+    for(const id of l.queuedCards){
+      const m=PRE[id];
+      if(!m)continue;
+      if(m.actor&&l.actor?.id!==m.actor)continue;
+      ps*=m.ps||1; es*=m.es||1; press*=m.press||1; stab*=m.stab||1;
+    }
+    ps=clamp(ps,.75,1.45); es=clamp(es,.58,1.20); press=clamp(press,.60,1.10); stab=clamp(stab,.60,1.10);
+    l.speed=Math.round(l.speed*ps);
+    l.enemySpeed=Math.round(l.enemySpeed*es);
+    l.enemyProfile=Object.assign({},l.enemyProfile||{}, {
+      pressure:clamp((l.enemyProfile?.pressure||1)*press,.55,1.6),
+      stability:clamp((l.enemyProfile?.stability||1)*stab,.55,1.6)
+    });
+    l.phase20EFPreMods={playerSpeed:ps,enemySpeed:es,enemyPressure:press,enemyStability:stab};
+    return l;
+  }
+
+  if(typeof Battle!=='undefined'&&Battle&&typeof Battle.makeLane==='function'){
+    const oldMakeLaneEF=Battle.makeLane;
+    Battle.makeLane=function(){
+      const l=oldMakeLaneEF.apply(this,arguments);
+      return applyPreCardModsEF(l);
+    };
+  }
+
+  function deltaEF(l,card,j){
+    const good=jpos(j), bad=jbad(j), normal=jnorm(j);
+    switch(card){
+      case 'step':return normal?20:(good?8:6);
+      case 'assault':return bad?-12:(good?34:20);
+      case 'guard':return bad?34:(normal?14:8);
+      case 'royal':return l.actor?.id==='albrecht'?(bad?18:(good?46:28)):(bad?8:14);
+      case 'wifeAdvice':return bad?30:(normal?14:8);
+      case 'butler':return bad?28:(normal?20:10);
+      case 'silverVault':return hasTagEF(l,['finance','trade','diplomacy','welfare','marriage','politics','noble','seafeara'])?(bad?22:38):(bad?10:20);
+      case 'legalEdict':return hasTagEF(l,['law','politics','religion','university','printing','noble','rick'])?(bad?30:18):(bad?18:8);
+      case 'springOath':return hasTagEF(l,['welfare','people','church','plague','refugee','pilgrimage','religion'])?(bad?34:16):(bad?16:6);
+      case 'roseInvite':return hasTagEF(l,['court','marriage','diplomacy','loire','scandal','noble','seafeara'])?(good?28:(bad?18:16)):(bad?8:10);
+      case 'ironwoodMobilization':return hasTagEF(l,['military','border','fort','ruthenia','treuval','mercenary'])||warEF(l)?(bad?20:36):(bad?8:14);
+      case 'healingDecree':return hasTagEF(l,['welfare','plague','people','village'])?(bad?30:12):(bad?12:6);
+      case 'tradePatent':return hasTagEF(l,['trade','port','finance','city','seafeara'])?(good?30:16):(good?16:8);
+      case 'envoySeal':return hasTagEF(l,['diplomacy','politics','noble','greatPower','loire','ruthenia','solia','azraq'])?(bad?36:16):(bad?18:8);
+      case 'holyBanner':return hasTagEF(l,['religion','church','pilgrimage','faith','rick'])?(bad?32:16):(bad?14:7);
+      case 'frontierCall':return hasTagEF(l,['military','border','security','fort','treuval','ruthenia'])||warEF(l)?(bad?18:34):(bad?8:12);
+      case 'marketCharter':return hasTagEF(l,['city','trade','port','finance','seafeara'])?(good?22:12):8;
+      case 'royalVow':return hasTagEF(l,['dynasty','family','marriage','brother','child'])?(bad?36:(normal?22:12)):(bad?12:6);
+      case 'forestTalisman':return hasTagEF(l,['occult','witch','ghost','animal','dragon','forest'])?(bad?38:18):(bad?16:6);
+      case 'masterBuilder':return hasTagEF(l,['infrastructure','building','reform','road','fort','construction'])?(good?30:20):10;
+      case 'lastReserve':{
+        const deficit=Math.max(0,-Number(l.line||0));
+        return deficit>=40?54:deficit>=20?42:deficit>0?32:12;
+      }
+      case 'pilgrimPass':return hasTagEF(l,['religion','pilgrimage','peace','rick'])||peaceEF(l)?(bad?24:14):(bad?10:6);
+      case 'caravanRight':return hasTagEF(l,['trade','port','foreignTheater','seafeara','azraq'])?(good?30:16):8;
+      case 'soliaDiscount':return hasTagEF(l,['military','border','security','foreignTheater','mercenary','solia'])?(good?30:16):8;
+      case 'cultureMission':return hasTagEF(l,['court','loire','diplomacy','foreignTheater','culture'])?(bad?14:22):8;
+      case 'creditLine':return hasTagEF(l,['finance','trade','port','seafeara'])?(bad?18:36):(bad?8:16);
+      case 'ceasefireFlag':return warEF(l)||peaceEF(l)||hasTagEF(l,['diplomacy','peace','war','border'])?(bad?40:(normal?26:16)):8;
+      case 'lostLandEdict':return borderPressedEF(l)?(bad?32:56):(hasTagEF(l,['border','military','fort','ruthenia','treuval'])||warEF(l)?(bad?20:40):10);
+      case 'frontierPledge':return hasTagEF(l,['military','border','fort','ruthenia','treuval','mercenary'])||warEF(l)?(bad?24:40):8;
+      case 'grandPeaceDoc':return peaceEF(l)||warEF(l)||hasTagEF(l,['diplomacy','peace','greatPower','war'])?(bad?46:44):12;
+      case 'princeRide':return l.actor?.id==='brother'&&(hasTagEF(l,['military','border','security','fort','treuval','ruthenia'])||warEF(l))?(bad?30:52):12;
+      default:return 0;
+    }
+  }
+
+  if(typeof Battle!=='undefined'&&Battle&&typeof Battle.cardEffect==='function'){
+    const oldCardEffectEF=Battle.cardEffect;
+    Battle.cardEffect=function(l,card,judge){
+      const result=oldCardEffectEF.apply(this,arguments);
+      if(card&&DATA.cards?.[card]){
+        const d=deltaEF(l,card,judge);
+        if(Number.isFinite(d))l.cardDelta=d;
+        const rank=DATA.cards[card].phase20EFRank||'';
+        l.cardEffectLabel=`${rank?rank+'：':''}${DATA.cards[card].name} 発動`;
+        l.cardEffectT=1.8;
+        if(card==='wifeAdvice'&&l&&!l.active.includes('wifeAdvice'))l.active.push('wifeAdvice');
+      }
+      return result;
+    };
+  }
+
+  if(typeof handleUsedCards==='function'){
+    const oldHandleUsedCardsEF=handleUsedCards;
+    handleUsedCards=function(cards){
+      const list=[...new Set((cards||[]).filter(Boolean))];
+      const r=oldHandleUsedCardsEF.call(this,list);
+      for(const id of list){
+        if(id==='royal'){State.params.troops=clamp((State.params.troops||0)-90,0,ECONOMY.troopsMax);State.params.prestige=clamp((State.params.prestige||50)+1,0,100);}
+        if(id==='assault'){State.params.troops=clamp((State.params.troops||0)-50,0,ECONOMY.troopsMax);}
+        if(id==='lastReserve'){State.params.troops=clamp((State.params.troops||0)-120,0,ECONOMY.troopsMax);}
+        if(id==='lostLandEdict'){State.params.tension=State.params.tension||0;State.params.prestige=clamp((State.params.prestige||50)+1,0,100);}
+        if(id==='grandPeaceDoc'){State.params.prestige=clamp((State.params.prestige||50)-1,0,100);State.params.diplomacy=clamp((State.params.diplomacy||50)+2,0,100);}
+        if(id==='creditLine'){State.params.nobleSupport=clamp((State.params.nobleSupport||50)-1,0,100);}
+      }
+      return r;
+    };
+  }
+
+  window.auditPhase20EFFixes=function(){
+    return {
+      applied:true,
+      phase:PHASE,
+      horseWindowOpen:horseWindowOpenEF(),
+      horseTurnRange:'turn 5-10 / 未達成のみ',
+      cardTextCount:Object.keys(CARD_TEXT).filter(id=>DATA.cards&&DATA.cards[id]&&DATA.cards[id].name===CARD_TEXT[id].name).length,
+      superCards:Object.entries(CARD_TEXT).filter(([,v])=>v.desc.startsWith('超強')).map(([id,v])=>id+':'+v.name)
+    };
+  };
+})();
+
+
+/* =========================================================
+   phase20EG: 王家初期ステータス弱体化パッチ
+   目的: アルブレヒト・王弟・王妃候補を未熟な状態から始め、
+   成長イベントと熟練度の価値を上げる。
+   方針: DATA.actors の基礎値だけを末尾で上書きする。
+   既存の成長ポイント、疲労、得意分野、イベント処理は変更しない。
+   ========================================================= */
+(function(){
+  const PHASE='phase20EG';
+  if(typeof DATA==='undefined'||!DATA.actors)return;
+
+  const ROYAL_BASE_STATS={
+    albrecht:{speed:2,push:2,stability:2,defense:2,type:'若き万能成長型'},
+    brother:{speed:3,push:2,stability:1,defense:1,type:'未熟な突撃博打型'},
+    wife:{speed:1,push:1,stability:3,defense:3,type:'王妃支援型'},
+    wife1:{speed:2,push:1,stability:3,defense:3,type:'内政安定型'},
+    wife2:{speed:2,push:1,stability:3,defense:2,type:'西方外交型'},
+    wife3:{speed:1,push:1,stability:3,defense:3,type:'信仰支援型'},
+    wife4:{speed:2,push:3,stability:2,defense:2,type:'大国外交型'},
+    wife5:{speed:3,push:3,stability:2,defense:2,type:'交易短期決戦型'},
+    wife6:{speed:3,push:3,stability:1,defense:2,type:'辺境突撃型'}
+  };
+
+  for(const [id,stats] of Object.entries(ROYAL_BASE_STATS)){
+    if(!DATA.actors[id])continue;
+    Object.assign(DATA.actors[id],stats);
+  }
+
+  // 表示上、序盤の未熟さが分かるように役割名だけ軽く補正する。
+  // 本文・イベント名・成長処理には影響しない。
+  if(typeof actorEffectiveStats==='function'){
+    const oldActorEffectiveStatsEG=actorEffectiveStats;
+    actorEffectiveStats=function(actor){
+      const out=oldActorEffectiveStatsEG.apply(this,arguments);
+      if(out&&ROYAL_BASE_STATS[out.id]&&!out.support){
+        out.phase20EGBase=ROYAL_BASE_STATS[out.id];
+      }
+      return out;
+    };
+  }
+
+  window.auditPhase20EGStats=function(){
+    const ids=Object.keys(ROYAL_BASE_STATS);
+    return {
+      applied:true,
+      phase:PHASE,
+      stats:ids.reduce((acc,id)=>{
+        const a=DATA.actors[id];
+        acc[id]=a?{name:a.name,type:a.type,speed:a.speed,push:a.push,stability:a.stability,defense:a.defense,total:a.speed+a.push+a.stability+a.defense}:null;
+        return acc;
+      },{})
+    };
+  };
+})();
+</script>
