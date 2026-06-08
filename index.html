@@ -32223,4 +32223,268 @@ phase20DL: early strong-case mix without touching brother/marriage routes
     };
   };
 })();
+/* =========================================================
+   phase20EH: プレイ履歴型・称号再設計パッチ
+   目的: 旧称号の「最終ステータス診断」偏重を避け、案件・采配・戦争・家族・危機の履歴から二つ名を選ぶ。
+   方針: 既存の endingScore / エンディング分岐 / 戦闘判定は変更しない。
+   determineHistoricalEpithet と理由表示だけを末尾で差し替える。
+   ========================================================= */
+(function(){
+  const PHASE='phase20EH';
+
+  function ensureReignLogEH(){
+    if(!State.reignLog||typeof State.reignLog!=='object')State.reignLog={};
+    const log=State.reignLog;
+    log.tags=log.tags||{};
+    log.results=log.results||{};
+    log.choices=log.choices||{};
+    log.actors=log.actors||{};
+    log.cards=log.cards||{};
+    log.events=log.events||{};
+    log.territory=log.territory||{gain:0,loss:0,borderChanges:0};
+    log.war=log.war||{battles:0,greatWars:0,peace:0,no2:0,ruler:0};
+    log.dynasty=log.dynasty||{wifeUses:0,brotherUses:0,childCases:0,marriageCases:0};
+    log.crisis=log.crisis||{solved:0,ignored:0,triggered:0};
+    log.cases=log.cases||{};
+    log.caseResults=log.caseResults||{};
+    log.history=log.history||[];
+    return log;
+  }
+  function incEH(obj,key,n=1){if(!key)return;obj[key]=(Number(obj[key]||0)+n);}
+  function tagsOfCaseEH(c){try{return Array.from(new Set((caseMeta(c)||{}).tags||[]));}catch(e){return Array.from(new Set(c?.tags||[]));}}
+  function rankGroupEH(rank){
+    if(['completeWin','majorWin','minorWin'].includes(rank))return 'win';
+    if(rank==='draw')return 'draw';
+    if(['minorLoss','majorLoss'].includes(rank))return 'loss';
+    if(rank==='completeLoss')return 'disaster';
+    return 'other';
+  }
+  function noteCaseToLogEH(caseObj,rank='unknown',actorId=null,cards=[]){
+    if(!caseObj)return;
+    const log=ensureReignLogEH();
+    const id=caseObj.id||'';
+    const tags=tagsOfCaseEH(caseObj);
+    if(id){incEH(log.cases,id,1);log.caseResults[id]=rank;}
+    for(const t of tags)incEH(log.tags,t,1);
+    incEH(log.results,rank,1);
+    const g=rankGroupEH(rank);incEH(log.results,g,1);
+    if(actorId){incEH(log.actors,actorId,1);if(actorId==='brother')incEH(log.dynasty,'brotherUses',1);if(String(actorId).startsWith('wife')||actorId==='wife')incEH(log.dynasty,'wifeUses',1);}
+    for(const card of (cards||[]).filter(Boolean))incEH(log.cards,card,1);
+    if(tags.some(t=>['war','military','border','security','fort'].includes(t))||id.includes('border')||id.includes('war'))incEH(log.war,'battles',1);
+    if(tags.includes('peace')||id.includes('peace')||id.includes('truce'))incEH(log.war,'peace',1);
+    if(tags.includes('greatPower')||id.includes('greatWar'))incEH(log.war,'greatWars',1);
+    if(tags.some(t=>['marriage','dynasty','family'].includes(t))){if(tags.includes('marriage')||id.includes('marriage'))incEH(log.dynasty,'marriageCases',1);}
+    if(tags.some(t=>['child','children','succession'].includes(t))||id.includes('child'))incEH(log.dynasty,'childCases',1);
+    if(tags.includes('crisis')||id.includes('crisis')){ if(['completeWin','majorWin','minorWin'].includes(rank))incEH(log.crisis,'solved',1); else if(['minorLoss','majorLoss','completeLoss'].includes(rank))incEH(log.crisis,'triggered',1); }
+    log.history.push({turn:State.turn,caseId:id,title:caseObj.title||id,rank,actorId,tags,cards:[...(cards||[])]});
+    if(log.history.length>260)log.history=log.history.slice(-260);
+  }
+
+  if(typeof Flow!=='undefined'&&Flow&&typeof Flow.finishBattle==='function'){
+    const oldFinishBattleEH=Flow.finishBattle;
+    Flow.finishBattle=function(){
+      try{
+        const preMap={...(State.map||{})};
+        const selected=[...(State.selected||[])];
+        const cardAssignments={...(State.cardAssignments||{})};
+        if(typeof battle!=='undefined'&&battle&&Array.isArray(battle.lanes)){
+          for(const l of battle.lanes){
+            const rank=(typeof Battle!=='undefined'&&Battle&&typeof Battle.rank==='function')?Battle.rank(l.line):'unknown';
+            const cid=l.case?.id;
+            const cards=(l.usedCards&&l.usedCards.length)?l.usedCards:(cardAssignments[cid]||[]);
+            noteCaseToLogEH(l.case,rank,l.actor?.id,cards);
+          }
+        }else{
+          for(const cid of selected){noteCaseToLogEH(getCase(cid),'unknown',State.assignments?.[cid],cardAssignments[cid]||[]);}
+        }
+        try{
+          const unselected=visibleCases().filter(c=>!selected.includes(c.id));
+          const neglected=(typeof selectNeglectCases==='function')?selectNeglectCases(unselected):[];
+          for(const c of neglected){noteCaseToLogEH(c,'ignored',null,[]);incEH(ensureReignLogEH().choices,'ignore',1);if(tagsOfCaseEH(c).includes('crisis')||String(c.id).includes('crisis'))incEH(ensureReignLogEH().crisis,'ignored',1);}
+        }catch(e){}
+        const r=oldFinishBattleEH.apply(this,arguments);
+        const log=ensureReignLogEH();
+        const postMap=State.map||{};
+        for(const k of new Set([...Object.keys(preMap),...Object.keys(postMap)])){
+          const d=Number(postMap[k]||0)-Number(preMap[k]||0);
+          if(d>0){log.territory.gain+=d;log.territory.borderChanges+=Math.abs(d);}else if(d<0){log.territory.loss+=Math.abs(d);log.territory.borderChanges+=Math.abs(d);}
+        }
+        return r;
+      }catch(e){
+        console.warn(PHASE+' finishBattle log skipped',e);
+        return oldFinishBattleEH.apply(this,arguments);
+      }
+    };
+  }
+
+  if(typeof handleUsedCards==='function'){
+    const oldHandleUsedCardsEH=handleUsedCards;
+    handleUsedCards=function(cards){
+      const log=ensureReignLogEH();
+      for(const id of (cards||[]).filter(Boolean)){incEH(log.cards,id,1);incEH(log.choices,'card',1);}
+      return oldHandleUsedCardsEH.apply(this,arguments);
+    };
+  }
+
+  function completedTagsEH(){
+    const out={};
+    for(const id of (State.completedCases||[])){
+      const c=typeof getCase==='function'?getCase(id):null;
+      for(const t of tagsOfCaseEH(c||{id,tags:[]}))incEH(out,t,1);
+    }
+    return out;
+  }
+  function mergedCountsEH(a={},b={}){const o={...a};for(const[k,v]of Object.entries(b||{}))o[k]=Math.max(Number(o[k]||0),Number(v||0));return o;}
+  function countAnyEH(counts,keys){return keys.reduce((n,k)=>n+Number(counts[k]||0),0);}
+  function getProfileEH(){
+    const log=ensureReignLogEH();
+    const inferredTags=completedTagsEH();
+    const tags=mergedCountsEH(log.tags,inferredTags);
+    const p=State.params||{};
+    const s=(typeof endingScore==='function')?endingScore():{p};
+    const mapValues=Object.values(State.map||{}).map(v=>Number(v)||0);
+    const mapGain=mapValues.filter(v=>v>0).reduce((a,b)=>a+b,0)+Number(log.territory?.gain||0);
+    const mapLoss=Math.abs(mapValues.filter(v=>v<0).reduce((a,b)=>a+b,0))+Number(log.territory?.loss||0);
+    const wins=Number(log.results?.win||0)+Number(log.results?.completeWin||0)*0.6+Number(log.results?.majorWin||0)*0.4;
+    const losses=Number(log.results?.loss||0)+Number(log.results?.disaster||0)*1.6;
+    const military=countAnyEH(tags,['military','border','security','fort','mercenary','war'])+Number(log.war?.battles||0)*0.8+wins*0.6+mapGain*1.8;
+    const peace=countAnyEH(tags,['diplomacy','peace','truce'])+Number(log.war?.peace||0)*2+(p.diplomacy||0)/18;
+    const mercy=countAnyEH(tags,['welfare','plague','refugee','people','orphan','food','village'])+(p.citySupport||0)/22+(p.stability||0)/28;
+    const wealth=countAnyEH(tags,['finance','trade','port','city','silver','loan'])+(p.treasury||0)/9000+(p.citySupport||0)/24+Number(log.choices?.card||0)*0.25;
+    const institution=countAnyEH(tags,['law','university','infrastructure','building','road','construction','reform','fort'])+(s.infra||0)*1.6;
+    const faith=countAnyEH(tags,['religion','church','pilgrimage','faith','rick'])+(p.churchSupport||0)/20;
+    const dynasty=countAnyEH(tags,['dynasty','family','marriage','succession','brother'])+Number(log.dynasty?.wifeUses||0)*1.2+Number(log.dynasty?.brotherUses||0)*1.2+Number(log.dynasty?.childCases||0)*2;
+    const occult=countAnyEH(tags,['occult','fate','witch','ghost','animal','dragon'])+Number(s.occult||0)*1.5+Number(State.illnessStrain||0)*0.4;
+    const ruin=losses*1.3+mapLoss*2.3+Number(log.crisis?.ignored||0)*2+Math.max(0,35-(p.stability||50))/5+Math.max(0,3000-(p.treasury||0))/1200;
+    const actorMax=Object.entries(log.actors||{}).sort((a,b)=>b[1]-a[1])[0]||null;
+    return {log,tags,p,s,mapGain,mapLoss,wins,losses,axes:{military,peace,mercy,wealth,institution,faith,dynasty,occult,ruin},actorMax};
+  }
+
+  const NEW_EP={
+    conquest:{id:21,name:'征服王',cat:'軍事・国境',title:'三十度目の冬、剣で広げた王国',text:'国境線は、彼の時代に何度も書き換えられた。年代記はその名を、勝利と動員の王として記した。'},
+    shield:{id:30,name:'守境王',cat:'軍事・国境',title:'三十度目の冬、盾となった王',text:'彼は無闇に広げるより、失わせないことに力を注いだ。砦と国境の村は、その治世を盾の名で呼んだ。'},
+    iron:{id:22,name:'鉄血王',cat:'軍事・国境',title:'三十度目の冬、鉄と血の王',text:'勝利は軽くなかった。兵の消耗と引き換えに、彼は王国を前へ押し出した。'},
+    peace:{id:48,name:'講和王',cat:'外交・王朝',title:'三十度目の冬、剣を鞘に収めた王',text:'戦場の勝敗だけでなく、戦を終わらせる技が彼の治世を形づくった。'},
+    mediator:{id:36,name:'調停王',cat:'外交・王朝',title:'三十度目の冬、言葉で支えた王国',text:'彼は剣よりも会議、血よりも誓約を重んじた。大陸は彼を、間に立つ王として記憶した。'},
+    mercy:{id:72,name:'慈悲王',cat:'信仰・秩序',title:'三十度目の冬、民を見捨てなかった王',text:'飢え、病、孤児、難民。王国の弱い場所に、彼の決裁は何度も向けられた。'},
+    relief:{id:70,name:'救恤王',cat:'信仰・秩序',title:'三十度目の冬、施しと秩序の王',text:'国庫や威信を削ってでも、彼は人々の日々をつなぎ止めようとした。'},
+    silver:{id:17,name:'銀貨王',cat:'繁栄',title:'三十度目の冬、銀貨の鳴る王国',text:'交易、税、港、市場。彼の治世は、剣音よりも銀貨の音で記憶された。'},
+    builder:{id:5,name:'築城王',cat:'繁栄',title:'三十度目の冬、石に名を刻んだ王',text:'橋、砦、道、書庫。彼の治世は、後世に触れられる形で残った。'},
+    law:{id:67,name:'法典王',cat:'信仰・秩序',title:'三十度目の冬、法で縛り法で守った王',text:'彼は一時の勝利より、制度として残る秩序を選んだ。'},
+    pilgrim:{id:61,name:'巡礼王',cat:'信仰・秩序',title:'三十度目の冬、祈りに支えられた王',text:'教会、巡礼、信仰の道が、彼の王権に静かな支柱を与えた。'},
+    queen:{id:45,name:'王妃と並ぶ王',cat:'外交・王朝',title:'三十度目の冬、二つの椅子の王国',text:'彼の治世は、一人の王だけのものではなかった。王妃の判断と存在が、宮廷の柱となった。'},
+    father:{id:46,name:'父王',cat:'外交・王朝',title:'三十度目の冬、子に渡す王冠',text:'彼はただ統治しただけではない。次代へ渡すものを作ろうとした。'},
+    brother:{id:52,name:'兄王',cat:'王権',title:'三十度目の冬、弟と王冠の王',text:'弟との関係は、治世の傷にも支えにもなった。兄としての選択が、王としての名に刻まれた。'},
+    fate:{id:73,name:'予言破りの王',cat:'信仰・秩序',title:'三十度目の冬、予言を越えた王',text:'占い師の言葉は彼を縛った。だが治世の積み重ねは、その言葉の意味を変えた。'},
+    star:{id:96,name:'星見王',cat:'傷・危機',title:'三十度目の冬、星と噂の王',text:'白鹿、魔女、幽霊、予言。彼の治世には、政治だけでは説明できない影が寄り添った。'},
+    widower:{id:88,name:'喪妃王',cat:'傷・危機',title:'三十度目の冬、黒布の王宮',text:'王妃の不在は、政策以上に宮廷の記憶を変えた。'},
+    fratricide:{id:92,name:'弟殺しの王',cat:'傷・危機',title:'三十度目の冬、血を分けた刃',text:'王冠は守られた。だがその影には、血を分けた者との決裂が残った。'},
+    ash:{id:81,name:'灰燼王',cat:'傷・危機',title:'三十度目の冬、灰の上の王冠',text:'反乱、敗北、飢え、消耗。彼の名は、守れなかったものとともに残った。'},
+    lost:{id:75,name:'敗戦王',cat:'傷・危機',title:'三十度目の冬、失われた地図',text:'地図は縮み、年代記の余白には敗北の名が書き込まれた。'},
+    last:{id:100,name:'墓守王',cat:'傷・危機',title:'三十度目の冬、残骸を守った王',text:'彼が守ったのは繁栄そのものではなく、繁栄の名残だった。'}
+  };
+
+  function scoreEpithetsEH(kind='fate'){
+    const pr=getProfileEH(),a=pr.axes,p=pr.p,s=pr.s,log=pr.log;
+    const rows=[];
+    function add(key,score,reason){rows.push({key,score:Math.round(score),reason,ep:NEW_EP[key],category:NEW_EP[key]?.cat||'治世'});}
+    if(kind==='battle')add('iron',95,'王が戦場に立った結末そのものが、軍事の記憶を最上位に押し上げたため');
+    if(kind==='illness')add('star',80+Math.min(20,Number(State.illnessStrain||0)*2),'病と予言が治世の終幕を覆ったため');
+    if(kind==='survival')add('fate',110,'三十度目の冬を、死ではなく譲位や転義として越えたため');
+    if(s.brotherDead||actorIsDead?.('brother'))add('fratricide',92+a.ruin*1.8,'王弟との流血が王朝の記憶に最も深い傷を残したため');
+    if((s.spouseDeadCount||0)>=1)add('widower',74+(s.spouseDeadCount||0)*15+a.dynasty,'王妃の死が宮廷と王朝の記憶を覆ったため');
+    if(a.ruin>=18||((p.stability||50)<=28&&pr.mapLoss>=2))add('ash',70+a.ruin*3,'敗北・危機・国内不安が治世の印象を強く支配したため');
+    if(pr.mapLoss>=4)add('lost',72+pr.mapLoss*8,'領土や勢力圏の喪失が、後世の評価を大きく左右したため');
+
+    add('conquest',a.military*7+pr.mapGain*7+pr.wins*3,'軍事・国境・勝利・領土前進の履歴が多いため');
+    add('shield',a.military*4+a.peace*3+Math.max(0,pr.wins-pr.mapGain)*2,'拡張よりも国境維持と防衛の印象が強いため');
+    add('iron',a.military*6+Number(log.results?.disaster||0)*3+Math.max(0,Number(p.troops||0)-3000)/500,'軍事動員と犠牲を伴う勝利の印象が強いため');
+    add('peace',a.peace*8+Number(log.war?.peace||0)*9+Math.max(0,(p.diplomacy||50)-55)*.8,'講和・停戦・外交収束の履歴が多いため');
+    add('mediator',a.peace*6+countAnyEH(pr.tags,['diplomacy','greatPower','court'])*3+(p.diplomacy||0)/3,'大国・宮廷・外交案件を言葉で支えたため');
+    add('mercy',a.mercy*7+countAnyEH(pr.tags,['plague','refugee','orphan'])*5,'福祉・疫病・難民・民衆救済の履歴が強いため');
+    add('relief',a.mercy*5+Number(log.choices?.budget||0)*5+Math.max(0,70-(p.treasury||0)/1000),'国庫や余力を削ってでも救済に向かった印象があるため');
+    add('silver',a.wealth*7+Math.max(0,(p.treasury||0)-16000)/1400,'交易・金融・都市・国庫の印象が強いため');
+    add('builder',a.institution*8+Number(s.infra||0)*8,'建設・制度・砦・道路など形に残る政策が多いため');
+    add('law',a.institution*7+countAnyEH(pr.tags,['law','university','reform'])*5+(p.stability||0)/3,'法・大学・制度改革によって王国を整えたため');
+    add('pilgrim',a.faith*7+Math.max(0,(p.churchSupport||0)-50)*.9,'教会・巡礼・宗教案件の比重が高いため');
+    add('queen',a.dynasty*4+Number(log.dynasty?.wifeUses||0)*8+(State.queenRelation||0)*.7,'王妃采配と婚姻後の王朝運営が強く印象に残ったため');
+    add('father',a.dynasty*5+Number(log.dynasty?.childCases||0)*12+(Array.isArray(State.children)?State.children.length*8:0),'子ども・継承・王朝の未来を重視したため');
+    add('brother',a.dynasty*4+Number(log.dynasty?.brotherUses||0)*9+Math.max(0,State.brotherTrust||0),'王弟との関係と采配が治世の大きな柱になったため');
+    add('star',a.occult*8+Number(State.illnessStrain||0)*2,'予言・怪異・病の影が治世を貫いていたため');
+    add('last',a.ruin*4+Math.max(0,40-(p.stability||50))*2+Math.max(0,3000-(p.treasury||0))/300,'低い安定・財政難・危機の記憶が強いため');
+
+    // 矛盾補正。プレイ感が近い方へ寄せる。
+    for(const r of rows){
+      if(r.key==='conquest'&&a.peace>a.military*.85)r.score-=18;
+      if(r.key==='shield'&&pr.mapGain>=3)r.score-=10;
+      if(r.key==='silver'&&a.mercy>=a.wealth*.8)r.score-=8;
+      if(r.key==='mercy'&&Number(log.crisis?.ignored||0)>=3)r.score-=18;
+      if(r.key==='peace'&&Number(log.war?.battles||0)>Number(log.war?.peace||0)*3+4)r.score-=12;
+      if(r.key==='queen'&&!s.hasSpouse)r.score-=50;
+      if(r.key==='brother'&&s.brotherDead)r.score-=35;
+      if(r.key==='father'&&(!Array.isArray(State.children)||State.children.length===0))r.score-=35;
+    }
+    return rows.filter(r=>r.ep).sort((x,y)=>y.score-x.score);
+  }
+
+  function buildEvidenceEH(pr,top){
+    const bits=[];
+    const t=pr.tags;
+    const tagPairs=[['軍事・国境',countAnyEH(t,['military','border','war','fort','security'])],['外交・講和',countAnyEH(t,['diplomacy','peace','truce','greatPower'])],['福祉・民衆',countAnyEH(t,['welfare','people','plague','refugee','orphan'])],['交易・財政',countAnyEH(t,['finance','trade','port','city','silver'])],['制度・建設',countAnyEH(t,['law','university','infrastructure','building','road','construction'])],['信仰',countAnyEH(t,['religion','church','pilgrimage','faith'])],['王朝・家族',countAnyEH(t,['dynasty','family','marriage','succession','brother'])]];
+    tagPairs.sort((a,b)=>b[1]-a[1]);
+    for(const [label,n] of tagPairs.slice(0,3)){if(n>0)bits.push(`${label}${n}件`);}
+    if(pr.mapGain>0)bits.push(`勢力圏拡大${pr.mapGain}`);
+    if(pr.mapLoss>0)bits.push(`勢力圏喪失${pr.mapLoss}`);
+    if(pr.actorMax&&pr.actorMax[1]>=2){bits.push(`最多采配：${DATA.actors?.[pr.actorMax[0]]?.name||pr.actorMax[0]}${pr.actorMax[1]}回`);}
+    return bits.join('／')||'最終数値だけでなく、治世全体の案件傾向を参照';
+  }
+
+  const oldDetermineHistoricalEpithetEH=typeof determineHistoricalEpithet==='function'?determineHistoricalEpithet:null;
+  determineHistoricalEpithet=function(kind='fate'){
+    try{
+      const list=scoreEpithetsEH(kind);
+      const top=list[0];
+      if(top&&top.score>=30){
+        const pr=getProfileEH();
+        State.lastEpithetCandidates=list.slice(0,5).map(x=>({id:x.ep.id,name:x.ep.name,score:x.score,reason:x.reason,category:x.category,key:x.key}));
+        State.lastEpithetReason=top.reason;
+        State.lastEpithetEvidence=buildEvidenceEH(pr,top);
+        State.lastEpithetSystem='phase20EH';
+        return {...top.ep,phase20EH:true,phase20EHKey:top.key,reason:top.reason};
+      }
+    }catch(e){console.warn(PHASE+' epithet fallback',e);}
+    return oldDetermineHistoricalEpithetEH?oldDetermineHistoricalEpithetEH(kind):epithet(77);
+  };
+
+  const oldEpithetReasonHtmlEH=typeof epithetReasonHtml==='function'?epithetReasonHtml:null;
+  epithetReasonHtml=function(){
+    if(State.lastEpithetSystem==='phase20EH'){
+      const list=State.lastEpithetCandidates||[];
+      const rows=list.map(x=>`<div class="summaryItem"><span class="summaryTag">${escapeHtml(x.category)}</span>${escapeHtml(x.name)}：${x.score}点<br><span class="summaryMuted">${escapeHtml(x.reason)}</span></div>`).join('');
+      return `<div class="summaryBlock"><h3>称号の根拠</h3><div class="summaryItem"><span class="summaryTag">治世ログ</span>${escapeHtml(State.lastEpithetEvidence||'')}</div><div class="summaryList">${rows}</div></div>`;
+    }
+    return oldEpithetReasonHtmlEH?oldEpithetReasonHtmlEH():'';
+  };
+
+  const oldEndingEpithetCommentEH=typeof endingEpithetComment==='function'?endingEpithetComment:null;
+  endingEpithetComment=function(ep){
+    if(ep&&ep.phase20EH){
+      return `この二つ名は、最終数値だけではなく、どの案件を選び、誰を采配し、どの危機をどう越えたかを年代記が読み直した結果である。${ep.reason||''}`;
+    }
+    return oldEndingEpithetCommentEH?oldEndingEpithetCommentEH(ep):'';
+  };
+
+  const oldBuildEndingTitleEH=typeof buildEndingTitle==='function'?buildEndingTitle:null;
+  buildEndingTitle=function(ep,kind='fate'){
+    if(ep&&ep.phase20EH&&NEW_EP[ep.phase20EHKey]?.title)return NEW_EP[ep.phase20EHKey].title;
+    return oldBuildEndingTitleEH?oldBuildEndingTitleEH(ep,kind):'三十度目の冬';
+  };
+
+  window.auditPhase20EHEpithets=function(kind='fate'){
+    const pr=getProfileEH();
+    return {applied:true,phase:PHASE,profile:pr.axes,tags:pr.tags,top:scoreEpithetsEH(kind).slice(0,8).map(x=>({key:x.key,name:x.ep.name,score:x.score,reason:x.reason}))};
+  };
+})();
+
+
 </script>
