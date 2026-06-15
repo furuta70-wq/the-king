@@ -48990,7 +48990,7 @@ const rewrites={
 marriage_wife6_treuval:{
   title:'霧海の戦姫との盟約婚',category:'トレウヴァル・婚姻',enemy:'霧海の戦姫',lineName:'盟約婚',bg:'port',intro:'霧海の長船から、族長の娘ルーアが王宮へ来た。花嫁というより、北岸の襲撃を止める誓約そのものだった。',stories:['ルーアは王妃となり、長船の戦士たちは王旗へ膝をついた。北岸の恐怖は、王家の力へ変わった。','婚姻は成立したが、宮廷貴族は海の氏族の作法に顔をしかめた。','ルーアは剣を抜いて去った。霧海では、再び襲撃の歌が作られ始めた。'],metaTags:['marriage','oath','port']},
 local_treuval_signal_fire:{
-  title:'北岸の焚火跡',category:'トレウヴァル・初遭遇',enemy:'トレウヴァル斥候',lineName:'北岸警戒',bg:'port',intro:'北岸の森で新しい焚火跡が見つかった。霧海を渡るトレウヴァルの長船が、再び沿岸へ近づいているらしい。',stories:['守備隊は浜へ降り、上陸した斥候を追い返した。長船は霧の奥へ逃げた。','斥候は追われたが、いくつかの倉が焼かれた。沿岸の村は夜ごとに海を見た。','斥候は見逃された。数日後、漁村の倉が焼かれ、略奪品は霧の中へ消えた。'],metaTags:['intro','scout','raid']},
+  title:'北岸の入り江の焚火跡',category:'トレウヴァル・初遭遇',enemy:'トレウヴァル斥候',lineName:'北岸警戒',bg:'port',intro:'北岸の入り江に、長船を引き上げた跡が残されていた。襲撃ではない。だが、その上陸は明確な警告だった。',stories:['守備隊は浜へ降り、上陸した斥候を追い返した。長船は霧の奥へ逃げた。','斥候は追われたが、いくつかの倉が焼かれた。沿岸の村は夜ごとに海を見た。','斥候は見逃された。数日後、漁村の倉が焼かれ、略奪品は霧の中へ消えた。'],metaTags:['intro','scout','raid']},
 border_treuval_shepherd_vale:{
   title:'放牧浜の襲撃',category:'土地争い・トレウヴァル',enemy:'上陸襲撃隊',lineName:'放牧浜防衛',bg:'port',intro:'北岸の放牧浜にトレウヴァルの戦士が上陸し、家畜と若者を連れ去った。占領ではない。奪って霧へ帰る戦だ。',stories:['襲撃隊は浜で追い返され、若者の一部も戻った。放牧浜には王国兵の巡回が置かれた。','家々は守られたが、家畜の多くは船へ積まれた。民は海を恐れた。','村人は浜を捨てた。空いた放牧地に、トレウヴァルの足跡だけが残った。'],metaTags:['coast','raid','territory']},
 border_treuval_longhouse_burns:{
@@ -49334,6 +49334,309 @@ console.info('phase68 removed tutorial and battle quote bracket marks');
     visibleCases.phase69FairRotation=true;
   }
   console.info(PHASE+' applied');
+})();
+
+
+
+/* phase71: family/final-ending consistency fixes */
+(function(){
+'use strict';
+if(window.__phase71FamilyFinalResultFixesApplied)return;
+window.__phase71FamilyFinalResultFixesApplied=true;
+const FINAL_ID71='finalcase_last_matter';
+function age71(){try{return typeof currentAge==='function'?currentAge():(16+Math.floor((((State&&State.turn)||1)-1)/2));}catch(e){return 16;}}
+function liveChildren71(){try{return Array.isArray(State.children)?State.children.filter(c=>c&&c.status!=='deceased'):[];}catch(e){return [];}}
+function normalizeChildren71(){
+  if(!State)return;
+  State.children=Array.isArray(State.children)?State.children.filter(Boolean):[];
+  const live=[];const dead=[];const seen=new Set();
+  for(const c of State.children){
+    const key=(c.id&&String(c.id))||`${c.name||''}:${c.gender||''}:${c.bornTurn||''}`;
+    if(c.status==='deceased'){dead.push(c);continue;}
+    if(seen.has(key))continue;
+    seen.add(key);live.push(c);
+  }
+  State.children=[...live.slice(0,2),...dead];
+  if(live.length>=2){
+    State.caseFlags=State.caseFlags||{};
+    State.caseFlags.royal_second_child_born=true;
+    State.marriage=State.marriage||{};
+    State.marriage.birthCooldownUntil=9999;
+  }
+}
+function canCreateRoyalChild71(){
+  normalizeChildren71();
+  const live=liveChildren71();
+  if(live.length>=2)return false;
+  if(live.length>=1&&State.caseFlags&&State.caseFlags.royal_second_child_born)return false;
+  return true;
+}
+window.normalizeChildren71=normalizeChildren71;
+try{
+  if(typeof createRoyalChild==='function'&&!createRoyalChild.phase71Wrapped){
+    const oldCreate71=createRoyalChild;
+    createRoyalChild=function(preferredGender=null){
+      if(!canCreateRoyalChild71())return null;
+      const child=oldCreate71.apply(this,arguments);
+      normalizeChildren71();
+      return child;
+    };
+    createRoyalChild.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 createRoyalChild wrap skipped',e);}
+try{
+  if(typeof royalBirthAllowed21==='function'&&!royalBirthAllowed21.phase71Wrapped){
+    const oldAllowed71=royalBirthAllowed21;
+    royalBirthAllowed21=function(){
+      if(!canCreateRoyalChild71())return false;
+      return oldAllowed71.apply(this,arguments);
+    };
+    royalBirthAllowed21.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 royalBirthAllowed wrap skipped',e);}
+try{
+  if(typeof maybeRoyalBirthAtTurnStart21==='function'&&!maybeRoyalBirthAtTurnStart21.phase71Wrapped){
+    const oldAutoBirth71=maybeRoyalBirthAtTurnStart21;
+    maybeRoyalBirthAtTurnStart21=function(){
+      if(!canCreateRoyalChild71())return null;
+      const r=oldAutoBirth71.apply(this,arguments);
+      normalizeChildren71();
+      return r;
+    };
+    maybeRoyalBirthAtTurnStart21.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 auto birth wrap skipped',e);}
+try{
+  if(typeof updateChildrenTick==='function'&&!updateChildrenTick.phase71Wrapped){
+    const oldTick71=updateChildrenTick;
+    updateChildrenTick=function(){
+      const r=oldTick71.apply(this,arguments);
+      normalizeChildren71();
+      if(typeof syncPrinceHealthStatus21==='function')syncPrinceHealthStatus21();
+      return r;
+    };
+    updateChildrenTick.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 updateChildrenTick wrap skipped',e);}
+function keepSpouseAlive71(id){
+  if(!State)return false;
+  State.familyHealth=State.familyHealth||{};
+  State.marriage=State.marriage||{};
+  const spouseId=id||State.marriage.spouseId;
+  State.familyHealth.spouse='critical';
+  if(spouseId){
+    State.marriage.spouseId=spouseId;
+    State.marriage.state='married';
+    if(typeof setActorStatus==='function')setActorStatus(spouseId,'injured',2);
+  }
+  State.marriage.mourningUntil=0;
+  return true;
+}
+try{
+  if(typeof setPatientStage==='function'&&!setPatientStage.phase71Wrapped){
+    const oldSetPatient71=setPatientStage;
+    setPatientStage=function(p,stage){
+      if(p&&p.kind==='spouse'&&stage==='dead'&&!State.allowExplicitSpouseDeath){
+        keepSpouseAlive71(State.marriage&&State.marriage.spouseId);
+        return;
+      }
+      const r=oldSetPatient71.apply(this,arguments);
+      if(State&&State.marriage&&State.marriage.state==='married'&&State.familyHealth&&State.familyHealth.spouse==='dead'&&!State.allowExplicitSpouseDeath){
+        keepSpouseAlive71(State.marriage.spouseId);
+      }
+      return r;
+    };
+    setPatientStage.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 setPatientStage wrap skipped',e);}
+try{
+  if(typeof applySpouseDeath==='function'&&!applySpouseDeath.phase71ExplicitGuard){
+    const oldDeath71=applySpouseDeath;
+    applySpouseDeath=function(id){
+      const actor=(DATA&&DATA.actors&&id)?DATA.actors[id]:null;
+      State.lastSpouseDeathName=(actor&&actor.name)||State.lastSpouseDeathName||'王妃';
+      if(!State.allowExplicitSpouseDeath){
+        keepSpouseAlive71(id);
+        return false;
+      }
+      return oldDeath71.apply(this,arguments);
+    };
+    applySpouseDeath.phase71ExplicitGuard=true;
+  }
+}catch(e){console.warn('phase71 spouse death guard skipped',e);}
+try{
+  if(typeof familyDiseaseTick==='function'&&!familyDiseaseTick.phase71Wrapped){
+    const oldFamilyDisease71=familyDiseaseTick;
+    familyDiseaseTick=function(){
+      const beforeSpouse=State&&State.marriage?State.marriage.spouseId:null;
+      const allow=!!(State&&State.allowExplicitSpouseDeath);
+      const r=oldFamilyDisease71.apply(this,arguments);
+      if(!allow&&State&&State.familyHealth&&State.familyHealth.spouse==='dead')keepSpouseAlive71(beforeSpouse||State.marriage?.spouseId);
+      normalizeChildren71();
+      if(typeof syncPrinceHealthStatus21==='function')syncPrinceHealthStatus21();
+      return r;
+    };
+    window.familyDiseaseTick=familyDiseaseTick;
+    familyDiseaseTick.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 familyDisease wrap skipped',e);}
+try{
+  syncPrinceHealthStatus21=function(){
+    const prince=liveChildren71().find(c=>c.gender==='male'&&c.status!=='deceased');
+    if(!prince||!State.actorsUnlocked||!State.actorsUnlocked.includes('prince'))return;
+    State.actorStatus=State.actorStatus||{};
+    const st=State.actorStatus.prince||{status:'normal',until:0};
+    if(['captured','dead'].includes(st.status))return;
+    const hs=prince.healthStage||prince.health||'健やか';
+    if(hs==='dead'||prince.status==='deceased'){State.actorStatus.prince={status:'dead',until:0};return;}
+    if(['critical','grave','重病','sick','frail','病弱'].includes(hs)){
+      State.actorStatus.prince={status:'tired',until:Math.max(State.turn+2,st.until||0),reason:'療養中'};
+      return;
+    }
+    if((st.status==='tired'||st.status==='injured')&&(st.until||0)<=State.turn)State.actorStatus.prince={status:'normal',until:0};
+  };
+  window.syncPrinceHealthStatus21=syncPrinceHealthStatus21;
+}catch(e){console.warn('phase71 prince status override skipped',e);}
+function finalDone71(){try{return !!(State.finalCaseResolved||((State.completedCases||[]).includes(FINAL_ID71)));}catch(e){return false;}}
+function finalPending71(){return !!(State&&age71()>=30&&!finalDone71()&&!State.gameOver&&!State.ending);}
+function buildFinal71(){
+  let c=null;
+  try{c=typeof refreshFinalEnemyCase==='function'?refreshFinalEnemyCase():(typeof buildFinalEnemyCase==='function'?buildFinalEnemyCase():null);}catch(e){}
+  if(c&&DATA&&Array.isArray(DATA.cases)){
+    const idx=DATA.cases.findIndex(x=>x&&x.id===FINAL_ID71);
+    if(idx>=0)DATA.cases[idx]=c;else DATA.cases.push(c);
+  }
+  return c;
+}
+function enterFinal71(reason){
+  if(!finalPending71())return false;
+  const c=buildFinal71();
+  if(!c)return false;
+  State.phase='ending_final_case';
+  State.endingMode='ending_final_case';
+  State.yearStoryRead=true;
+  State.justRevealed=false;
+  State.suppressMapNews=true;
+  State.mapNews=[];
+  State.queue=[];
+  State.caseWarSlotKinds={};
+  State.caseCache={turn:State.turn,cases:[FINAL_ID71],warSlotKinds:{},phase71EndingPhase:true,reason:reason||''};
+  State.selected=(State.selected||[]).filter(id=>id===FINAL_ID71).slice(0,1);
+  State.assignments=Object.fromEntries(Object.entries(State.assignments||{}).filter(([id])=>id===FINAL_ID71));
+  State.cardAssignments=Object.fromEntries(Object.entries(State.cardAssignments||{}).filter(([id])=>id===FINAL_ID71));
+  State.caseBudgets=Object.fromEntries(Object.entries(State.caseBudgets||{}).filter(([id])=>id===FINAL_ID71));
+  return true;
+}
+try{
+  if(typeof visibleCases==='function'&&!visibleCases.phase71Wrapped){
+    const oldVisible71=visibleCases;
+    visibleCases=function(){
+      if(finalPending71()){
+        enterFinal71('visibleCases');
+        const c=buildFinal71();
+        return c?[c]:[];
+      }
+      return oldVisible71.apply(this,arguments);
+    };
+    visibleCases.phase71Wrapped=true;
+  }
+  if(typeof maxSelectableCases==='function'&&!maxSelectableCases.phase71Wrapped){
+    const oldMax71=maxSelectableCases;
+    maxSelectableCases=function(){return finalPending71()?1:oldMax71.apply(this,arguments);};
+    maxSelectableCases.phase71Wrapped=true;
+  }
+  if(typeof visibleCaseCount==='function'&&!visibleCaseCount.phase71Wrapped){
+    const oldCount71=visibleCaseCount;
+    visibleCaseCount=function(){return finalPending71()?1:oldCount71.apply(this,arguments);};
+    visibleCaseCount.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 final visible wrap skipped',e);}
+try{
+  if(typeof Flow==='object'&&Flow&&typeof Flow.nextPeriod==='function'&&!Flow.nextPeriod.phase71Wrapped){
+    const oldNext71=Flow.nextPeriod;
+    Flow.nextPeriod=function(){
+      const r=oldNext71.apply(this,arguments);
+      if(finalPending71())enterFinal71('nextPeriod');
+      normalizeChildren71();
+      return r;
+    };
+    Flow.nextPeriod.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 nextPeriod wrap skipped',e);}
+try{
+  if(typeof View==='object'&&View&&typeof View.main==='function'&&!View.main.phase71Wrapped){
+    const oldMain71=View.main;
+    View.main=function(){
+      if(finalPending71())enterFinal71('main');
+      normalizeChildren71();
+      return oldMain71.apply(this,arguments);
+    };
+    View.main.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 View.main wrap skipped',e);}
+try{
+  if(typeof endingLegacyStats==='function'&&!endingLegacyStats.phase71Wrapped){
+    const oldLegacy71=endingLegacyStats;
+    endingLegacyStats=function(){
+      const rows=oldLegacy71.apply(this,arguments)||[];
+      return rows.filter(x=>!/(国境を動かした顔|選帝侯との貸し借り)/.test(String(x)));
+    };
+    endingLegacyStats.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 legacy stats wrap skipped',e);}
+try{
+  if(typeof buildEnding==='function'&&!buildEnding.phase71Wrapped){
+    const oldBuildEnding71=buildEnding;
+    buildEnding=function(){
+      const e=oldBuildEnding71.apply(this,arguments);
+      if(e){
+        e.comment='';
+      }
+      return e;
+    };
+    buildEnding.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 build ending wrap skipped',e);}
+try{
+  if(typeof chooseFateEnding==='function'&&!chooseFateEnding.phase71Wrapped){
+    const oldChoose71=chooseFateEnding;
+    chooseFateEnding=function(){const e=oldChoose71.apply(this,arguments);if(e)e.comment='';return e;};
+    chooseFateEnding.phase71Wrapped=true;
+  }
+}catch(e){}
+try{
+  if(typeof View==='object'&&View&&typeof View.endingStory==='function'&&!View.endingStory.phase71Wrapped){
+    const oldEndingStory71=View.endingStory;
+    View.endingStory=function(ending){
+      const r=oldEndingStory71.apply(this,arguments);
+      try{
+        const k=document.querySelector('#screenResult .endingKicker');
+        if(k&&ending&&['battle','illness','collapse'].includes(ending.type)){
+          k.textContent=ending.type==='battle'?'戦場の終わり':ending.type==='illness'?'病床の終わり':'治世の終わり';
+        }
+      }catch(e){}
+      return r;
+    };
+    View.endingStory.phase71Wrapped=true;
+  }
+  if(typeof View==='object'&&View&&typeof View.endingResult==='function'&&!View.endingResult.phase71Wrapped){
+    const oldEndingResult71=View.endingResult;
+    View.endingResult=function(){
+      const r=oldEndingResult71.apply(this,arguments);
+      try{
+        const small=document.querySelector('#screenResult .endingText .small');
+        if(small)small.remove();
+        document.querySelectorAll('#screenResult .endingResultBox div').forEach(el=>{
+          if(/国境を動かした顔|選帝侯との貸し借り|称号の根拠/.test(el.textContent||''))el.remove();
+        });
+      }catch(e){}
+      return r;
+    };
+    View.endingResult.phase71Wrapped=true;
+  }
+}catch(e){console.warn('phase71 ending view wrap skipped',e);}
+try{normalizeChildren71();}catch(e){}
+console.info('phase71 family/final/result fixes applied');
 })();
 
 </script>
@@ -49719,6 +50022,735 @@ window.addEventListener('keydown',function(e){
 window.phase70CountryTutorials=COUNTRY_TUTORIALS;
 window.showCountryTutorial70=showCountryTutorial70;
 console.info(PHASE+' applied');
+})();
+</script>
+
+<script id="phase72_tutorial_detection_assign_back_js">
+(function(){
+'use strict';
+if(window.__phase72TutorialAssignBackApplied)return;
+window.__phase72TutorialAssignBackApplied=true;
+const PHASE='phase72_tutorial_detection_assign_back';
+function $(id){return document.getElementById(id);}
+function activeScreenId72(){const el=document.querySelector('.screen.active');return el?el.id:'';}
+function esc72(v){return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
+function currentVisibleCases72(){
+  const out=[];
+  try{
+    if(State&&State.caseCache){
+      if(Array.isArray(State.caseCache))out.push(...State.caseCache);
+      else if(Array.isArray(State.caseCache.cases))out.push(...State.caseCache.cases);
+      else if(Array.isArray(State.caseCache.list))out.push(...State.caseCache.list);
+    }
+  }catch(_){ }
+  if(!out.length){try{if(typeof visibleCases==='function')out.push(...(visibleCases()||[]));}catch(_){ }}
+  const seen=new Set();
+  return out.filter(c=>c&&c.id&&!seen.has(c.id)&&(seen.add(c.id),true));
+}
+function hasBrotherCase72(cases){return cases.some(c=>c&&(c.id==='brother_return_01'||c.id==='brother_return_02'||String(c.id||'').includes('brother_return')));}
+function hasMarriageCase72(cases){return cases.some(c=>c&&String(c.id||'').startsWith('marriage_'));}
+function showStoryTutorial72(kind){
+  if(!State||activeScreenId72()!=='screenMain'||window.__firstCasePickTutorialOpen)return false;
+  if(kind==='brother'&&!State.brotherReturnTutorialSeen&&typeof window.showButlerCaseTutorial60==='function'){
+    State.__phase72SuppressCountryTutorialTurn=State.turn;
+    window.showButlerCaseTutorial60('brotherReturnTutorial','陛下！　王弟殿下がお戻りになりました。<br>これより、王家の物語もまた動き始めます。','brotherReturnTutorialSeen');
+    return !!document.getElementById('brotherReturnTutorial');
+  }
+  if(kind==='marriage'&&!State.marriageTutorialSeen&&typeof window.showButlerCaseTutorial60==='function'){
+    State.__phase72SuppressCountryTutorialTurn=State.turn;
+    window.showButlerCaseTutorial60('marriageCaseTutorial','陛下。縁談が届いております。<br>恋も戦争と同じ、全力でアタックなさいませ！','marriageTutorialSeen');
+    return !!document.getElementById('marriageCaseTutorial');
+  }
+  return false;
+}
+function checkStoryCaseTutorial72(){
+  if(!State||activeScreenId72()!=='screenMain'||window.__firstCasePickTutorialOpen)return false;
+  const cases=currentVisibleCases72();
+  if(hasBrotherCase72(cases)&&!State.brotherReturnTutorialSeen)return showStoryTutorial72('brother');
+  if(hasMarriageCase72(cases)&&!State.marriageTutorialSeen)return showStoryTutorial72('marriage');
+  return false;
+}
+window.checkStoryCaseTutorial72=checkStoryCaseTutorial72;
+window.checkStoryCaseTutorial60=checkStoryCaseTutorial72;
+if(typeof View==='object'&&View&&typeof View.main==='function'&&!View.main.phase72StoryTutorialFixed){
+  const oldMain=View.main.bind(View);
+  View.main=function(){
+    const ret=oldMain.apply(this,arguments);
+    setTimeout(checkStoryCaseTutorial72,120);
+    return ret;
+  };
+  View.main.phase72StoryTutorialFixed=true;
+}
+function addAssignBackCss72(){
+  if(document.getElementById('phase72-assign-back-css'))return;
+  const st=document.createElement('style');
+  st.id='phase72-assign-back-css';
+  st.textContent=`
+#screenAssign .assignFooter{justify-content:space-between!important;gap:12px!important;}
+.phase72BackToCases{min-width:178px!important;background:linear-gradient(#e9d0a2,#b88a45)!important;border-color:#6d4b1e!important;color:#102033!important;font-size:15px!important;box-shadow:0 3px 0 #4b3519!important;}
+.phase72AssignHint{color:#e8d6ad!important;font-size:12px!important;font-weight:900!important;opacity:.9!important;margin-left:10px!important;}
+.phase70CountryTutorialTitle{font-size:14px!important;letter-spacing:.07em!important;}
+`;
+  document.head.appendChild(st);
+}
+function goBackToCases72(ev){
+  if(ev){ev.preventDefault();ev.stopPropagation();}
+  try{audio&&audio();sfx&&sfx('cancel');}catch(_){ }
+  if(typeof View==='object'&&View&&typeof View.main==='function')View.main();
+}
+window.goBackToCases72=goBackToCases72;
+function patchAssignBackButton72(){
+  addAssignBackCss72();
+  const footer=document.querySelector('#screenAssign .assignFooter');
+  if(!footer||footer.querySelector('.phase72BackToCases'))return;
+  const box=document.createElement('div');
+  box.style.display='flex';
+  box.style.alignItems='center';
+  box.innerHTML='<button class="phase72BackToCases" onclick="goBackToCases72(event)">案件選択へ戻る</button><span class="phase72AssignHint">Escでも戻る</span>';
+  footer.insertBefore(box,footer.firstChild);
+}
+if(typeof View==='object'&&View&&typeof View.assign==='function'&&!View.assign.phase72BackButtonWrapped){
+  const oldAssign=View.assign.bind(View);
+  View.assign=function(){
+    const ret=oldAssign.apply(this,arguments);
+    setTimeout(patchAssignBackButton72,0);
+    return ret;
+  };
+  View.assign.phase72BackButtonWrapped=true;
+}
+function shouldSuppressCountryTutorialNow72(caseId){
+  if(!State)return false;
+  if(State.__phase72SuppressCountryTutorialTurn===State.turn)return true;
+  const cases=currentVisibleCases72();
+  if((hasBrotherCase72(cases)&&!State.brotherReturnTutorialSeen)||(hasMarriageCase72(cases)&&!State.marriageTutorialSeen))return true;
+  const c=(typeof getCase==='function'?getCase(caseId):null);
+  const id=String(caseId||c?.id||'');
+  if(id==='brother_return_01'||id==='brother_return_02'||id.includes('brother_return')||id.startsWith('marriage_'))return true;
+  return false;
+}
+if(typeof Flow==='object'&&Flow&&typeof Flow.toggleCase==='function'&&!Flow.toggleCase.phase72CountrySuppressWrapped){
+  const oldToggle=Flow.toggleCase.bind(Flow);
+  Flow.toggleCase=function(id){
+    const suppress=shouldSuppressCountryTutorialNow72(id);
+    if(suppress){
+      window.__phase70CountryTutorialOpen=true;
+      setTimeout(function(){
+        const el=$('phase70CountryTutorial');
+        if(!el)window.__phase70CountryTutorialOpen=false;
+      },700);
+    }
+    const ret=oldToggle.apply(this,arguments);
+    if(suppress)setTimeout(checkStoryCaseTutorial72,120);
+    return ret;
+  };
+  Flow.toggleCase.phase72CountrySuppressWrapped=true;
+}
+function relabelCountryTutorialTitle72(){
+  const title=document.querySelector('#phase70CountryTutorial .phase70CountryTutorialTitle');
+  if(title&&title.textContent&&!title.textContent.startsWith('解説：'))title.textContent='解説：'+title.textContent.trim();
+}
+const mo=new MutationObserver(relabelCountryTutorialTitle72);
+try{mo.observe(document.body,{childList:true,subtree:true});}catch(_){ }
+window.addEventListener('keydown',function(e){
+  if(activeScreenId72()==='screenAssign'&&!window.__firstCasePickTutorialOpen&&!window.__phase70CountryTutorialOpen&&!window.__phase67BattleQuoteOpen){
+    if(e.key==='Escape'){
+      e.preventDefault();e.stopImmediatePropagation();
+      goBackToCases72(e);
+      return false;
+    }
+  }
+},true);
+setTimeout(checkStoryCaseTutorial72,300);
+console.info(PHASE+' applied');
+})();
+</script>
+
+
+
+<script id="phase73_early_hard_limit_brother_back_js">
+(function(){
+'use strict';
+if(window.__phase73EarlyHardBrotherBackApplied)return;
+window.__phase73EarlyHardBrotherBackApplied=true;
+const PHASE='phase73_early_hard_limit_brother_back';
+function currentAge73(){try{return typeof currentAge==='function'?currentAge():16+Math.floor((State?.turn||1)-1)/2;}catch(_){return 16;}}
+function isHardLike73(c){const d=String(c&&c.difficulty||'').toLowerCase();return d==='hard'||d==='desperate';}
+function hardLimit73(){const age=currentAge73();if(age<=19)return 1;if(age===20)return 2;return Infinity;}
+function allCases73(){try{return (DATA&&Array.isArray(DATA.cases))?DATA.cases:[];}catch(_){return [];}}
+function restoreHard73(){
+  for(const c of allCases73()){
+    if(c&&c.__phase73OriginalDifficulty){c.difficulty=c.__phase73OriginalDifficulty;delete c.__phase73OriginalDifficulty;}
+    if(c&&c.__phase73OriginalDanger!=null){c.danger=c.__phase73OriginalDanger;delete c.__phase73OriginalDanger;}
+    if(c&&c.__phase73OriginalInitialLine!=null){c.initialLine=c.__phase73OriginalInitialLine;delete c.__phase73OriginalInitialLine;}
+  }
+}
+function normalizeEarlyHardCases73(list){
+  if(!Array.isArray(list))return list;
+  restoreHard73();
+  const limit=hardLimit73();
+  if(!Number.isFinite(limit))return list;
+  let kept=0;
+  for(const c of list){
+    if(!isHardLike73(c))continue;
+    if(kept<limit){kept++;continue;}
+    c.__phase73OriginalDifficulty=c.difficulty;
+    c.__phase73OriginalDanger=c.danger;
+    c.__phase73OriginalInitialLine=c.initialLine;
+    c.difficulty='normal';
+    if((c.danger||0)>1)c.danger=1;
+    if((c.initialLine||0)<-12)c.initialLine=-12;
+  }
+  return list;
+}
+function patchBrotherReturn73(){
+  const cases=allCases73();
+  for(const c of cases){
+    if(!c||!c.id)continue;
+    if(c.id==='brother_return_01'){
+      c.difficulty='normal';
+      c.ignoreType='くすぶる';
+      c.danger=0;
+      c.enemy='枢機卿ロレンツォ・ディ・ベルカーロ';
+      c.lineName='帰国交渉';
+      c.enemyImg='rickSoldier';
+      c.initialLine=-8;
+      c.intro='リック聖王国から、腹違いの弟に関する書簡が届いた。聖庁で育てられた少年は、今や王弟として政治的価値を帯びている。呼び戻せば王家は強まるが、枢機卿ベルカーロは容易に手放す気がない。';
+    }
+    if(c.id==='brother_return_02'){
+      c.difficulty='easy';
+      c.ignoreType='くすぶる';
+      c.danger=0;
+      c.enemy='枢機卿ロレンツォ・ディ・ベルカーロ';
+      c.lineName='再交渉';
+      c.enemyImg='rickSoldier';
+      c.initialLine=-4;
+      c.intro='王弟殿下は、まだ王都を去ってはおられない。枢機卿ベルカーロの理屈は弱まり、あとは兄の言葉が届くかどうかにかかっている。今ならまだ、王家の血を取り戻せる。';
+    }
+  }
+  try{
+    if(window.CASE_STAGE_META){
+      if(CASE_STAGE_META.brother_return_01)CASE_STAGE_META.brother_return_01.scale=1;
+      if(CASE_STAGE_META.brother_return_02)CASE_STAGE_META.brother_return_02.scale=1;
+    }
+  }catch(_){ }
+}
+function relabelAssignBackButton73(){
+  const btn=document.querySelector('.phase72BackToCases');
+  if(btn)btn.textContent='戻る ESC';
+  document.querySelectorAll('.phase72AssignHint').forEach(el=>el.remove());
+}
+function addCss73(){
+  if(document.getElementById('phase73-css'))return;
+  const st=document.createElement('style');
+  st.id='phase73-css';
+  st.textContent='.phase72BackToCases{min-width:112px!important;font-size:15px!important;padding-left:16px!important;padding-right:16px!important}.phase72AssignHint{display:none!important;}';
+  document.head.appendChild(st);
+}
+patchBrotherReturn73();
+addCss73();
+if(typeof visibleCases==='function'&&!visibleCases.phase73EarlyHardLimitWrapped){
+  const oldVisible=visibleCases;
+  visibleCases=function(){
+    const out=oldVisible.apply(this,arguments)||[];
+    const ret=normalizeEarlyHardCases73(out);
+    try{if(State&&State.caseCache&&Array.isArray(State.caseCache.cases))State.caseCache.phase73EarlyHardLimit=true;}catch(_){ }
+    return ret;
+  };
+  visibleCases.phase73EarlyHardLimitWrapped=true;
+}
+if(typeof View==='object'&&View&&typeof View.main==='function'&&!View.main.phase73BrotherPatchWrapped){
+  const oldMain=View.main.bind(View);
+  View.main=function(){patchBrotherReturn73();const ret=oldMain.apply(this,arguments);setTimeout(relabelAssignBackButton73,0);return ret;};
+  View.main.phase73BrotherPatchWrapped=true;
+}
+if(typeof View==='object'&&View&&typeof View.assign==='function'&&!View.assign.phase73BackRelabelWrapped){
+  const oldAssign=View.assign.bind(View);
+  View.assign=function(){const ret=oldAssign.apply(this,arguments);setTimeout(relabelAssignBackButton73,0);return ret;};
+  View.assign.phase73BackRelabelWrapped=true;
+}
+const mo=new MutationObserver(relabelAssignBackButton73);
+try{mo.observe(document.body,{childList:true,subtree:true});}catch(_){ }
+setTimeout(function(){patchBrotherReturn73();relabelAssignBackButton73();},50);
+console.info(PHASE+' applied');
+})();
+
+
+(function(){
+if(window.__PHASE74_TREUVAL_FULL_AUDIT__)return;
+window.__PHASE74_TREUVAL_FULL_AUDIT__=true;
+const PHASE='phase74_treuval_full_audit';
+function findCase74(id){try{return DATA&&Array.isArray(DATA.cases)?DATA.cases.find(c=>c&&c.id===id):null;}catch(_){return null;}}
+function patchCase74(id,patch){
+  const c=findCase74(id); if(!c)return;
+  Object.keys(patch).forEach(k=>{
+    if(k==='stories'){
+      c.effects=c.effects||{}; c.effects.stories=patch.stories.slice();
+      if(Array.isArray(c.stories))c.stories=patch.stories.slice();
+    }else if(k==='metaTags'){
+      if(typeof CASE_STAGE_META==='object'&&CASE_STAGE_META){
+        const m=CASE_STAGE_META[id]=CASE_STAGE_META[id]||{};
+        m.tags=[...new Set([...(m.tags||[]),...patch.metaTags,'treuval','northCoast',PHASE])];
+        if(!m.tensionKey)m.tensionKey='altrantTreuval';
+      }
+      if(c.meta&&Array.isArray(c.meta.tags))c.meta.tags=[...new Set([...c.meta.tags,...patch.metaTags,'treuval','northCoast',PHASE])];
+    }else{ c[k]=patch[k]; }
+  });
+  c.phase74TreuvalFullAudit=true;
+  try{ if(typeof CASE_BG==='object'&&CASE_BG)CASE_BG[id]=patch.bg||'port'; }catch(_){ }
+  try{ if(typeof CASE_ARCHETYPE==='object'&&CASE_ARCHETYPE&&patch.arch)CASE_ARCHETYPE[id]=patch.arch; }catch(_){ }
+}
+const audit={
+local_treuval_signal_fire:{title:'北岸の入り江の焚火跡',category:'トレウヴァル・初遭遇',enemy:'トレウヴァル斥候',lineName:'北岸警戒',bg:'port',intro:'北岸の入り江に、長船を引き上げた跡が残されていた。襲撃ではない。だが、その上陸は明確な警告だった。',stories:['守備隊は浜へ降り、上陸した斥候を追い返した。長船は霧の奥へ逃げた。','斥候は追われたが、いくつかの倉が焼かれた。沿岸の村は夜ごとに海を見た。','斥候は見逃された。数日後、漁村の倉が焼かれ、略奪品は霧の中へ消えた。'],metaTags:['intro','scout','raid','inlet']},
+foreshadow_treuval_cairn:{title:'潮待ち浜の石積み',category:'前触れ外交・北岸',enemy:'トレウヴァル斥候隊',lineName:'浜辺の境目',bg:'port',intro:'干潮の浜辺に、トレウヴァルの戦士たちが石を積んだ。祖先の印だと言うが、漁師たちはそこから先を恐れている。',stories:['石積みは共同の標に改められ、浜には王国兵の見張りが置かれた。境目はまだ王の言葉を聞いている。','石積みは増え、斥候はそこを上陸の目印として使い始めた。','漁師たちは浜を避け、潮騒だけが境界を塗り替えた。'],metaTags:['omen','coast','boundary']},
+marriage_wife6_treuval:{title:'霧海の戦姫との盟約婚',category:'トレウヴァル・婚姻',enemy:'霧海の戦姫',lineName:'盟約婚',bg:'port',intro:'霧海の長船から、族長の娘ルーアが王宮へ来た。花嫁というより、北岸の襲撃を止める誓約そのものだった。',stories:['ルーアは王妃となり、長船の戦士たちは王旗へ膝をついた。北岸の恐怖は、王家の力へ変わった。','婚姻は成立したが、宮廷貴族は海の氏族の作法に顔をしかめた。','ルーアは剣を抜いて去った。霧海では、再び襲撃の歌が作られ始めた。'],metaTags:['marriage','oath','port']},
+border_treuval_shepherd_vale:{title:'放牧浜の襲撃',category:'土地争い・トレウヴァル',enemy:'上陸襲撃隊',lineName:'放牧浜防衛',bg:'port',intro:'北岸の放牧浜にトレウヴァルの戦士が上陸し、家畜と若者を連れ去った。占領ではない。奪って霧へ帰る戦だ。',stories:['襲撃隊は浜で追い返され、若者の一部も戻った。放牧浜には王国兵の巡回が置かれた。','家々は守られたが、家畜の多くは船へ積まれた。民は海を恐れた。','村人は浜を捨てた。空いた放牧地に、トレウヴァルの足跡だけが残った。'],metaTags:['coast','raid','territory']},
+border_treuval_longhouse_burns:{title:'岬の見張り砦炎上',category:'土地争い・トレウヴァル',enemy:'トレウヴァル戦団',lineName:'岬砦防衛',bg:'port',intro:'海霧の夜、北岸の見張り砦が焼け落ちた。トレウヴァル戦団は砦を奪わず、そこへ住めなくした。',stories:['岬の砦は仮防壁で持ちこたえ、焦げた梁の上に王旗が戻された。','砦は再建されたが、守備兵は霧の角笛に怯え続けた。','岬は放棄された。そこから先の浜は、王国の税吏が近づけぬ土地になった。'],metaTags:['coast','fort','territory']},
+late_war_treuval_campaign:{title:'霧海の大船団',category:'後半危機・北岸防衛',enemy:'ダグダンの大船団',lineName:'北岸防衛',bg:'port',intro:'霧海の島々から長船が集まり、北岸へ向かっている。通過ではない。沿岸を焼き、名誉と獲物を奪う大襲撃だ。',stories:['烽火と沿岸民兵が間に合い、大船団は浜で止められた。霧は沖へ退いた。','大船団は退いたが、いくつかの港は焼けた。勝利より、生き残りに近かった。','長船は北岸を荒らし、沿岸諸侯は王を待たず独自に武装した。'],metaTags:['grandRaid','coast','late']},
+country_treuval_guest_law:{bg:'port',intro:'霧をまとった小船が河口に着いた。トレウヴァルの使者は角杯を差し出し、海の客人としての返礼を求めている。',stories:['王は塩と鉄を返礼し、使者は王を臆病者とは歌わぬと誓った。','杯は交わされたが返礼は曖昧だった。詩人は王を試す歌を作り始めた。','使者は去り、沿岸には「陸の王は海を恐れた」という歌が流れた。'],metaTags:['oath','diplomacy','riverMouth']},
+country_treuval_stolen_horn:{bg:'port',intro:'浜辺に槍を並べた戦士たちが、盗まれた戦角の返還を求めている。法で裁くか、名誉で償うか。',stories:['王は戦角の由来を調べ、償いの贈り物を整えた。浜辺の槍は下ろされた。','戦角は返ったが、手続きは遅かった。戦士たちは王国法を臆病な言い訳と見た。','怒りは報復の歌になった。次の霧夜、沿岸の倉が焼かれた。'],metaTags:['honor','oath','coast']},
+country_treuval_winter_fleet:{bg:'port',intro:'冬の海に、灯を消したガレー船が現れた。港を奪わず、倉を焼き、鐘を外して霧へ消える襲撃だ。',stories:['烽火と退避倉が間に合い、船団は獲物を得られず霧海へ戻った。','船団は退いたが、いくつかの村は焼かれた。民は海そのものを恐れた。','冬船団は港を荒らし、沿岸の一角にトレウヴァルの冬営地が築かれた。'],metaTags:['winter','fleet','raid']},
+country_treuval_war_princess_trial:{title:'浜辺の力試し',category:'トレウヴァル・武勇',lineName:'浜辺の演武',bg:'port',intro:'長船で来た族長の娘ルーアが、浜辺で王国兵との力試しを求めた。拒めば、部族の誇りを傷つける。',stories:['王は力試しを正式な演武に変えた。宮廷は驚き、部族は王の度量を笑って認めた。','演武は盛り上がったが、宮廷には野蛮を招いたという不満が残った。','ルーアは王宮を退屈な檻と呼び、部族の戦士たちは侮辱と受け取った。'],metaTags:['warPrincess','coast','honor']},
+country_treuval_black_wolf_raid:{bg:'port',intro:'黒狼の印を掲げる戦士団が、三つの沿岸村に上陸した。略奪だけでなく、浜に石碑まで立てている。',stories:['王国軍は海霧の中で戦線を保ち、浜の石碑を引き倒した。黒狼は船へ戻った。','黒狼は退いたが、捕虜と財貨を奪った。村は守られたが、恐怖は残った。','黒狼は冬営地を固め、税吏の近づけぬ浜が生まれた。'],metaTags:['blackWolf','coast','territory']},
+country_treuval_great_council:{bg:'port',intro:'霧海の島で部族長たちが集まり、アルトラント沿岸を次の獲物にするか話し合っている。',stories:['王は贈り物と捕虜返還でダグダンを動かし、大評議会は襲撃を先送りした。','評議会は割れた。全面襲撃は避けたが、若い戦士団の一部は勝手に海へ出た。','大評議会は襲撃を認めた。霧の向こうで櫂がそろい、沿岸の鐘が鳴った。'],metaTags:['council','islands','diplomacy']},
+treuval_mist_stone_omen:{bg:'port',intro:'干潮の浜辺に、誰も運んだ覚えのない石碑が立っていた。渦巻き模様はトレウヴァルの古い神の印らしい。',stories:['王は石碑を壊さず、見張りと祈りの場を置いた。海辺の恐怖は管理された。','石碑は移されたが、理由は説明されず、漁民の不安は残った。','夜ごとに供物が置かれた。王国の法が届かぬ浜が一つ生まれた。'],metaTags:['omen','coast','oldGods']},
+treuval_coastal_fog_beacons:{bg:'port',intro:'沿岸民が、海霧の夜に備えて烽火台を増やしてほしいと訴えた。霧の向こうの船は待ってくれない。',stories:['烽火台は岬ごとにつながり、民は王が海を見ていると知った。','いくつかの烽火台は建ったが、空白の岬が残った。そこだけは今も暗い。','漁民は自分たちで松明を買った。王の旗より霧の方が近く感じられた。'],metaTags:['beacon','defense','coast']},
+treuval_raid_captive_ransom:{bg:'port',intro:'トレウヴァルの霧船が沿岸の若者を連れ去った。身代金か、武力か、名誉の客として交渉するか。',stories:['王は捕虜を客人として返す儀礼を整え、若者たちは帰った。ローワンは義理を認めた。','一部は帰ったが条件は重かった。家族の涙は止まったが、海への怒りは残った。','捕虜は遠い島へ連れて行かれ、沿岸では王を恨む声が増えた。'],metaTags:['hostage','mistShip','coast']},
+treuval_burned_watchtower:{bg:'port',intro:'夜明け、岬の見張り塔が焼け残っていた。兵は、霧の中から角笛が聞こえたと震えている。',stories:['王国軍は岬を再占拠し、塔を石造りで建て直した。霧の戦士は近づかなかった。','塔は再建されたが、守備兵の士気は戻らなかった。','岬は放棄され、トレウヴァルの標識が立った。沿岸防衛に穴が開いた。'],metaTags:['watchtower','coast','fort']},
+treuval_coast_winter_settlement:{bg:'port',intro:'北岸の浜に、トレウヴァルの木柵が築かれた。彼らは一冬の宿だと言うが、掟はすでに浜へ根を下ろしている。',stories:['王国軍は冬営地を包囲し、退去と捕虜返還を認めさせた。浜は戻った。','木柵は一部壊されたが、数家族は残った。海岸の言葉が少し変わり始めた。','冬営地は村になり、王国の税ではなく部族の掟が通る土地になった。'],metaTags:['winterCamp','settlement','territory']},
+treuval_dagdan_whale_bone_throne:{bg:'port',intro:'ダグダンは鯨骨の座から、アルトラント沿岸の一部を古き海の民の寄港地と呼んだ。',stories:['王は海岸での演武と捕虜返還で返した。宣言は歌に留まり、地図には刻まれなかった。','宣言は弱まったが消えなかった。詩人は、いずれ戻ると歌った。','宣言は部族の誓いとなり、戦士たちはその海岸を奪うまで帰らぬと誓った。'],metaTags:['dagdan','claim','territory']},
+treuval_mist_fleet_grand_raid:{bg:'port',intro:'水平線が霧で白くなり、その下から無数の櫂が現れた。トレウヴァル全氏族の大襲撃が始まる。',stories:['王国は烽火、艦隊、沿岸民兵を総動員し、大船団を浜で止めた。','大船団は退いたが、いくつかの港は失われた。王国は勝ったのではなく、沈まなかった。','大船団は沿岸を呑み込み、地図の端は霧の色に塗られた。'],metaTags:['grandRaid','fleet','coast']},
+treuval_oath_peace_conference:{bg:'port',intro:'襲撃と報復の末、トレウヴァルは塩と鉄の講和を求めてきた。名誉の言葉を誤れば、霧はまた戻る。',stories:['王は儀礼を王国法の下に置き、捕虜返還と港の利用範囲を明文化した。','講和は成立したが、港の利用権が曖昧に残った。霧は沖で待っている。','講和の機会は失われ、次の襲撃は正当な報復として歌われた。'],metaTags:['peace','oath','diplomacy']},
+rowan_winter_livestock:{title:'浜辺の冬営願い',category:'トレウヴァル・生存交渉',lineName:'冬営交渉',bg:'port',intro:'霧海の冬が荒れ、トレウヴァルの家畜が飢えている。ローワンは北岸の浜での一時冬営を求めてきた。',stories:['期限と賠償を定めて浜を開き、家畜も村も冬を越した。ローワンは春の羊毛を贈った。','冬営は認めたが、浜の境界を巡る小さな争いが残った。','飢えた家畜と若い戦士は浜へ上がり、沿岸の村に怒号が走った。'],metaTags:['winterCamp','livestock','coast']},
+rowan_hero_funeral:{title:'浜辺の英雄葬',category:'トレウヴァル・戦死者返還',lineName:'遺骸返還',bg:'port',intro:'浜辺の小競り合いで倒れたトレウヴァルの老戦士を、ローワンは霧海へ返せと求めた。',stories:['遺骸は武具とともに船へ返され、ローワンは敵に敬意を払う王を歌にした。','返還は行われたが、儀礼の不備が小さな棘として残った。','老戦士は帰れず、トレウヴァルの若者たちは屈辱を新しい歌にした。'],metaTags:['funeral','honor','coast']},
+rowan_stone_crown:{title:'霧海の石王冠',category:'トレウヴァル・伝統紛争',lineName:'王冠仲裁',bg:'port',intro:'霧海の島々で、古い石王冠を巡る氏族争いが起きた。勝者は北岸の寄港権まで求めるつもりだ。',stories:['古記録と詩人の証言から、王冠は共同祭祀の象徴と定められた。争いは浜へ来なかった。','仲裁は成立したが、二つの氏族の歌はまだ相手を皮肉っている。','石王冠は争いの旗となり、霧海の火が北岸へ飛び火した。'],metaTags:['stoneCrown','islands','diplomacy']},
+rowan_last_duel:{title:'潮待ち浜の決闘',category:'トレウヴァル・武人外交',lineName:'潮待ち決闘',bg:'port',intro:'ローワンは潮待ち浜で王へ一騎討ちを申し込んだ。書簡ではなく、腕で王としての覚悟を示せという。',stories:['王は潮待ち浜に立ち、ローワンの刃を受け止めた。逃げなかった事実が霧海の歌になった。','決闘は痛み分けに終わり、互いの誇りだけが残った。','王は決闘を避け、ローワンは「言葉だけの王」としてそれを歌った。'],metaTags:['duel','honor','coast']},
+postwar_lull_altrantTreuval:{title:'沿岸村の帰還路',enemy:'沿岸帰還の混乱',intro:'トレウヴァルの襲撃が退いた後、沿岸の村人たちは帰還を求めた。だが港には焼け跡と略奪の記憶が残っている。',win:'帰還路は守られ、沿岸の村に生活の音が戻った。',draw:'帰還は始まったが、沿岸の不安は消えなかった。',loss:'帰還は乱れ、霧海の氏族への恐れが再び広がった。'},
+postwar_lull_altrantTreuval_return:{title:'沿岸村の帰還路',enemy:'沿岸帰還の混乱',intro:'トレウヴァルの襲撃が退いた後、沿岸の村人たちは帰還を求めた。だが港には焼け跡と略奪の記憶が残っている。',win:'帰還路は守られ、沿岸の村に生活の音が戻った。',draw:'帰還は始まったが、沿岸の不安は消えなかった。',loss:'帰還は乱れ、霧海の氏族への恐れが再び広がった。'},
+postwar_lull_altrantTreuval_beacon:{title:'霧見岬の烽火台',enemy:'見張り台の不備',intro:'霧海からの再上陸に備え、霧見岬に烽火台を建てる案が出た。だが漁村は、また戦場になることを恐れている。',win:'烽火台は整い、沿岸の警戒網は強まった。',draw:'見張りは立ったが、村人の不安は残った。',loss:'烽火台は未完成のまま、北の海に不穏が残った。'}
+};
+Object.keys(audit).forEach(id=>patchCase74(id,audit[id]));
+try{
+  if(typeof BORDER_PLACES==='object'&&BORDER_PLACES)BORDER_PLACES.altrantTreuval=['霧見岬','北岸の入り江','潮待ち浜','黒岬砦','放牧浜'];
+  if(typeof TERRITORY_STAKES==='object'&&TERRITORY_STAKES&&TERRITORY_STAKES.altrantTreuval){
+    TERRITORY_STAKES.altrantTreuval.label='トレウヴァル北岸';
+    TERRITORY_STAKES.altrantTreuval.pos={
+      2:{name:'霧見岬の監視権確保',short:'霧見岬確保',summary:'北岸の岬に王国の烽火と監視所が置かれ、長船の接近を早く知れるようになった。',tax:300,stability:1,troops:60,prestige:1,tension:1,case:'霧見岬の補給',risk:'氏族の報復'},
+      4:{name:'北岸寄港地の管理権掌握',short:'寄港地管理',summary:'王国は北岸の寄港地を管理し、捕虜返還と通商の主導権を握った。だがトレウヴァル氏族の誓約は重い。',tax:550,stability:2,troops:90,prestige:2,tension:2,case:'寄港地管理',risk:'冬営地反発'}
+    };
+    TERRITORY_STAKES.altrantTreuval.neg={
+      2:{name:'霧見岬喪失',short:'霧見岬喪失',summary:'霧見岬を失い、長船の接近を知る目が弱まった。沿岸の村は夜ごとに鐘を鳴らしている。',tax:-350,stability:-2,troops:-100,prestige:-1,tension:1,case:'霧見岬奪還',risk:'沿岸襲撃'},
+      4:{name:'北岸冬営地の既成事実化',short:'冬営地定着',summary:'北岸の浜にトレウヴァルの冬営地が根を下ろした。王国法より氏族の掟が通る場所が生まれている。',tax:-650,stability:-5,troops:-220,prestige:-2,tension:2,case:'冬営地撤去',risk:'捕虜・略奪増加'}
+    };
+  }
+}catch(_){ }
+try{
+  const repl=[
+    ['トレウヴァル森境の焚火跡','北岸の入り江の焚火跡'],['北の森境','北岸の入り江'],['北岸の森','北岸の入り江'],['北方森','霧海の北岸'],['黒森砦シュヴァルツホルン','黒岬砦シュヴァルツホルン'],['黒森砦','黒岬砦'],['北西木柵線','北岸木柵地'],['灰狼谷','灰狼の入り江'],['焦土の牧草地','焦土の放牧浜'],['北西の荒地','北岸の浜辺'],['荒地の境目','浜辺の境目'],['辺境戦士','海の氏族戦士'],['辺境の風','霧海の風'],['辺境では','霧海では'],['辺境民','沿岸民'],['北方氏族','霧海の氏族']
+  ];
+  DATA.cases.forEach(c=>{
+    if(!c)return;
+    const blob=[c.id,c.title,c.category,c.enemy,c.lineName,c.intro,JSON.stringify(c.effects&&c.effects.stories||[]),JSON.stringify(c.stories||[])].join(' ');
+    if(!/トレウヴァル|treuval|altrantTreuval/.test(blob))return;
+    ['title','category','enemy','lineName','intro'].forEach(k=>{if(typeof c[k]==='string')repl.forEach(([a,b])=>{c[k]=c[k].split(a).join(b);});});
+    if(c.effects&&Array.isArray(c.effects.stories))c.effects.stories=c.effects.stories.map(x=>{if(typeof x!=='string')return x;repl.forEach(([a,b])=>{x=x.split(a).join(b);});return x;});
+    if(Array.isArray(c.stories))c.stories=c.stories.map(x=>{if(typeof x!=='string')return x;repl.forEach(([a,b])=>{x=x.split(a).join(b);});return x;});
+  });
+}catch(e){console.warn('phase74 treuval text cleanup failed',e);}
+console.info(PHASE+' applied');
+})();
+
+(function(){
+'use strict';
+if(window.__phase75PeaceFatigueMultiFrontApplied)return;
+window.__phase75PeaceFatigueMultiFrontApplied=true;
+const PHASE='phase75_peace_fatigue_multifront';
+const BORDER_KEYS=(typeof ALTRANT_BORDER_KEYS!=='undefined'?ALTRANT_BORDER_KEYS:['altrantRuthenia','altrantLoire','altrantTreuval','altrantRick','altrantSolia']);
+function n(x){return Number(x)||0;}
+function clamp75(x,a,b){return Math.max(a,Math.min(b,x));}
+function keyFor75(c){
+  if(!c)return'';
+  try{ if(typeof borderKeyForCase==='function'){const k=borderKeyForCase(c); if(k)return k;} }catch(_){ }
+  try{ if(typeof keyForBorderCase==='function'){const k=keyForBorderCase(c); if(k)return k;} }catch(_){ }
+  try{ const ks=typeof caseTensionKeys==='function'?caseTensionKeys(c):[]; return (ks||[]).find(k=>BORDER_KEYS.includes(k))||''; }catch(_){ return''; }
+}
+function label75(key){try{return typeof borderPressureLabel==='function'?borderPressureLabel(key):key;}catch(_){return key||'国境';}}
+function ensureWar75(){try{if(typeof ensureBorderWarState==='function')ensureBorderWarState();}catch(_){ }
+  State.borderWarState=State.borderWarState||{};
+  State.warTurns=State.warTurns||{};
+  State.warFatigue=State.warFatigue||{};
+  State.warCooldown=State.warCooldown||{};
+  State.borderPeaceCooldown=State.borderPeaceCooldown||{};
+  State.borderPeaceStalemate=State.borderPeaceStalemate||{};
+  State.borderPressure=State.borderPressure||{};
+  State.tension=State.tension||{};
+  State.map=State.map||{};
+  BORDER_KEYS.forEach(k=>{
+    if(!State.borderWarState[k])State.borderWarState[k]='peace';
+    State.warTurns[k]=n(State.warTurns[k]);
+    State.warFatigue[k]=n(State.warFatigue[k]);
+    State.warCooldown[k]=n(State.warCooldown[k]);
+    State.borderPeaceCooldown[k]=n(State.borderPeaceCooldown[k]);
+    State.borderPeaceStalemate[k]=n(State.borderPeaceStalemate[k]);
+    State.borderPressure[k]=n(State.borderPressure[k]);
+    State.tension[k]=n(State.tension[k]);
+    State.map[k]=n(State.map[k]);
+  });
+}
+function isAtWar75(key){ensureWar75();return State.borderWarState[key]==='war'||State.borderWarState[key]==='greatWar'||n(State.warTurns[key])>0;}
+function isPeaceKind75(c){try{return typeof phase16WarSlotKind==='function'&&phase16WarSlotKind(c)==='peace';}catch(_){return String(c&&c.id||'').includes('peace');}}
+function isWarSlot75(c){try{return typeof isPhase16WarSlotCase==='function'&&isPhase16WarSlotCase(c);}catch(_){return /^phase16_(war|greatwar|peace)_/.test(String(c&&c.id||''));}}
+function isTalk75(c){
+  const id=String(c&&c.id||'');
+  const cat=String(c&&c.category||'');
+  let tags=[];try{tags=(typeof caseMeta==='function'?caseMeta(c).tags:[])||[];}catch(_){ }
+  return id.includes('talk')||id.includes('exchange')||id.includes('peace')||id.includes('truce')||id.includes('envoy')||cat.includes('外交')||cat.includes('交渉')||tags.includes('peace')||tags.includes('diplomacy');
+}
+function isBorderContest75(c){
+  const key=keyFor75(c); if(!key)return false;
+  if(isWarSlot75(c))return true;
+  let tags=[];try{tags=(typeof caseMeta==='function'?caseMeta(c).tags:[])||[];}catch(_){ }
+  const id=String(c&&c.id||'');
+  const cat=String(c&&c.category||'');
+  return tags.some(t=>['border','war','military','territory','coast','raid','fort'].includes(t))||cat.includes('土地争い')||cat.includes('国境')||id.includes('border_')||id.includes('_border_');
+}
+function available75(c){
+  if(!c)return false;
+  try{ if(typeof isPhase16ReservedCase==='function'&&isPhase16ReservedCase(c))return false; }catch(_){ }
+  try{ if(typeof caseAvailable==='function'&&!caseAvailable(c,typeof nationalPowerRank==='function'?nationalPowerRank():4))return false; }catch(_){ }
+  try{ if(typeof caseBlockedByProgress==='function'&&caseBlockedByProgress(c))return false; }catch(_){ }
+  if((State.completedCases||[]).includes(c.id)&&c.once)return false;
+  return true;
+}
+function markDirty75(){try{State.caseCache=null;}catch(_){ }}
+function setMapTo75(key,target){
+  State.map=State.map||{};
+  const before=n(State.map[key]);
+  const next=clamp75(Math.round(target),-4,4);
+  State.map[key]=next;
+  try{ if(next!==before&&typeof markBorderTerritoryChange==='function')markBorderTerritoryChange(key); }catch(_){ }
+  return {before,after:next};
+}
+function endWar75(key,cooldown){
+  ensureWar75();
+  State.borderWarState[key]='peace';
+  State.warTurns[key]=0;
+  State.warFatigue[key]=0;
+  State.warCooldown[key]=Math.max(n(State.warCooldown[key]),cooldown||4);
+  State.borderPeaceCooldown[key]=Math.max(n(State.borderPeaceCooldown[key]),cooldown||4);
+  State.borderPeaceStalemate[key]=0;
+  try{ if(typeof markBorderPeace==='function')markBorderPeace(key); }catch(_){ }
+  markDirty75();
+}
+const oldPeaceReady75=typeof peaceConferenceReady==='function'?peaceConferenceReady:null;
+if(oldPeaceReady75){
+  peaceConferenceReady=function(row){
+    if(!row||!row.key)return false;
+    ensureWar75();
+    const key=row.key;
+    if(n(State.borderPeaceCooldown[key])>0)return false;
+    const atWar=isAtWar75(key);
+    if(!atWar)return false;
+    const turns=n(State.warTurns[key]);
+    if(turns<2)return false;
+    let hist={};try{hist=typeof ensureBorderWarHistory==='function'?(ensureBorderWarHistory()[key]||{}):{};}catch(_){ }
+    const lastWar=n(hist.lastWarActionTurn);
+    if(lastWar&&lastWar>=n(State.turn))return false;
+    const p=n(State.borderPressure[key]);
+    const f=n(State.warFatigue[key]);
+    const t=n(State.tension[key]);
+    const stalemate=n(State.borderPeaceStalemate[key]);
+    return f>=45||turns>=4||p<70||stalemate>=1||((f+t*10)>=78&&turns>=3)||State.borderWarState[key]==='greatWar';
+  };
+}
+const oldCaseThreat75=typeof caseThreat==='function'?caseThreat:null;
+if(oldCaseThreat75){
+  caseThreat=function(c){
+    let base=oldCaseThreat75(c);
+    if(c&&isPeaceKind75(c)){
+      const key=keyFor75(c); ensureWar75();
+      if(key){
+        const fatigue=n(State.warFatigue[key]);
+        const tension=n(State.tension[key]);
+        const turns=n(State.warTurns[key]);
+        base+=Math.round(tension*8 - fatigue*.16 - Math.max(0,turns-2)*3);
+        base=clamp75(base,55,190);
+      }
+    }
+    return base;
+  };
+}
+const oldApplyPeace75=typeof applyBorderWarSlotOutcome==='function'?applyBorderWarSlotOutcome:null;
+if(oldApplyPeace75){
+  applyBorderWarSlotOutcome=function(r){
+    const c=r&&r.case; const key=c?keyFor75(c):''; const kind=c&&typeof phase16WarSlotKind==='function'?phase16WarSlotKind(c):'';
+    if(!c||!key||kind!=='peace')return oldApplyPeace75.apply(this,arguments);
+    ensureWar75();
+    const before={map:n(State.map[key]),pressure:n(State.borderPressure[key]),fatigue:n(State.warFatigue[key]),tension:n(State.tension[key])};
+    const ret=oldApplyPeace75.apply(this,arguments);
+    ensureWar75();
+    let line='';
+    if(typeof isSuccessRank==='function'&&isSuccessRank(r.rank)){
+      const m=setMapTo75(key,before.map+1);
+      State.borderPressure[key]=clamp75(14,0,180);
+      try{ if(typeof changeTension==='function')changeTension(key,-Math.max(2,Math.min(5,before.tension))); else State.tension[key]=Math.max(0,before.tension-3); }catch(_){State.tension[key]=Math.max(0,before.tension-3);}
+      endWar75(key,4);
+      line=`講和は王国優位でまとまり、${label75(key)}方面の国境は押し上げられた。戦争は終わり、最低二年は同方面の国境争いが凍結される。`;
+      line+=`<br>国境 ${m.before}→${m.after} / 疲弊 ${Math.round(before.fatigue)}→0 / 緊張 ${Math.round(before.tension)}→${Math.round(n(State.tension[key]))}`;
+    }else if(r.rank==='draw'){
+      State.borderPressure[key]=clamp75(before.pressure-12,0,180);
+      State.warFatigue[key]=clamp75(before.fatigue-10,0,200);
+      State.borderPeaceStalemate[key]=n(State.borderPeaceStalemate[key])+1;
+      try{ if(typeof changeTension==='function')changeTension(key,-1); else State.tension[key]=Math.max(0,before.tension-1); }catch(_){State.tension[key]=Math.max(0,before.tension-1);}
+      State.borderWarState[key]=State.borderWarState[key]||'war';
+      if(State.borderWarState[key]==='peace')State.borderWarState[key]='war';
+      line=`講和は拮抗した。捕虜交換と休戦案だけが残り、戦争は終わらない。疲弊はわずかに和らいだが、次の交渉まで火は消えない。`;
+      line+=`<br>戦争継続 / 疲弊 ${Math.round(before.fatigue)}→${Math.round(n(State.warFatigue[key]))} / 緊張 ${Math.round(before.tension)}→${Math.round(n(State.tension[key]))}`;
+    }else{
+      const m=setMapTo75(key,before.map-1);
+      State.borderPressure[key]=clamp75(28,0,180);
+      try{ if(typeof changeTension==='function')changeTension(key,-Math.max(1,Math.min(3,before.tension))); else State.tension[key]=Math.max(0,before.tension-1); }catch(_){State.tension[key]=Math.max(0,before.tension-1);}
+      endWar75(key,4);
+      if(r.rank==='completeLoss'||r.rank==='majorLoss'){
+        State.params.prestige=clamp75(n(State.params.prestige)-2,0,100);
+        State.params.stability=clamp75(n(State.params.stability)-1,0,100);
+      }
+      line=`講和は不利な条件でまとまり、${label75(key)}方面の国境は押し戻された。だが戦争は終わり、最低二年は同方面の国境争いが凍結される。`;
+      line+=`<br>国境 ${m.before}→${m.after} / 疲弊 ${Math.round(before.fatigue)}→0 / 緊張 ${Math.round(before.tension)}→${Math.round(n(State.tension[key]))}`;
+    }
+    r.specialLines=r.specialLines||[];
+    r.specialLines.push(line);
+    State.lastWarOutcomeNotes=State.lastWarOutcomeNotes||[];
+    State.lastWarOutcomeNotes.push(`${label75(key)}講和刷新：${line.replace(/<br>/g,' / ')}`);
+    markDirty75();
+    return line;
+  };
+}
+const oldWorld75=typeof worldSituationTick==='function'?worldSituationTick:null;
+if(oldWorld75){
+  worldSituationTick=function(){
+    const ret=oldWorld75.apply(this,arguments);
+    ensureWar75();
+    if(State.__phase75CooldownTick!==State.turn){
+      State.__phase75CooldownTick=State.turn;
+      let changed=false;
+      for(const k of BORDER_KEYS){
+        const before=n(State.borderPeaceCooldown[k]);
+        if(before>0){State.borderPeaceCooldown[k]=Math.max(0,before-1);changed=true;}
+      }
+      if(changed)markDirty75();
+    }
+    return ret;
+  };
+}
+function candidateOtherBorderCase75(current){
+  ensureWar75();
+  const used=new Set((current||[]).map(c=>c.id));
+  const atWarKeys=new Set(BORDER_KEYS.filter(isAtWar75));
+  const pool=(DATA.cases||[]).filter(c=>{
+    if(!available75(c)||used.has(c.id)||isWarSlot75(c)||isTalk75(c))return false;
+    const key=keyFor75(c);
+    if(!key||atWarKeys.has(key)||n(State.borderPeaceCooldown[key])>0)return false;
+    return isBorderContest75(c);
+  });
+  pool.sort((a,b)=>{
+    const ka=keyFor75(a),kb=keyFor75(b);
+    const sa=n(State.borderPressure[ka])+n(State.tension[ka])*12+Math.abs(n(State.map[ka]))*8;
+    const sb=n(State.borderPressure[kb])+n(State.tension[kb])*12+Math.abs(n(State.map[kb]))*8;
+    return sb-sa;
+  });
+  return pool[0]||null;
+}
+function rebalanceWarSlots75(list){
+  ensureWar75();
+  let out=[...(list||[])];
+  const seenWarKey=new Set();
+  out=out.filter(c=>{
+    const key=keyFor75(c);
+    if(key&&n(State.borderPeaceCooldown[key])>0&&isBorderContest75(c))return false;
+    if(isWarSlot75(c)&&key){
+      const kind=typeof phase16WarSlotKind==='function'?phase16WarSlotKind(c):'';
+      if(kind!=='peace'){
+        const tag=key+':war';
+        if(seenWarKey.has(tag))return false;
+        seenWarKey.add(tag);
+      }
+    }
+    return true;
+  });
+  const hasWar=BORDER_KEYS.some(isAtWar75);
+  if(hasWar){
+    const hasOther=out.some(c=>{const k=keyFor75(c);return k&&!isAtWar75(k)&&n(State.borderPeaceCooldown[k])<=0&&isBorderContest75(c);});
+    if(!hasOther){
+      const add=candidateOtherBorderCase75(out);
+      if(add){
+        const limit=(typeof visibleCaseCount==='function')?visibleCaseCount():7;
+        if(out.length>=limit){
+          let idx=-1;
+          for(let i=out.length-1;i>=0;i--){
+            const c=out[i];
+            const protectedCase=(State.selected||[]).includes(c.id)||c.marriageCandidate||c.unlockActor||c.id==='tutorial_butler'||(typeof isPhase16ReservedCase==='function'&&isPhase16ReservedCase(c)&&isPeaceKind75(c));
+            if(!protectedCase){idx=i;break;}
+          }
+          if(idx>=0)out.splice(idx,1);
+        }
+        out.push(add);
+      }
+    }
+  }
+  const limit=(typeof visibleCaseCount==='function')?visibleCaseCount():7;
+  return out.slice(0,limit);
+}
+const oldAppend75=typeof appendBorderWarSlots==='function'?appendBorderWarSlots:null;
+if(oldAppend75){
+  appendBorderWarSlots=function(out,all){
+    const res=oldAppend75.apply(this,arguments);
+    return rebalanceWarSlots75(res);
+  };
+}
+const oldVisible75=typeof visibleCases==='function'?visibleCases:null;
+if(oldVisible75){
+  visibleCases=function(){
+    let out=oldVisible75.apply(this,arguments);
+    out=rebalanceWarSlots75(out);
+    if(State.caseCache&&State.caseCache.turn===State.turn){
+      try{State.caseCache.cases=out.map(c=>c.id);State.caseCache.phase75Applied=true;}catch(_){ }
+    }
+    return out;
+  };
+}
+const oldInfo75=typeof caseExtraInfoParts==='function'?caseExtraInfoParts:null;
+if(oldInfo75){
+  caseExtraInfoParts=function(c){
+    const parts=oldInfo75.apply(this,arguments)||[];
+    const key=keyFor75(c); if(!key)return parts;
+    ensureWar75();
+    if(n(State.borderPeaceCooldown[key])>0&&isBorderContest75(c)){
+      parts.push(`<div class="borderPacingNote">${label75(key)}方面は講和後の休戦中です。国境争い停止：残り${n(State.borderPeaceCooldown[key])}期。</div>`);
+    }
+    if(isPeaceKind75(c)){
+      const f=n(State.warFatigue[key]),t=n(State.tension[key]);
+      parts.push(`<div class="borderPacingNote warn">講和条件：疲弊が高いほど成立しやすく、緊張が高いほど難しくなります。疲弊${Math.round(f)}／緊張${Math.round(t)}</div>`);
+    }
+    return parts;
+  };
+}
+ensureWar75();
+markDirty75();
+console.info(PHASE+' applied');
+})();
+
+</script>
+
+
+<script id="phase76-combo-perfect">
+(function(){
+'use strict';
+if(window.__phase76ComboPerfectApplied)return;
+window.__phase76ComboPerfectApplied=true;
+function ensure(){
+  if(!window.State)return;
+  if(typeof State.perfectStreak!=='number')State.perfectStreak=0;
+}
+function clone(o){try{return JSON.parse(JSON.stringify(o||{}));}catch(_){return Object.assign({},o||{});}}
+function doubleNumerics(obj){
+  if(!obj||typeof obj!=='object')return obj;
+  const out=Array.isArray(obj)?[]:{};
+  for(const k in obj){
+    const v=obj[k];
+    if(k==='story'){out[k]=v;continue;}
+    if(typeof v==='number')out[k]=Math.round(v*2);
+    else if(v&&typeof v==='object')out[k]=doubleNumerics(v);
+    else out[k]=v;
+  }
+  return out;
+}
+function showComboPerfectFx(){
+  const root=document.getElementById('game')||document.body;
+  if(!root)return;
+  const old=document.getElementById('comboPerfectFx76');
+  if(old)old.remove();
+  const div=document.createElement('div');
+  div.id='comboPerfectFx76';
+  div.innerHTML='<div class="comboPerfectFlash76"></div><div class="comboPerfectRing76"></div><div class="comboPerfectText76">COMBO PERFECT</div>';
+  root.appendChild(div);
+  try{if(typeof sfx==='function')sfx('finishWin');else if(typeof audio==='function')audio();}catch(_){ }
+  setTimeout(()=>{const el=document.getElementById('comboPerfectFx76');if(el)el.remove();},1300);
+}
+function addCss(){
+  if(document.getElementById('phase76ComboPerfectCss'))return;
+  const st=document.createElement('style');
+  st.id='phase76ComboPerfectCss';
+  st.textContent=`
+#comboPerfectFx76{position:absolute;inset:0;z-index:99999;pointer-events:none;display:flex;align-items:center;justify-content:center;animation:comboShake76 .55s ease-out both;}
+.comboPerfectFlash76{position:absolute;inset:-40px;background:radial-gradient(circle at 50% 48%,rgba(255,245,170,.92),rgba(255,196,45,.45) 24%,rgba(255,120,30,.18) 47%,rgba(255,255,255,0) 70%);animation:comboFlash76 1.15s ease-out both;mix-blend-mode:screen;}
+.comboPerfectRing76{position:absolute;width:260px;height:260px;border:5px solid rgba(255,238,130,.95);border-radius:50%;box-shadow:0 0 34px rgba(255,212,62,.95),inset 0 0 30px rgba(255,212,62,.35);animation:comboRing76 1.05s ease-out both;}
+.comboPerfectText76{position:relative;padding:16px 36px;border:3px solid #fff1a6;border-radius:18px;background:linear-gradient(180deg,rgba(40,24,4,.92),rgba(116,65,8,.86));color:#fff4b8;font-size:48px;font-weight:1000;letter-spacing:.08em;text-shadow:0 3px 0 #5b2600,0 0 22px rgba(255,224,100,.95);box-shadow:0 0 38px rgba(255,210,72,.72),0 8px 0 rgba(0,0,0,.25);animation:comboText76 1.12s cubic-bezier(.12,1.35,.25,1) both;}
+.resultCard.comboPerfectResult76{box-shadow:0 0 0 4px rgba(255,229,98,.85),0 0 40px rgba(255,201,45,.7),inset 0 0 24px rgba(255,213,86,.22)!important;}
+.resultCard.comboPerfectResult76 h2::after{content:'  COMBO PERFECT';display:inline-block;margin-left:10px;font-size:14px;color:#7a3d00;background:#ffe477;border:2px solid #9b6400;border-radius:999px;padding:3px 8px;vertical-align:middle;}
+@keyframes comboFlash76{0%{opacity:0;transform:scale(.55)}14%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.45)}}
+@keyframes comboRing76{0%{opacity:0;transform:scale(.25) rotate(0deg)}22%{opacity:1}100%{opacity:0;transform:scale(2.3) rotate(18deg)}}
+@keyframes comboText76{0%{opacity:0;transform:scale(.35) translateY(18px)}18%{opacity:1;transform:scale(1.12) translateY(0)}42%{transform:scale(1)}100%{opacity:0;transform:scale(1.06) translateY(-10px)}}
+@keyframes comboShake76{0%,100%{transform:translate(0,0)}12%{transform:translate(5px,-3px)}22%{transform:translate(-4px,3px)}32%{transform:translate(3px,2px)}44%{transform:translate(-2px,-2px)}58%{transform:translate(1px,1px)}}`;
+  document.head.appendChild(st);
+}
+function init(){
+  if(!window.Battle||!Battle.collide||!Battle.result||!window.State)return false;
+  addCss();ensure();
+  const oldCollide=Battle.collide.bind(Battle);
+  Battle.collide=function(l){
+    const already=l&&l.collided;
+    const ret=oldCollide(l);
+    try{
+      if(l&&!already&&l.collided&&!l.__phase76ComboChecked){
+        l.__phase76ComboChecked=true;
+        ensure();
+        if(l.lastJudge==='Perfect!'){
+          State.perfectStreak=(Number(State.perfectStreak)||0)+1;
+          if(State.perfectStreak>=3){
+            l.comboPerfect=true;
+            State.perfectStreak=0;
+            showComboPerfectFx();
+          }
+        }else{
+          State.perfectStreak=0;
+        }
+      }
+    }catch(e){console.warn('phase76 combo collide failed',e);}
+    return ret;
+  };
+  const oldResult=Battle.result.bind(Battle);
+  Battle.result=function(l){
+    const r=oldResult(l);
+    try{
+      if(l&&l.comboPerfect&&r&&r.effect){
+        r.comboPerfect=true;
+        r.effect=doubleNumerics(clone(r.effect));
+        r.specialLines=r.specialLines||[];
+        r.specialLines.unshift('COMBO PERFECT：この案件の効果が2倍になりました。');
+      }
+    }catch(e){console.warn('phase76 combo result failed',e);}
+    return r;
+  };
+  if(window.View&&View.resultLane){
+    const oldResultLane=View.resultLane.bind(View);
+    View.resultLane=function(r){
+      const ret=oldResultLane(r);
+      if(r&&r.comboPerfect){
+        setTimeout(()=>{
+          const card=document.querySelector('#screenResult .resultCard');
+          if(card)card.classList.add('comboPerfectResult76');
+        },0);
+      }
+      return ret;
+    };
+  }
+  return true;
+}
+if(!init()){
+  let tries=0;
+  const timer=setInterval(()=>{tries++; if(init()||tries>20)clearInterval(timer);},100);
+}
+console.info('phase76 combo perfect applied');
 })();
 </script>
 
