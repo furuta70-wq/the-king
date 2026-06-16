@@ -5902,7 +5902,7 @@ if(State.assignFlash){clearTimeout(State.assignFlashTimer);State.assignFlashTime
 },
 battle(full=false,countText=null){if(!battle)return;if(full){setScreen('screenBattle');$('screenBattle').innerHTML=`${battleTopHtml(battle)}<div class="battleArea" id="battleArea">${battle.lanes.map(l=>View.lane(l,battle.lanes.length)).join('')}</div>${countText?`<div id="countdown"class="countdown">${countText}</div>`:''}`}else{const c=$('countdown');if(c)c.remove()}View.updateBattle()},
 lane(l,count){return battleLaneHtml(l,count)},
-updateBattle(){if(!battle)return;const frame=1/60;const remain=Math.max(0,CONFIG.battleSeconds-(battle.elapsed||0));const tt=$('timerText');if(tt)tt.textContent=remain.toFixed(1);const tf=$('timeFill');if(tf)tf.style.width=`${clamp(remain/CONFIG.battleSeconds*100,0,100)}%`;const tb=$('timerBox');if(tb)tb.classList.toggle('danger',remain<=5);const dangerLane=battleMostDangerLane();const ba=$('battleAlert');if(ba){ba.classList.toggle('warn',!!dangerLane);ba.textContent=battleAlertText(dangerLane)}for(const l of battle.lanes){if(l.tapRespawn>0)l.tapRespawn=Math.max(0,l.tapRespawn-frame);if(l.tapPressT>0)l.tapPressT=Math.max(0,l.tapPressT-frame);if(l.landT>0)l.landT=Math.max(0,l.landT-frame);if(l.startT>0)l.startT=Math.max(0,l.startT-frame);if(l.hitReadyT>0)l.hitReadyT=Math.max(0,l.hitReadyT-frame);const lane=$(`lane${l.id}`);if(!lane)continue;lane.classList.toggle('done',l.status==='done');lane.classList.toggle('stun',l.phase==='approach'&&(l.playerStun>0||l.enemyStun>0));lane.classList.toggle('landPulse',l.landT>0);lane.classList.toggle('startPulse',l.startT>0);lane.classList.toggle('hitReady',l.hitReadyT>0);lane.classList.toggle('budgetBoost',battle.phase==='budgetIntro'&&(l.budgetIntroBonus||0)>0);const tactical=laneTacticalState(l);lane.classList.toggle('laneDanger',tactical.cls==='danger');lane.classList.toggle('laneAdvantage',tactical.cls==='adv');const stateEl=$(`laneState${l.id}`);if(stateEl){stateEl.textContent=tactical.label;stateEl.className=`laneStateBadge ${tactical.cls}`}const pct=clamp(l.line,-100,100);const fill=$(`fill${l.id}`);if(fill){fill.style.left=pct>=0?'50%':`${50+pct/2}%`;fill.style.width=`${Math.abs(pct)/2}%`;fill.style.background=pct>=0?'#e5c24c':'#b34236'}const lt=$(`lineText${l.id}`);if(lt)lt.textContent=`${l.line>=0?'+':''}${l.line}`;const d=Battle.distance(l);let grow=0;if(l.phase==='approach')grow=1-clamp(d/CONFIG.readyPx,0,1);if(d<0)grow=Math.max(0,1-Math.abs(d)/64);const effort=l.phase==='approach'?grow:0;const time=battle.elapsed||0;const shake=Math.sin(time*24+l.seed)*effort*3.2;const bob=Math.sin(time*18+l.seed)*effort*3.0;const startLean=l.startT>0?(l.startT/.26)*5:0;const lean=2+effort*8+startLean;const losing=l.phase==='recoil'&&l.lastDelta<0,winning=l.phase==='recoil'&&l.lastDelta>0;const pStun=l.phase==='approach'&&l.playerStun>0,eStun=l.phase==='approach'&&l.enemyStun>0;const pose=l.phase==='recoil'?Math.min(1,l.recoilT/l.recoilDur):0;const landDrop=l.landT>0?Math.sin((1-l.landT/.28)*Math.PI)*5:0;const left=$(`left${l.id}`),right=$(`right${l.id}`);if(left){left.style.left=`${l.playerX}px`;left.classList.toggle('straining',effort>.45);left.classList.toggle('bracing',losing||pStun);left.style.transform=`translateY(${bob+landDrop-(losing?pose*8:0)}px) translateX(${shake}px) rotate(${l.phase==='approach'?-lean:(losing?8:winning?-5:0)}deg)`}if(right){right.style.left=`${l.enemyX}px`;right.classList.toggle('straining',effort>.45);right.classList.toggle('bracing',winning||eStun);right.style.transform=`translateY(${bob+landDrop-(winning?pose*8:0)}px) translateX(${-shake}px) rotate(${l.phase==='approach'?lean:(winning?-8:losing?5:0)}deg)`}const tap=$(`tap${l.id}`);if(tap){tap.style.setProperty('--tapScale',(.62+grow*.72).toFixed(3));tap.style.setProperty('--tapGlow',grow.toFixed(3));tap.style.setProperty('--tapOpacity',(.70+grow*.30).toFixed(3));tap.classList.remove('wait','good','perfect','late','locked','consumed','recoilOff','reborn','pressed','tutorialGlow');if(l.case?.id==='tutorial_butler'&&l.phase==='approach'&&!l.tapped)tap.classList.add('tutorialGlow');let label='TAP';if(l.tapPressT>0)tap.classList.add('pressed');if(l.phase==='approach'&&!l.tapped){if(l.tapJustSpawned){tap.classList.add('reborn');l.tapJustSpawned=false}if(d<=CONFIG.perfectPx){tap.classList.add('perfect');label='Perfect!'}else if(Math.abs(d)<=CONFIG.goodPx){tap.classList.add('good');label='Good'}else if(d<=CONFIG.readyPx){tap.classList.add('wait');label='Normal'}}else if(l.tapped){if(l.tapPressT>0){const fx=FX_LABELS[l.storedJudge]||{};label=fx.label||l.storedJudge||'TAP'}else{tap.classList.add('consumed');label=''}}else{tap.classList.add('recoilOff');label=''}tap.textContent=label}const x=Battle.clashX(l);const sp=$(`spark${l.id}`);if(sp)sp.style.left=`${x}px`;const dust=$(`impactDust${l.id}`);if(dust)dust.style.left=`${x}px`;const j=$(`judge${l.id}`);if(j){const fx=FX_LABELS[l.lastJudge]||{};j.textContent=l.lastJudge?(fx.label||l.lastJudge):'';}const cs=$(`cardSlot${l.id}`);if(cs){const wait=l.queuedCards.map(id=>`<span class="cardChip waiting">${DATA.cards[id].name}</span>`).join('');const used=l.cardUsed?`<span class="cardChip used">${DATA.cards[l.cardUsed].name}</span>`:'';const eff=l.cardEffectLabel?`<span class="cardEffectText">${l.cardEffectLabel}</span>`:'';cs.innerHTML=wait+used+eff}const cb=$(`combo${l.id}`);if(cb)cb.textContent=l.combo>=2?`${l.combo} COMBO`:''}},
+updateBattle(){if(!battle)return;const frame=1/60;const remain=Math.max(0,CONFIG.battleSeconds-(battle.elapsed||0));const tt=$('timerText');if(tt)tt.textContent=remain.toFixed(1);const tf=$('timeFill');if(tf)tf.style.width=`${clamp(remain/CONFIG.battleSeconds*100,0,100)}%`;const tb=$('timerBox');if(tb)tb.classList.toggle('danger',remain<=5);const dangerLane=battleMostDangerLane();const ba=$('battleAlert');if(ba){ba.classList.toggle('warn',!!dangerLane);ba.textContent=battleAlertText(dangerLane)}for(const l of battle.lanes){if(l.tapRespawn>0)l.tapRespawn=Math.max(0,l.tapRespawn-frame);if(l.tapPressT>0)l.tapPressT=Math.max(0,l.tapPressT-frame);if(l.landT>0)l.landT=Math.max(0,l.landT-frame);if(l.startT>0)l.startT=Math.max(0,l.startT-frame);if(l.hitReadyT>0)l.hitReadyT=Math.max(0,l.hitReadyT-frame);const lane=$(`lane${l.id}`);if(!lane)continue;lane.classList.toggle('done',l.status==='done');lane.classList.toggle('stun',l.phase==='approach'&&(l.playerStun>0||l.enemyStun>0));lane.classList.toggle('landPulse',l.landT>0);lane.classList.toggle('startPulse',l.startT>0);lane.classList.toggle('hitReady',l.hitReadyT>0);lane.classList.toggle('budgetBoost',battle.phase==='budgetIntro'&&(l.budgetIntroBonus||0)>0);const tactical=laneTacticalState(l);lane.classList.toggle('laneDanger',tactical.cls==='danger');lane.classList.toggle('laneAdvantage',tactical.cls==='adv');const stateEl=$(`laneState${l.id}`);if(stateEl){stateEl.textContent=tactical.label;stateEl.className=`laneStateBadge ${tactical.cls}`}const pct=clamp(l.line,-100,100);const fill=$(`fill${l.id}`);if(fill){fill.style.left=pct>=0?'50%':`${50+pct/2}%`;fill.style.width=`${Math.abs(pct)/2}%`;fill.style.background=pct>=0?'#e5c24c':'#b34236'}const lt=$(`lineText${l.id}`);if(lt)lt.textContent=`${l.line>=0?'+':''}${l.line}`;const d=Battle.distance(l);let grow=0;if(l.phase==='approach')grow=1-clamp(d/CONFIG.readyPx,0,1);if(d<0)grow=Math.max(0,1-Math.abs(d)/64);const effort=l.phase==='approach'?grow:0;const time=battle.elapsed||0;const shake=Math.sin(time*24+l.seed)*effort*3.2;const bob=Math.sin(time*18+l.seed)*effort*3.0;const startLean=l.startT>0?(l.startT/.26)*5:0;const lean=2+effort*8+startLean;const losing=l.phase==='recoil'&&l.lastDelta<0,winning=l.phase==='recoil'&&l.lastDelta>0;const pStun=l.phase==='approach'&&l.playerStun>0,eStun=l.phase==='approach'&&l.enemyStun>0;const pose=l.phase==='recoil'?Math.min(1,l.recoilT/l.recoilDur):0;const landDrop=l.landT>0?Math.sin((1-l.landT/.28)*Math.PI)*5:0;const left=$(`left${l.id}`),right=$(`right${l.id}`);if(left){left.style.left=`${l.playerX}px`;left.classList.toggle('straining',effort>.45);left.classList.toggle('bracing',losing||pStun);left.style.transform=`translateY(${bob+landDrop-(losing?pose*8:0)}px) translateX(${shake}px) rotate(${l.phase==='approach'?-lean:(losing?8:winning?-5:0)}deg)`}if(right){right.style.left=`${l.enemyX}px`;right.classList.toggle('straining',effort>.45);right.classList.toggle('bracing',winning||eStun);right.style.transform=`translateY(${bob+landDrop-(winning?pose*8:0)}px) translateX(${-shake}px) rotate(${l.phase==='approach'?lean:(winning?-8:losing?5:0)}deg)`}const tap=$(`tap${l.id}`);if(tap){tap.style.setProperty('--tapScale',(.62+grow*.72).toFixed(3));tap.style.setProperty('--tapGlow',grow.toFixed(3));tap.style.setProperty('--tapOpacity',(.70+grow*.30).toFixed(3));tap.classList.remove('wait','good','perfect','late','locked','consumed','recoilOff','reborn','pressed','tutorialGlow');if(l.case?.id==='tutorial_butler'&&l.phase==='approach'&&!l.tapped)tap.classList.add('tutorialGlow');let label='TAP';if(l.tapPressT>0)tap.classList.add('pressed');if(l.phase==='approach'&&!l.tapped){if(l.tapJustSpawned){tap.classList.add('reborn');l.tapJustSpawned=false}const jw=laneJudgeWindow(l);if(d<=jw.perfectPx){tap.classList.add('perfect');label='Perfect!'}else if(Math.abs(d)<=jw.goodPx){tap.classList.add('good');label='Good'}else if(d<=jw.readyPx){tap.classList.add('wait');label='Normal'}}else if(l.tapped){if(l.tapPressT>0){const fx=FX_LABELS[l.storedJudge]||{};label=fx.label||l.storedJudge||'TAP'}else{tap.classList.add('consumed');label=''}}else{tap.classList.add('recoilOff');label=''}tap.textContent=label}const x=Battle.clashX(l);const sp=$(`spark${l.id}`);if(sp)sp.style.left=`${x}px`;const dust=$(`impactDust${l.id}`);if(dust)dust.style.left=`${x}px`;const j=$(`judge${l.id}`);if(j){const fx=FX_LABELS[l.lastJudge]||{};j.textContent=l.lastJudge?(fx.label||l.lastJudge):'';}const cs=$(`cardSlot${l.id}`);if(cs){const wait=l.queuedCards.map(id=>`<span class="cardChip waiting">${DATA.cards[id].name}</span>`).join('');const used=l.cardUsed?`<span class="cardChip used">${DATA.cards[l.cardUsed].name}</span>`:'';const eff=l.cardEffectLabel?`<span class="cardEffectText">${l.cardEffectLabel}</span>`:'';cs.innerHTML=wait+used+eff}const cb=$(`combo${l.id}`);if(cb)cb.textContent=l.combo>=2?`${l.combo} COMBO`:''}},
 resultLane(r){setScreen('screenResult');if(r.finalLine>=15)sfx('resultWin');else if(r.finalLine<-14)sfx('resultLose');else sfx('resultDraw');$('screenResult').innerHTML=`<div class="topbar"><b>戦線結果</b>${paramHud()}</div><div class="resultBody"><div class="resultCard"><h2>${r.case.title}</h2><div class="resultGrid"><div class="resultBox"><b>結果</b><br>${compactResultStatusHtml(r)}</div><div class="resultBox"><b>主な影響</b><br>${compactEffectHtml(r)}</div></div><div class="storyLine">${r.story}${resultImportantSpecialHtml(r.specialLines||[])}</div><br><button onclick="Flow.nextResult()">次へ</button></div></div>`},
 summary(data){setScreen('screenResult');sfx('summary');$('screenResult').innerHTML=`<div class="topbar"><b>${periodLabel()}　総括</b>${paramHud()}</div><div class="resultBody"><div class="resultCard"><h2>${periodLabel()}の記録</h2><div class="resultMini"><span>${Flow.deltaText(data.publicDelta)}</span><span>現在：国庫 ${fmt(State.params.treasury)} / 兵数 ${fmt(State.params.troops)}</span><span>国力ランク ${nationalPowerRank()}</span></div>${summaryCaseResultsHtml(data)}${importantSummaryNotesHtml(data)}${territorySummaryHtml()}${cardRewardHtml(data)}${actorConsequenceHtml(data)}${compactOptionalDetailsHtml(data)}<br><button onclick="Flow.nextPeriod()">次の半期へ</button></div></div>`}
 };
@@ -8375,8 +8375,8 @@ requestAnimationFrame(Battle.tick);
 }
 window.closeBattleTutorial=closeBattleTutorial;
 function multiFrontAssist(count){
-if(count>=3)return{speedFactor:.74,laneSpeed:.90,tempoFactor:.80,readyPx:CONFIG.readyPx+40,goodPx:CONFIG.goodPx+42,perfectPx:CONFIG.perfectPx+32,label:''};
-if(count===2)return{speedFactor:.86,laneSpeed:.95,tempoFactor:.90,readyPx:CONFIG.readyPx+22,goodPx:CONFIG.goodPx+24,perfectPx:CONFIG.perfectPx+18,label:''};
+if(count>=3)return{speedFactor:.74,laneSpeed:.90,tempoFactor:.80,readyPx:CONFIG.readyPx+52,goodPx:CONFIG.goodPx+58,perfectPx:120,label:''};
+if(count===2)return{speedFactor:.86,laneSpeed:.95,tempoFactor:.90,readyPx:CONFIG.readyPx+30,goodPx:CONFIG.goodPx+36,perfectPx:100,label:''};
 return{speedFactor:1,laneSpeed:1,tempoFactor:1,readyPx:CONFIG.readyPx,goodPx:CONFIG.goodPx,perfectPx:CONFIG.perfectPx,label:''};
 }
 function laneJudgeWindow(l){
@@ -52826,5 +52826,185 @@ window.auditFamilyPrincessV15=function(){return{spouse:currentSpouseId(),princes
 .princessWorkText{margin-top:5px;font-size:13px;line-height:1.55;font-weight:850;color:#3d301d}
 .princessWorkEffect{margin-top:7px;font-size:12px;font-weight:1000;color:#07527a}
 </style>
+
+<script id="core-card-badge-result-story-v17">
+(function(){
+'use strict';
+if(window.__CORE_CARD_BADGE_RESULT_STORY_V17__)return;
+window.__CORE_CARD_BADGE_RESULT_STORY_V17__=true;
+function esc17(v){try{return typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'');}catch(e){return String(v??'');}}
+function badge17(kicker,label,tone){
+ if(!label)return'';
+ return `<div class="requestRibbon unifiedCaseBadge ${tone||'req-foreign'}"><span class="reqKicker">${esc17(kicker)}</span><span class="reqFaction">${esc17(label)}</span></div>`;
+}
+function firstRequest17(c){
+ try{
+  if(typeof requestRibbonHtml!=='function')return'';
+  const html=requestRibbonHtml(c)||'';
+  if(!html)return'';
+  const m=html.match(/<div class="requestRibbon[\s\S]*?<\/div>/);
+  return m?m[0]:html;
+ }catch(e){return'';}
+}
+window.unifiedCaseBadgeHtml=function(c){
+ const req=firstRequest17(c);if(req)return req;
+ const id=String(c?.id||'');
+ if(c?.finalCase||id==='finalcase_last_matter')return badge17('終局','最後の一件','req-rival');
+ if(id.startsWith('crisis_recovery_'))return badge17('危機',id.includes('troops')?'臨時徴兵':'緊急公債','req-army');
+ if(id==='tutorial_butler')return badge17('案内','チュートリアル','req-foreign');
+ let wk='';try{wk=typeof warSlotKind==='function'?warSlotKind(c):'';}catch(e){}
+ if(wk){
+  const map={peace:['局面','講和','req-foreign'],greatWar:['局面','大戦争','req-army'],warning:['局面','戦争前夜','req-army'],no2:['敵影','敵国中枢','req-army'],ruler:['敵影','君主親征','req-army'],war:['局面','戦争','req-army']};
+  const x=map[wk]||map.war;return badge17(x[0],x[1],x[2]);
+ }
+ let brother=false,marriage=false;
+ try{brother=typeof isBrotherStoryCase==='function'&&isBrotherStoryCase(c);}catch(e){}
+ try{marriage=typeof isMarriageStoryCase==='function'&&isMarriageStoryCase(c);}catch(e){}
+ if(brother)return badge17('物語','王弟','req-noble');
+ if(marriage)return badge17('物語','縁談','req-good');
+ if(c?.chainGate)return badge17('連鎖','継続案件','req-rival');
+ if(c?.factionPressureKey)return badge17('圧力','派閥不満','req-noble');
+ if(c?.territoryStake)return badge17('要地','領土案件','req-trade');
+ if(c?.greatFlow)return badge17('大勢','歴史のうねり','req-rival');
+ let boss={level:0};try{boss=typeof effectiveBorderBossLevel==='function'?effectiveBorderBossLevel(c):boss;}catch(e){}
+ if(Number(boss?.level||0)>=4)return badge17('敵影','君主級','req-army');
+ if(Number(boss?.level||0)>=3)return badge17('敵影','実力者','req-army');
+ return'';
+};
+window.factionRequestCaseNote=function(c){return unifiedCaseBadgeHtml(c);};
+window.caseTitleHtml=function(c){return `<div class="caseTitle"><span>${esc17(c?.title||'')}</span>${unifiedCaseBadgeHtml(c)}</div>`;};
+window.caseCardBodyHtml=function(c,infoBand=''){
+ const recovery=(typeof recoveryTagsHtml==='function'?recoveryTagsHtml(c):'');
+ return `${caseTitleHtml(c)}<div class="caseStory">${typeof polishedCaseIntro==='function'?polishedCaseIntro(c):esc17(c?.intro||'')}</div>${recovery}${infoBand}`;
+};
+if(window.View&&typeof View.caseCard==='function'){
+ View.caseCard=function(c){
+  const idx=State.selected.indexOf(c.id);
+  const selection={sel:idx>=0?'selected':'',locked:idx<0&&State.selected.length>=maxSelectableCases()?'locked':''};
+  const infoParts=caseInfoParts(c,c.id==='tutorial_butler');
+  const classes=caseCardClassList(c,infoParts,selection);
+  const infoBand=caseInfoBandHtml(infoParts);
+  return `<div class="${classes}" data-case-id="${c.id}" data-order="${idx>=0?idx+1:''}" onclick="Flow.toggleCase('${c.id}')">${caseCardBodyHtml(c,infoBand)}</div>`;
+ };
+}
+function resultStoriesHtml17(data){
+ const rows=(data?.lanes||[]).filter(r=>r&&r.case&&String(r.story||r.effect?.story||'').trim()).map(r=>{
+  const story=String(r.story||r.effect?.story||'').trim();
+  const rank=String(r.rank||'');
+  const tone=rank.includes('Win')?'win':rank.includes('Loss')?'loss':'draw';
+  return `<div class="turnResultStory ${tone}"><div class="turnResultStoryHead"><span>${esc17(r.case.title)}</span><b>${esc17(r.label||'')}</b></div><div class="turnResultStoryText">${esc17(story)}</div></div>`;
+ });
+ if(!rows.length)return'';
+ return `<div class="turnResultStories"><h3>この半期の顛末</h3>${rows.join('')}</div>`;
+}
+if(window.View&&typeof View.summary==='function'){
+ const oldSummary17=View.summary;
+ View.summary=function(data){
+  const ret=oldSummary17.apply(this,arguments);
+  const html=resultStoriesHtml17(data);
+  if(html){
+   const card=document.querySelector('#screenResult .resultCard');
+   if(card&&!card.querySelector('.turnResultStories')){
+    const button=card.querySelector('button');
+    if(button)button.insertAdjacentHTML('beforebegin',html);else card.insertAdjacentHTML('beforeend',html);
+   }
+  }
+  return ret;
+ };
+}
+window.auditCardBadgeResultStoryV17=function(){
+ return{recoveryFunction:typeof recoveryTagsHtml==='function',badgeFunction:typeof unifiedCaseBadgeHtml==='function',summaryWrapped:true};
+};
+})();
+</script>
+<style id="core-card-badge-result-story-v17-css">
+#screenMain .caseCard.hasRecoveryTags{min-height:126px!important;}
+#screenMain .caseCard.hasRecoveryTags.hasInfoBand{min-height:154px!important;}
+.turnResultStories{margin:12px 0 14px;padding:12px 14px;border:2px solid rgba(201,155,56,.72);border-radius:14px;background:rgba(255,247,227,.72);color:#172337}
+.turnResultStories h3{margin:0 0 9px;font-size:16px;color:#102a4c}
+.turnResultStory{margin-top:8px;padding:9px 11px;border-left:5px solid #c99b38;border-radius:9px;background:#fff7e3}
+.turnResultStory.win{border-left-color:#2f9c67}.turnResultStory.loss{border-left-color:#c94d3a}.turnResultStory.draw{border-left-color:#c99b38}
+.turnResultStoryHead{display:flex;justify-content:space-between;gap:10px;align-items:center;font-size:13px;font-weight:1000;color:#102a4c}
+.turnResultStoryHead b{font-size:11px;white-space:nowrap;color:#6f6046}
+.turnResultStoryText{margin-top:5px;font-size:13px;line-height:1.55;font-weight:800;color:#3d301d}
+</style>
+
+
+<script id="summary-story-persistence-v18">
+(function(){
+'use strict';
+if(window.__SUMMARY_STORY_PERSISTENCE_V18__)return;
+window.__SUMMARY_STORY_PERSISTENCE_V18__=true;
+function esc18(v){
+ const s=String(v??'');
+ return s.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function storyOf18(r){
+ if(!r)return'';
+ const direct=String(r.story||r.effect?.story||'').trim();
+ if(direct)return direct;
+ try{
+  const byRank=r.case?.effects?.[r.rank]?.story;
+  if(byRank)return String(byRank).trim();
+ }catch(_){ }
+ return'';
+}
+function build18(data){
+ const rows=(data?.lanes||[]).map(r=>{
+  const story=storyOf18(r);if(!story||!r?.case)return'';
+  const rank=String(r.rank||'');
+  const tone=/Win/.test(rank)?'win':/Loss/.test(rank)?'loss':'draw';
+  return `<div class="turnResultStory ${tone}"><div class="turnResultStoryHead"><span>${esc18(r.case.title||'案件')}</span><b>${esc18(r.label||'')}</b></div><div class="turnResultStoryText">${esc18(story)}</div></div>`;
+ }).filter(Boolean);
+ if(!rows.length)return'';
+ return `<div class="turnResultStories persistentTurnStories"><h3>この半期の顛末</h3>${rows.join('')}</div>`;
+}
+function place18(data){
+ const card=document.querySelector('#screenResult .resultCard');
+ if(!card)return false;
+ const html=build18(data||State.lastSummary);
+ if(!html)return false;
+ // すでに挿入済みならDOMを触らない。MutationObserverの自己再発火を防ぐ。
+ if(card.querySelector('.persistentTurnStories'))return true;
+ const legacy=card.querySelector('.turnResultStories:not(.persistentTurnStories)');
+ if(legacy)legacy.remove();
+ const mini=card.querySelector('.resultMini');
+ if(mini)mini.insertAdjacentHTML('afterend',html);
+ else card.insertAdjacentHTML('afterbegin',html);
+ return true;
+}
+function ensure18(data){
+ place18(data);
+ requestAnimationFrame(()=>place18(data));
+ setTimeout(()=>place18(data),40);
+ setTimeout(()=>place18(data),160);
+ setTimeout(()=>place18(data),400);
+}
+if(window.View&&typeof View.summary==='function'){
+ const base=View.summary;
+ View.summary=function(data){
+  const ret=base.apply(this,arguments);
+  ensure18(data||State.lastSummary);
+  return ret;
+ };
+}
+const root=document.getElementById('screenResult');
+if(root&&window.MutationObserver){
+ const obs=new MutationObserver(()=>{
+  if(!root.classList.contains('active')||!State.lastSummary)return;
+  if(root.querySelector('.persistentTurnStories'))return;
+  place18(State.lastSummary);
+ });
+ obs.observe(root,{childList:true,subtree:true});
+ window.__summaryStoryObserverV18=obs;
+}
+window.auditSummaryStoryV18=function(){return{stories:(State.lastSummary?.lanes||[]).map(r=>({id:r.case?.id,rank:r.rank,story:storyOf18(r)})),visible:!!document.querySelector('.persistentTurnStories')};};
+})();
+</script>
+<style id="summary-story-persistence-v18-css">
+.persistentTurnStories{margin:12px 0 14px!important;padding:12px 14px!important;border:2px solid rgba(201,155,56,.78)!important;border-radius:14px!important;background:rgba(255,247,227,.82)!important;color:#172337!important}
+.persistentTurnStories h3{margin:0 0 9px!important;font-size:17px!important;color:#102a4c!important}
+</style>
+
 </body>
 </html>
