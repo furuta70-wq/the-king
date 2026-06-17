@@ -49129,168 +49129,197 @@ window.unifiedCaseNoteHtml=function(c,isTutorial=false){
 
 
 
-/* phase56: unified keyboard navigation without layout changes */
+/* phase56: unified PC / tablet input controller */
 (function(){
 'use strict';
-if(window.__phase56UnifiedKeyboardApplied)return;
-window.__phase56UnifiedKeyboardApplied=true;
-const K={mainIndex:0,assignArea:'actors',actorIndex:0,cardIndex:0,autoCardsReady:false};
+if(window.__coreInputControllerV20)return;
+window.__coreInputControllerV20=true;
+const Input={mainIndex:0,area:'actors',actorId:null,cardId:null,autoMoved:false,renderQueued:false};
+const AREAS=['actors','cards','budget','start'];
 function activeScreenId(){const el=document.querySelector('.screen.active');return el?el.id:'';}
-function clampK(n,min,max){return Math.max(min,Math.min(max,n));}
-function stop(e){e.preventDefault();e.stopImmediatePropagation();return true;}
-function clearFocus(){document.querySelectorAll('.keyFocus').forEach(el=>el.classList.remove('keyFocus'));}
-function ensureVisible(el){try{el&&el.scrollIntoView&&el.scrollIntoView({block:'nearest',inline:'nearest'});}catch(_){} }
+function isTouch(){return !!(window.matchMedia&&window.matchMedia('(hover: none), (pointer: coarse)').matches);}
+function stop(e){e.preventDefault();e.stopImmediatePropagation();e.stopPropagation();return false;}
+function clearInputMarks(root=document){root.querySelectorAll('.keyFocus,.pcCurrentActor,.pcCurrentCard,.pcActiveArea,.pcActiveLane').forEach(el=>el.classList.remove('keyFocus','pcCurrentActor','pcCurrentCard','pcActiveArea','pcActiveLane'));}
+function ensureVisible(el){try{el&&el.scrollIntoView&&el.scrollIntoView({block:'nearest',inline:'nearest'});}catch(_){}}
 function caseEls(){return Array.from(document.querySelectorAll('#screenMain .caseCard[data-case-id]')).filter(el=>!el.classList.contains('locked'));}
 function nextBtn(){return document.querySelector('#screenMain .next');}
 function actorEls(){return Array.from(document.querySelectorAll('#screenAssign .actorCard:not(.disabled)'));}
 function cardEls(){return Array.from(document.querySelectorAll('#screenAssign .trumpCard:not(.disabled)'));}
 function laneEls(){return Array.from(document.querySelectorAll('#screenAssign .assignLane'));}
-function currentCaseId(){return (State.selected||[])[State.cursor||0]||'';}
-function currentCase(){return getCase(currentCaseId());}
-function activeBudgetBand(){const lanes=laneEls();const lane=lanes[State.cursor||0]||lanes[0];return lane?lane.querySelector('.budgetBand'):null;}
+function currentLaneIndex(){const ids=State&&Array.isArray(State.selected)?State.selected:[];return Math.max(0,Math.min(ids.length-1,Number(State.cursor)||0));}
+function currentCaseId(){const ids=State&&Array.isArray(State.selected)?State.selected:[];return ids[currentLaneIndex()]||'';}
+function activeBudgetBand(){const lane=laneEls()[currentLaneIndex()]||laneEls()[0];return lane?lane.querySelector('.budgetBand'):null;}
 function startBtn(){return document.querySelector('#screenAssign .assignFooter .primary');}
-function assignAreas(){const a=[];if(actorEls().length)a.push('actors');if(cardEls().length)a.push('cards');if(activeBudgetBand())a.push('budget');a.push('start');return a;}
-function normalizeArea(){const a=assignAreas();if(!a.includes(K.assignArea))K.assignArea=a[0]||'start';}
-function updateMainButtonLabel(){const b=nextBtn();if(b){const base='次へ';if(b.textContent.trim()!==`${base} Enter`)b.textContent=`${base} Enter`;}}
-function updateAssignButtonLabel(){const b=startBtn();if(!b)return;const ready=Flow&&Flow.allAssigned&&Flow.allAssigned();const label=ready?'衝突開始 Enter':'人物を選択';if(b.textContent.trim()!==label)b.textContent=label;}
-function applyMainFocus(){if(activeScreenId()!=='screenMain')return;clearFocus();updateMainButtonLabel();const els=caseEls();const hasNext=!!nextBtn();const max=els.length+(hasNext?1:0)-1;if(max<0)return;K.mainIndex=clampK(K.mainIndex,0,max);const el=K.mainIndex<els.length?els[K.mainIndex]:nextBtn();if(el){el.classList.add('keyFocus');ensureVisible(el);}}
-function applyAssignFocus(){if(activeScreenId()!=='screenAssign')return;clearFocus();updateAssignButtonLabel();const ready=!!(Flow&&Flow.allAssigned&&Flow.allAssigned());if(!ready)K.autoCardsReady=false;else if(!K.autoCardsReady){K.autoCardsReady=true;if(cardEls().length)K.assignArea='cards';else K.assignArea='start';}const lanes=laneEls();const lane=lanes[State.cursor||0]||lanes[0];if(lane)lane.classList.add('keyFocus');normalizeArea();let el=null;
- if(K.assignArea==='actors'){const a=actorEls();if(a.length){K.actorIndex=clampK(K.actorIndex,0,a.length-1);el=a[K.actorIndex];}}
- else if(K.assignArea==='cards'){const c=cardEls();if(c.length){K.cardIndex=clampK(K.cardIndex,0,c.length-1);el=c[K.cardIndex];}}
- else if(K.assignArea==='budget'){el=activeBudgetBand();}
- else if(K.assignArea==='start'){el=startBtn();}
- if(el){el.classList.add('keyFocus');ensureVisible(el);}
+function backBtn(){return document.querySelector('#screenAssign .phase72BackToCases');}
+function availableAreas(){const out=[];if(actorEls().length)out.push('actors');if(cardEls().length)out.push('cards');if(activeBudgetBand())out.push('budget');out.push('start');return out;}
+function areaLabel(a){return({actors:'采配者を選択',cards:'切り札を選択',budget:'支援予算を調整',start:'衝突開始'})[a]||'';}
+function areaHelp(a){return({actors:'↑↓ 人物　Enter 配置　A/S/D 案件',cards:'←→ 切り札　Enter 投入　↑↓ 項目',budget:'← 減額　増額 →　↑↓ 項目',start:'Enter 衝突開始　↑ 戻る'})[a]||'';}
+function normalizeArea(){const a=availableAreas();if(!a.includes(Input.area))Input.area=a[0]||'start';}
+function chosenActorEl(){const a=actorEls();if(!a.length)return null;let el=Input.actorId?a.find(x=>(x.dataset.actorId||x.getAttribute('data-actor-id'))===Input.actorId):null;if(!el)el=a[0];Input.actorId=el.dataset.actorId||el.getAttribute('data-actor-id')||null;return el;}
+function chosenCardEl(){const c=cardEls();if(!c.length)return null;let el=Input.cardId?c.find(x=>(x.dataset.cardId||x.getAttribute('data-card-id'))===Input.cardId):null;if(!el)el=c[0];Input.cardId=el.dataset.cardId||el.getAttribute('data-card-id')||null;return el;}
+function moveById(list,currentId,dir,attr){if(!list.length)return null;let i=list.findIndex(el=>(el.dataset[attr]||el.getAttribute('data-'+attr.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())))===currentId);if(i<0)i=0;i=(i+dir+list.length)%list.length;return list[i];}
+function tutorialRoot(){return document.querySelector('#firstCasePickTutorial,#brotherReturnTutorial,#marriageCaseTutorial,#coreCountryTutorial,#pickTwoTutorial,#tutorialOverlay,#tutorialBadOverlay,.firstCaseTutorialScreen,.coreCountryTutorialScreen,.pickTwoTutorial,.tutorialOverlay');}
+function tutorialOpen(){return !!tutorialRoot()||!!window.__firstCasePickTutorialOpen||!!window.__coreCountryTutorialOpen;}
+function armInputShield(ms=240){window.__kingInputShieldUntil=Math.max(Number(window.__kingInputShieldUntil||0),performance.now()+ms);}
+function closeTutorialUnified(e){
+ const el=tutorialRoot();if(!el)return false;
+ if(e)stop(e);
+ armInputShield(280);
+ if(el.id==='brotherReturnTutorial'&&window.closeButlerCaseTutorial60)window.closeButlerCaseTutorial60('brotherReturnTutorial','brotherReturnTutorialSeen',e);
+ else if(el.id==='marriageCaseTutorial'&&window.closeButlerCaseTutorial60)window.closeButlerCaseTutorial60('marriageCaseTutorial','marriageTutorialSeen',e);
+ else if(el.id==='firstCasePickTutorial'&&window.closeFirstCaseTutorial60)window.closeFirstCaseTutorial60(e);
+ else if(el.id==='coreCountryTutorial'&&window.closeCountryTutorial)window.closeCountryTutorial(e);
+ else if(el.id==='pickTwoTutorial'&&window.closePickTwoTutorial)window.closePickTwoTutorial(e);
+ else if(el.id==='tutorialBadOverlay'&&window.closeTutorialBadHint)window.closeTutorialBadHint(e);
+ else if(el.id==='tutorialOverlay'&&window.closeBattleTutorial)window.closeBattleTutorial(e);
+ else { const btn=el.querySelector('button'); if(btn)btn.click(); else el.remove(); }
+ setTimeout(()=>{Input.mainIndex=0;applyMainFocus();applyAssignFocus();},320);
+ return true;
 }
-function refreshFocus(){applyMainFocus();applyAssignFocus();}
-function moveAssignArea(dir){const a=assignAreas();if(!a.length)return;normalizeArea();let i=a.indexOf(K.assignArea);if(i<0)i=0;K.assignArea=a[(i+dir+a.length)%a.length];applyAssignFocus();}
-function chooseLane(delta){const ids=State.selected||[];if(!ids.length)return;State.cursor=(State.cursor+delta+ids.length)%ids.length;View.assign();}
-function changeBudget(delta){const id=currentCaseId();if(!id)return false;if(typeof changeCaseBudget==='function'){changeCaseBudget(null,id,delta);K.assignArea='budget';setTimeout(applyAssignFocus,0);return true;}return false;}
-function mainKey(e){
- const story=document.querySelector('#screenMain .yearStory,#screenMain .chronicleStory');
- if(story&&(e.key==='Enter'||e.key==='ArrowRight')){story.click();return stop(e);}
- const els=caseEls();const b=nextBtn();const total=els.length+(b?1:0);if(!total)return false;
- if(e.key==='ArrowDown'){K.mainIndex=(K.mainIndex+1)%total;applyMainFocus();return stop(e);} 
- if(e.key==='ArrowUp'){K.mainIndex=(K.mainIndex-1+total)%total;applyMainFocus();return stop(e);} 
- if(e.key==='ArrowRight'&&b){K.mainIndex=total-1;applyMainFocus();return stop(e);} 
- if(e.key==='ArrowLeft'){K.mainIndex=Math.max(0,K.mainIndex-1);applyMainFocus();return stop(e);} 
- if(e.key==='Enter'){
-   if(K.mainIndex<els.length){els[K.mainIndex]?.click();setTimeout(applyMainFocus,0);}else if(State.selected&&State.selected.length){Flow.toAssign();}
-   return stop(e);
+function closeTutorialByEnter(e){return closeTutorialUnified(e);}
+function updateMainLabel(){const b=nextBtn();if(b&&!/Enter/.test(b.textContent||''))b.textContent='次へ Enter';}
+function applyMainFocus(){
+ if(activeScreenId()!=='screenMain'||tutorialOpen())return;
+ clearInputMarks(document.getElementById('screenMain')||document);updateMainLabel();
+ const els=caseEls(),b=nextBtn(),total=els.length+(b?1:0);if(!total)return;
+ Input.mainIndex=Math.max(0,Math.min(total-1,Input.mainIndex));
+ const el=Input.mainIndex<els.length?els[Input.mainIndex]:b;if(el){el.classList.add('keyFocus');ensureVisible(el);}
+}
+function installAssignHud(){
+ const screen=document.getElementById('screenAssign'),assign=screen&&screen.querySelector('.assign');if(!assign)return;
+ let hud=screen.querySelector('.pcAssignStatus');
+ if(!hud){
+  hud=document.createElement('div');hud.className='pcAssignStatus';
+  hud.innerHTML='<div class="pcAssignSteps"><button type="button" data-area="actors">1 采配者</button><button type="button" data-area="cards">2 切り札</button><button type="button" data-area="budget">3 支援予算</button><button type="button" data-area="start">4 衝突開始</button></div><span class="pcAssignStatusHelp"></span>';
+  assign.appendChild(hud);
  }
- if(e.key==='Escape'){const last=State.selected?.[State.selected.length-1];if(last)Flow.toggleCase(last);setTimeout(applyMainFocus,0);return stop(e);} 
+ const hint=screen.querySelector('.phase72AssignHint');if(hint)hint.textContent=areaHelp(Input.area);
+}
+function applyAssignFocus(){
+ if(activeScreenId()!=='screenAssign'||tutorialOpen())return;
+ const screen=document.getElementById('screenAssign');if(!screen)return;
+ clearInputMarks(screen);normalizeArea();installAssignHud();
+ const ready=!!(window.Flow&&Flow.allAssigned&&Flow.allAssigned());
+ if(!ready)Input.autoMoved=false;else if(!Input.autoMoved){Input.autoMoved=true;Input.area=cardEls().length?'cards':(activeBudgetBand()?'budget':'start');}
+ const li=currentLaneIndex(),lane=laneEls()[li]||laneEls()[0];
+ if(lane){lane.classList.add('pcActiveLane');lane.dataset.pcLaneLabel=`案件${li+1} 操作中`;}
+ let el=null;
+ if(Input.area==='actors'){el=chosenActorEl();if(el)el.classList.add('pcCurrentActor');screen.querySelector('.assignActorHeading')?.classList.add('pcActiveArea');}
+ else if(Input.area==='cards'){el=chosenCardEl();if(el)el.classList.add('pcCurrentCard');screen.querySelector('.trumpHead')?.classList.add('pcActiveArea');}
+ else if(Input.area==='budget'){el=activeBudgetBand();el?.classList.add('pcActiveArea');}
+ else{el=startBtn();el?.classList.add('pcActiveArea');}
+ if(el){el.classList.add('keyFocus');ensureVisible(el);}
+ const hud=screen.querySelector('.pcAssignStatus');if(hud){hud.querySelectorAll('.pcAssignSteps button').forEach(btn=>btn.classList.toggle('active',btn.dataset.area===Input.area));const help=hud.querySelector('.pcAssignStatusHelp');if(help)help.textContent=areaHelp(Input.area);}
+ const b=startBtn();if(b){const label=ready?'衝突開始 Enter':'人物を選択';if(b.textContent.trim()!==label)b.textContent=label;}
+}
+function queueAssignFocus(){if(Input.renderQueued)return;Input.renderQueued=true;requestAnimationFrame(()=>{Input.renderQueued=false;applyAssignFocus();});setTimeout(applyAssignFocus,40);}
+function moveArea(dir){const a=availableAreas();normalizeArea();let i=Math.max(0,a.indexOf(Input.area));Input.area=a[Math.max(0,Math.min(a.length-1,i+dir))];applyAssignFocus();}
+function setLane(i){const ids=State.selected||[];if(i<0||i>=ids.length){try{sfx&&sfx('warn');}catch(_){}return;}State.cursor=i;View.assign();queueAssignFocus();}
+function changeBudget(delta){const id=currentCaseId();if(id&&typeof changeCaseBudget==='function'){changeCaseBudget(null,id,delta);Input.area='budget';queueAssignFocus();return true;}return false;}
+function mainKey(e){
+ if(tutorialOpen()){if(e.key==='Enter')return closeTutorialByEnter(e);return stop(e);}
+ const story=document.querySelector('#screenMain .yearStory,#screenMain .chronicleStory');if(story&&e.key==='Enter'){story.click();return stop(e);}
+ const els=caseEls(),b=nextBtn(),total=els.length+(b?1:0);if(!total)return false;
+ if(e.key==='ArrowDown'){Input.mainIndex=(Input.mainIndex+1)%total;applyMainFocus();return stop(e);}
+ if(e.key==='ArrowUp'){Input.mainIndex=(Input.mainIndex-1+total)%total;applyMainFocus();return stop(e);}
+ if(e.key==='ArrowRight'&&b){Input.mainIndex=total-1;applyMainFocus();return stop(e);}
+ if(e.key==='ArrowLeft'){Input.mainIndex=Math.max(0,Input.mainIndex-1);applyMainFocus();return stop(e);}
+ if(e.key==='Enter'){if(Input.mainIndex<els.length){els[Input.mainIndex].click();setTimeout(applyMainFocus,0);}else if(State.selected?.length)Flow.toAssign();return stop(e);}
+ if(e.key==='Escape'){const last=State.selected?.at(-1);if(last)Flow.toggleCase(last);setTimeout(applyMainFocus,0);return stop(e);}
  return false;
 }
 function assignKey(e){
- const ids=State.selected||[];if(!ids.length)return false;
- normalizeArea();
- const key=(e.key||'').toLowerCase();
- if(['a','s','d'].includes(key)){
-   const laneIndex={a:0,s:1,d:2}[key];
-   if(laneIndex<ids.length){State.cursor=laneIndex;View.assign();setTimeout(applyAssignFocus,0);}
-   else{try{sfx&&sfx('warn');}catch(_){}}
-   return stop(e);
+ if(tutorialOpen()){if(e.key==='Enter')return closeTutorialByEnter(e);return stop(e);}
+ const ids=State.selected||[];if(!ids.length)return false;normalizeArea();const key=(e.key||'').toLowerCase();
+ if(key==='a'||key==='s'||key==='d'){setLane({a:0,s:1,d:2}[key]);return stop(e);}
+ if(e.key==='Escape'){if(window.goBackToCases72)goBackToCases72(e);else View.main();return stop(e);}
+ if(Input.area==='actors'){
+   if(e.key==='ArrowUp'||e.key==='ArrowDown'){const list=actorEls(),el=moveById(list,Input.actorId,e.key==='ArrowDown'?1:-1,'actorId');if(el)Input.actorId=el.dataset.actorId;applyAssignFocus();return stop(e);}
+   if(e.key==='ArrowRight'){moveArea(1);return stop(e);}if(e.key==='ArrowLeft'){return stop(e);}
+   if(e.key==='Enter'){chosenActorEl()?.click();queueAssignFocus();return stop(e);}
+   if(e.key==='Backspace'||e.key==='Delete'){const id=currentCaseId();if(id&&State.assignments?.[id]){delete State.assignments[id];View.assign();queueAssignFocus();}return stop(e);}
  }
- if(e.key==='Escape'){
-   if(typeof goBackToCases72==='function')goBackToCases72(e);
-   else if(typeof View==='object'&&View&&typeof View.main==='function')View.main();
-   return stop(e);
+ if(Input.area==='cards'){
+   if(e.key==='ArrowLeft'||e.key==='ArrowRight'){const list=cardEls(),el=moveById(list,Input.cardId,e.key==='ArrowRight'?1:-1,'cardId');if(el)Input.cardId=el.dataset.cardId;applyAssignFocus();return stop(e);}
+   if(e.key==='ArrowUp'){Input.area='actors';applyAssignFocus();return stop(e);}if(e.key==='ArrowDown'){Input.area=activeBudgetBand()?'budget':'start';applyAssignFocus();return stop(e);}
+   if(e.key==='Enter'){chosenCardEl()?.click();queueAssignFocus();return stop(e);}
+   if(e.key==='Backspace'||e.key==='Delete'){const cid=currentCaseId(),list=typeof cardsForCase==='function'?cardsForCase(cid):[];if(list?.length)Flow.assignCard(list.at(-1));queueAssignFocus();return stop(e);}
  }
- if(e.key==='ArrowLeft'){
-   if(K.assignArea==='cards'){
-     const c=cardEls();if(c.length){K.cardIndex=(K.cardIndex-1+c.length)%c.length;applyAssignFocus();}
-     return stop(e);
-   }
-   if(K.assignArea==='budget'){changeBudget(-1);return stop(e);}
-   moveAssignArea(-1);return stop(e);
+ if(Input.area==='budget'){
+   if(e.key==='ArrowLeft'){changeBudget(-1);return stop(e);}if(e.key==='ArrowRight'){changeBudget(1);return stop(e);}
+   if(e.key==='ArrowUp'){Input.area=cardEls().length?'cards':'actors';applyAssignFocus();return stop(e);}if(e.key==='ArrowDown'){Input.area='start';applyAssignFocus();return stop(e);}
+   if(e.key==='Enter'){return stop(e);}
  }
- if(e.key==='ArrowRight'){
-   if(K.assignArea==='cards'){
-     const c=cardEls();if(c.length){K.cardIndex=(K.cardIndex+1)%c.length;applyAssignFocus();}
-     return stop(e);
-   }
-   if(K.assignArea==='budget'){changeBudget(1);return stop(e);}
-   moveAssignArea(1);return stop(e);
- }
- if(e.key==='ArrowUp'||e.key==='ArrowDown'){
-   const dir=e.key==='ArrowDown'?1:-1;
-   if(K.assignArea==='actors'){
-     const a=actorEls();if(a.length){K.actorIndex=(K.actorIndex+dir+a.length)%a.length;applyAssignFocus();}
-     return stop(e);
-   }
-   if(K.assignArea==='cards'){
-     K.assignArea=e.key==='ArrowUp'?'actors':(activeBudgetBand()?'budget':'start');applyAssignFocus();return stop(e);
-   }
-   if(K.assignArea==='budget'){
-     K.assignArea=e.key==='ArrowUp'?(cardEls().length?'cards':'actors'):'start';applyAssignFocus();return stop(e);
-   }
-   if(K.assignArea==='start'){
-     K.assignArea=e.key==='ArrowUp'?(activeBudgetBand()?'budget':(cardEls().length?'cards':'actors')):'actors';applyAssignFocus();return stop(e);
-   }
-   moveAssignArea(dir);return stop(e);
- }
- if(e.key==='Enter'){
-   if(K.assignArea==='actors'){
-     const a=actorEls();if(a.length){a[K.actorIndex]?.click();setTimeout(()=>{applyAssignFocus();},0);}return stop(e);
-   }
-   if(K.assignArea==='cards'){
-     const c=cardEls();if(c.length){c[K.cardIndex]?.click();setTimeout(applyAssignFocus,0);}return stop(e);
-   }
-   if(K.assignArea==='budget'){
-     moveAssignArea(1);return stop(e);
-   }
-   if(K.assignArea==='start'){
-     if(Flow.allAssigned&&Flow.allAssigned())Flow.startBattle();else{try{sfx&&sfx('warn');}catch(_){}K.assignArea='actors';applyAssignFocus();}
-     return stop(e);
-   }
- }
- if(e.key==='Backspace'||e.key==='Delete'){
-   if(K.assignArea==='cards'){
-     const cid=currentCaseId();const list=(typeof cardsForCase==='function'?cardsForCase(cid):[]);if(list&&list.length)Flow.assignCard(list[list.length-1]);
-     setTimeout(applyAssignFocus,0);return stop(e);
-   }
-   const cid=currentCaseId();if(cid&&State.assignments&&State.assignments[cid]){delete State.assignments[cid];View.assign();}
-   return stop(e);
+ if(Input.area==='start'){
+   if(e.key==='ArrowUp'){Input.area=activeBudgetBand()?'budget':(cardEls().length?'cards':'actors');applyAssignFocus();return stop(e);}
+   if(e.key==='ArrowDown'||e.key==='ArrowLeft'||e.key==='ArrowRight')return stop(e);
+   if(e.key==='Enter'){if(Flow.allAssigned&&Flow.allAssigned())Flow.startBattle();else{try{sfx&&sfx('warn');}catch(_){}Input.area='actors';applyAssignFocus();}return stop(e);}
  }
  return false;
 }
-function passiveAdvance(){const id=activeScreenId();
- if(id==='screenMapNews'){const target=document.querySelector('#screenMapNews .mapNewsScreen,#screenMapNews .mapNewsCue');target?.click();return true;}
- if(id==='screenOpening'){const target=document.querySelector('#screenOpening .openingTitle,#screenOpening .openingStoryScreen,.openingScreen');target?.click();return true;}
- if(id==='screenResult'){const btn=document.querySelector('#screenResult button.primary.pulse,#screenResult button.primary,#screenResult button');btn?.click();return !!btn;}
- const modal=document.querySelector('.screen.active .modalShade .choices button,.screen.active .modalBox button');if(modal){modal.click();return true;}
- return false;
+function passiveAdvance(){const id=activeScreenId();if(id==='screenMapNews'){document.querySelector('#screenMapNews .mapNewsScreen,#screenMapNews .mapNewsCue')?.click();return true;}if(id==='screenOpening'){document.querySelector('#screenOpening .openingTitle,#screenOpening .openingStoryScreen,.openingScreen')?.click();return true;}if(id==='screenResult'){const btn=document.querySelector('#screenResult button.primary.pulse,#screenResult button.primary,#screenResult button');btn?.click();return !!btn;}const modal=document.querySelector('.screen.active .modalShade .choices button,.screen.active .modalBox button');if(modal){modal.click();return true;}return false;}
+function installPointerController(){
+ let tutorialPointerArmed=false;
+ document.addEventListener('pointerdown',function(e){
+   if(performance.now()<Number(window.__kingInputShieldUntil||0)){stop(e);return;}
+   const tut=e.target.closest?.('#firstCasePickTutorial,#brotherReturnTutorial,#marriageCaseTutorial,#coreCountryTutorial,#pickTwoTutorial,#tutorialOverlay,#tutorialBadOverlay,.firstCaseTutorialScreen,.coreCountryTutorialScreen,.pickTwoTutorial,.tutorialOverlay');
+   if(tut){tutorialPointerArmed=true;stop(e);return;}
+   const step=e.target.closest?.('#screenAssign .pcAssignSteps button[data-area]');if(step){Input.area=step.dataset.area;applyAssignFocus();stop(e);return;}
+   const screen=e.target.closest?.('#screenAssign');if(!screen)return;
+   const lane=e.target.closest('.assignLane');if(lane){const lanes=laneEls(),i=lanes.indexOf(lane);if(i>=0&&i!==currentLaneIndex()){State.cursor=i;Input.area='actors';queueAssignFocus();}}
+   if(e.target.closest('.actorCard,.assignActorHeading')){Input.area='actors';const card=e.target.closest('.actorCard');if(card)Input.actorId=card.dataset.actorId||null;queueAssignFocus();}
+   else if(e.target.closest('.trumpCard,.trumpHead,.trumpBar')){Input.area='cards';const card=e.target.closest('.trumpCard');if(card)Input.cardId=card.dataset.cardId||null;queueAssignFocus();}
+   else if(e.target.closest('.budgetBand,.budgetMinus,.budgetPlus')){Input.area='budget';queueAssignFocus();}
+   else if(e.target.closest('.assignFooter .primary')){Input.area='start';queueAssignFocus();}
+ },true);
+ document.addEventListener('pointerup',function(e){
+   if(!tutorialPointerArmed)return;
+   tutorialPointerArmed=false;
+   stop(e);closeTutorialUnified(e);
+ },true);
+ document.addEventListener('click',function(e){
+   if(performance.now()<Number(window.__kingInputShieldUntil||0)){stop(e);return;}
+   const tut=e.target.closest?.('#firstCasePickTutorial,#brotherReturnTutorial,#marriageCaseTutorial,#coreCountryTutorial,#pickTwoTutorial,#tutorialOverlay,#tutorialBadOverlay,.firstCaseTutorialScreen,.coreCountryTutorialScreen,.pickTwoTutorial,.tutorialOverlay');
+   if(tut){stop(e);closeTutorialUnified(e);}
+ },true);
 }
-if(typeof battleKeyGuideText==='function'){
- battleKeyGuideText=function(laneCount){const keys=laneCount>=3?'A / S / D':laneCount===2?'A / S':'A';return `操作：${keys} またはタップ　停止：F`;};
+function installCss(){if(document.getElementById('core-input-controller-v20-css'))return;const st=document.createElement('style');st.id='core-input-controller-v20-css';st.textContent=`
+.firstCaseTutorialScreen,.coreCountryTutorialScreen,.pickTwoTutorial,.tutorialOverlay{cursor:pointer!important}.firstCaseTutorialScreen .storyCue::after,.coreCountryTutorialScreen .storyCue::after{content:"クリック / Enter";position:absolute;right:40px;white-space:nowrap;font-size:11px;color:#ffe8a8;font-weight:1000}
+#screenAssign .pcAssignStatus{position:absolute;left:50%;top:58px;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;align-items:stretch;gap:4px;width:560px;max-width:calc(100% - 360px);padding:5px 8px;border:2px solid rgba(66,220,255,.72);border-radius:13px;background:rgba(7,35,61,.96);color:#dff9ff;box-shadow:0 0 16px rgba(66,220,255,.28);pointer-events:auto}
+#screenAssign .pcAssignSteps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}#screenAssign .pcAssignSteps button{height:25px!important;min-width:0!important;padding:0 6px!important;border:1px solid rgba(255,232,178,.32)!important;border-radius:8px!important;background:rgba(255,255,255,.07)!important;color:#d6bd82!important;box-shadow:none!important;font-size:10px!important;font-weight:1000!important;white-space:nowrap!important}#screenAssign .pcAssignSteps button.active{border-color:#78eaff!important;background:linear-gradient(180deg,#dff9ff,#42dcff)!important;color:#06243b!important;box-shadow:0 0 11px rgba(66,220,255,.42)!important}#screenAssign .pcAssignStatusHelp{font-size:10px;color:#fff0b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+#screenAssign .assignLane.pcActiveLane{border-color:#42dcff!important;box-shadow:0 0 0 4px rgba(66,220,255,.28),0 0 22px rgba(66,220,255,.34),0 4px 0 rgba(0,0,0,.28)!important;position:relative}
+#screenAssign .assignLane.pcActiveLane::after{content:attr(data-pc-lane-label);position:absolute;right:10px;top:8px;z-index:20;padding:3px 8px;border-radius:999px;background:#073052;color:#dff9ff;border:1px solid #42dcff;font-size:10px;font-weight:1000}
+#screenAssign .assignActorHeading.pcActiveArea,#screenAssign .trumpHead.pcActiveArea{background:linear-gradient(90deg,#0b4f7b,#12395f)!important;color:#e8fbff!important;box-shadow:inset 5px 0 0 #42dcff,0 0 14px rgba(66,220,255,.28)!important}
+#screenAssign .actorCard.pcCurrentActor,#screenAssign .trumpCard.pcCurrentCard{border-color:#42dcff!important;box-shadow:0 0 0 4px rgba(66,220,255,.30),0 0 18px rgba(66,220,255,.38),0 3px 0 rgba(0,0,0,.25)!important;filter:brightness(1.08)!important;position:relative}
+#screenAssign .actorCard.pcCurrentActor::after,#screenAssign .trumpCard.pcCurrentCard::after{content:"選択位置";position:absolute;right:7px;top:6px;padding:2px 6px;border-radius:999px;background:#073052;color:#dff9ff;border:1px solid #42dcff;font-size:9px;font-weight:1000}
+#screenAssign .budgetBand.pcActiveArea{border-color:#42dcff!important;box-shadow:0 0 0 3px rgba(66,220,255,.26),0 0 16px rgba(66,220,255,.32)!important;background:#eefcff!important}
+#screenAssign .assignFooter .primary.pcActiveArea{box-shadow:0 0 0 4px rgba(66,220,255,.32),0 0 22px rgba(66,220,255,.52),0 5px 0 #07527a!important}
+#screenAssign .phase72AssignHint{min-width:310px;text-align:left;color:#9beeff!important;font-size:11px!important}
+.simpleControlHint{position:absolute;z-index:140;padding:4px 9px;border-radius:999px;background:rgba(7,35,61,.88);border:1px solid rgba(120,234,255,.54);color:#dff9ff;font-size:10px;font-weight:900;pointer-events:none}.mainSimpleHint{right:18px;top:57px}.battleSimpleHint{right:14px;top:68px}#screenAssign .assignLane:nth-child(1)::before,#screenAssign .assignLane:nth-child(2)::before,#screenAssign .assignLane:nth-child(3)::before{position:absolute;left:8px;top:8px;z-index:22;width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;background:#102a4c;color:#fff1bf;border:1px solid #d6ad4b;font-size:11px;font-weight:1000;box-shadow:0 2px 0 rgba(0,0,0,.25)}#screenAssign .assignLane:nth-child(1)::before{content:"A"}#screenAssign .assignLane:nth-child(2)::before{content:"S"}#screenAssign .assignLane:nth-child(3)::before{content:"D"}
+@media (hover:none),(pointer:coarse){#screenAssign .pcAssignStatus{top:57px;width:540px;max-width:calc(100% - 330px)}.firstCaseTutorialScreen .storyCue::after,.coreCountryTutorialScreen .storyCue::after{content:"タップ"}}
+`;document.head.appendChild(st);}
+function wrapViews(){
+ const oldMain=View.main.bind(View);View.main=function(){const r=oldMain.apply(this,arguments);Input.mainIndex=0;setTimeout(applyMainFocus,0);setTimeout(applyMainFocus,380);return r;};
+ if(View.updateMainSelection){const old=View.updateMainSelection.bind(View);View.updateMainSelection=function(){const r=old.apply(this,arguments);setTimeout(applyMainFocus,0);return r;};}
+ const oldAssign=View.assign.bind(View);View.assign=function(){const r=oldAssign.apply(this,arguments);queueAssignFocus();return r;};
 }
-if(typeof battleTopHtml==='function'){
- battleTopHtml=function(activeBattle){const laneCount=activeBattle?.lanes?.length||0;return `<div class="battleTop" id="battleTop"><div class="battleTopLeft"><div class="battleModeLabel">衝突</div><div class="battleLaneCount">${battleLaneCountText(laneCount)}</div></div><div id="timerBox"><div class="battleTimeHud"><div class="battleTimeRow"><span class="battleTimeKicker">残り</span><div class="timerNum"><span id="timerText">${CONFIG.battleSeconds.toFixed(1)}</span></div><span class="battleTimeKicker right">秒</span></div><div class="timeBar"><div class="timeFill" id="timeFill"></div></div></div></div><div class="battleTopRight"><div class="battleTopRightRow"><div class="battleAlert" id="battleAlert">${battleAlertText(null)}</div><button class="battlePauseBtn" id="battlePauseBtn" onclick="Battle.togglePause&&Battle.togglePause()">停止 F</button></div><div class="battleKeyGuide">${battleKeyGuideText(laneCount)}</div></div></div>`;};
-}
-function setPauseButton(){const btn=document.getElementById('battlePauseBtn');if(!btn||!battle)return;const paused=battle.phase==='paused';btn.textContent=paused?'再開 F':'停止 F';btn.classList.toggle('paused',paused);}
-function showPauseOverlay(){const screen=document.getElementById('screenBattle');if(!screen)return;let ov=document.getElementById('battlePausedOverlay');if(battle&&battle.phase==='paused'){if(!ov){ov=document.createElement('div');ov.id='battlePausedOverlay';ov.className='battlePausedOverlay';ov.innerHTML='<div class="battlePausedBox">一時停止中<small>Fキーまたは「再開 F」で再開</small></div>';screen.appendChild(ov);}}else if(ov){ov.remove();}}
-Battle.togglePause=function(){if(!battle)return;if(battle.phase==='running'){battle.phase='paused';battle.pauseStartedAt=performance.now();setPauseButton();showPauseOverlay();try{sfx('cancel');}catch(_){ }return;}if(battle.phase==='paused'){const now=performance.now();const pausedMs=now-(battle.pauseStartedAt||now);battle.start=(battle.start||now)+pausedMs;battle.last=now;battle.phase='running';battle.pauseStartedAt=0;setPauseButton();showPauseOverlay();try{sfx('next');}catch(_){ }requestAnimationFrame(Battle.tick);}};
-const oldUpdateBattle=View.updateBattle.bind(View);View.updateBattle=function(){oldUpdateBattle();setPauseButton();showPauseOverlay();};
-const oldMain=View.main.bind(View);View.main=function(){oldMain();setTimeout(()=>{K.mainIndex=0;updateMainButtonLabel();applyMainFocus();},0);};
-if(View.updateMainSelection){const oldUpdateMainSelection=View.updateMainSelection.bind(View);View.updateMainSelection=function(){oldUpdateMainSelection();setTimeout(()=>{updateMainButtonLabel();applyMainFocus();},0);};}
-const oldAssign=View.assign.bind(View);View.assign=function(){oldAssign();setTimeout(()=>{updateAssignButtonLabel();applyAssignFocus();},0);};
+function installScreenHints(){const main=document.getElementById('screenMain');if(main&&!main.querySelector('.simpleControlHint')){const h=document.createElement('div');h.className='simpleControlHint mainSimpleHint';h.textContent='PC：↑↓で案件移動・Enterで決定　タブレット：直接タップ';main.appendChild(h);}const battle=document.getElementById('screenBattle');if(battle&&!battle.querySelector('.simpleControlHint')){const h=document.createElement('div');h.className='simpleControlHint battleSimpleHint';h.textContent='PC：A / S / Dで各戦線　Fで一時停止　タブレット：戦線をタップ';battle.appendChild(h);}}
+function install(){installCss();installPointerController();wrapViews();setTimeout(()=>{applyMainFocus();applyAssignFocus();installScreenHints();},0);}
 window.addEventListener('keydown',function(e){
- if(e.defaultPrevented)return;const t=e.target;if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName||''))return;const id=activeScreenId();
- if(id==='screenBattle'){
-   if(e.code==='Space'||e.key===' '){return stop(e);} 
-   if((e.key||'').toLowerCase()==='f'){Battle.togglePause&&Battle.togglePause();return stop(e);} 
-   if(e.key==='Enter'&&battle&&battle.phase==='paused'){Battle.togglePause&&Battle.togglePause();return stop(e);} 
-   return;
- }
- if(e.code==='Space'||e.key===' '){return stop(e);} 
- if(id==='screenMain'&&mainKey(e))return;
- if(id==='screenAssign'&&assignKey(e))return;
- if(e.key==='Enter'){if(passiveAdvance())return stop(e);} 
- if(e.key==='Escape'){
-   const modal=document.querySelector('.screen.active .modalShade,.screen.active .modalBox');if(modal){const btn=document.querySelector('.screen.active .modalBox button');btn?.click();return stop(e);} 
- }
+ if(performance.now()<Number(window.__kingInputShieldUntil||0)){stop(e);return;}
+ const t=e.target;if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName||''))return;
+ if(tutorialOpen()){if(e.key==='Enter')closeTutorialByEnter(e);else stop(e);return;}
+ const id=activeScreenId();
+ if(id==='screenBattle'){if(e.code==='Space'||e.key===' ')return stop(e);if((e.key||'').toLowerCase()==='f'){Battle.togglePause&&Battle.togglePause();return stop(e);}if(e.key==='Enter'&&battle&&battle.phase==='paused'){Battle.togglePause&&Battle.togglePause();return stop(e);}return;}
+ if(e.code==='Space'||e.key===' ')return stop(e);
+ if(id==='screenMain'&&mainKey(e)!==false)return;
+ if(id==='screenAssign'&&assignKey(e)!==false)return;
+ if(e.key==='Enter'&&passiveAdvance())return stop(e);
 },true);
-window.phase56KeyboardRefresh=refreshFocus;
+window.coreInputControllerV20={state:Input,refresh(){applyMainFocus();applyAssignFocus();},setArea(a){if(AREAS.includes(a)){Input.area=a;applyAssignFocus();}}};
+install();
 })();
+
 
 /* phase57: advance button unification, reading scroll keys, trump scroll preservation */
 (function(){
@@ -49881,7 +49910,7 @@ if(typeof View==='object'&&View&&typeof View.main==='function'&&!View.main.phase
 }
 window.addEventListener('keydown',function(e){
   if(!window.__firstCasePickTutorialOpen)return;
-  if(e.key==='Enter'||e.key==='Escape'||e.code==='Space'||e.key===' '){
+  if(e.key==='Enter'){
     e.preventDefault();e.stopImmediatePropagation();
     if(document.getElementById('brotherReturnTutorial')){closeButlerCaseTutorial60('brotherReturnTutorial','brotherReturnTutorialSeen',e);return false;}
     if(document.getElementById('marriageCaseTutorial')){closeButlerCaseTutorial60('marriageCaseTutorial','marriageTutorialSeen',e);return false;}
@@ -52335,7 +52364,7 @@ function install(){
 }
 window.addEventListener('keydown',function(e){
   if(!window.__coreCountryTutorialOpen)return;
-  if(e.key==='Enter'||e.key==='Escape'||e.code==='Space'||e.key===' '){e.preventDefault();e.stopImmediatePropagation();closeCountryTutorial(e);return false;}
+  if(e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();closeCountryTutorial(e);return false;}
 },true);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 window.coreCountryTutorials=COUNTRY_TUTORIALS;
@@ -53006,5 +53035,334 @@ window.auditSummaryStoryV18=function(){return{stories:(State.lastSummary?.lanes|
 .persistentTurnStories h3{margin:0 0 9px!important;font-size:17px!important;color:#102a4c!important}
 </style>
 
+
+<style id="pc-operation-guides-v22-css">
+/* PC向けキー表示は既存レイアウトの外側へ絶対配置し、寸法を変えない */
+.pcOnlyGuide,.pcKeyCap,.pcScreenGuide{display:none!important;pointer-events:none!important;user-select:none!important}
+@media (hover:hover) and (pointer:fine){
+  .pcOnlyGuide,.pcKeyCap,.pcScreenGuide{display:flex!important}
+  .pcKeyCap{align-items:center;justify-content:center;min-width:28px;height:22px;padding:0 7px;border:1px solid rgba(190,239,255,.88);border-radius:6px;background:rgba(7,24,42,.90);color:#e8fbff;font-size:10px;font-weight:1000;line-height:1;letter-spacing:.04em;box-shadow:0 2px 0 rgba(0,0,0,.36),0 0 9px rgba(66,220,255,.24);text-shadow:0 1px 0 #000;z-index:190}
+  .pcWindowGuide{position:absolute;right:18px;bottom:13px;align-items:center;gap:6px;padding:5px 9px;border:1px solid rgba(255,232,178,.46);border-radius:999px;background:rgba(7,24,42,.78);color:#fff1bf;font-size:11px;font-weight:1000;letter-spacing:.04em;box-shadow:0 2px 8px rgba(0,0,0,.26);z-index:250}
+  .pcWindowGuide .key{display:inline-flex;align-items:center;justify-content:center;height:20px;min-width:46px;padding:0 7px;border:1px solid rgba(190,239,255,.86);border-radius:5px;background:#102a4c;color:#dff9ff;font-size:10px;box-shadow:0 2px 0 rgba(0,0,0,.34)}
+  .openingStoryBox,.tutorialOverlay,.modalBox,.yearStory,.chronicleStory{position:relative!important}
+  #screenAssign .actorCard.pcCurrentActor::after,#screenAssign .trumpCard.pcCurrentCard::after{content:"ENTER";position:absolute;right:7px;top:7px;display:flex;align-items:center;justify-content:center;height:20px;min-width:46px;padding:0 6px;border:1px solid rgba(190,239,255,.92);border-radius:5px;background:rgba(7,24,42,.92);color:#e8fbff;font-size:9px;font-weight:1000;line-height:1;letter-spacing:.04em;box-shadow:0 2px 0 rgba(0,0,0,.34),0 0 9px rgba(66,220,255,.28);z-index:90;pointer-events:none}
+  #screenAssign .actorCard,#screenAssign .trumpCard{position:relative!important}
+  #screenAssign .budgetBand.pcActiveArea::after{content:"← 減額　増額 →";position:absolute;right:8px;top:-24px;height:20px;display:flex;align-items:center;padding:0 8px;border:1px solid rgba(190,239,255,.86);border-radius:6px;background:rgba(7,24,42,.90);color:#e8fbff;font-size:10px;font-weight:1000;box-shadow:0 2px 0 rgba(0,0,0,.28);z-index:100;pointer-events:none}
+  #screenAssign .budgetBand{position:relative!important}
+  #screenBattle .lane .pcLaneKey{position:absolute;left:10px;top:39px;z-index:86}
+  #screenResult .pcResultGuide,#screenEnding .pcResultGuide{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);align-items:center;gap:10px;padding:5px 12px;border:1px solid rgba(255,232,178,.42);border-radius:999px;background:rgba(7,24,42,.88);color:#fff1bf;font-size:11px;font-weight:1000;box-shadow:0 2px 10px rgba(0,0,0,.30);z-index:240;white-space:nowrap}
+  .pcChoiceFocus{outline:3px solid #42dcff!important;outline-offset:2px!important;box-shadow:0 0 0 4px rgba(66,220,255,.20),0 0 18px rgba(66,220,255,.38),0 3px 0 #604416!important;filter:brightness(1.07)!important}
+  .pcChoiceGuide{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);align-items:center;gap:7px;padding:5px 10px;border:1px solid rgba(255,232,178,.42);border-radius:999px;background:rgba(7,24,42,.86);color:#fff1bf;font-size:10.5px;font-weight:1000;z-index:260;white-space:nowrap}
+}
+@media (hover:none),(pointer:coarse){
+  .touchWindowGuide{display:flex!important;position:absolute;right:18px;bottom:13px;align-items:center;padding:5px 10px;border:1px solid rgba(255,232,178,.40);border-radius:999px;background:rgba(7,24,42,.76);color:#fff1bf;font-size:11px;font-weight:1000;z-index:250;pointer-events:none}
+}
+</style>
+<script id="pc-operation-guides-v22-js">
+(function(){
+'use strict';
+if(window.__PC_OPERATION_GUIDES_V22__)return;
+window.__PC_OPERATION_GUIDES_V22__=true;
+let choiceIndex=0;
+function finePointer(){return !!(window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches);}
+function activeScreen(){return document.querySelector('.screen.active');}
+function addWindowGuide(root,text='クリック / ENTER'){
+ if(!root||root.querySelector(':scope > .pcWindowGuide,:scope > .touchWindowGuide'))return;
+ const pc=document.createElement('div');pc.className='pcOnlyGuide pcWindowGuide';pc.innerHTML=`<span>${text.split(' / ')[0]}</span><span>/</span><span class="key">${text.split(' / ')[1]||'ENTER'}</span>`;root.appendChild(pc);
+ const touch=document.createElement('div');touch.className='touchWindowGuide';touch.textContent='タップで続ける';root.appendChild(touch);
+}
+function updateWindowGuides(){
+ const selectors=[
+  '#firstCasePickTutorial .openingStoryBox','#brotherReturnTutorial .openingStoryBox','#marriageCaseTutorial .openingStoryBox','#coreCountryTutorial .openingStoryBox','#pickTwoTutorial .openingStoryBox',
+  '#tutorialOverlay','#tutorialBadOverlay','.firstCaseTutorialScreen .openingStoryBox','.coreCountryTutorialScreen .openingStoryBox','.pickTwoTutorial .openingStoryBox',
+  '#screenOpening .openingStoryBox','#screenMain .yearStory','#screenMain .chronicleStory'
+ ];
+ document.querySelectorAll(selectors.join(',')).forEach(el=>addWindowGuide(el));
+ // 単一の「続ける」型モーダルのみ案内。選択肢モーダルは別表示。
+ document.querySelectorAll('.screen.active .modalBox').forEach(box=>{
+   const buttons=Array.from(box.querySelectorAll('.choices button,button')).filter(b=>!b.disabled);
+   if(buttons.length===1)addWindowGuide(box,'クリック / ENTER');
+ });
+}
+function updateAssignGuides(){
+ const screen=document.getElementById('screenAssign');if(!screen||!screen.classList.contains('active'))return;
+ // 既存の状態別ヘルプを短く統一し、右端にESCを常時表示
+ const help=screen.querySelector('.pcAssignStatusHelp');
+ if(help&&!help.dataset.v22){help.dataset.v22='1';}
+ let esc=screen.querySelector('.pcAssignEscapeGuide');
+ if(!esc){esc=document.createElement('div');esc.className='pcOnlyGuide pcKeyCap pcAssignEscapeGuide';esc.textContent='ESC　案件選択へ';const hud=screen.querySelector('.pcAssignStatus');if(hud)hud.appendChild(esc);}
+}
+function updateBattleGuides(){
+ const screen=document.getElementById('screenBattle');if(!screen||!screen.classList.contains('active'))return;
+ const keys=['A','S','D'];
+ screen.querySelectorAll('.lane').forEach((lane,i)=>{
+   let cap=lane.querySelector('.pcLaneKey');if(!cap){cap=document.createElement('span');cap.className='pcOnlyGuide pcKeyCap pcLaneKey';lane.appendChild(cap);}cap.textContent=keys[i]||String(i+1);
+ });
+}
+function updateResultGuides(){
+ ['screenResult','screenEnding'].forEach(id=>{
+   const screen=document.getElementById(id);if(!screen||!screen.classList.contains('active'))return;
+   let g=screen.querySelector('.pcResultGuide');if(!g){g=document.createElement('div');g.className='pcOnlyGuide pcResultGuide';g.innerHTML='<span>↑↓ スクロール</span><span class="pcKeyCap">ENTER</span><span>次へ</span>';screen.appendChild(g);}
+ });
+}
+function currentChoiceBox(){
+ const box=document.querySelector('.screen.active .modalBox,.screen.active .choiceBox,.screen.active .openingChoiceBox');if(!box)return null;
+ const buttons=Array.from(box.querySelectorAll('.choices button,button')).filter(b=>!b.disabled&&b.offsetParent!==null);
+ return buttons.length>1?{box,buttons}:null;
+}
+function updateChoiceGuides(){
+ const data=currentChoiceBox();
+ document.querySelectorAll('.pcChoiceFocus').forEach(x=>x.classList.remove('pcChoiceFocus'));
+ if(!data)return;
+ choiceIndex=Math.max(0,Math.min(data.buttons.length-1,choiceIndex));
+ data.buttons[choiceIndex].classList.add('pcChoiceFocus');
+ let g=data.box.querySelector('.pcChoiceGuide');if(!g){g=document.createElement('div');g.className='pcOnlyGuide pcChoiceGuide';g.textContent='↑↓ 選択　ENTER 決定';data.box.appendChild(g);}
+}
+function updateAll(){updateWindowGuides();updateAssignGuides();updateBattleGuides();updateResultGuides();updateChoiceGuides();}
+function keydown(e){
+ if(!finePointer())return;
+ const data=currentChoiceBox();if(!data)return;
+ // チュートリアルは既存のEnter/クリック処理を優先
+ if(document.querySelector('#firstCasePickTutorial,#brotherReturnTutorial,#marriageCaseTutorial,#coreCountryTutorial,#pickTwoTutorial,#tutorialOverlay,#tutorialBadOverlay'))return;
+ if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();e.stopImmediatePropagation();choiceIndex=(choiceIndex+1)%data.buttons.length;updateChoiceGuides();data.buttons[choiceIndex].scrollIntoView({block:'nearest'});return;}
+ if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();e.stopImmediatePropagation();choiceIndex=(choiceIndex-1+data.buttons.length)%data.buttons.length;updateChoiceGuides();data.buttons[choiceIndex].scrollIntoView({block:'nearest'});return;}
+ if(e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();data.buttons[choiceIndex].click();choiceIndex=0;setTimeout(updateAll,0);}
+}
+document.addEventListener('keydown',keydown,true);
+const obs=new MutationObserver(()=>requestAnimationFrame(updateAll));
+obs.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+window.addEventListener('resize',updateAll,{passive:true});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateAll,{once:true});else updateAll();
+window.auditPcOperationGuidesV22=function(){return{finePointer:finePointer(),active:activeScreen()?.id||'',windowGuides:document.querySelectorAll('.pcWindowGuide').length,laneKeys:document.querySelectorAll('.pcLaneKey').length,choice:!!currentChoiceBox()};};
+})();
+</script>
+
+
+<style id="operation-guide-layout-fix-v23">
+/* 采配画面の案内は既存レイアウトへ重ねず、既存見出し・下部余白へ分散する */
+#screenAssign .pcAssignStatus{display:none!important}
+#screenAssign .pcAssignEscapeGuide{display:none!important}
+#screenAssign .phase72AssignHint{display:none!important}
+@media (hover:hover) and (pointer:fine){
+  #screenAssign .phase72AssignHint{
+    display:block!important;
+    position:absolute!important;
+    left:210px!important;
+    bottom:22px!important;
+    width:430px!important;
+    max-width:430px!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    color:#9edff4!important;
+    font-size:10px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    text-align:left!important;
+    pointer-events:none!important;
+    z-index:35!important;
+  }
+  #screenAssign .assignActorHeading.pcActiveArea,
+  #screenAssign .trumpHead.pcActiveArea{
+    border-color:#42dcff!important;
+    box-shadow:inset 5px 0 0 #42dcff,0 0 12px rgba(66,220,255,.26)!important;
+  }
+}
+@media (hover:none),(pointer:coarse){
+  #screenAssign .pcAssignStatus,
+  #screenAssign .phase72AssignHint,
+  #screenAssign .pcOnlyGuide,
+  #screenAssign .pcKeyCap,
+  #screenAssign .pcAssignEscapeGuide{display:none!important}
+}
+</style>
+<script id="operation-guide-layout-fix-v23-js">
+(function(){
+'use strict';
+if(window.__OPERATION_GUIDE_LAYOUT_FIX_V23__)return;
+window.__OPERATION_GUIDE_LAYOUT_FIX_V23__=true;
+function assignReady23(){
+ const lanes=Array.from(document.querySelectorAll('#screenAssign .assignLane'));
+ if(!lanes.length)return false;
+ return lanes.every(l=>!!l.querySelector('.assigned:not(.empty)'));
+}
+function syncAssignButton23(){
+ const screen=document.getElementById('screenAssign');
+ if(!screen||!screen.classList.contains('active'))return;
+ const btn=screen.querySelector('.assignFooter .primary');
+ if(!btn)return;
+ let ready=false;
+ try{ready=!!(window.Flow&&Flow.allAssigned&&Flow.allAssigned());}catch(_){ready=assignReady23();}
+ if(!ready)ready=assignReady23();
+ btn.disabled=!ready;
+ btn.classList.toggle('pulse',ready);
+ btn.classList.toggle('advanceReady',ready);
+ const label=ready?'衝突開始 Enter':'人物を選択';
+ if((btn.textContent||'').trim()!==label)btn.textContent=label;
+}
+function cleanup23(){
+ document.querySelectorAll('#screenAssign .pcAssignStatus,#screenAssign .pcAssignEscapeGuide').forEach(el=>el.remove());
+ syncAssignButton23();
+}
+if(window.View&&typeof View.assign==='function'){
+ const base=View.assign;
+ View.assign=function(){const ret=base.apply(this,arguments);requestAnimationFrame(cleanup23);setTimeout(cleanup23,50);return ret;};
+}
+const root=document.getElementById('screenAssign');
+if(root&&window.MutationObserver){
+ const obs=new MutationObserver(()=>requestAnimationFrame(cleanup23));
+ obs.observe(root,{childList:true,subtree:true,attributes:true,attributeFilter:['class','disabled']});
+ window.__assignLayoutObserverV23=obs;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanup23,{once:true});else cleanup23();
+})();
+</script>
+
+
+<style id="window-guide-overlap-fix-v24-css">
+/* v24: 既存のstoryCue横の説明と新ガイドの重なりを解消 */
+.firstCaseTutorialScreen .storyCue::after,
+.coreCountryTutorialScreen .storyCue::after,
+.phase67BattleQuoteScreen .storyCue::after,
+.openingStoryScreen .storyCue::after,
+.mapNewsCue::after{content:none!important;display:none!important;}
+.openingStoryBox,.mapNewsBox,.tutorialOverlay,.modalBox,.yearStory,.chronicleStory{position:relative!important;}
+@media (hover:hover) and (pointer:fine){
+  .pcWindowGuide{right:18px;bottom:13px;}
+  .windowGuideHasCue > .pcWindowGuide{right:76px!important;bottom:18px!important;}
+}
+@media (hover:none),(pointer:coarse){
+  .touchWindowGuide{right:18px;bottom:13px;}
+  .windowGuideHasCue > .touchWindowGuide{right:76px!important;bottom:18px!important;}
+}
+/* 下部スペースの少ない箱では少し上へ */
+.windowGuideHasCue.openingStoryBox > .pcWindowGuide,
+.windowGuideHasCue.openingStoryBox > .touchWindowGuide,
+.windowGuideHasCue.mapNewsBox > .pcWindowGuide,
+.windowGuideHasCue.mapNewsBox > .touchWindowGuide{bottom:18px!important;}
+</style>
+<script id="window-guide-overlap-fix-v24-js">
+(function(){
+'use strict';
+if(window.__WINDOW_GUIDE_OVERLAP_FIX_V24__)return;
+window.__WINDOW_GUIDE_OVERLAP_FIX_V24__=true;
+function markGuideBoxes(){
+  document.querySelectorAll('.pcWindowGuide,.touchWindowGuide').forEach(guide=>{
+    const box=guide.parentElement;
+    if(!box)return;
+    const hasCue=!!box.querySelector('.storyCue,.mapNewsCue');
+    box.classList.toggle('windowGuideHasCue',hasCue);
+  });
+  // 旧CSS由来のstoryCue隣接説明が入っていそうな箱を念のため統一
+  document.querySelectorAll('.openingStoryBox,.mapNewsBox').forEach(box=>{
+    if(box.querySelector('.storyCue,.mapNewsCue')) box.classList.add('windowGuideHasCue');
+  });
+}
+const run=()=>requestAnimationFrame(markGuideBoxes);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true}); else run();
+if(window.MutationObserver){
+  const obs=new MutationObserver(()=>markGuideBoxes());
+  obs.observe(document.body,{childList:true,subtree:true});
+}
+})();
+</script>
+
+<style id="device-guide-optimization-v25-css">
+/* PC向け案内はfine pointerのみ。タブレットでは完全に隠す */
+@media (hover:none), (pointer:coarse){
+  .pcOnlyGuide,
+  .pcKeyCap,
+  .pcScreenGuide,
+  .pcAssignStatus,
+  .pcAssignStatusHelp,
+  .pcAssignEscapeGuide,
+  .pcLaneKey,
+  .pcResultGuide,
+  .pcChoiceGuide,
+  .pcWindowGuide,
+  #screenAssign .actorCard.pcCurrentActor::after,
+  #screenAssign .trumpCard.pcCurrentCard::after,
+  #screenAssign .budgetBand.pcActiveArea::after{
+    display:none!important;
+    content:none!important;
+  }
+
+  /* タブレットでは必要最小限の案内だけ表示 */
+  .touchWindowGuide{
+    display:flex!important;
+    position:absolute!important;
+    right:76px!important;
+    bottom:18px!important;
+    align-items:center!important;
+    padding:5px 10px!important;
+    border:1px solid rgba(255,232,178,.40)!important;
+    border-radius:999px!important;
+    background:rgba(7,24,42,.76)!important;
+    color:#fff1bf!important;
+    font-size:11px!important;
+    font-weight:1000!important;
+    z-index:250!important;
+    pointer-events:none!important;
+    white-space:nowrap!important;
+  }
+  /* 矢印が無いウインドウでは右下へ */
+  :not(.windowGuideHasCue) > .touchWindowGuide{
+    right:18px!important;
+    bottom:13px!important;
+  }
+
+  /* タブレットでは通常画面の操作説明を出さない */
+  .touchScreenGuide,
+  .touchAssignGuide,
+  .touchBattleGuide,
+  .touchResultGuide,
+  .touchChoiceGuide{
+    display:none!important;
+  }
+}
+
+/* PCではタッチ案内を確実に隠す */
+@media (hover:hover) and (pointer:fine){
+  .touchWindowGuide,
+  .touchScreenGuide,
+  .touchAssignGuide,
+  .touchBattleGuide,
+  .touchResultGuide,
+  .touchChoiceGuide{
+    display:none!important;
+  }
+}
+</style>
+<script id="device-guide-optimization-v25-js">
+(function(){
+'use strict';
+if(window.__DEVICE_GUIDE_OPTIMIZATION_V25__)return;
+window.__DEVICE_GUIDE_OPTIMIZATION_V25__=true;
+function isCoarse(){
+  return !!(window.matchMedia && window.matchMedia('(hover:none), (pointer:coarse)').matches);
+}
+function normalizeTouchGuides(){
+  const coarse=isCoarse();
+  document.documentElement.classList.toggle('coarsePointerUI',coarse);
+  document.documentElement.classList.toggle('finePointerUI',!coarse);
+  document.querySelectorAll('.touchWindowGuide').forEach(g=>{
+    const box=g.parentElement;
+    if(!box)return;
+    const hasCue=!!box.querySelector('.storyCue,.mapNewsCue');
+    box.classList.toggle('windowGuideHasCue',hasCue);
+    // 文言はタブレットで一律に短くする
+    if(coarse)g.textContent='タップで続ける';
+  });
+}
+const run=()=>requestAnimationFrame(normalizeTouchGuides);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+window.addEventListener('resize',run,{passive:true});
+window.addEventListener('orientationchange',run,{passive:true});
+if(window.MutationObserver){
+  const obs=new MutationObserver(()=>normalizeTouchGuides());
+  obs.observe(document.body,{childList:true,subtree:true});
+}
+})();
+</script>
 </body>
 </html>
