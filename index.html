@@ -2787,6 +2787,12 @@ button.primary:active,#screenMain .next:active,#screenAssign .assignFooter butto
   #screenAssign .dispatchFooter{grid-template-columns:160px 1fr 230px!important;}
 }
 
+
+/* v74: 次期へ残る問題は影響の大きい最大2件・各項目は案件名＋最初の1文だけ */
+#screenResult .carryoverTop2V73{padding-bottom:11px!important;}
+#screenResult .carryoverBulletListV73{margin:0!important;padding:0 0 0 22px!important;display:flex!important;flex-direction:column!important;gap:8px!important;}
+#screenResult .carryoverBulletListV73 li{padding-left:3px!important;font-size:13px!important;line-height:1.55!important;font-weight:850!important;color:#172337!important;}
+#screenResult .carryoverBulletListV73 li::marker{color:#102a4c!important;font-size:1.05em!important;}
 </style>
 </head>
 <body><div id="gameViewport" aria-label="私は王である ゲーム画面"><div id="game"><section class="screen active" id="screenOpening"></section><section class="screen" id="screenMapNews"></section><section class="screen" id="screenMain"></section><section class="screen" id="screenAssign"></section><section class="screen" id="screenBattle"></section><section class="screen" id="screenResult"></section></div></div>
@@ -52636,13 +52642,13 @@ console.info('phase71 family/final/result fixes applied');
       copy.enemy='枢機卿ロレンツォ・ディ・ベルカーロ';
       copy.enemyImg='lorenzoBelcaro';
       copy.initialLine=-8;
-      copy.intro='リック神聖国から、腹違いの弟に関する書簡が届いた。幼い頃より聖庁の庇護下で育てられてきた少年は、今や王弟として政治的価値を帯びている。交渉の相手は、聖王本人ではなく聖庁の実務を握る枢機卿ロレンツォ・ディ・ベルカーロ。王家の血を取り戻すため、信仰と面子を傷つけずに道を開かねばならない。';
+      copy.intro='リックで育った腹違いの弟、ルートヴィヒが帰還を望んでいる。だが王位継承権を持つ彼を、聖庁も選帝侯たちもただの家族とは見ていない。枢機卿ロレンツォとの帰還交渉が始まる。';
     }else{
       copy.difficulty='easy';
       copy.enemy='枢機卿ロレンツォ・ディ・ベルカーロ';
       copy.enemyImg='lorenzoBelcaro';
       copy.initialLine=-5;
-      copy.intro='前回の交渉決裂を受け、聖庁の実務を握る枢機卿ロレンツォ・ディ・ベルカーロが再び条件を示してきた。だが、まだ扉は閉じ切っていない。王家の血を異国に抱え込まれたままにしないため、今回は救済の道を選び取る交渉である。';
+      copy.intro='前回の交渉は決裂したが、ルートヴィヒ帰還の道はまだ残っている。枢機卿ロレンツォが新たな条件を示した。今度こそ弟を王国へ迎えたい。';
     }
     return copy;
   }
@@ -55047,8 +55053,8 @@ const roots=[
   ['#pickTwoTutorial .openingStoryBox','老執事より'],
   ['.firstCaseTutorialScreen .openingStoryBox','老執事より'],
   ['.pickTwoTutorial .openingStoryBox','老執事より'],
-  ['#tutorialOverlay','軍務官より'],
-  ['#tutorialBadOverlay','軍務官より'],
+  /* #tutorialOverlay / #tutorialBadOverlay are intentionally excluded here.
+     Their sender is owned by battle-tutorial-cleanup-v50 to prevent competing writes. */
   ['.tutorialOverlay.butlerAdviceBox','老執事より']
 ];
 function apply(){
@@ -55225,13 +55231,49 @@ function polishCarryoverTextV37(raw){
   t=t.replace(/。{2,}/g,'。').replace(/、{2,}/g,'、').trim();
   return{title:title||'未対応案件',text:t,risk};
 }
+function carryoverImpactScoreV73(raw,index){
+  const t=stripV37(raw).replace(/\s+/g,' ').trim();
+  let score=0;
+  const groups=[
+    [140,/(王弟.*反逆|反逆|内戦|王位|継承争い|国家崩壊|滅亡)/],
+    [130,/(領土.*喪失|領土.*割譲|勢力圏.*喪失|国境線.*後退|大戦争)/],
+    [120,/(死別|重病|病床|疫病.*拡大|大流行)/],
+    [110,/(戦争|開戦|講和決裂|休戦破綻|王妃|王子|王女|共同統治)/],
+    [90,/(既成事実|悪化判定|国境線|戦争圧力|火種|連鎖|勢力圏)/],
+    [70,/(緊張|未対応|再燃|衛生|信仰|貴族|民心|市場)/]
+  ];
+  for(const [v,re] of groups){if(re.test(t)){score+=v;break;}}
+  const pct=t.match(/(?:悪化判定|確率)\s*(\d+)\s*％?/);
+  if(pct)score+=Math.min(50,Math.round(Number(pct[1])/2));
+  const step=t.match(/既成事実\s*(\d+)\s*→\s*(\d+)/);
+  if(step)score+=Math.max(0,Number(step[2])-Number(step[1]))*20;
+  return score-index*.001;
+}
+function carryoverDisplayTextV73(raw){
+  const full=stripV37(raw).replace(/\s+/g,' ').trim();
+  if(!full)return'';
+
+  const colon=full.indexOf('：');
+  const title=colon>0?full.slice(0,colon).trim():'';
+  const body=colon>0?full.slice(colon+1).trim():full;
+  const firstMatch=body.match(/^.*?[。！？]/);
+  const firstSentence=(firstMatch?firstMatch[0]:body).trim();
+  const normalized=/[。！？]$/.test(firstSentence)?firstSentence:`${firstSentence}。`;
+
+  return title?`${title}：${normalized}`:normalized;
+}
 window.importantSummaryNotesHtml=function(data){
   const src=Array.isArray(data&&data.pressureNotes)?data.pressureNotes:[];
   const all=src.filter(x=>{try{return typeof resultLineIsImportant==='function'?resultLineIsImportant(x):true;}catch(e){return true;}});
-  const notes=all.slice(0,4).map(polishCarryoverTextV37);
+  const seen=new Set();
+  const ranked=all.map((raw,index)=>({raw,index,score:carryoverImpactScoreV73(raw,index)})).filter(x=>{
+    const key=stripV37(x.raw).replace(/[、。！？：:\s]/g,'').slice(0,36);
+    if(!key||seen.has(key))return false;
+    seen.add(key);return true;
+  }).sort((a,b)=>b.score-a.score||a.index-b.index);
+  const notes=ranked.slice(0,2);
   if(!notes.length)return'';
-  const more=all.length-notes.length;
-  return `<div class="summaryBlock carryoverBlockV37"><h3>次期へ残る問題</h3><div class="summaryList">${notes.map(n=>`<div class="carryoverItemV37"><span class="carryoverTagV37">再燃注意</span><div class="carryoverTitleV37">${escV37(n.title)}</div><div class="carryoverTextV37">${escV37(n.text)}</div>${n.risk?`<div class="carryoverRiskV37">${escV37(n.risk)}</div>`:''}</div>`).join('')}</div>${more>0?`<div class="summaryMuted">ほか${more}件は次期の情勢へ反映されます。</div>`:''}</div>`;
+  return `<div class="summaryBlock carryoverBlockV37 carryoverTop2V73"><h3>次期へ残る問題</h3><ul class="carryoverBulletListV73">${notes.map(n=>`<li>${escV37(carryoverDisplayTextV73(n.raw))}</li>`).join('')}</ul></div>`;
 };
 })();
 ;
