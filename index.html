@@ -2787,12 +2787,6 @@ button.primary:active,#screenMain .next:active,#screenAssign .assignFooter butto
   #screenAssign .dispatchFooter{grid-template-columns:160px 1fr 230px!important;}
 }
 
-
-/* v74: 次期へ残る問題は影響の大きい最大2件・各項目は案件名＋最初の1文だけ */
-#screenResult .carryoverTop2V73{padding-bottom:11px!important;}
-#screenResult .carryoverBulletListV73{margin:0!important;padding:0 0 0 22px!important;display:flex!important;flex-direction:column!important;gap:8px!important;}
-#screenResult .carryoverBulletListV73 li{padding-left:3px!important;font-size:13px!important;line-height:1.55!important;font-weight:850!important;color:#172337!important;}
-#screenResult .carryoverBulletListV73 li::marker{color:#102a4c!important;font-size:1.05em!important;}
 </style>
 </head>
 <body><div id="gameViewport" aria-label="私は王である ゲーム画面"><div id="game"><section class="screen active" id="screenOpening"></section><section class="screen" id="screenMapNews"></section><section class="screen" id="screenMain"></section><section class="screen" id="screenAssign"></section><section class="screen" id="screenBattle"></section><section class="screen" id="screenResult"></section></div></div>
@@ -10948,7 +10942,7 @@ window.addEventListener('keydown',e=>{if(!battle||battle.phase!=='running')retur
 const Opening={
 showTitle(){
 setScreen('screenOpening');
-$('screenOpening').innerHTML=`<div class="openingTitle openingFadeIn" onclick="Opening.showStory()"><img class="openingTitleImg" src="${TITLE_IMG}" draggable="false" alt=""><div class="startCue">画面を押して始める</div></div>`;
+$('screenOpening').innerHTML=`<div class="openingTitle openingFadeIn" onclick="Opening.showStory()"><img class="openingTitleImg" src="${TITLE_IMG}" draggable="false" alt=""><div class="startCue">クリック / Enterで始める</div></div>`;
 },
 showStory(){
 audio();sfx("opening");
@@ -50934,7 +50928,10 @@ b[k]=num(b[k])+num(v);
 }
 if(item.buff.line){
 const add=num(item.buff.line);
-if(add!==0){b.line+=add;setLaneLine50(fl,num(fl.line)+add);if(typeof fl.budgetIntroFromLine==='number')fl.budgetIntroFromLine=clampFn(fl.budgetIntroFromLine+add,-100,100);if(typeof fl.budgetIntroToLine==='number')fl.budgetIntroToLine=clampFn(fl.budgetIntroToLine+add,-100,100);}
+if(add!==0){
+b.line+=add;
+fl.phase108FinalAllyLineBonus=num(fl.phase108FinalAllyLineBonus)+add;
+}
 }
 if(item.buff.enemySpeedCut){fl.enemySpeed=Math.max(80,num(fl.enemySpeed)*(1-num(item.buff.enemySpeedCut)));}
 if(item.buff.playerSpeedBoost){fl.speed=num(fl.speed)*(1+num(item.buff.playerSpeedBoost));}
@@ -50956,9 +50953,24 @@ host.appendChild(node);
 try{sfx(item.sfx||'card');}catch(e){}
 if(item.kind!=='切り札')applyFinalAllyItem50(item);
 }
+function mergeFinalAllyLineBonus108(){
+if(!battle||!Array.isArray(battle.lanes))return;
+for(const l of battle.lanes){
+const add=num(l&&l.phase108FinalAllyLineBonus);
+if(!l||!add||l.phase108FinalAllyMerged)continue;
+l.phase108FinalAllyMerged=true;
+const from=Number.isFinite(Number(l.budgetIntroFromLine))?num(l.budgetIntroFromLine):num(l.line);
+const to=Number.isFinite(Number(l.budgetIntroToLine))?num(l.budgetIntroToLine):num(l.line);
+l.budgetIntroFromLine=clampFn(from,-100,100);
+l.budgetIntroToLine=clampFn(to+add,-100,100);
+l.budgetIntroBonus=Math.max(1,num(l.budgetIntroBonus)+Math.abs(add));
+l.phase108FinalAllyMergedBonus=add;
+}
+}
 function continueAfterIntro50(){
 removeIntro50();
 if(!battle)return;
+mergeFinalAllyLineBonus108();
 if(battle.lanes&&battle.lanes.some(l=>(l.budgetIntroBonus||0)>0)){Battle.startBudgetIntro();return;}
 battle.phase='running';battle.start=performance.now();battle.last=battle.start;requestAnimationFrame(Battle.tick);
 }
@@ -51298,7 +51310,7 @@ function wrapViews(){
  if(View.updateMainSelection){const old=View.updateMainSelection.bind(View);View.updateMainSelection=function(){const r=old.apply(this,arguments);setTimeout(applyMainFocus,0);return r;};}
  const oldAssign=View.assign.bind(View);View.assign=function(){const r=oldAssign.apply(this,arguments);queueAssignFocus();return r;};
 }
-function installScreenHints(){const main=document.getElementById('screenMain');if(main&&!main.querySelector('.simpleControlHint')){const h=document.createElement('div');h.className='simpleControlHint mainSimpleHint';h.textContent='PC：↑↓で案件移動・Enterで決定　タブレット：直接タップ';main.appendChild(h);}const battle=document.getElementById('screenBattle');if(battle&&!battle.querySelector('.simpleControlHint')){const h=document.createElement('div');h.className='simpleControlHint battleSimpleHint';h.textContent='PC：A / S / Dで各戦線　Fで一時停止　タブレット：戦線をタップ';battle.appendChild(h);}}
+function installScreenHints(){const main=document.getElementById('screenMain');if(main&&!main.querySelector('.simpleControlHint')){const h=document.createElement('div');h.className='simpleControlHint mainSimpleHint';h.textContent='↑↓で選ぶ　Enterで決定　Escで解除';main.appendChild(h);}const battle=document.getElementById('screenBattle');if(battle&&!battle.querySelector('.simpleControlHint')){const h=document.createElement('div');h.className='simpleControlHint battleSimpleHint';h.textContent='A/S/D：戦線　F：停止';battle.appendChild(h);}}
 function install(){installCss();installPointerController();wrapViews();setTimeout(()=>{applyMainFocus();applyAssignFocus();installScreenHints();},0);}
 window.addEventListener('keydown',function(e){
  if(performance.now()<Number(window.__kingInputShieldUntil||0)){stop(e);return;}
@@ -51306,9 +51318,9 @@ window.addEventListener('keydown',function(e){
  if(tutorialOpen()){if(e.key==='Enter')closeTutorialByEnter(e);else stop(e);return;}
  const id=activeScreenId();
  if(id==='screenBattle'){if(e.code==='Space'||e.key===' ')return stop(e);if((e.key||'').toLowerCase()==='f'){Battle.togglePause&&Battle.togglePause();return stop(e);}if(e.key==='Enter'&&battle&&battle.phase==='paused'){Battle.togglePause&&Battle.togglePause();return stop(e);}return;}
- if(e.code==='Space'||e.key===' ')return stop(e);
+ if((e.code==='Space'||e.key===' ')&&!(id==='screenAssign'&&document.querySelector('#screenAssign .dispatchShell')))return stop(e);
  if(id==='screenMain'&&mainKey(e)!==false)return;
- if(id==='screenAssign'&&assignKey(e)!==false)return;
+ if(id==='screenAssign'&&!document.querySelector('#screenAssign .dispatchShell')&&assignKey(e)!==false)return;
  if(e.key==='Enter'&&passiveAdvance())return stop(e);
 },true);
 window.coreInputControllerV20={state:Input,refresh(){applyMainFocus();applyAssignFocus();},setArea(a){if(AREAS.includes(a)){Input.area=a;applyAssignFocus();}}};
@@ -52075,7 +52087,7 @@ function phase67BuildQuoteQueue(){
   const cases=phase67SelectedCases();
   if(cases.some(c=>c&&c.id==='brother_final_rebellion')){
     return [
-      {speaker:'ルートヴィヒ',text:'我が名はルートヴィヒ！　ただ一人の肉親に刃を向ける愚かな弟だ！！'},
+      {speaker:'ルートヴィヒ',text:'我が名はルートヴィヒ。愛しき兄に刃を向ける、愚かな弟だ！'},
       {speaker:'アルブレヒト',text:'我が名はアルブレヒト。お前の兄だ。'}
     ];
   }
@@ -52642,13 +52654,13 @@ console.info('phase71 family/final/result fixes applied');
       copy.enemy='枢機卿ロレンツォ・ディ・ベルカーロ';
       copy.enemyImg='lorenzoBelcaro';
       copy.initialLine=-8;
-      copy.intro='リックで育った腹違いの弟、ルートヴィヒが帰還を望んでいる。だが王位継承権を持つ彼を、聖庁も選帝侯たちもただの家族とは見ていない。枢機卿ロレンツォとの帰還交渉が始まる。';
+      copy.intro='リック神聖国から、腹違いの弟に関する書簡が届いた。幼い頃より聖庁の庇護下で育てられてきた少年は、今や王弟として政治的価値を帯びている。交渉の相手は、聖王本人ではなく聖庁の実務を握る枢機卿ロレンツォ・ディ・ベルカーロ。王家の血を取り戻すため、信仰と面子を傷つけずに道を開かねばならない。';
     }else{
       copy.difficulty='easy';
       copy.enemy='枢機卿ロレンツォ・ディ・ベルカーロ';
       copy.enemyImg='lorenzoBelcaro';
       copy.initialLine=-5;
-      copy.intro='前回の交渉は決裂したが、ルートヴィヒ帰還の道はまだ残っている。枢機卿ロレンツォが新たな条件を示した。今度こそ弟を王国へ迎えたい。';
+      copy.intro='前回の交渉決裂を受け、聖庁の実務を握る枢機卿ロレンツォ・ディ・ベルカーロが再び条件を示してきた。だが、まだ扉は閉じ切っていない。王家の血を異国に抱え込まれたままにしないため、今回は救済の道を選び取る交渉である。';
     }
     return copy;
   }
@@ -54793,9 +54805,9 @@ window.__PC_OPERATION_GUIDES_V22__=true;
 let choiceIndex=0;
 function finePointer(){return !!(window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches);}
 function activeScreen(){return document.querySelector('.screen.active');}
-function addWindowGuide(root,text='クリック / ENTER'){
+function addWindowGuide(root,text='クリック / Enter'){
  if(!root||root.querySelector(':scope > .pcWindowGuide,:scope > .touchWindowGuide'))return;
- const pc=document.createElement('div');pc.className='pcOnlyGuide pcWindowGuide';pc.innerHTML=`<span>${text.split(' / ')[0]}</span><span>/</span><span class="key">${text.split(' / ')[1]||'ENTER'}</span>`;root.appendChild(pc);
+ const pc=document.createElement('div');pc.className='pcOnlyGuide pcWindowGuide';pc.innerHTML=`<span>${text.split(' / ')[0]}</span><span>/</span><span class="key">${text.split(' / ')[1]||'Enter'}</span>`;root.appendChild(pc);
  const touch=document.createElement('div');touch.className='touchWindowGuide';touch.textContent='タップで続ける';root.appendChild(touch);
 }
 function updateWindowGuides(){
@@ -54808,7 +54820,7 @@ function updateWindowGuides(){
  // 単一の「続ける」型モーダルのみ案内。選択肢モーダルは別表示。
  document.querySelectorAll('.screen.active .modalBox').forEach(box=>{
    const buttons=Array.from(box.querySelectorAll('.choices button,button')).filter(b=>!b.disabled);
-   if(buttons.length===1)addWindowGuide(box,'クリック / ENTER');
+   if(buttons.length===1)addWindowGuide(box,'クリック / Enter');
  });
 }
 function updateAssignGuides(){
@@ -54829,7 +54841,7 @@ function updateBattleGuides(){
 function updateResultGuides(){
  ['screenResult','screenEnding'].forEach(id=>{
    const screen=document.getElementById(id);if(!screen||!screen.classList.contains('active'))return;
-   let g=screen.querySelector('.pcResultGuide');if(!g){g=document.createElement('div');g.className='pcOnlyGuide pcResultGuide';g.innerHTML='<span>↑↓ スクロール</span><span class="pcKeyCap">ENTER</span><span>次へ</span>';screen.appendChild(g);}
+   let g=screen.querySelector('.pcResultGuide');if(!g){g=document.createElement('div');g.className='pcOnlyGuide pcResultGuide';g.innerHTML='<span>↑↓ スクロール</span><span>Enterで進む</span>';screen.appendChild(g);}
  });
 }
 function currentChoiceBox(){
@@ -54843,7 +54855,7 @@ function updateChoiceGuides(){
  if(!data)return;
  choiceIndex=Math.max(0,Math.min(data.buttons.length-1,choiceIndex));
  data.buttons[choiceIndex].classList.add('pcChoiceFocus');
- let g=data.box.querySelector('.pcChoiceGuide');if(!g){g=document.createElement('div');g.className='pcOnlyGuide pcChoiceGuide';g.textContent='↑↓ 選択　ENTER 決定';data.box.appendChild(g);}
+ let g=data.box.querySelector('.pcChoiceGuide');if(!g){g=document.createElement('div');g.className='pcOnlyGuide pcChoiceGuide';g.textContent='↑↓←→で選ぶ　Enter / Spaceで決定　Escで閉じる';data.box.appendChild(g);}
 }
 function updateAll(){updateWindowGuides();updateAssignGuides();updateBattleGuides();updateResultGuides();updateChoiceGuides();}
 function keydown(e){
@@ -55053,8 +55065,8 @@ const roots=[
   ['#pickTwoTutorial .openingStoryBox','老執事より'],
   ['.firstCaseTutorialScreen .openingStoryBox','老執事より'],
   ['.pickTwoTutorial .openingStoryBox','老執事より'],
-  /* #tutorialOverlay / #tutorialBadOverlay are intentionally excluded here.
-     Their sender is owned by battle-tutorial-cleanup-v50 to prevent competing writes. */
+  ['#tutorialOverlay','軍務官より'],
+  ['#tutorialBadOverlay','軍務官より'],
   ['.tutorialOverlay.butlerAdviceBox','老執事より']
 ];
 function apply(){
@@ -55140,7 +55152,7 @@ function caseCardHtml(id,i){
 function renderAssign(){
  setScreen('screenAssign');
  const ids=(State.selected||[]).filter(Boolean);const ready=ids.length>0&&ids.every(id=>!!(State.assignments&&State.assignments[id]));const total=ids.reduce((sum,id)=>sum+caseBudgetCost(getCase(id)),0);
- $('screenAssign').innerHTML=`<div class="topbar"><b>${periodLabel()}　采配</b>${paramHud()}</div><div class="dispatchShell"><main class="dispatchCases" style="--case-count:${Math.max(1,ids.length)}">${ids.map(caseCardHtml).join('')}</main><footer class="dispatchFooter"><button type="button" class="dispatchBack" onclick="DispatchV36.back()">戻る <small>ESC</small></button><button type="button" class="dispatchStart ${ready?'advanceReady':''}" ${ready?'':'disabled'} onclick="Flow.startBattle()">${ready?'衝突開始 ENTER':'担当者を選択'}</button></footer></div>`;
+ $('screenAssign').innerHTML=`<div class="topbar"><b>${periodLabel()}　采配</b>${paramHud()}</div><div class="dispatchShell"><main class="dispatchCases" style="--case-count:${Math.max(1,ids.length)}">${ids.map(caseCardHtml).join('')}</main><footer class="dispatchFooter"><button type="button" class="dispatchBack" onclick="DispatchV36.back()">戻る</button><button type="button" class="dispatchStart ${ready?'advanceReady':''}" ${ready?'':'disabled'} onclick="Flow.startBattle()">${ready?'衝突開始':'担当者を選択'}</button></footer></div>`;
 }
 function closeModal(){const m=document.querySelector('#screenAssign .dispatchModalShade');if(m)m.remove();}
 function modalBase(c,title,body,foot=''){
@@ -55175,7 +55187,7 @@ window.DispatchV36={
   const selected=cardsForCase(id);const assignedIds=new Set(Object.values(State.assignments||{}));
   let hand=(State.hand||[]).slice();
   hand.sort((a,b)=>(selected.includes(b)?1:0)-(selected.includes(a)?1:0));
-  const visible=hand.slice(0,3);
+  const visible=hand; // phase110: 表示は全切り札。投入上限は toggleTrump の3枚制限で維持。
   const body=visible.map(cardId=>{const cd=DATA.cards?.[cardId]||{};const placed=selectedCardCaseId(cardId);const actorLocked=cd.actorId&&assignedIds.has(cd.actorId);const disabled=!!actorLocked;return `<button type="button" class="dispatchTrumpChoice ${selected.includes(cardId)?'selected':''} ${disabled?'disabled':''}" ${disabled?'disabled':''} onclick="DispatchV36.toggleTrump('${esc(id)}','${esc(cardId)}')"><div class="dispatchChoiceName">${esc(cd.name||cardId)}</div><div class="dispatchChoiceDesc">${esc(cd.desc||'')}${placed&&placed!==id?`<br>現在：案件${(State.selected||[]).indexOf(placed)+1}で使用中`:''}</div><div class="dispatchSub">${selected.includes(cardId)?'選択中':'押して選択'}</div></button>`;}).join('')||'<div class="dispatchChoiceDesc">使用できる切り札がありません。</div>';
   const foot=`<button type="button" onclick="DispatchV36.clearTrumps('${esc(id)}')">すべて外す</button><button type="button" class="dispatchDone" onclick="DispatchV36.closeAndRender()">完了</button>`;
   modalBase(c,`切り札を選択（${selected.length}/3）`,body,foot);
@@ -55231,49 +55243,13 @@ function polishCarryoverTextV37(raw){
   t=t.replace(/。{2,}/g,'。').replace(/、{2,}/g,'、').trim();
   return{title:title||'未対応案件',text:t,risk};
 }
-function carryoverImpactScoreV73(raw,index){
-  const t=stripV37(raw).replace(/\s+/g,' ').trim();
-  let score=0;
-  const groups=[
-    [140,/(王弟.*反逆|反逆|内戦|王位|継承争い|国家崩壊|滅亡)/],
-    [130,/(領土.*喪失|領土.*割譲|勢力圏.*喪失|国境線.*後退|大戦争)/],
-    [120,/(死別|重病|病床|疫病.*拡大|大流行)/],
-    [110,/(戦争|開戦|講和決裂|休戦破綻|王妃|王子|王女|共同統治)/],
-    [90,/(既成事実|悪化判定|国境線|戦争圧力|火種|連鎖|勢力圏)/],
-    [70,/(緊張|未対応|再燃|衛生|信仰|貴族|民心|市場)/]
-  ];
-  for(const [v,re] of groups){if(re.test(t)){score+=v;break;}}
-  const pct=t.match(/(?:悪化判定|確率)\s*(\d+)\s*％?/);
-  if(pct)score+=Math.min(50,Math.round(Number(pct[1])/2));
-  const step=t.match(/既成事実\s*(\d+)\s*→\s*(\d+)/);
-  if(step)score+=Math.max(0,Number(step[2])-Number(step[1]))*20;
-  return score-index*.001;
-}
-function carryoverDisplayTextV73(raw){
-  const full=stripV37(raw).replace(/\s+/g,' ').trim();
-  if(!full)return'';
-
-  const colon=full.indexOf('：');
-  const title=colon>0?full.slice(0,colon).trim():'';
-  const body=colon>0?full.slice(colon+1).trim():full;
-  const firstMatch=body.match(/^.*?[。！？]/);
-  const firstSentence=(firstMatch?firstMatch[0]:body).trim();
-  const normalized=/[。！？]$/.test(firstSentence)?firstSentence:`${firstSentence}。`;
-
-  return title?`${title}：${normalized}`:normalized;
-}
 window.importantSummaryNotesHtml=function(data){
   const src=Array.isArray(data&&data.pressureNotes)?data.pressureNotes:[];
   const all=src.filter(x=>{try{return typeof resultLineIsImportant==='function'?resultLineIsImportant(x):true;}catch(e){return true;}});
-  const seen=new Set();
-  const ranked=all.map((raw,index)=>({raw,index,score:carryoverImpactScoreV73(raw,index)})).filter(x=>{
-    const key=stripV37(x.raw).replace(/[、。！？：:\s]/g,'').slice(0,36);
-    if(!key||seen.has(key))return false;
-    seen.add(key);return true;
-  }).sort((a,b)=>b.score-a.score||a.index-b.index);
-  const notes=ranked.slice(0,2);
+  const notes=all.slice(0,4).map(polishCarryoverTextV37);
   if(!notes.length)return'';
-  return `<div class="summaryBlock carryoverBlockV37 carryoverTop2V73"><h3>次期へ残る問題</h3><ul class="carryoverBulletListV73">${notes.map(n=>`<li>${escV37(carryoverDisplayTextV73(n.raw))}</li>`).join('')}</ul></div>`;
+  const more=all.length-notes.length;
+  return `<div class="summaryBlock carryoverBlockV37"><h3>次期へ残る問題</h3><div class="summaryList">${notes.map(n=>`<div class="carryoverItemV37"><span class="carryoverTagV37">再燃注意</span><div class="carryoverTitleV37">${escV37(n.title)}</div><div class="carryoverTextV37">${escV37(n.text)}</div>${n.risk?`<div class="carryoverRiskV37">${escV37(n.risk)}</div>`:''}</div>`).join('')}</div>${more>0?`<div class="summaryMuted">ほか${more}件は次期の情勢へ反映されます。</div>`:''}</div>`;
 };
 })();
 ;
@@ -55590,7 +55566,7 @@ function apply(){
   if(!btn)return false;
   const ready=stateReady()||domReady();
   btn.disabled=!ready;
-  btn.textContent=ready?'衝突開始 ENTER':'担当者を選択';
+  btn.textContent=ready?'衝突開始':'担当者を選択';
   btn.classList.toggle('isActorReady',ready);
   btn.classList.toggle('actorReady',ready);
   btn.classList.toggle('advanceReady',ready);
@@ -55629,5 +55605,924 @@ apply();
 ;
 
 </script>
+
+
+<!-- phase95: 国別チュートリアルを選択時ポップアップからリザルトの「解説」欄へ移設 -->
+<script id="phase95-country-result-explanation">
+(function(){
+'use strict';
+if(window.__phase95CountryResultExplanationApplied)return;
+window.__phase95CountryResultExplanationApplied=true;
+const PHASE='phase95_country_result_explanation';
+function esc95(v){return String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function countryTutorials95(){
+  return window.coreCountryTutorials||{
+    loire:{title:'ロアール王国',text:'絢爛たる薔薇の王宮を誇る西方の大王国。王太子アルマンは芸術と面子を愛し、スタント信徒を柔軟に受け入れる。'},
+    rick:{title:'リック神聖国',text:'トリック教の正統を掲げる、鍵と巡礼の聖王国。聖王ロレンツォは信仰に厚く、神の代行者として異端の影を決して許さない。'},
+    ruthenia:{title:'ルテニア大公国',text:'雪原の果てまで版図を広げる東方の巨大帝国。女大公イリーナは策謀に長け、無数の兵を動かして国境へ静かな圧力を加える。'},
+    solia:{title:'ソリア',text:'険しい山岳と傭兵に支えられた小国。若公レナートは義と利益の狭間を生き、他国の戦争さえ秤にかけて国を富ませる。'},
+    azraq:{title:'アズラク帝国',text:'砂漠、隊商路、聖地を抱く南東の大帝国。皇帝サファルはリャムの信仰と交易を結び、聖地をめぐるリックとの戦いを長く続けている。'},
+    seafeara:{title:'セーフェアラ商業連合',text:'国土を持たず、海路を網のように張り巡らせる商業連盟。終身総督マルチェロは貿易と借款を武器に、王たちと対等に渡り合う。'},
+    treuval:{title:'トレウヴァル',text:'霧海の島々に生きる氏族の集合体。王ダグダンはその暴力をもって氏族を束ね、アルトラントの港を次なる獲物と見据える。'}
+  };
+}
+function caseTags95(c){try{return (typeof caseMeta==='function'?(caseMeta(c).tags||[]):(c&&Array.isArray(c.tags)?c.tags:[]))||[];}catch(_){return c&&Array.isArray(c.tags)?c.tags:[];}}
+function countryKeyForCase95(c){
+  if(!c)return'';
+  const hay=(String(c.id||'')+' '+String(c.title||'')+' '+String(c.category||'')+' '+String(c.enemy||'')+' '+caseTags95(c).join(' ')).toLowerCase();
+  const checks=[
+    ['seafeara',/seafeara|セーフェアラ|マルチェロ|アルバロ|商館|商業連盟/],
+    ['treuval',/treuval|トレウヴァル|霧海|長船|ダグダン|コルム/],
+    ['ruthenia',/ruthenia|ルテニア|イリーナ/],
+    ['loire',/loire|ロアール|アルマン/],
+    ['azraq',/azraq|azrak|アズラク|サファル/],
+    ['rick',/rick|リック|ロレンツォ|トリック/],
+    ['solia',/solia|ソリア|レナート/]
+  ];
+  for(const [key,re] of checks)if(re.test(hay))return key;
+  return'';
+}
+function selectedResultCases95(data){
+  const out=[];
+  const seen=new Set();
+  const lanes=Array.isArray(data&&data.lanes)?data.lanes:[];
+  lanes.forEach(r=>{
+    const c=r&&r.case;
+    const id=String(c&&c.id||'');
+    if(c&&id&&!seen.has(id)){seen.add(id);out.push(c);}
+  });
+  return out;
+}
+function countryResultExplanationsHtml95(data){
+  const dict=countryTutorials95();
+  const used=[];
+  const seen=new Set();
+  selectedResultCases95(data).forEach(c=>{
+    const key=countryKeyForCase95(c);
+    if(key&&dict[key]&&!seen.has(key)){seen.add(key);used.push(dict[key]);}
+  });
+  if(!used.length)return'';
+  return `<div class="summaryBlock countryExplanationBlock95"><h3>解説</h3><div class="countryExplanationList95">${used.map(info=>`<div class="countryExplanationItem95"><div class="countryExplanationTitle95">${esc95(info.title)}</div><div class="countryExplanationText95">${esc95(info.text)}</div></div>`).join('')}</div></div>`;
+}
+function insertCountryResultExplanations95(data){
+  const card=document.querySelector('#screenResult .resultCard');
+  if(!card||card.querySelector('.countryExplanationBlock95'))return;
+  const html=countryResultExplanationsHtml95(data);
+  if(!html)return;
+  const holder=document.createElement('div');
+  holder.innerHTML=html;
+  const block=holder.firstElementChild;
+  const btn=Array.from(card.querySelectorAll('button')).find(b=>/次の半期/.test(b.textContent||''))||card.querySelector('button:last-of-type');
+  if(btn)card.insertBefore(block,btn.previousSibling&&btn.previousSibling.nodeName==='BR'?btn.previousSibling:btn);
+  else card.appendChild(block);
+}
+function markAllCountryTutorialsSeen95(){
+  try{
+    if(!window.State)return;
+    if(!State.countryTutorialSeen||typeof State.countryTutorialSeen!=='object')State.countryTutorialSeen={};
+    Object.keys(countryTutorials95()).forEach(k=>State.countryTutorialSeen[k]=true);
+    window.__coreCountryTutorialOpen=false;
+    window.__phase70CountryTutorialOpen=false;
+    const old=document.getElementById('coreCountryTutorial');if(old)old.remove();
+    const old70=document.getElementById('phase70CountryTutorial');if(old70)old70.remove();
+  }catch(_){ }
+}
+function install95(){
+  markAllCountryTutorialsSeen95();
+  if(window.Flow&&typeof Flow.toggleCase==='function'&&!Flow.toggleCase.phase95CountryPopupDisabled){
+    const oldToggle=Flow.toggleCase.bind(Flow);
+    Flow.toggleCase=function(id){markAllCountryTutorialsSeen95();const ret=oldToggle.apply(this,arguments);markAllCountryTutorialsSeen95();return ret;};
+    Flow.toggleCase.phase95CountryPopupDisabled=true;
+  }
+  if(window.View&&typeof View.summary==='function'&&!View.summary.phase95CountryExplanationWrapped){
+    const oldSummary=View.summary.bind(View);
+    View.summary=function(data){
+      markAllCountryTutorialsSeen95();
+      const ret=oldSummary.apply(this,arguments);
+      try{insertCountryResultExplanations95(data);}catch(err){console.warn(PHASE+' insert failed',err);}
+      return ret;
+    };
+    View.summary.phase95CountryExplanationWrapped=true;
+  }
+}
+function installCss95(){
+  if(document.getElementById('phase95-country-result-explanation-css'))return;
+  const st=document.createElement('style');
+  st.id='phase95-country-result-explanation-css';
+  st.textContent=`
+.countryExplanationBlock95{margin-top:12px!important;background:#fff7e3!important;border:2px solid #8a6832!important;border-radius:12px!important;padding:10px 12px!important;color:#172337!important;}
+.countryExplanationBlock95 h3{margin:0 0 8px!important;font-size:17px!important;color:#102a4c!important;}
+.countryExplanationList95{display:flex!important;flex-direction:column!important;gap:8px!important;}
+.countryExplanationItem95{border-top:1px solid rgba(138,104,50,.26)!important;padding-top:8px!important;}
+.countryExplanationItem95:first-child{border-top:0!important;padding-top:0!important;}
+.countryExplanationTitle95{display:inline-block!important;margin-bottom:5px!important;padding:2px 9px!important;border-radius:999px!important;background:#102a4c!important;color:#fff1bf!important;border:1px solid #c99b38!important;font-size:12px!important;font-weight:1000!important;letter-spacing:.06em!important;}
+.countryExplanationText95{font-size:14px!important;line-height:1.66!important;font-weight:850!important;color:#30281a!important;}
+`;
+  document.head.appendChild(st);
+}
+installCss95();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install95);else install95();
+window.countryResultExplanationsHtml95=countryResultExplanationsHtml95;
+window.countryKeyForCase95=countryKeyForCase95;
+console.info(PHASE+' applied');
+})();
+</script>
+<script>
+/* phase106: 王弟戦のルートヴィヒ開戦台詞を固定文に統一 */
+(function(){
+'use strict';
+if(window.__PHASE106_BROTHER_QUOTE_UNIFIED__)return;
+window.__PHASE106_BROTHER_QUOTE_UNIFIED__=true;
+const PHASE='phase106_brother_quote_unified';
+const LUDWIG_QUOTE='我が名はルートヴィヒ。愛しき兄に刃を向ける、愚かな弟だ！';
+
+function getCaseById(id){
+  try{return (window.DATA&&Array.isArray(DATA.cases))?DATA.cases.find(c=>c&&c.id===id):null;}catch(_){return null;}
+}
+function selectedCases(){
+  try{return (window.State&&Array.isArray(State.selected)?State.selected:[]).map(getCaseById).filter(Boolean);}catch(_){return [];}
+}
+function isFinalBrotherCase(c){
+  if(!c)return false;
+  const id=String(c.id||'');
+  const tx=[c.id,c.title,c.category,c.enemy,c.finalEnemy,c.finalCaseTheme,c.finalEnemyLabel,c.enemyImg,c.intro].filter(Boolean).join(' ');
+  return id==='finalcase_last_matter' && (/brother|王弟|ルートヴィヒ/.test(tx));
+}
+function shouldShowFinalBrotherQuote(){
+  const cases=selectedCases();
+  return cases.some(isFinalBrotherCase);
+}
+function ensureCss(){
+  if(document.getElementById('phase106BrotherQuoteCss'))return;
+  const st=document.createElement('style');
+  st.id='phase106BrotherQuoteCss';
+  st.textContent=`
+.phase106BrotherQuoteScreen{position:absolute!important;inset:0!important;z-index:421!important;background:radial-gradient(circle at center,rgba(30,48,74,.72),rgba(4,8,14,.86))!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:42px!important;cursor:pointer!important;}
+.phase106BrotherQuoteScreen .openingStoryBox{width:760px!important;min-height:0!important;padding:34px 44px 44px!important;background:linear-gradient(#fff1c9,#e6c98d)!important;border:4px solid #b48732!important;border-radius:20px!important;color:#172033!important;box-shadow:0 18px 48px rgba(0,0,0,.58),inset 0 0 0 2px rgba(255,255,255,.42)!important;}
+.phase106BrotherQuoteScreen .openingStoryText{width:auto!important;max-width:none!important;padding-right:0!important;font-size:25px!important;line-height:1.62!important;font-weight:900!important;letter-spacing:.02em!important;}
+.phase106BrotherQuoteSpeaker{display:inline-block;margin:0 0 16px 0;padding:3px 11px;border-radius:999px;background:#102a4c;color:#fff1bf;border:2px solid #c99b38;font-size:13px;font-weight:1000;letter-spacing:.08em;}
+.phase106BrotherQuoteLine{min-height:44px;white-space:normal;}
+.phase106BrotherQuoteScreen .storyCue{z-index:5!important;}
+`;
+  document.head.appendChild(st);
+}
+function typeText(el,text,onDone){
+  if(!el){onDone&&onDone();return {skip(){}};}
+  let i=0,done=false,timer=null;
+  el.textContent='';
+  const step=()=>{
+    if(done)return;
+    i++;
+    el.textContent=text.slice(0,i);
+    if(i>=text.length){done=true;onDone&&onDone();return;}
+    timer=setTimeout(step,32);
+  };
+  timer=setTimeout(step,60);
+  return {skip(){if(done)return;done=true;if(timer)clearTimeout(timer);el.textContent=text;onDone&&onDone();}};
+}
+function showQuote(after){
+  ensureCss();
+  try{audio&&audio();sfx&&sfx('opening');}catch(_){ }
+  const host=document.getElementById('game')||document.body;
+  const root=document.createElement('div');
+  root.id='phase106BrotherQuoteScreen';
+  root.className='phase106BrotherQuoteScreen openingFadeIn';
+  root.innerHTML='<div class="openingStoryBox storyEnter"><div class="openingStoryText"><div class="phase106BrotherQuoteSpeaker">ルートヴィヒ</div><div class="phase106BrotherQuoteLine"></div></div><div class="storyCue">▼</div></div>';
+  host.appendChild(root);
+  const line=root.querySelector('.phase106BrotherQuoteLine');
+  let typingDone=false;
+  const typing=typeText(line,LUDWIG_QUOTE,()=>{typingDone=true;});
+  function finish(ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();}
+    try{audio&&audio();}catch(_){ }
+    if(!typingDone&&typing){typing.skip();return false;}
+    try{sfx&&sfx('next');}catch(_){ }
+    root.classList.add('openingFadeOut');
+    setTimeout(()=>{try{root.remove();}catch(_){ } after&&after();},320);
+    return false;
+  }
+  root.addEventListener('click',finish,true);
+  const keyHandler=function(e){
+    if(!document.getElementById('phase106BrotherQuoteScreen')){window.removeEventListener('keydown',keyHandler,true);return;}
+    if(e.key==='Enter'||e.key==='Escape'||e.code==='Space'||e.key===' '){finish(e);}
+  };
+  window.addEventListener('keydown',keyHandler,true);
+}
+
+// phase67 の王弟反逆セリフが将来再生成されても、この固定文に寄せる。
+try{
+  if(window.DATA&&Array.isArray(DATA.cases)){
+    for(const c of DATA.cases){
+      if(c&&c.id==='brother_final_rebellion')c.phase106BrotherQuote=LUDWIG_QUOTE;
+    }
+  }
+}catch(_){ }
+
+if(window.Battle&&typeof Battle.start==='function'&&!Battle.start.phase106BrotherQuoteUnified){
+  const prev=Battle.start;
+  Battle.start=function(){
+    if(window.__phase106BrotherQuoteProceed){
+      window.__phase106BrotherQuoteProceed=false;
+      return prev.apply(this,arguments);
+    }
+    if(shouldShowFinalBrotherQuote()){
+      const self=this,args=arguments;
+      showQuote(function(){
+        window.__phase106BrotherQuoteProceed=true;
+        prev.apply(self,args);
+      });
+      return;
+    }
+    return prev.apply(this,arguments);
+  };
+  Battle.start.phase106BrotherQuoteUnified=true;
+}
+console.info(PHASE+' applied');
+})();
+
+
+/* phase109: 衝突難易度調整。全体速度を少し上げ、2戦線・3戦線の補助を締める */
+(function(){
+  const PHASE='phase109-battle-difficulty-tuning';
+  try{
+    if(window.CONFIG){
+      CONFIG.baseSpeed = 0.60;
+    }
+
+    const tunedAssist=function(count){
+      if(count>=3){
+        return {
+          speedFactor:.78,
+          laneSpeed:.93,
+          tempoFactor:.86,
+          readyPx:460,
+          goodPx:292,
+          perfectPx:105,
+          label:''
+        };
+      }
+      if(count===2){
+        return {
+          speedFactor:.92,
+          laneSpeed:.98,
+          tempoFactor:.96,
+          readyPx:435,
+          goodPx:268,
+          perfectPx:82,
+          label:''
+        };
+      }
+      return {
+        speedFactor:1,
+        laneSpeed:1,
+        tempoFactor:1,
+        readyPx:(window.CONFIG&&CONFIG.readyPx)||420,
+        goodPx:(window.CONFIG&&CONFIG.goodPx)||252,
+        perfectPx:(window.CONFIG&&CONFIG.perfectPx)||66,
+        label:''
+      };
+    };
+    tunedAssist.phase109BattleDifficultyTuned=true;
+
+    // 非moduleのグローバル関数束縛と window プロパティの両方を更新する。
+    try{ multiFrontAssist = tunedAssist; }catch(_){ }
+    window.multiFrontAssist = tunedAssist;
+
+    // Battle.start / Battle.makeLane は実行時に multiFrontAssist を参照するため、既存関数本体は維持してよい。
+    // ただし、既に作成済みの battle がある場合は次回開始から反映される。
+    console.info(PHASE+' applied: baseSpeed=0.60, 2-front/3-front assist tightened');
+  }catch(e){
+    console.error(PHASE+' failed',e);
+  }
+})();
+
+</script>
+
+
+<!-- phase110: PC操作の一本化・采配dispatchキーボード対応・切り札全表示補強 -->
+<script id="phase110-pc-operation-polish">
+(function(){
+'use strict';
+if(window.__PHASE110_PC_OPERATION_POLISH__)return;
+window.__PHASE110_PC_OPERATION_POLISH__=true;
+const PHASE='phase110_pc_operation_polish';
+let mainIndex=0;
+let dispatchIndex=0;
+let modalIndex=0;
+function $(id){return document.getElementById(id);}
+function activeId(){const el=document.querySelector('.screen.active');return el?el.id:'';}
+function isDispatch(){const s=$('screenAssign');return !!(s&&s.classList.contains('active')&&s.querySelector('.dispatchShell'));}
+function stop(e){e.preventDefault();e.stopImmediatePropagation();e.stopPropagation();return false;}
+function visible(el){return !!(el&&el.offsetParent!==null&&!el.disabled&&el.getAttribute('aria-disabled')!=='true');}
+function focusEl(el){if(!el)return;try{el.focus({preventScroll:true});}catch(_){try{el.focus();}catch(__){}}try{el.scrollIntoView({block:'nearest',inline:'nearest'});}catch(_){}}
+function dispatchButtons(){
+  const s=$('screenAssign');if(!s)return[];
+  return Array.from(s.querySelectorAll('.dispatchActorSlot,.dispatchOptionalSlot,.dispatchBudgetBtn,.dispatchBack,.dispatchStart')).filter(visible);
+}
+function modalButtons(){
+  const m=document.querySelector('#screenAssign .dispatchModalShade');if(!m)return[];
+  return Array.from(m.querySelectorAll('.dispatchChoiceList button,.dispatchModalFoot button,.dispatchClose')).filter(visible);
+}
+function cleanMarks(root=document){root.querySelectorAll('.phase110Focus').forEach(el=>el.classList.remove('phase110Focus'));}
+function applyDispatchFocus(){
+  if(!isDispatch()||document.querySelector('#screenAssign .dispatchModalShade'))return;
+  const list=dispatchButtons();
+  cleanMarks($('screenAssign'));
+  if(!list.length)return;
+  const active=document.activeElement;
+  let i=list.indexOf(active);
+  if(i<0)i=Math.max(0,Math.min(dispatchIndex,list.length-1));
+  dispatchIndex=i;list[i].classList.add('phase110Focus');
+}
+function moveDispatch(dir){
+  const list=dispatchButtons();if(!list.length)return;
+  dispatchIndex=(Math.max(0,list.indexOf(document.activeElement))+dir+list.length)%list.length;
+  cleanMarks($('screenAssign'));list[dispatchIndex].classList.add('phase110Focus');focusEl(list[dispatchIndex]);
+}
+function moveModal(dir){
+  const list=modalButtons();if(!list.length)return;
+  let i=list.indexOf(document.activeElement);if(i<0)i=modalIndex;
+  modalIndex=(i+dir+list.length)%list.length;
+  cleanMarks(document.querySelector('#screenAssign .dispatchModalShade')||document);
+  list[modalIndex].classList.add('phase110Focus');focusEl(list[modalIndex]);
+}
+function ensureGuide(){
+  if(!isDispatch())return;
+  const shell=document.querySelector('#screenAssign .dispatchShell');if(!shell)return;
+  let g=shell.querySelector('.phase110PcGuide');
+  if(!g){g=document.createElement('div');g.className='phase110PcGuide';g.textContent='Tab / 矢印で移動　Enter / Spaceで決定　Escで戻る';shell.appendChild(g);}
+  Array.from(document.querySelectorAll('#screenAssign .dispatchActorSlot')).forEach((b,i)=>{b.setAttribute('aria-label',`案件${i+1}の担当者を選ぶ`);});
+  Array.from(document.querySelectorAll('#screenAssign .dispatchOptionalSlot')).forEach((b,i)=>{b.setAttribute('aria-label',`案件${i+1}の切り札を選ぶ`);});
+}
+function syncStart(){try{if(typeof window.syncDispatchStart==='function')window.syncDispatchStart();}catch(_){}}
+function dispatchKey(e){
+  if(!isDispatch())return false;
+  const t=e.target;if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName||''))return false;
+  const modal=!!document.querySelector('#screenAssign .dispatchModalShade');
+  if(modal){
+    if(e.key==='Escape'){if(window.DispatchV36&&DispatchV36.close)DispatchV36.close();modalIndex=0;setTimeout(()=>{ensureGuide();applyDispatchFocus();},0);return stop(e);}
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){moveModal(1);return stop(e);}
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){moveModal(-1);return stop(e);}
+    if(e.key==='Enter'||e.key===' '||e.code==='Space'){const list=modalButtons();let i=list.indexOf(document.activeElement);if(i<0)i=modalIndex;if(list[i])list[i].click();modalIndex=0;setTimeout(()=>{ensureGuide();syncStart();},0);return stop(e);}
+    return false;
+  }
+  if(e.key==='Escape'){if(window.DispatchV36&&DispatchV36.back)DispatchV36.back();else if(window.View&&View.main)View.main();return stop(e);}
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){moveDispatch(1);return stop(e);}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){moveDispatch(-1);return stop(e);}
+  if(e.key==='Enter'||e.key===' '||e.code==='Space'){
+    const list=dispatchButtons();let i=list.indexOf(document.activeElement);if(i<0)i=Math.max(0,Math.min(dispatchIndex,list.length-1));
+    const el=list[i]||document.querySelector('#screenAssign .dispatchStart:not(:disabled)');
+    if(el){el.click();setTimeout(()=>{ensureGuide();syncStart();applyDispatchFocus();},0);}
+    return stop(e);
+  }
+  return false;
+}
+function mainEls(){return Array.from(document.querySelectorAll('#screenMain .caseCard[data-case-id]')).filter(el=>!el.classList.contains('locked')&&el.offsetParent!==null);}
+function mainNext(){return document.querySelector('#screenMain .next:not(:disabled)');}
+function applyMainFocus(){
+  if(activeId()!=='screenMain')return;
+  const els=mainEls();const next=mainNext();const list=next?els.concat(next):els;
+  cleanMarks($('screenMain'));if(!list.length)return;
+  mainIndex=Math.max(0,Math.min(mainIndex,list.length-1));list[mainIndex].classList.add('phase110Focus');focusEl(list[mainIndex]);
+}
+function mainKey(e){
+  if(activeId()!=='screenMain')return false;
+  const story=document.querySelector('#screenMain .yearStory,#screenMain .chronicleStory');
+  if(story&&e.key==='Enter'){story.click();return stop(e);}
+  const els=mainEls();const next=mainNext();const list=next?els.concat(next):els;if(!list.length)return false;
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'){mainIndex=(mainIndex+1)%list.length;applyMainFocus();return stop(e);}
+  if(e.key==='ArrowUp'||e.key==='ArrowLeft'){mainIndex=(mainIndex-1+list.length)%list.length;applyMainFocus();return stop(e);}
+  if(e.key==='Enter'){list[mainIndex].click();setTimeout(applyMainFocus,0);return stop(e);}
+  if(e.key==='Escape'){const last=window.State&&State.selected&&State.selected.at&&State.selected.at(-1);if(last&&window.Flow&&Flow.toggleCase)Flow.toggleCase(last);setTimeout(applyMainFocus,0);return stop(e);}
+  return false;
+}
+function addCss(){
+  if($('phase110-pc-operation-css'))return;
+  const st=document.createElement('style');st.id='phase110-pc-operation-css';st.textContent=`
+#screenAssign .phase110PcGuide{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:70;padding:4px 11px;border-radius:999px;border:1px solid rgba(120,234,255,.54);background:rgba(7,35,61,.88);color:#dff9ff;font-size:11px;font-weight:900;pointer-events:none;white-space:nowrap;box-shadow:0 0 12px rgba(66,220,255,.20)}
+#screenAssign .phase110Focus,#screenMain .phase110Focus{outline:4px solid rgba(66,220,255,.86)!important;outline-offset:2px!important;box-shadow:0 0 0 5px rgba(66,220,255,.22),0 0 22px rgba(66,220,255,.40),0 4px 0 rgba(0,0,0,.22)!important;filter:brightness(1.06)!important;position:relative!important;z-index:30!important;}
+#screenAssign .dispatchModal .phase110Focus{outline-color:rgba(66,220,255,.96)!important;}
+#screenAssign .dispatchChoiceList{scrollbar-width:thin;}
+#screenAssign .dispatchTrumpChoice{min-height:112px!important;}
+#screenAssign .dispatchTrumpChoice .dispatchChoiceDesc{max-height:58px;overflow:hidden;}
+#screenAssign .dispatchModalTitle::after{content:none;display:none;font-size:11px;color:#6f6046;font-weight:900;}
+@media (hover:none),(pointer:coarse){#screenAssign .phase110PcGuide{display:none!important}}
+`;
+  document.head.appendChild(st);
+}
+function refresh(){addCss();ensureGuide();syncStart();applyDispatchFocus();applyMainFocus();}
+window.addEventListener('keydown',function(e){
+  if(dispatchKey(e)!==false)return;
+  if(mainKey(e)!==false)return;
+},true);
+document.addEventListener('focusin',function(e){
+  if(isDispatch()&&e.target&&e.target.closest('#screenAssign')){const list=dispatchButtons();const i=list.indexOf(e.target);if(i>=0)dispatchIndex=i;applyDispatchFocus();}
+  const mb=modalButtons();const mi=mb.indexOf(e.target);if(mi>=0){modalIndex=mi;cleanMarks(document.querySelector('#screenAssign .dispatchModalShade')||document);e.target.classList.add('phase110Focus');}
+},true);
+if(window.MutationObserver){
+  let q=false;const obs=new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;refresh();});});
+  obs.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','disabled','aria-disabled']});
+}
+if(window.DispatchV36){
+  ['render','openActors','openTrumps','pickActor','toggleTrump','clearTrumps','closeAndRender','changeBudget'].forEach(k=>{
+    const fn=DispatchV36[k];if(typeof fn==='function'&&!fn.__phase110){DispatchV36[k]=function(){const r=fn.apply(this,arguments);setTimeout(refresh,0);setTimeout(refresh,60);return r;};DispatchV36[k].__phase110=true;}
+  });
+}
+if(window.View&&typeof View.main==='function'&&!View.main.__phase110){const base=View.main;View.main=function(){const r=base.apply(this,arguments);mainIndex=0;setTimeout(refresh,0);return r;};View.main.__phase110=true;}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();
+console.info(PHASE+' applied');
+})();
+</script>
+
+
+<!-- phase111: PC補助テキスト一本化 -->
+<script id="phase111-pc-help-text-unified">
+(function(){
+'use strict';
+if(window.__PHASE111_PC_HELP_TEXT_UNIFIED__)return;
+window.__PHASE111_PC_HELP_TEXT_UNIFIED__=true;
+const PHASE='phase111_pc_help_text_unified';
+function $(s,r=document){return r.querySelector(s);}
+function $all(s,r=document){return Array.from(r.querySelectorAll(s));}
+function finePointer(){try{return window.matchMedia('(hover:hover) and (pointer:fine)').matches;}catch(_){return true;}}
+function setText(el,txt){if(el&&el.textContent!==txt)el.textContent=txt;}
+function normalizeStartCue(){setText($('.startCue'),'クリック / Enterで始める');}
+function normalizeSimpleHints(){
+  const main=$('#screenMain .mainSimpleHint,#screenMain .simpleControlHint.mainSimpleHint');
+  if(main)setText(main,'↑↓で選ぶ　Enterで決定　Escで解除');
+  const battle=$('#screenBattle .battleSimpleHint,#screenBattle .simpleControlHint.battleSimpleHint');
+  if(battle)setText(battle,'A/S/D：戦線　F：停止');
+}
+function normalizeWindowGuides(){
+  $all('.pcWindowGuide').forEach(g=>{
+    const spans=$all('span',g);
+    if(spans.length>=3){setText(spans[0],'クリック');setText(spans[1],'/');setText(spans[2],'Enter');}
+    else setText(g,'クリック / Enterで進む');
+  });
+  $all('.pcChoiceGuide').forEach(g=>setText(g,'↑↓←→で選ぶ　Enter / Spaceで決定　Escで閉じる'));
+  $all('.pcResultGuide').forEach(g=>{g.innerHTML='<span>↑↓で読む</span><span>Enterで進む</span>';});
+}
+function normalizeDispatchGuide(){
+  const shell=$('#screenAssign .dispatchShell');
+  if(shell){
+    let g=$('.phase110PcGuide',shell)||$('.phase111PcGuide',shell);
+    if(!g){g=document.createElement('div');g.className='phase110PcGuide phase111PcGuide';shell.appendChild(g);}
+    setText(g,'Tab / 矢印で移動　Enter / Spaceで決定　Escで戻る');
+  }
+  $all('#screenAssign .dispatchBack').forEach(b=>{if(b.textContent.trim()!=='戻る')b.textContent='戻る';});
+  $all('#screenAssign .dispatchStart').forEach(b=>{
+    if(!b.disabled&&/ENTER|Enter/.test(b.textContent))b.textContent='衝突開始';
+  });
+}
+function normalizeDispatchModal(){
+  const modal=$('#screenAssign .dispatchModal');
+  if(!modal)return;
+  let guide=$('.phase111ModalGuide',modal);
+  if(!guide){
+    guide=document.createElement('div');
+    guide.className='phase111ModalGuide';
+    const foot=$('.dispatchModalFoot',modal);
+    (foot||modal).appendChild(guide);
+  }
+  setText(guide,'↑↓←→で選ぶ　Enter / Spaceで決定　Escで閉じる');
+}
+function normalizeBattlePaused(){
+  const box=$('#screenBattle .battlePausedBox small');
+  if(box)setText(box,'Enterで再開');
+}
+function run(){
+  normalizeStartCue();
+  normalizeSimpleHints();
+  normalizeWindowGuides();
+  normalizeDispatchGuide();
+  normalizeDispatchModal();
+  normalizeBattlePaused();
+}
+const css=document.createElement('style');
+css.id='phase111-pc-help-text-css';
+css.textContent=`
+/* 旧采配UI由来の補助文言を完全に出さない */
+#screenAssign .assignActorHeading::after,
+#screenAssign .trumpHead::after,
+#screenAssign .currentPick::after{content:none!important;display:none!important;}
+/* PC補助はPCだけ、タッチ補助はタッチだけ */
+@media (hover:hover) and (pointer:fine){
+  .touchWindowGuide,.touchScreenGuide,.touchAssignGuide,.touchBattleGuide,.touchResultGuide,.touchChoiceGuide{display:none!important;}
+  .simpleControlHint{display:block!important;}
+}
+@media (hover:none), (pointer:coarse){
+  .simpleControlHint,.phase110PcGuide,.phase111PcGuide,.phase111ModalGuide,.pcOnlyGuide,.pcWindowGuide,.pcChoiceGuide,.pcResultGuide{display:none!important;}
+}
+#screenAssign .phase111ModalGuide{margin-right:auto;align-self:center;color:#6f6046;font-size:11px;font-weight:1000;white-space:nowrap;}
+#screenAssign .dispatchModalTitle::after{content:none!important;display:none!important;}
+#screenBattle .battlePausedBox small{font-size:13px!important;color:#dff9ff!important;font-weight:900!important;}
+`;
+document.head.appendChild(css);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+if(window.MutationObserver){
+  let queued=false;
+  new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;run();});}).observe(document.body,{childList:true,subtree:true,characterData:true});
+}
+console.info(PHASE+' applied');
+})();
+</script>
+
+
+<!-- phase112: 老執事案件表示／妻画像／弟表記／采配者短縮名の最終整理 -->
+<style id="phase112-story-labels-and-actor-names-css">
+/* 老執事のチュートリアル案件は、黄色難易度と混同しないよう青白系に変更 */
+#screenMain .caseCard[data-case-id="tutorial_butler"],
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"]{
+  border-color:#42dcff!important;
+  background:linear-gradient(180deg,#f5fdff,#cfeefa)!important;
+  box-shadow:0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(255,255,255,.72),inset 0 0 18px rgba(66,220,255,.16)!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"] .caseTitle,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .caseTitle{
+  color:#06243b!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"] .caseStory,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .caseStory{
+  color:#26394a!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"] .requestRibbon,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .requestRibbon{
+  border-color:#42dcff!important;
+  background:linear-gradient(180deg,#dff9ff,#bfeef6)!important;
+  box-shadow:0 0 12px rgba(66,220,255,.42),0 2px 0 rgba(0,0,0,.14)!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"] .requestRibbon .reqKicker,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .requestRibbon .reqKicker{
+  background:#073052!important;
+  color:#dff9ff!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"] .requestRibbon .reqFaction,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .requestRibbon .reqFaction{
+  color:#06243b!important;
+}
+/* 采配画面の人物名は短縮名を前提に、念のため省略ではなく収める */
+#screenAssign .dispatchName,
+#screenAssign .dispatchChoiceName,
+#screenAssign .assignedName,
+#screenAssign .actorName{
+  text-overflow:clip!important;
+  max-width:100%!important;
+}
+</style>
+<script id="phase112-story-labels-and-actor-names-js">
+(function(){
+'use strict';
+if(window.__PHASE112_STORY_LABELS_AND_ACTOR_NAMES__)return;
+window.__PHASE112_STORY_LABELS_AND_ACTOR_NAMES__=true;
+const PHASE='phase112_story_labels_and_actor_names';
+function esc(v){try{return typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'');}catch(e){return String(v??'');}}
+function spouseId(){try{return (typeof currentSpouseId==='function'&&currentSpouseId())||State?.marriage?.spouseId||State?.spouseId||'wife1';}catch(e){return 'wife1';}}
+function actorLabel(id){
+  const a=(window.DATA&&DATA.actors&&DATA.actors[id])||(window.DATA&&DATA.supportActors&&DATA.supportActors[id]);
+  if(!a)return id||'';
+  if(id==='brother')return '弟';
+  return a.shortName||a.displayName||a.name||id;
+}
+function scrubBrotherText(v){
+  if(typeof v!=='string')return v;
+  if(v.includes('我が名はルートヴィヒ'))return v;
+  return v
+    .replace(/ルートヴィヒ派/g,'弟派')
+    .replace(/王弟派/g,'弟派')
+    .replace(/王弟/g,'弟')
+    .replace(/ルートヴィヒ/g,'弟');
+}
+function deepScrub(obj,seen=new WeakSet()){
+  if(typeof obj==='string')return scrubBrotherText(obj);
+  if(Array.isArray(obj))return obj.map(x=>deepScrub(x,seen));
+  if(obj&&typeof obj==='object'){
+    if(seen.has(obj))return obj;seen.add(obj);
+    for(const k of Object.keys(obj)){
+      if(k==='src'||k==='href')continue;
+      obj[k]=deepScrub(obj[k],seen);
+    }
+  }
+  return obj;
+}
+function applyDataPatch(){
+  if(!window.DATA)return;
+  const actors=DATA.actors||{};
+  if(actors.brother){
+    actors.brother.name='弟';
+    actors.brother.shortName='弟';
+    actors.brother.displayName='弟';
+    actors.brother.fullName='弟';
+    actors.brother.type=String(actors.brother.type||'').replace(/ルートヴィヒ|王弟/g,'弟')||'弟・継承火種型';
+  }
+  const wifeShort={wife1:'ヘレーネ',wife2:'エレオノール',wife3:'ベアトリーチェ',wife4:'アナスタシア',wife5:'サフィーラ',wife6:'ブリギッド'};
+  for(const [id,short] of Object.entries(wifeShort)){
+    const a=actors[id];if(!a)continue;
+    a.shortName=short;
+    a.displayName=short;
+    a.fullName=a.fullName||a.name;
+    a.name=short;
+  }
+  if(actors.wife){actors.wife.name='王妃';actors.wife.shortName='王妃';actors.wife.displayName='王妃';}
+  const supports=DATA.supportActors||{};
+  if(supports.support_brother){
+    supports.support_brother.name='弟';
+    supports.support_brother.shortName='弟';
+    supports.support_brother.displayName='弟';
+    supports.support_brother.type=String(supports.support_brother.type||'').replace(/ルートヴィヒ|王弟/g,'弟')||'臨時助力・弟調停';
+  }
+  if(Array.isArray(DATA.cases)){
+    for(const c of DATA.cases){
+      deepScrub(c);
+      if(c&&c.id==='tutorial_butler'){
+        c.difficulty='tutorial';
+        c.butlerGuide=true;
+      }
+      /* 汎用王妃案件は wife キーを使うが、実画像は妻1に固定されていたため動的キーへ移す */
+      if(c&&c.enemyImg==='wife')c.enemyImg='currentWife';
+      if(c&&c.requiresSpouse&&String(c.enemy||'')==='王妃')c.enemy='王妃';
+    }
+  }
+  deepScrub(DATA.cards||{});
+}
+applyDataPatch();
+
+/* チュートリアル案件のバッジを老執事として表示 */
+const oldBadge=window.unifiedCaseBadgeHtml;
+window.unifiedCaseBadgeHtml=function(c){
+  if(c&&c.id==='tutorial_butler')return `<div class="requestRibbon unifiedCaseBadge req-foreign"><span class="reqKicker">案内</span><span class="reqFaction">老執事</span></div>`;
+  const html=oldBadge?oldBadge(c):'';
+  return scrubBrotherText(html||'');
+};
+if(typeof window.caseTitleHtml==='function'){
+  window.caseTitleHtml=function(c){return `<div class="caseTitle"><span>${esc(scrubBrotherText(c?.title||''))}</span>${window.unifiedCaseBadgeHtml(c)}</div>`;};
+}
+
+/* 汎用 wife 画像を現在の王妃へ動的に差し替える */
+if(typeof window.effectiveEnemyImg==='function'){
+  const oldEnemyImg=window.effectiveEnemyImg;
+  window.effectiveEnemyImg=function(c){
+    const out=oldEnemyImg.apply(this,arguments);
+    if(out==='wife'||out==='currentWife')return spouseId();
+    return out;
+  };
+} else if(typeof effectiveEnemyImg==='function'){
+  const oldEnemyImg=effectiveEnemyImg;
+  effectiveEnemyImg=function(c){
+    const out=oldEnemyImg.apply(this,arguments);
+    if(out==='wife'||out==='currentWife')return spouseId();
+    return out;
+  };
+}
+if(typeof window.effectiveEnemyName==='function'){
+  const oldEnemyName=window.effectiveEnemyName;
+  window.effectiveEnemyName=function(c){return scrubBrotherText(oldEnemyName.apply(this,arguments));};
+} else if(typeof effectiveEnemyName==='function'){
+  const oldEnemyName=effectiveEnemyName;
+  effectiveEnemyName=function(c){return scrubBrotherText(oldEnemyName.apply(this,arguments));};
+}
+
+/* 采配者名・結果名は短縮名を使う */
+window.actorDisplayName=function(id){return actorLabel(id);};
+if(typeof window.actorRoleBonusText==='function'){
+  const oldBonus=window.actorRoleBonusText;
+  window.actorRoleBonusText=function(actorId,rank,tags,scale){
+    if(actorId==='brother'){
+      const ok=(typeof isSuccessRank==='function')?isSuccessRank(rank):String(rank).includes('Win');
+      const bad=(typeof isHardFailureRank==='function')?isHardFailureRank(rank):String(rank).includes('Loss');
+      if(ok)return '弟は兄を支える側に立ち、自分を担ごうとする声から一歩離れた。';
+      if(bad)return '失敗は弟本人の願いではなく、彼を利用しようとする者たちの声を大きくした。';
+      return '弟は被害を抑えたが、善意だけでは廷臣の計算を止められないことも露わになった。';
+    }
+    return scrubBrotherText(oldBonus.apply(this,arguments));
+  };
+}
+if(typeof window.brotherEndingPhrase==='function'){
+  const oldBrotherEnding=window.brotherEndingPhrase;
+  window.brotherEndingPhrase=function(){return scrubBrotherText(oldBrotherEnding.apply(this,arguments));};
+}
+if(typeof window.endingTraitLines==='function'){
+  const oldEndingTraitLines=window.endingTraitLines;
+  window.endingTraitLines=function(){
+    const out=oldEndingTraitLines.apply(this,arguments);
+    return Array.isArray(out)?out.map(scrubBrotherText):scrubBrotherText(out);
+  };
+}
+if(typeof window.buildEnding==='function'){
+  const oldBuildEnding=window.buildEnding;
+  window.buildEnding=function(){
+    const out=oldBuildEnding.apply(this,arguments);
+    return deepScrub(out);
+  };
+}
+if(typeof window.maybeTriggerBrotherRebellion==='function'){
+  const oldMaybe=window.maybeTriggerBrotherRebellion;
+  window.maybeTriggerBrotherRebellion=function(){return scrubBrotherText(oldMaybe.apply(this,arguments));};
+} else if(typeof maybeTriggerBrotherRebellion==='function'){
+  const oldMaybe=maybeTriggerBrotherRebellion;
+  maybeTriggerBrotherRebellion=function(){return scrubBrotherText(oldMaybe.apply(this,arguments));};
+}
+
+/* DispatchV36 は内部クロージャで a.name を参照するため、データ名自体を短縮化した上で描画直後に念押し補正 */
+function patchDomText(root=document){
+  try{
+    root.querySelectorAll('#screenAssign .dispatchName,#screenAssign .dispatchChoiceName,#screenAssign .assignedName,#screenAssign .actorName,#screenResult .summaryCaseMeta span,#screenBattle .laneHeader,#screenMain .caseCard').forEach(el=>{
+      if(el.closest&&el.closest('.phase67BattleQuoteScreen'))return;
+      for(const node of el.childNodes){
+        if(node.nodeType===Node.TEXT_NODE){const nv=scrubBrotherText(node.nodeValue);if(node.nodeValue!==nv)node.nodeValue=nv;}
+      }
+    });
+    root.querySelectorAll('#screenAssign img,#screenBattle img').forEach(img=>{
+      const alt=img.getAttribute('alt');if(alt)img.setAttribute('alt',scrubBrotherText(alt));
+    });
+  }catch(e){}
+}
+function rerenderIfActive(){
+  applyDataPatch();
+  if(document.getElementById('screenAssign')?.classList.contains('active')&&window.DispatchV36&&typeof DispatchV36.render==='function'){
+    try{DispatchV36.render();}catch(e){}
+  }else if(document.getElementById('screenMain')?.classList.contains('active')&&window.View&&typeof View.main==='function'){
+    try{View.main();}catch(e){}
+  }
+  patchDomText(document);
+}
+if(window.DispatchV36){
+  for(const k of ['render','openActors','openTrumps','pickActor','toggleTrump','clearTrumps','closeAndRender','changeBudget']){
+    const fn=DispatchV36[k];
+    if(typeof fn==='function'&&!fn.__phase112){
+      DispatchV36[k]=function(){applyDataPatch();const r=fn.apply(this,arguments);setTimeout(()=>patchDomText(document),0);setTimeout(()=>patchDomText(document),80);return r;};
+      DispatchV36[k].__phase112=true;
+    }
+  }
+}
+if(window.View&&typeof View.main==='function'){
+  const oldMain=View.main;
+  View.main=function(){applyDataPatch();const r=oldMain.apply(this,arguments);setTimeout(()=>patchDomText(document),0);return r;};
+}
+if(window.View&&typeof View.summary==='function'){
+  const oldSummary=View.summary;
+  View.summary=function(){applyDataPatch();const r=oldSummary.apply(this,arguments);setTimeout(()=>patchDomText(document),0);return r;};
+}
+if(window.MutationObserver){
+  const obs=new MutationObserver(()=>patchDomText(document));
+  if(document.body)obs.observe(document.body,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rerenderIfActive,{once:true});else setTimeout(rerenderIfActive,0);
+console.info(PHASE+' applied');
+})();
+</script>
+
+
+<style id="phase113-support-shortnames-badge-restore-css">
+/* phase113: 老執事案件のバッジ文言は従来どおり「案内 / チュートリアル」に戻す */
+#screenMain .caseCard[data-case-id="tutorial_butler"] .requestRibbon .reqFaction,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .requestRibbon .reqFaction{
+  color:#06243b!important;
+}
+</style>
+<script id="phase113-support-shortnames-badge-restore-js">
+(function(){
+'use strict';
+if(window.__PHASE113_SUPPORT_SHORTNAMES_BADGE_RESTORE__)return;
+window.__PHASE113_SUPPORT_SHORTNAMES_BADGE_RESTORE__=true;
+const PHASE='phase113_support_shortnames_badge_restore';
+function safeText(v){return String(v??'');}
+function esc(v){try{return typeof escapeHtml==='function'?escapeHtml(safeText(v)):safeText(v);}catch(e){return safeText(v);}}
+function scrubBrotherText(v){
+  if(typeof v!=='string')return v;
+  if(v.includes('我が名はルートヴィヒ'))return v;
+  return v.replace(/ルートヴィヒ派/g,'弟派').replace(/王弟派/g,'弟派').replace(/王弟/g,'弟').replace(/ルートヴィヒ/g,'弟');
+}
+const SUPPORT_SHORT={
+  support_butler:'老執事',
+  support_leopold:'レオポルト',
+  support_emil:'エーミール',
+  support_clarissa:'クラリッサ',
+  support_rosen:'コンラート',
+  support_gerhard:'ゲルハルト',
+  support_loire:'イザベラ',
+  support_rick:'ロレンツォ',
+  support_ruthenia:'オルロフ',
+  support_solia:'クラウディア',
+  support_azraq:'ムスタファ',
+  support_seafeara:'マルチェロ',
+  support_treuval:'ローワン',
+  support_brother:'弟'
+};
+const ACTOR_SHORT={
+  albrecht:'アルブレヒト',
+  brother:'弟',
+  wife:'王妃',
+  wife1:'ヘレーネ',
+  wife2:'エレオノール',
+  wife3:'ベアトリーチェ',
+  wife4:'アナスタシア',
+  wife5:'サフィーラ',
+  wife6:'ブリギッド'
+};
+function applyShortNames(){
+  try{
+    if(window.DATA&&DATA.actors){
+      for(const [id,name] of Object.entries(ACTOR_SHORT)){
+        const a=DATA.actors[id];
+        if(!a)continue;
+        a.shortName=name;
+        a.displayName=name;
+        a.name=name;
+        if(id==='brother'){
+          a.fullName='弟';
+          a.type=scrubBrotherText(a.type||'弟・継承火種型')||'弟・継承火種型';
+        }
+      }
+    }
+    if(window.DATA&&DATA.supportActors){
+      for(const [id,name] of Object.entries(SUPPORT_SHORT)){
+        const a=DATA.supportActors[id];
+        if(!a)continue;
+        a.shortName=name;
+        a.displayName=name;
+        a.name=name;
+        if(a.fullName)a.fullName=scrubBrotherText(a.fullName);
+        if(a.type)a.type=scrubBrotherText(a.type);
+        if(id==='support_brother')a.type='臨時助力・弟調停';
+      }
+    }
+  }catch(e){}
+}
+function labelForId(id){
+  if(SUPPORT_SHORT[id])return SUPPORT_SHORT[id];
+  if(ACTOR_SHORT[id])return ACTOR_SHORT[id];
+  const a=(window.DATA&&DATA.actors&&DATA.actors[id])||(window.DATA&&DATA.supportActors&&DATA.supportActors[id]);
+  return scrubBrotherText(a?(a.shortName||a.displayName||a.name||id):id);
+}
+applyShortNames();
+
+/* phase112で一度「老執事」に変えたバッジを、見た目はそのまま文言だけチュートリアルへ戻す */
+const prevBadge=window.unifiedCaseBadgeHtml;
+window.unifiedCaseBadgeHtml=function(c){
+  if(c&&c.id==='tutorial_butler')return `<div class="requestRibbon unifiedCaseBadge req-foreign"><span class="reqKicker">案内</span><span class="reqFaction">チュートリアル</span></div>`;
+  const html=prevBadge?prevBadge.apply(this,arguments):'';
+  return scrubBrotherText(html||'');
+};
+if(typeof window.caseTitleHtml==='function'){
+  window.caseTitleHtml=function(c){return `<div class="caseTitle"><span>${esc(scrubBrotherText(c?.title||''))}</span>${window.unifiedCaseBadgeHtml(c)}</div>`;};
+}
+/* 采配者名を返す関数があれば、臨時采配者も含めて略称を最優先にする */
+window.actorDisplayName=function(id){return labelForId(id);};
+window.supportActorDisplayName=function(id){return labelForId(id);};
+
+function patchDomText(root=document){
+  try{
+    applyShortNames();
+    root.querySelectorAll('#screenAssign .dispatchName,#screenAssign .dispatchChoiceName,#screenAssign .assignedName,#screenAssign .actorName').forEach(el=>{
+      const id=el.getAttribute('data-actor-id')||el.closest('[data-actor-id]')?.getAttribute('data-actor-id')||el.closest('[data-id]')?.getAttribute('data-id');
+      const label=id?labelForId(id):scrubBrotherText(el.textContent||'');
+      if(label&&el.childNodes.length===1){if(el.textContent!==label)el.textContent=label;}
+      else{
+        for(const n of el.childNodes){if(n.nodeType===Node.TEXT_NODE){const nv=scrubBrotherText(n.nodeValue);if(n.nodeValue!==nv)n.nodeValue=nv;}}
+      }
+    });
+    root.querySelectorAll('#screenAssign .actorSupportTag').forEach(el=>{if(el.textContent!=='臨時')el.textContent='臨時';});
+    root.querySelectorAll('#screenMain .caseCard[data-case-id="tutorial_butler"] .requestRibbon .reqKicker').forEach(el=>{if(el.textContent!=='案内')el.textContent='案内';});
+    root.querySelectorAll('#screenMain .caseCard[data-case-id="tutorial_butler"] .requestRibbon .reqFaction').forEach(el=>{if(el.textContent!=='チュートリアル')el.textContent='チュートリアル';});
+    root.querySelectorAll('#screenAssign,#screenMain,#screenResult,#screenBattle').forEach(scope=>{
+      for(const node of scope.childNodes){ if(node.nodeType===Node.TEXT_NODE) node.nodeValue=scrubBrotherText(node.nodeValue); }
+    });
+  }catch(e){}
+}
+function rerenderActive(){
+  applyShortNames();
+  if(document.getElementById('screenAssign')?.classList.contains('active')&&window.DispatchV36&&typeof DispatchV36.render==='function'){
+    try{DispatchV36.render();}catch(e){}
+  }else if(document.getElementById('screenMain')?.classList.contains('active')&&window.View&&typeof View.main==='function'){
+    try{View.main();}catch(e){}
+  }
+  setTimeout(()=>patchDomText(document),0);
+  setTimeout(()=>patchDomText(document),80);
+}
+if(window.DispatchV36){
+  for(const k of ['render','openActors','openTrumps','pickActor','toggleTrump','clearTrumps','closeAndRender','changeBudget']){
+    const fn=DispatchV36[k];
+    if(typeof fn==='function'&&!fn.__phase113){
+      DispatchV36[k]=function(){applyShortNames();const r=fn.apply(this,arguments);setTimeout(()=>patchDomText(document),0);setTimeout(()=>patchDomText(document),80);return r;};
+      DispatchV36[k].__phase113=true;
+    }
+  }
+}
+if(window.View&&typeof View.main==='function'&&!View.main.__phase113){
+  const old=View.main;
+  View.main=function(){applyShortNames();const r=old.apply(this,arguments);setTimeout(()=>patchDomText(document),0);return r;};
+  View.main.__phase113=true;
+}
+if(window.MutationObserver){
+  const obs=new MutationObserver(()=>patchDomText(document));
+  if(document.body)obs.observe(document.body,{childList:true,subtree:true});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',rerenderActive,{once:true});else setTimeout(rerenderActive,0);
+console.info(PHASE+' applied');
+})();
+</script>
+
+
+<!-- phase114: 起動直後フリーズ対策。弟/略称補正MutationObserverは文字変更監視を外し、同値代入を避ける。 -->
 </body>
 </html>
