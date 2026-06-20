@@ -4857,10 +4857,10 @@ const VISUAL_ENEMY_NAME_OVERRIDES={
 "country_treuval_stolen_horn":"ダグダン・マク・ロクラン",
 "country_treuval_guest_law":"ダグダン・マク・ロクラン",
 "border_treuval_longhouse_burns":"炎",
-"royal_child_birth":"レオポルト王子",
-"royal_child_health_watch":"レオポルト王子",
-"royal_child_education":"レオポルト王子",
-"dynasty_child_of_fate":"エリーゼ王女",
+"royal_child_birth":"王宮侍医と乳母たち",
+"royal_child_health_watch":"王宮侍医と乳母たち",
+"royal_child_education":"王子・王女",
+"dynasty_child_of_fate":"王女",
 };
 const VISUAL_BG_OVERRIDES={
 "hospital":"infirmary",
@@ -27983,10 +27983,10 @@ const wife=currentWifeName();
 if(wife)items.push({kind:'支え',name:wife,cls:'support',power:2,sfx:'select'});
 const kids=livingKids();
 const hasDynasty=flag('dynasty_started')||kids.length>0;
-const hasPrince=kids.some(c=>String(c.gender||c.type||c.id||'').includes('prince')||String(c.name||'').includes('レオポルト'))||hasDynasty;
-const hasPrincess=kids.some(c=>String(c.gender||c.type||c.id||'').includes('princess')||String(c.name||'').includes('エリーゼ'))||hasDynasty;
-if(hasPrince)items.push({kind:'支え',name:'レオポルト王子',cls:'support',power:1,sfx:'select'});
-if(hasPrincess)items.push({kind:'支え',name:'エリーゼ王女',cls:'support',power:1,sfx:'select'});
+const princeKid=kids.find(c=>c&&c.gender==='male');
+const princessKid=kids.find(c=>c&&c.gender==='female');
+if(princeKid)items.push({kind:'支え',name:(window.royalPrinceDisplayName183?window.royalPrinceDisplayName183():((princeKid.name||'王子')+'王子')),cls:'support',power:1,sfx:'select'});
+if(princessKid)items.push({kind:'支え',name:(window.royalPrincessDisplayName183?window.royalPrincessDisplayName183():((princessKid.name||'王女')+'王女')),cls:'support',power:1,sfx:'select'});
 if(done('tutorial_butler')||num(State?.butlerTrust)>0)items.push({kind:'支え',name:'老執事',cls:'support',power:1,sfx:'select'});
 if(done('horse'))items.push({kind:'支え',name:'愛馬シュトルム',cls:'support',power:1,sfx:'select'});
 if(finalEnemy!=='brother'&&(done('brother_persuasion')||State?.brother?.loyal||State?.brotherRoute==='loyal'))items.push({kind:'支え',name:'ルートヴィヒ',cls:'support',power:2,sfx:'select'});
@@ -50997,8 +50997,10 @@ if(spouse&&SPOUSE_NAME50[spouse]){
 addUnique(items,makeAlly('支え',SPOUSE_NAME50[spouse],'support',{goodPush:3,perfectPush:3,badGuard:1,line:1},true,'select'));
 }
 const kids=livingKids50();
-if(kids.length>0)addUnique(items,makeAlly('支え','レオポルト王子','support',{badGuard:1,enemyPushCut:.015,line:1},true,'select'));
-if(kids.length>=2)addUnique(items,makeAlly('支え','エリーゼ王女','support',{badGuard:1,enemyPushCut:.015,line:1},true,'select'));
+const princeKid50=kids.find(c=>c&&c.gender==='male');
+const princessKid50=kids.find(c=>c&&c.gender==='female');
+if(princeKid50)addUnique(items,makeAlly('支え',(window.royalPrinceDisplayName183?window.royalPrinceDisplayName183():((princeKid50.name||'王子')+'王子')),'support',{badGuard:1,enemyPushCut:.015,line:1},true,'select'));
+if(princessKid50)addUnique(items,makeAlly('支え',(window.royalPrincessDisplayName183?window.royalPrincessDisplayName183():((princessKid50.name||'王女')+'王女')),'support',{badGuard:1,enemyPushCut:.015,line:1},true,'select'));
 if(finalEnemyKey50()!=='brother'&&(done('brother_persuasion')||State?.brother?.loyal||State?.brotherRoute==='loyal')){
 addUnique(items,makeAlly('支え','ルートヴィヒ','support',{line:3,badGuard:3,enemyPushCut:.035},true,'select'));
 }
@@ -61754,7 +61756,7 @@ function cleanup(root=document){
     root.querySelectorAll('#screenAssign .dispatchBudgetMeta').forEach(el=>{
       const t=el.textContent||'';
       if(t.includes('ライン＋')&&!t.includes('開始ライン＋'))el.textContent=t.replace('ライン＋','開始ライン＋');
-      if(t.includes('ライン+'){/* noop for older half-width plus guard */}
+      if(t.includes('ライン+')){/* noop for older half-width plus guard */}
     });
   }catch(e){}
 }
@@ -62270,6 +62272,501 @@ if(!document.getElementById(css.id))document.head.appendChild(css);
 try{(DATA&&Array.isArray(DATA.cases)?DATA.cases:[]).forEach(tuneCase);if(window.State)State.caseCache=null;}catch(_){ }
 window.phase181RebellionStrategyAudit=function(){const s=state();const d=strategy();const c=getRebelCase();return {selected:s&&s.phase105RebellionStrategy||null,costPaid:s&&s.phase105RebellionStrategyCost||0,currentTreasury:treasury(),strategy:d,caseEnemy:c&&c.enemy,caseEnemyImg:c&&c.enemyImg,caseBg:c&&c.bg,arch:(typeof CASE_ARCHETYPE==='object'&&CASE_ARCHETYPE&&CASE_ARCHETYPE[ID])||'',bg:(typeof CASE_BG==='object'&&CASE_BG&&CASE_BG[ID])||''};};
 console.info('phase181 rebellion strategy tuning applied');
+})();
+
+/* ===== phase182: princess six-year notice and princess diplomacy audit ===== */
+(function(){
+'use strict';
+if(window.__PHASE182_PRINCESS_SIX_NOTICE__)return;
+window.__PHASE182_PRINCESS_SIX_NOTICE__=true;
+function n(v){v=Number(v);return Number.isFinite(v)?v:0;}
+function childYears182(ch){return Math.floor(n(ch&&ch.ageHalfTurns)/2);}
+function liveChildren182(){return Array.isArray(State&&State.children)?State.children.filter(c=>c&&c.status!=='deceased'):[];}
+function princesses182(){return liveChildren182().filter(c=>c.gender==='female');}
+function healthyEnoughForWork182(ch){return !['重病','critical','grave','dead'].includes(String((ch&&ch.healthStage)||(ch&&ch.health)||''));}
+function notifiedSet182(){State.phase182PrincessSixNotified=Array.isArray(State.phase182PrincessSixNotified)?State.phase182PrincessSixNotified:[];return State.phase182PrincessSixNotified;}
+function princessSixText182(ch){
+ const name=(ch&&ch.name)||'王女';
+ return `${name}王女は六歳を越え、祝宴や使節謁見の席に姿を見せるようになりました。\n王の傍らで采配を学ぶ王子とは違い、彼女は宮廷の輪の中で自分の言葉を持ち始めています。\nその挨拶や贈り物は、剣や法令とは別の形で、外国使節と宮廷人の心を少しずつ動かすでしょう。\n\n以後、半期総括で「王女の小さな外交」が起こることがあります。`;
+}
+function syncPrincessSixNotice182(reason){
+ if(!window.State)return null;
+ if(State.pendingRoyalBirthNotice)return null;
+ const done=notifiedSet182();
+ const target=princesses182().find(ch=>childYears182(ch)>=6&&!done.includes(ch.id));
+ if(!target)return null;
+ done.push(target.id);
+ const text=princessSixText182(target);
+ State.pendingRoyalBirthNotice={kind:'princessUnlock',title:'王女の成長',text,childId:target.id,phase182:true};
+ State.worldLog=State.worldLog||[];
+ State.worldLog.push({turn:State.turn,label:`${target.name||'王女'}王女は六歳を迎え、宮廷外交の場に姿を見せ始めた。`});
+ return State.pendingRoyalBirthNotice;
+}
+window.syncPrincessSixNotice182=syncPrincessSixNotice182;
+if(typeof updateChildrenTick==='function'&&!updateChildrenTick.phase182PrincessSixNotice){
+ const oldUpdateChildrenTick182=updateChildrenTick;
+ updateChildrenTick=function(){
+   const ret=oldUpdateChildrenTick182.apply(this,arguments);
+   try{syncPrincessSixNotice182('tick');}catch(e){console.warn('phase182 princess notice failed',e);}
+   return ret;
+ };
+ updateChildrenTick.phase182PrincessSixNotice=true;
+}
+function princessWorkCandidates182(){
+ const country=[
+  {key:'altrantLoire',label:'ロアール'},
+  {key:'altrantRick',label:'リック'},
+  {key:'altrantRuthenia',label:'ルテニア'},
+  {key:'altrantSolia',label:'ソリア'},
+  {key:'altrantSeafeara',label:'セーフェアラ'},
+  {key:'altrantTreuval',label:'トレウヴァル'},
+  {key:'altrantAzraq',label:'アズラク'}
+ ];
+ const wars=new Set();
+ try{
+  const bs=State&&State.borderWarState;
+  if(typeof bs==='string')wars.add(bs);
+  else if(Array.isArray(bs))bs.forEach(x=>wars.add(String((x&&x.key)||x)));
+  else if(bs&&typeof bs==='object')Object.entries(bs).forEach(([k,v])=>{if(v===true||(v&&(['active','war','fighting'].includes(v.status)||v.active)))wars.add(k);});
+  const wt=State&&State.warTurns;if(wt&&typeof wt==='object')Object.entries(wt).forEach(([k,v])=>{if(n(v)>0)wars.add(k);});
+ }catch(_){ }
+ const raw=String((State&&((State.finalEnemy)||(State.finalCaseResult&&State.finalCaseResult.finalEnemy)||(State.endingFinalEnemy)))||'').toLowerCase();
+ const fmap={loire:'altrantLoire',rick:'altrantRick',ruthenia:'altrantRuthenia',solia:'altrantSolia',seafeara:'altrantSeafeara',treuval:'altrantTreuval',azraq:'altrantAzraq'};
+ const finalKey=fmap[raw]||'';
+ return country.filter(x=>!wars.has(x.key)&&x.key!==finalKey).filter(x=>n(State.influence&&State.influence[x.key])<95||n(State.tension&&State.tension[x.key])>0);
+}
+window.phase182PrincessAudit=function(){
+ const ps=princesses182().map(ch=>({id:ch.id,name:ch.name,age:childYears182(ch),health:ch.healthStage||ch.health||'健やか',sixNoticeNotified:notifiedSet182().includes(ch.id),workEligible:childYears182(ch)>=6&&healthyEnoughForWork182(ch)}));
+ const eligible=ps.filter(p=>p.workEligible);
+ return {
+  princesses:ps,
+  hasSixNoticeWrapper:!!(typeof updateChildrenTick==='function'&&updateChildrenTick.phase182PrincessSixNotice),
+  pendingRoyalNotice:State&&State.pendingRoyalBirthNotice||null,
+  princessWorkResolver:typeof window.resolvePrincessWorkV15==='function',
+  princessWorkHtml:typeof window.princessWorkHtmlV15==='function',
+  princessWorkChance:'30% per result turn when an eligible princess and a valid foreign target exist',
+  eligiblePrincessCount:eligible.length,
+  currentTurnWork:State&&State.princessWorkByTurn&&State.princessWorkByTurn[String(State.turn||0)]||null,
+  possibleTargets:princessWorkCandidates182(),
+  notes:[
+   '王女6歳通知は、王子成長通知や誕生通知を上書きしない。通知済みでない王女がいれば次のターン開始処理で一度だけ出る。',
+   '王女の小さな外交は、6歳以上・生存・重病でない王女がいる時、半期総括で確率発生する。',
+   '戦争中・最終敵対象の国は、小さな外交の対象から外れる。'
+  ]
+ };
+};
+console.info('phase182 princess six notice and audit applied');
+})();
+
+</script>
+
+
+<script>
+/* ===== phase183: spouse-based royal child names and dynamic royal-name text ===== */
+(function(){
+'use strict';
+if(window.__PHASE183_SPOUSE_CHILD_NAMES__)return;
+window.__PHASE183_SPOUSE_CHILD_NAMES__=true;
+const NAME_BY_SPOUSE={
+  wife1:{male:'レオポルト',female:'アーデルハイト'},
+  wife2:{male:'アウグスト',female:'マルグリット'},
+  wife3:{male:'マティアス',female:'カタリナ'},
+  wife4:{male:'ミハイル',female:'タチアナ'},
+  wife5:{male:'ユースフ',female:'ライラ'},
+  wife6:{male:'エオガン',female:'モイラ'}
+};
+const FALLBACK={male:['レオポルト','フリードリヒ','ヴィルヘルム','ハインリヒ','カール','エルンスト'],female:['アーデルハイト','シャルロッテ','ルイーゼ','アマーリエ','テレーゼ','マリア']};
+const DEFAULT_NAMES=new Set(['フリードリヒ','ヴィルヘルム','ハインリヒ','カール','エルンスト','オットー','レオポルト','エリーゼ','シャルロッテ','ルイーゼ','アマーリエ','テレーゼ','マリア']);
+function spouseIdNow(){return (window.State&&State.marriage&&(State.marriage.spouseId||State.marriage.wifeId))||null;}
+function childNameForSpouse183(spouseId,gender){
+  const g=gender==='female'?'female':'male';
+  return (NAME_BY_SPOUSE[spouseId]&&NAME_BY_SPOUSE[spouseId][g])||FALLBACK[g][0];
+}
+function nameListFor183(gender){
+  const g=gender==='female'?'female':'male';
+  const first=childNameForSpouse183(spouseIdNow(),g);
+  const rest=FALLBACK[g].filter(n=>n!==first);
+  return [first,...rest,first,first];
+}
+window.royalChildNameByMother183=childNameForSpouse183;
+window.royalChildNames=function(gender){return nameListFor183(gender);};
+window.royalChildName=function(gender,idx){const arr=nameListFor183(gender);return arr[(Math.max(1,Number(idx)||1)-1)%arr.length];};
+function livingChildren183(){
+  try{if(typeof livingChildren==='function')return livingChildren()||[];}catch(_){ }
+  return Array.isArray(window.State&&State.children)?State.children.filter(c=>c&&c.status!=='deceased'):[];
+}
+function prince183(){return livingChildren183().find(c=>c&&c.gender==='male')||null;}
+function princess183(){return livingChildren183().find(c=>c&&c.gender==='female')||null;}
+function childDisplay183(ch){if(!ch)return'';return `${ch.name||childNameForSpouse183(ch.mother,ch.gender)}${ch.gender==='male'?'王子':'王女'}`;}
+window.royalPrinceDisplayName183=function(){const ch=prince183();return ch?childDisplay183(ch):'王子';};
+window.royalPrincessDisplayName183=function(){const ch=princess183();return ch?childDisplay183(ch):'王女';};
+function migrateChildNames183(){
+  if(!Array.isArray(window.State&&State.children))return;
+  let changed=false;
+  for(const ch of State.children){
+    if(!ch||ch.status==='deceased')continue;
+    if(!ch.mother&&State.marriage&&State.marriage.spouseId&&ch.bornTurn===State.turn)ch.mother=State.marriage.spouseId;
+    const desired=childNameForSpouse183(ch.mother,ch.gender);
+    if(ch.mother&&desired&&(!ch.name||DEFAULT_NAMES.has(ch.name))&&ch.name!==desired){ch.name=desired;changed=true;}
+  }
+  const p=prince183();
+  if(p&&window.DATA&&DATA.actors&&DATA.actors.prince){
+    DATA.actors.prince.name=`${p.name}王子`;
+    DATA.actors.prince.fullName=`${p.name}・フォン・ライヒェンベルク`;
+    DATA.actors.prince.childId=p.id;
+  }
+  return changed;
+}
+window.migrateRoyalChildNames183=migrateChildNames183;
+if(typeof createRoyalChild==='function'&&!createRoyalChild.phase183SpouseNames){
+  const oldCreate183=createRoyalChild;
+  createRoyalChild=function(preferredGender=null){
+    const before=Array.isArray(State&&State.children)?State.children.length:0;
+    const child=oldCreate183.apply(this,arguments);
+    if(child){
+      if(!child.mother&&State&&State.marriage)child.mother=State.marriage.spouseId||State.marriage.wifeId||child.mother||null;
+      const isNew=(Array.isArray(State&&State.children)?State.children.length:0)>before||child.bornTurn===State.turn||child.ageHalfTurns===0;
+      if(isNew){const desired=childNameForSpouse183(child.mother,child.gender);if(desired)child.name=desired;}
+    }
+    migrateChildNames183();
+    return child;
+  };
+  createRoyalChild.phase183SpouseNames=true;
+}
+if(typeof updateChildrenTick==='function'&&!updateChildrenTick.phase183SpouseNames){
+  const oldTick183=updateChildrenTick;
+  updateChildrenTick=function(){const ret=oldTick183.apply(this,arguments);try{migrateChildNames183();}catch(_){ }return ret;};
+  updateChildrenTick.phase183SpouseNames=true;
+}
+function replaceFixedRoyalNames183(s){
+  if(typeof s!=='string')return s;
+  return s.replace(/レオポルト王子/g,window.royalPrinceDisplayName183()).replace(/エリーゼ王女/g,window.royalPrincessDisplayName183());
+}
+window.replaceFixedRoyalNames183=replaceFixedRoyalNames183;
+function patchCaseIntro(id,intro){
+  if(!window.DATA||!Array.isArray(DATA.cases))return;
+  const c=DATA.cases.find(x=>x&&x.id===id);if(c)c.intro=intro;
+}
+patchCaseIntro('royal_child_birth','王宮に新しい命が生まれる。王子なら王冠を継ぐ未来、王女なら宮廷外交と文化を動かす未来が開く。祝福の鐘の裏で、選帝侯も外国使節もすでに次代の王朝を数えている。');
+patchCaseIntro('royal_child_education','幼い王子と王女の教育方針を決める時が来た。王子には王冠の重みを、王女には外交カードにされる前に自分の言葉を持つ力を。教室は、次の二十年の王国を先取りしている。');
+patchCaseIntro('royal_child_guardian','幼い継承者の後見をめぐり、宮廷貴族と選帝侯家が動き出した。王子と王女を守る制度を作れなければ、子どもたちの未来は大人の派閥争いに奪われる。');
+patchCaseIntro('dynasty_prince_tutor','王子の正式な教師を選ぶ時が来た。法学者は制度を、軍人は剣を、聖職者は祈りを、商人は数字を教えようとする。どの椅子を近くに置くかで、次代の王の形が変わる。');
+patchCaseIntro('dynasty_princess_languages','王女にどの言語を学ばせるかが議題になった。ロアール語は宮廷文化を、リック語は信仰を、商業語は交易を開く。言語は、彼女が将来どの世界と話すかを決める。');
+patchCaseIntro('dynasty_princess_betrothal_offer','外国使節が、王女との将来婚約をほのめかした。彼女をただの同盟札にするのか、それとも本人の未来を守ったうえで外交に使うのか。返答の仕方ひとつで王朝の品位が測られる。');
+patchCaseIntro('dynasty_prince_study_abroad','外国宮廷から、王子を短期間招きたいという申し出が届いた。異国を知る機会か、人質外交の始まりか。王子の視野を広げるには、鎖にならない条件を作らねばならない。');
+if(typeof yearStoryText==='function'&&!yearStoryText.phase183SpouseNames){
+  const oldYear183=yearStoryText;
+  yearStoryText=function(){return replaceFixedRoyalNames183(oldYear183.apply(this,arguments));};
+  yearStoryText.phase183SpouseNames=true;
+}
+if(typeof endingTraitLines==='function'&&!endingTraitLines.phase183SpouseNames){
+  const oldEnding183=endingTraitLines;
+  endingTraitLines=function(kind){const arr=oldEnding183.apply(this,arguments)||[];return arr.map(replaceFixedRoyalNames183);};
+  endingTraitLines.phase183SpouseNames=true;
+}
+if(typeof applyChildrenRouteResult==='function'&&!applyChildrenRouteResult.phase183SpouseNames){
+  const oldApply183=applyChildrenRouteResult;
+  applyChildrenRouteResult=function(r){const ret=oldApply183.apply(this,arguments);if(r&&Array.isArray(r.specialLines))r.specialLines=r.specialLines.map(replaceFixedRoyalNames183);return replaceFixedRoyalNames183(ret);};
+  applyChildrenRouteResult.phase183SpouseNames=true;
+}
+try{migrateChildNames183();}catch(_){ }
+window.phase183ChildNameAudit=function(){
+  const kids=livingChildren183();
+  return {spouse:spouseIdNow(),table:NAME_BY_SPOUSE,children:kids.map(c=>({id:c.id,name:c.name,gender:c.gender,mother:c.mother,display:childDisplay183(c)})),prince:window.royalPrinceDisplayName183(),princess:window.royalPrincessDisplayName183(),fixedNameHits:{leopold:document.documentElement.innerHTML.includes('レオポルト王子'),elisePrincess:document.documentElement.innerHTML.includes('エリーゼ王女')}};
+};
+console.info('phase183 spouse-based child names applied');
+})();
+</script>
+
+
+<script>
+/* ===== phase184: royal child-name integrity audit/fix ===== */
+(function(){
+'use strict';
+if(window.__PHASE184_CHILD_NAME_INTEGRITY__)return;
+window.__PHASE184_CHILD_NAME_INTEGRITY__=true;
+const NAME_BY_SPOUSE_184={
+  wife1:{male:'レオポルト',female:'アーデルハイト'},
+  wife2:{male:'アウグスト',female:'マルグリット'},
+  wife3:{male:'マティアス',female:'カタリナ'},
+  wife4:{male:'ミハイル',female:'タチアナ'},
+  wife5:{male:'ユースフ',female:'ライラ'},
+  wife6:{male:'エオガン',female:'モイラ'}
+};
+const FALLBACK_184={
+  male:['レオポルト','フリードリヒ','ヴィルヘルム','ハインリヒ','カール','エルンスト','オットー'],
+  female:['アーデルハイト','シャルロッテ','ルイーゼ','アマーリエ','テレーゼ','マリア']
+};
+const OLD_DEFAULT_184=new Set(['フリードリヒ','ヴィルヘルム','ハインリヒ','カール','エルンスト','オットー','レオポルト','エリーゼ','シャルロッテ','ルイーゼ','アマーリエ','テレーゼ','マリア','アーデルハイト']);
+function spouseId184(){return (window.State&&State.marriage&&(State.marriage.spouseId||State.marriage.wifeId))||null;}
+function normalizeGender184(g){return g==='female'?'female':'male';}
+function listForMother184(mother,gender){
+  const g=normalizeGender184(gender);
+  const first=(NAME_BY_SPOUSE_184[mother]&&NAME_BY_SPOUSE_184[mother][g])||FALLBACK_184[g][0];
+  const rest=FALLBACK_184[g].filter(n=>n!==first);
+  return [first].concat(rest);
+}
+function childOrderIndex184(ch,arr){
+  const list=(arr||[]).filter(c=>c&&c.status!=='deceased'&&normalizeGender184(c.gender)===normalizeGender184(ch.gender)&&(c.mother||null)===(ch.mother||null));
+  list.sort((a,b)=>(Number(a.bornTurn)||0)-(Number(b.bornTurn)||0)||(Number((a.id||'').replace(/\D/g,''))||0)-(Number((b.id||'').replace(/\D/g,''))||0));
+  const i=list.findIndex(c=>c===ch||c.id===ch.id);
+  return Math.max(0,i);
+}
+function desiredChildName184(ch,arr){
+  if(!ch)return'';
+  const list=listForMother184(ch.mother,normalizeGender184(ch.gender));
+  return list[childOrderIndex184(ch,arr)%list.length];
+}
+function living184(){
+  try{if(typeof livingChildren==='function')return livingChildren()||[];}catch(_){ }
+  return Array.isArray(window.State&&State.children)?State.children.filter(c=>c&&c.status!=='deceased'):[];
+}
+function migrate184(){
+  if(!Array.isArray(window.State&&State.children))return false;
+  let changed=false;
+  const all=State.children;
+  for(const ch of all){
+    if(!ch||ch.status==='deceased')continue;
+    if(!ch.mother&&State.marriage&&State.marriage.spouseId&&ch.bornTurn===State.turn){ch.mother=State.marriage.spouseId;changed=true;}
+    const desired=desiredChildName184(ch,all);
+    if(ch.mother&&desired&&(!ch.name||OLD_DEFAULT_184.has(ch.name))&&ch.name!==desired){ch.name=desired;changed=true;}
+  }
+  const p=living184().find(c=>c.gender==='male');
+  if(p&&window.DATA&&DATA.actors&&DATA.actors.prince){
+    DATA.actors.prince.name=`${p.name}王子`;
+    DATA.actors.prince.fullName=`${p.name}・フォン・ライヒェンベルク`;
+    DATA.actors.prince.childId=p.id;
+  }
+  return changed;
+}
+window.royalChildNameByMother184=function(mother,gender,idx){const list=listForMother184(mother,gender);return list[(Math.max(1,Number(idx)||1)-1)%list.length];};
+window.migrateRoyalChildNames184=migrate184;
+window.royalChildNames=function(gender){return listForMother184(spouseId184(),gender);};
+window.royalChildName=function(gender,idx){return window.royalChildNameByMother184(spouseId184(),gender,idx);};
+function childLabel184(ch){return ch?`${ch.name||desiredChildName184(ch,State.children||[])}${ch.gender==='male'?'王子':'王女'}`:'';}
+window.royalPrinceDisplayName183=function(){const p=living184().find(c=>c.gender==='male');return p?childLabel184(p):'王子';};
+window.royalPrincessDisplayName183=function(){const p=living184().find(c=>c.gender==='female');return p?childLabel184(p):'王女';};
+window.royalPrinceDisplayName184=window.royalPrinceDisplayName183;
+window.royalPrincessDisplayName184=window.royalPrincessDisplayName183;
+window.replaceFixedRoyalNames183=function(s){
+  if(typeof s!=='string')return s;
+  return s.replace(/レオポルト王子/g,window.royalPrinceDisplayName183()).replace(/エリーゼ王女/g,window.royalPrincessDisplayName183());
+};
+function repl184(s){return window.replaceFixedRoyalNames183?window.replaceFixedRoyalNames183(s):s;}
+function wrapLineFunc184(name){
+  try{
+    const fn=window[name]||eval(name);
+    if(typeof fn!=='function'||fn.phase184ChildNames)return;
+    const wrapped=function(){return repl184(fn.apply(this,arguments));};
+    wrapped.phase184ChildNames=true;
+    window[name]=wrapped;
+    try{eval(name+'=wrapped');}catch(_){ }
+  }catch(_){ }
+}
+['royalPrinceShortLine12','royalPrincessShortLine12','royalFutureYearLine12'].forEach(wrapLineFunc184);
+function wrapArrayFunc184(name){
+  try{
+    const fn=window[name]||eval(name);
+    if(typeof fn!=='function'||fn.phase184ChildNames)return;
+    const wrapped=function(){const v=fn.apply(this,arguments);return Array.isArray(v)?v.map(repl184):repl184(v);};
+    wrapped.phase184ChildNames=true;
+    window[name]=wrapped;
+    try{eval(name+'=wrapped');}catch(_){ }
+  }catch(_){ }
+}
+['royalFutureEndingLines12','endingTraitLines','applyChildrenRouteResult'].forEach(wrapArrayFunc184);
+function patchCaseIntro184(id,intro){try{const c=DATA&&Array.isArray(DATA.cases)&&DATA.cases.find(x=>x&&x.id===id);if(c)c.intro=intro;}catch(_){ }}
+patchCaseIntro184('royal_child_birth','王宮に新しい命が生まれる。王子なら王冠を継ぐ未来、王女なら宮廷外交と文化を動かす未来が開く。祝福の鐘の裏で、選帝侯も外国使節もすでに次代の王朝を数えている。');
+patchCaseIntro184('royal_child_education','幼い王子と王女の教育方針を決める時が来た。王子には王冠の重みを、王女には外交カードにされる前に自分の言葉を持つ力を。教室は、次の二十年の王国を先取りしている。');
+patchCaseIntro184('royal_child_guardian','幼い継承者の後見をめぐり、宮廷貴族と選帝侯家が動き出した。王子と王女を守る制度を作れなければ、子どもたちの未来は大人の派閥争いに奪われる。');
+if(typeof createRoyalChild==='function'&&!createRoyalChild.phase184ChildNames){
+  const old=createRoyalChild;
+  createRoyalChild=function(preferredGender=null){
+    const child=old.apply(this,arguments);
+    try{
+      if(child){
+        if(!child.mother&&State&&State.marriage)child.mother=State.marriage.spouseId||State.marriage.wifeId||child.mother||null;
+        const desired=desiredChildName184(child,State.children||[]);
+        if(desired)child.name=desired;
+      }
+      migrate184();
+    }catch(e){console.warn('phase184 child-name create fix failed',e);}
+    return child;
+  };
+  createRoyalChild.phase184ChildNames=true;
+}
+if(typeof updateChildrenTick==='function'&&!updateChildrenTick.phase184ChildNames){
+  const old=updateChildrenTick;
+  updateChildrenTick=function(){
+    try{migrate184();}catch(_){ }
+    const ret=old.apply(this,arguments);
+    try{migrate184();}catch(_){ }
+    return ret;
+  };
+  updateChildrenTick.phase184ChildNames=true;
+}
+try{migrate184();}catch(_){ }
+window.phase184ChildNameIntegrityAudit=function(){
+  const kids=living184().map(c=>({id:c.id,mother:c.mother,gender:c.gender,name:c.name,desired:desiredChildName184(c,State.children||[]),ok:c.name===desiredChildName184(c,State.children||[]),display:childLabel184(c)}));
+  const liveText=[];
+  try{
+    ['royal_child_birth','royal_child_education','royal_child_guardian','dynasty_prince_tutor','dynasty_princess_languages','dynasty_princess_betrothal_offer','dynasty_prince_study_abroad'].forEach(id=>{const c=DATA.cases.find(x=>x&&x.id===id);if(c)liveText.push({id,intro:c.intro,hasOldFixed:/レオポルト王子|エリーゼ王女/.test(c.intro||'')});});
+  }catch(_){ }
+  const samples={};
+  Object.keys(NAME_BY_SPOUSE_184).forEach(k=>samples[k]={firstPrince:window.royalChildNameByMother184(k,'male',1),secondPrince:window.royalChildNameByMother184(k,'male',2),firstPrincess:window.royalChildNameByMother184(k,'female',1),secondPrincess:window.royalChildNameByMother184(k,'female',2)});
+  return {spouse:spouseId184(),samples,children:kids,allCurrentChildrenNamedCorrectly:kids.every(k=>k.ok),princeDisplay:window.royalPrinceDisplayName183(),princessDisplay:window.royalPrincessDisplayName183(),patchedCaseIntros:liveText,wrappers:{create:!!(typeof createRoyalChild==='function'&&createRoyalChild.phase184ChildNames),tick:!!(typeof updateChildrenTick==='function'&&updateChildrenTick.phase184ChildNames),futureLine:!!(typeof royalFutureYearLine12==='function'&&royalFutureYearLine12.phase184ChildNames)}};
+};
+console.info('phase184 child-name integrity fix applied');
+})();
+</script>
+
+
+<script>
+/* ===== phase185: child names simplified for one prince + one princess design ===== */
+(function(){
+'use strict';
+if(window.__PHASE185_CHILD_NAME_SIMPLE_PAIR__)return;
+window.__PHASE185_CHILD_NAME_SIMPLE_PAIR__=true;
+const NAME_BY_SPOUSE_185={
+  wife1:{male:'レオポルト',female:'アーデルハイト'},
+  wife2:{male:'アウグスト',female:'マルグリット'},
+  wife3:{male:'マティアス',female:'カタリナ'},
+  wife4:{male:'ミハイル',female:'タチアナ'},
+  wife5:{male:'ユースフ',female:'ライラ'},
+  wife6:{male:'エオガン',female:'モイラ'}
+};
+const FALLBACK_185={male:'レオポルト',female:'アーデルハイト'};
+const OLD_DEFAULT_185=new Set(['フリードリヒ','ヴィルヘルム','ハインリヒ','カール','エルンスト','オットー','レオポルト','エリーゼ','シャルロッテ','ルイーゼ','アマーリエ','テレーゼ','マリア','アーデルハイト','マルグリット','カタリナ','タチアナ','ライラ','モイラ','アウグスト','マティアス','ミハイル','ユースフ','エオガン']);
+function normGender185(g){return g==='female'?'female':'male';}
+function currentSpouse185(){return (window.State&&State.marriage&&(State.marriage.spouseId||State.marriage.wifeId))||null;}
+function livingChildren185(){
+  try{if(typeof livingChildren==='function')return livingChildren()||[];}catch(_){ }
+  return Array.isArray(window.State&&State.children)?State.children.filter(c=>c&&c.status!=='deceased'):[];
+}
+function expectedName185(mother,gender){
+  const g=normGender185(gender);
+  return (NAME_BY_SPOUSE_185[mother]&&NAME_BY_SPOUSE_185[mother][g])||FALLBACK_185[g];
+}
+window.royalChildNameByMother185=expectedName185;
+window.royalChildNameByMother184=function(mother,gender){return expectedName185(mother,gender);};
+window.royalChildNameByMother183=function(mother,gender){return expectedName185(mother,gender);};
+window.royalChildNames=function(gender){return [expectedName185(currentSpouse185(),gender)];};
+window.royalChildName=function(gender){return expectedName185(currentSpouse185(),gender);};
+function attachMissingMother185(ch){
+  if(!ch)return false;
+  if(ch.mother)return false;
+  const sp=currentSpouse185();
+  if(!sp)return false;
+  ch.mother=sp;
+  return true;
+}
+function shouldRename185(ch,desired){
+  if(!ch||!desired)return false;
+  if(!ch.name)return true;
+  if(ch.name===desired)return false;
+  return OLD_DEFAULT_185.has(ch.name);
+}
+function syncActor185(){
+  const p=livingChildren185().find(c=>c&&normGender185(c.gender)==='male');
+  if(p&&window.DATA&&DATA.actors&&DATA.actors.prince){
+    DATA.actors.prince.name=`${p.name}王子`;
+    DATA.actors.prince.fullName=`${p.name}・フォン・ライヒェンベルク`;
+    DATA.actors.prince.childId=p.id;
+  }
+}
+function migrate185(){
+  if(!Array.isArray(window.State&&State.children))return false;
+  let changed=false;
+  for(const ch of State.children){
+    if(!ch||ch.status==='deceased')continue;
+    if(attachMissingMother185(ch))changed=true;
+    const desired=expectedName185(ch.mother,normGender185(ch.gender));
+    if(shouldRename185(ch,desired)){ch.name=desired;changed=true;}
+  }
+  syncActor185();
+  return changed;
+}
+window.migrateRoyalChildNames185=migrate185;
+window.migrateRoyalChildNames184=migrate185;
+function childLabel185(ch){return ch?`${ch.name||expectedName185(ch.mother,ch.gender)}${normGender185(ch.gender)==='male'?'王子':'王女'}`:'';}
+window.royalPrinceDisplayName185=function(){const p=livingChildren185().find(c=>normGender185(c.gender)==='male');return p?childLabel185(p):'王子';};
+window.royalPrincessDisplayName185=function(){const p=livingChildren185().find(c=>normGender185(c.gender)==='female');return p?childLabel185(p):'王女';};
+window.royalPrinceDisplayName184=window.royalPrinceDisplayName183=window.royalPrinceDisplayName185;
+window.royalPrincessDisplayName184=window.royalPrincessDisplayName183=window.royalPrincessDisplayName185;
+window.replaceFixedRoyalNames183=function(s){
+  if(typeof s!=='string')return s;
+  return s.replace(/レオポルト王子/g,window.royalPrinceDisplayName185()).replace(/エリーゼ王女/g,window.royalPrincessDisplayName185());
+};
+function repl185(s){return window.replaceFixedRoyalNames183?window.replaceFixedRoyalNames183(s):s;}
+function wrapAfter185(name,mode){
+  try{
+    const fn=window[name]||eval(name);
+    if(typeof fn!=='function'||fn.phase185ChildNames)return;
+    const wrapped=function(){
+      const v=fn.apply(this,arguments);
+      try{migrate185();}catch(_){ }
+      if(mode==='array')return Array.isArray(v)?v.map(repl185):repl185(v);
+      return repl185(v);
+    };
+    wrapped.phase185ChildNames=true;
+    window[name]=wrapped;
+    try{eval(name+'=wrapped');}catch(_){ }
+  }catch(_){ }
+}
+['royalPrinceShortLine12','royalPrincessShortLine12','royalFutureYearLine12','yearStoryText'].forEach(n=>wrapAfter185(n,'string'));
+['royalFutureEndingLines12','endingTraitLines','applyChildrenRouteResult'].forEach(n=>wrapAfter185(n,'array'));
+if(typeof createRoyalChild==='function'&&!createRoyalChild.phase185ChildNames){
+  const old=createRoyalChild;
+  createRoyalChild=function(){
+    const child=old.apply(this,arguments);
+    try{
+      if(child){
+        attachMissingMother185(child);
+        const desired=expectedName185(child.mother,child.gender);
+        if(desired)child.name=desired;
+      }
+      migrate185();
+    }catch(e){console.warn('phase185 child-name create sync failed',e);}
+    return child;
+  };
+  createRoyalChild.phase185ChildNames=true;
+}
+if(typeof updateChildrenTick==='function'&&!updateChildrenTick.phase185ChildNames){
+  const old=updateChildrenTick;
+  updateChildrenTick=function(){
+    try{migrate185();}catch(_){ }
+    const ret=old.apply(this,arguments);
+    try{migrate185();}catch(_){ }
+    return ret;
+  };
+  updateChildrenTick.phase185ChildNames=true;
+}
+function patchCaseIntro185(id,intro){try{const c=DATA&&Array.isArray(DATA.cases)&&DATA.cases.find(x=>x&&x.id===id);if(c)c.intro=intro;}catch(_){ }}
+patchCaseIntro185('royal_child_birth','王宮に新しい命が生まれる。王子なら王冠を継ぐ未来、王女なら宮廷外交と文化を動かす未来が開く。祝福の鐘の裏で、選帝侯も外国使節もすでに次代の王朝を数えている。');
+try{migrate185();}catch(_){ }
+window.phase185ChildNameSimplePairAudit=function(){
+  const kids=livingChildren185();
+  const alive=kids.map(c=>({id:c.id,mother:c.mother,gender:c.gender,name:c.name,expected:expectedName185(c.mother,c.gender),ok:c.name===expectedName185(c.mother,c.gender),display:childLabel185(c)}));
+  const male=kids.filter(c=>normGender185(c.gender)==='male').length;
+  const female=kids.filter(c=>normGender185(c.gender)==='female').length;
+  const impossibleWarnings=[];
+  if(kids.length>2)impossibleWarnings.push('生存子どもが2人を超えています');
+  if(male>1)impossibleWarnings.push('生存王子が複数います');
+  if(female>1)impossibleWarnings.push('生存王女が複数います');
+  return {
+    design:'子どもは最大2人、王子1人・王女1人まで。妻ごとに各性別1名を固定命名する。同性2人目ローテーションは使わない。',
+    spouse:currentSpouse185(),
+    table:NAME_BY_SPOUSE_185,
+    samples:Object.fromEntries(Object.keys(NAME_BY_SPOUSE_185).map(k=>[k,{prince:expectedName185(k,'male'),princess:expectedName185(k,'female')} ])),
+    children:alive,
+    pairState:{alive:kids.length,male,female,ok:kids.length<=2&&male<=1&&female<=1,warnings:impossibleWarnings},
+    allCurrentChildrenNamedCorrectly:alive.every(c=>c.ok),
+    princeDisplay:window.royalPrinceDisplayName185(),
+    princessDisplay:window.royalPrincessDisplayName185(),
+    wrappers:{create:!!(typeof createRoyalChild==='function'&&createRoyalChild.phase185ChildNames),tick:!!(typeof updateChildrenTick==='function'&&updateChildrenTick.phase185ChildNames)}
+  };
+};
+console.info('phase185 child-name simple gender-pair fix applied');
 })();
 </script>
 
