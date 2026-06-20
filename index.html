@@ -62768,7 +62768,634 @@ window.phase185ChildNameSimplePairAudit=function(){
 };
 console.info('phase185 child-name simple gender-pair fix applied');
 })();
+
+(function(){
+'use strict';
+if(window.__phase187BossTrumpCardsApplied)return;
+window.__phase187BossTrumpCardsApplied=true;
+const PHASE='phase187_boss_trump_cards';
+const POWER_LABEL={small:'小',medium:'中',large:'大',extreme:'極大'};
+const POWER_VALUE={small:10,medium:20,large:35,extreme:52};
+const BOSS_CARDS={
+  dragonSlayerSpear:{id:'dragonSlayerSpear',name:'竜討ちの王槍',short:'竜槍',power:'extreme',kind:'dragonRush',desc:'効果：極大。味方の移動速度と衝突時の押し込みが大きく上がる。'},
+  deadKingEdict:{id:'deadKingEdict',name:'亡王の勅命',short:'勅命',power:'extreme',kind:'deadKingGrow',desc:'効果：極大。後退を大きく抑え、衝突のたび押し込みが上がる。'},
+  amnestyConfiscation:{id:'amnestyConfiscation',name:'赦免と没収令',short:'赦免',power:'large',kind:'amnestyGuard',desc:'効果：大。敵の押し込みを下げ、味方の後退を抑える。'},
+  successionGoldSeal:{id:'successionGoldSeal',name:'継承の金印',short:'金印',power:'large',kind:'successionShield',desc:'効果：大。悪い判定を一度だけ軽くし、以後の判定を少し強める。'},
+  eveSecretPact:{id:'eveSecretPact',name:'前夜の密約',short:'密約',power:'large',kind:'evePact',desc:'効果：大。成功時の押し込みが上がり、敵の移動速度を少し下げる。'}
+};
+const UNIFIED_DESC={
+  step:'効果：小。開始直後、味方の押し込みが少し強くなる。',
+  assault:'効果：中。最初の衝突で押し込みが強くなる。',
+  guard:'効果：中。最初に押し負けた時、後退を大きく抑える。',
+  royal:'効果：大。一定時間、味方の移動速度と押し込みが上がる。',
+  wifeAdvice:'効果：中。悪い判定を一度だけ軽くし、立て直す。',
+  butler:'効果：小。負けた時の被害を一度だけ抑える。',
+  silverVault:'効果：大。押し込みが大きく上がる。国庫消費は半減。',
+  legalEdict:'効果：中。敵の押し込みを下げ、味方の後退を抑える。',
+  springOath:'効果：中。味方が押し負けても、次の衝突が強くなる。',
+  roseInvite:'効果：小。敵の移動速度を下げる。',
+  ironwoodMobilization:'効果：大。衝突時の押し込みが大きく上がる。兵の消費は半減。',
+  healingDecree:'効果：中。後退を抑え、次の押し込みを強める。',
+  tradePatent:'効果：小。押し込みが少し上がる。国庫消費は半減。',
+  envoySeal:'効果：中。敵の押し込みを下げる。',
+  holyBanner:'効果：中。衝突するたびに少し強くなる。',
+  frontierCall:'効果：大。一定時間、衝突時の押し込みが大きく上がる。',
+  marketCharter:'効果：小。移動速度が少し上がる。国庫消費は半減。',
+  royalVow:'効果：中。悪い判定を一度だけ軽くする。',
+  forestTalisman:'効果：中。敵の移動速度を下げる。',
+  masterBuilder:'効果：中。衝突するたびに押し込みが強くなる。',
+  masonContract:'効果：中。衝突するたびに押し込みが強くなる。',
+  lastReserve:'効果：大。劣勢時、移動速度と押し込みが上がる。',
+  pilgrimPass:'効果：小。敵の押し込みを少し下げる。',
+  pilgrimGuard:'効果：小。敵の押し込みを少し下げる。',
+  caravanRight:'効果：小。移動速度が上がる。国庫消費は半減。',
+  soliaDiscount:'効果：中。衝突時の押し込みが上がる。兵の消費は半減。',
+  cultureMission:'効果：小。敵の押し込みを下げる。',
+  culturalMission:'効果：小。敵の押し込みを下げる。',
+  creditLine:'効果：中。押し込みが上がる。国庫消費は半減。',
+  ceasefireFlag:'効果：中。敵の移動速度と押し込みを下げる。',
+  whiteFlag:'効果：中。敵の移動速度と押し込みを下げる。',
+  lostLandEdict:'効果：大。開始直後、押し込みが大きく上がる。',
+  reconquestEdict:'効果：大。開始直後、押し込みが大きく上がる。',
+  frontierPledge:'効果：大。衝突するたび押し込みが強くなる。',
+  frontierOath:'効果：大。衝突するたび押し込みが強くなる。',
+  grandPeaceDoc:'効果：大。敵の押し込みを下げ、味方の後退を抑える。',
+  greatPeaceDoc:'効果：大。敵の押し込みを下げ、味方の後退を抑える。',
+  princeRide:'効果：大。味方の移動速度と押し込みが上がる。',
+  brotherCharge:'効果：大。味方の移動速度と押し込みが上がる。'
+};
+function hasOwn(o,k){return Object.prototype.hasOwnProperty.call(o,k);}
+function safeClamp(v,a,b){try{return typeof clamp==='function'?clamp(v,a,b):Math.max(a,Math.min(b,v));}catch(_){return Math.max(a,Math.min(b,v));}}
+function majorWin(rank){return rank==='completeWin'||rank==='majorWin';}
+function success(rank){return ['completeWin','majorWin','minorWin'].includes(rank);}
+function tagsOf(c){try{return typeof caseMeta==='function'?(caseMeta(c).tags||[]):((c&&c.meta&&c.meta.tags)||c.tags||[]);}catch(_){return((c&&c.meta&&c.meta.tags)||c.tags||[]);}}
+function hasTag(c,list){const t=tagsOf(c);return list.some(x=>t.includes(x));}
+function defineCards(){
+  if(typeof DATA!=='object'||!DATA.cards)return;
+  for(const [id,card] of Object.entries(BOSS_CARDS)){
+    if(!DATA.cards[id])DATA.cards[id]={};
+    Object.assign(DATA.cards[id],card,{phase187BossTrump:true});
+  }
+  for(const [id,desc] of Object.entries(UNIFIED_DESC)){
+    if(DATA.cards[id])DATA.cards[id].desc=desc;
+  }
+}
+defineCards();
+function spec(id){return BOSS_CARDS[id]||null;}
+function labelFor(id){const s=spec(id);return s?POWER_LABEL[s.power]||'大':'';}
+function valueFor(id){const s=spec(id);return s?POWER_VALUE[s.power]||35:0;}
+function cardName(id){return (DATA&&DATA.cards&&DATA.cards[id]&&DATA.cards[id].name)||(spec(id)&&spec(id).name)||id;}
+function cardDesc(id){return (BOSS_CARDS[id]&&BOSS_CARDS[id].desc)||UNIFIED_DESC[id]||'';}
+if(typeof renderAssign==='function'&&!renderAssign.phase187BossTrump){
+  const old=renderAssign;
+  renderAssign=function(){defineCards();const r=old.apply(this,arguments);defineCards();return r;};
+  renderAssign.phase187BossTrump=true;
+}
+const oldCardUniversalSpec=window.cardUniversalSpec;
+window.cardUniversalSpec=function(id){
+  if(BOSS_CARDS[id])return BOSS_CARDS[id];
+  return oldCardUniversalSpec?oldCardUniversalSpec.apply(this,arguments):null;
+};
+const oldCardEffectTextFinal=window.cardEffectTextFinal;
+window.cardEffectTextFinal=function(id){
+  const txt=cardDesc(id);
+  if(txt)return txt;
+  return oldCardEffectTextFinal?oldCardEffectTextFinal.apply(this,arguments):'';
+};
+const oldCardLaneStartBonus=window.cardLaneStartBonus;
+window.cardLaneStartBonus=function(cardId,lane){
+  if(BOSS_CARDS[cardId])return 0;
+  return oldCardLaneStartBonus?oldCardLaneStartBonus.apply(this,arguments):0;
+};
+const oldCardJudgeBonus=window.cardJudgeBonus;
+window.cardJudgeBonus=function(cardId,judge,lane){
+  const s=spec(cardId);
+  if(!s)return oldCardJudgeBonus?oldCardJudgeBonus.apply(this,arguments):0;
+  const bad=(judge==='Bad'||judge==='Late'||judge==='Miss');
+  const good=(judge==='Good'||judge==='Perfect!'||judge==='Perfect');
+  const hits=Math.max(0,Number(lane&&lane.clashCount||lane&&lane.phase187DeadKingHits||0));
+  if(s.kind==='dragonRush')return good?52:bad?22:38;
+  if(s.kind==='deadKingGrow')return Math.min(58,26+hits*8)+(bad?8:0);
+  if(s.kind==='amnestyGuard')return bad?40:26;
+  if(s.kind==='successionShield')return bad?46:18;
+  if(s.kind==='evePact')return good?38:22;
+  return 0;
+};
+const oldCardModifySpeed=window.cardModifySpeed;
+window.cardModifySpeed=function(cardId,baseSpeed,side){
+  const s=spec(cardId);
+  if(!s)return oldCardModifySpeed?oldCardModifySpeed.apply(this,arguments):baseSpeed;
+  if(cardId==='dragonSlayerSpear'&&side==='player')return baseSpeed*1.38;
+  if(cardId==='eveSecretPact'&&side==='enemy')return baseSpeed*.88;
+  return baseSpeed;
+};
+function tuneLaneByQueuedCards(l){
+  if(!l||!Array.isArray(l.queuedCards))return l;
+  if(l.queuedCards.includes('dragonSlayerSpear')){
+    l.speed=Math.round(Number(l.speed||0)*1.38);
+    l.phase187DragonRush=true;
+  }
+  if(l.queuedCards.includes('eveSecretPact')){
+    l.enemySpeed=Math.round(Number(l.enemySpeed||0)*.88);
+    l.phase187EvePact=true;
+  }
+  if(l.queuedCards.includes('amnestyConfiscation')){
+    l.enemyProfile=Object.assign({},l.enemyProfile||{}, {pressure:safeClamp(Number(l.enemyProfile&&l.enemyProfile.pressure||1)*.78,.45,1.6)});
+    l.phase187AmnestyGuard=true;
+  }
+  if(l.queuedCards.includes('successionGoldSeal'))l.phase187GoldSealReady=true;
+  if(l.queuedCards.includes('deadKingEdict'))l.phase187DeadKingGrow=true;
+  return l;
+}
+if(typeof Battle==='object'&&Battle&&typeof Battle.makeLane==='function'&&!Battle.makeLane.phase187BossTrump){
+  const oldMakeLane=Battle.makeLane;
+  Battle.makeLane=function(){defineCards();const l=oldMakeLane.apply(this,arguments);try{tuneLaneByQueuedCards(l);}catch(e){console.warn(PHASE+' makeLane skipped',e);}return l;};
+  Battle.makeLane.phase187BossTrump=true;
+}
+function bossCardDelta(l,card,judge){
+  const bad=judge==='Bad'||judge==='Late'||judge==='Miss';
+  const good=judge==='Good'||judge==='Perfect!'||judge==='Perfect';
+  const perfect=judge==='Perfect!'||judge==='Perfect';
+  const hits=Math.max(0,Number(l&&l.clashCount||0));
+  if(card==='dragonSlayerSpear')return perfect?58:good?48:bad?20:36;
+  if(card==='deadKingEdict')return Math.min(70,28+(hits+1)*9)+(bad?10:0);
+  if(card==='amnestyConfiscation')return bad?38:24;
+  if(card==='successionGoldSeal'){
+    if(l)l.phase187GoldSealReady=true;
+    return bad?50:20;
+  }
+  if(card==='eveSecretPact')return good?38:24;
+  return 0;
+}
+if(typeof Battle==='object'&&Battle&&typeof Battle.cardEffect==='function'&&!Battle.cardEffect.phase187BossTrump){
+  const oldCardEffect=Battle.cardEffect;
+  Battle.cardEffect=function(l,card,judge){
+    if(!BOSS_CARDS[card])return oldCardEffect.apply(this,arguments);
+    defineCards();
+    l.cardDelta=bossCardDelta(l,card,judge);
+    l.cardUsed=card;
+    l.cardEffectLabel=`${labelFor(card)}：${cardName(card)} 発動`;
+    l.cardEffectT=1.8;
+    if(card==='deadKingEdict')l.phase187DeadKingActive=true;
+    if(card==='successionGoldSeal')l.phase187GoldSealReady=true;
+    if(typeof sfx==='function')sfx('card');
+    return undefined;
+  };
+  Battle.cardEffect.phase187BossTrump=true;
+}
+if(typeof Battle==='object'&&Battle&&typeof Battle.recoilProfile==='function'&&!Battle.recoilProfile.phase187BossTrump){
+  const oldRecoil=Battle.recoilProfile;
+  Battle.recoilProfile=function(judge,delta,l){
+    const table=oldRecoil.apply(this,arguments);
+    try{
+      const id=l&&l.cardUsed;
+      if(!table||!BOSS_CARDS[id])return table;
+      const hits=Math.max(1,Number(l.clashCount||0)+1);
+      if(id==='dragonSlayerSpear'){
+        table.enemyKb=Math.round(table.enemyKb*(judge==='Perfect!'?1.92:judge==='Good'?1.72:1.52));
+      }else if(id==='deadKingEdict'){
+        table.playerKb=Math.round(table.playerKb*.32);
+        table.playerStun=safeClamp(Number(table.playerStun||0)*.54,.05,1.05);
+        table.enemyKb=Math.round(table.enemyKb*safeClamp(1+hits*.14,1.14,2.05));
+      }else if(id==='amnestyConfiscation'){
+        table.playerKb=Math.round(table.playerKb*.58);
+        table.playerStun=safeClamp(Number(table.playerStun||0)*.72,.05,1.05);
+      }else if(id==='successionGoldSeal'){
+        if(delta<0&&l.phase187GoldSealReady){
+          table.playerKb=Math.round(table.playerKb*.35);
+          table.playerStun=safeClamp(Number(table.playerStun||0)*.55,.05,1.05);
+          l.phase187GoldSealReady=false;
+        }else{
+          table.playerKb=Math.round(table.playerKb*.84);
+        }
+      }else if(id==='eveSecretPact'){
+        if(delta>=0)table.enemyKb=Math.round(table.enemyKb*1.38);
+      }
+    }catch(e){console.warn(PHASE+' recoil skipped',e);}
+    return table;
+  };
+  Battle.recoilProfile.phase187BossTrump=true;
+}
+if(typeof evaluateCardRewards==='function'&&!evaluateCardRewards.phase187BossTrump){
+  const oldEvaluate=evaluateCardRewards;
+  evaluateCardRewards=function(data){
+    defineCards();
+    const rewards=oldEvaluate.apply(this,arguments)||[];
+    try{
+      const lanes=(data&&data.lanes)||[];
+      const wonMajor=id=>lanes.some(r=>r&&r.case&&r.case.id===id&&majorWin(r.rank));
+      const wonAny=id=>lanes.some(r=>r&&r.case&&r.case.id===id&&success(r.rank));
+      if(wonMajor('dragon_red_mountains_23'))rewardCardOnce('phase187_dragon_red_mountains_23','dragonSlayerSpear','赤き山脈の竜を退けた証として、竜討ちの王槍が王宮に掲げられました。',rewards);
+      if(wonMajor('deadking_throne_27'))rewardCardOnce('phase187_deadking_throne_27','deadKingEdict','亡王の玉座を越えた証として、亡王の勅命が王の机に残されました。',rewards);
+      if(wonMajor('flow_great_noble_rebellion'))rewardCardOnce('phase187_great_noble_rebellion','amnestyConfiscation','大貴族同盟の反乱を鎮め、王は赦免と没収を統治の刃として使えるようになりました。',rewards);
+      if(wonMajor('late_fate_succession_law'))rewardCardOnce('phase187_succession_law','successionGoldSeal','王位継承法案に金印が押され、王朝の未来を支える切り札となりました。',rewards);
+      if(wonMajor('late_fate_eve_council')||wonAny('finalprep_noble_reconciliation'))rewardCardOnce('phase187_eve_council','eveSecretPact','運命の日を前に集った者たちの約束が、前夜の密約として記録されました。',rewards);
+    }catch(e){console.warn(PHASE+' reward skipped',e);}
+    return rewards;
+  };
+  evaluateCardRewards.phase187BossTrump=true;
+}
+window.phase187BossTrumpAudit=function(){
+  defineCards();
+  const ids=Object.keys(BOSS_CARDS);
+  const normalized=Object.keys(UNIFIED_DESC).filter(id=>DATA&&DATA.cards&&DATA.cards[id]).map(id=>({id,name:DATA.cards[id].name,desc:DATA.cards[id].desc}));
+  return {
+    phase:PHASE,
+    bossCards:ids.map(id=>({id,name:DATA.cards[id]&&DATA.cards[id].name,short:DATA.cards[id]&&DATA.cards[id].short,desc:DATA.cards[id]&&DATA.cards[id].desc,inHand:!!(State&&State.hand||[]).includes(id),claimed:!!(State&&State.cardRewardsClaimed&&State.cardRewardsClaimed['phase187_'+id])})),
+    rewardTargets:['dragon_red_mountains_23','deadking_throne_27','flow_great_noble_rebellion','late_fate_succession_law','late_fate_eve_council'],
+    textRule:'効果：小／中／大／極大。で統一。竜討ちの王槍と亡王の勅命のみ極大。',
+    normalizedDescriptions:normalized,
+    wrappers:{makeLane:!!(Battle&&Battle.makeLane&&Battle.makeLane.phase187BossTrump),cardEffect:!!(Battle&&Battle.cardEffect&&Battle.cardEffect.phase187BossTrump),recoil:!!(Battle&&Battle.recoilProfile&&Battle.recoilProfile.phase187BossTrump),rewards:!!(typeof evaluateCardRewards==='function'&&evaluateCardRewards.phase187BossTrump)}
+  };
+};
+defineCards();
+console.info(PHASE+' applied');
+})();
+
+</script>
+
+
+
+<script id="phase189_mourning_bell_sfx">
+(function(){
+'use strict';
+if(window.__phase189MourningBellSfxApplied)return;
+window.__phase189MourningBellSfxApplied=true;
+const PHASE='phase189_mourning_bell_sfx';
+function playMourningBell189(){
+  try{
+    if(typeof bell==='function'){
+      bell(196,0,.034);
+      bell(147,.34,.024);
+    }
+    if(typeof tone==='function'){
+      tone(98,.82,'sine',.028,0,{slideTo:82,cutoff:620,master:.56,attack:.006,release:.50});
+      tone(131,.70,'triangle',.014,.06,{slideTo:118,cutoff:950,master:.42,attack:.006,release:.46});
+      tone(73,.92,'sine',.020,.34,{slideTo:65,cutoff:520,master:.48,attack:.008,release:.58});
+    }
+    if(typeof noise==='function'){
+      noise(.18,.014,.015,{type:'bandpass',freq:360,q:.72,master:.25,attack:.004,release:.14});
+    }
+  }catch(e){try{console.warn(PHASE,'play skipped',e);}catch(_){} }
+}
+window.phase189PlayMourningBell=playMourningBell189;
+const oldSfx=window.sfx;
+if(typeof oldSfx==='function'&&!oldSfx.phase189MourningBell){
+  window.sfx=function(n){
+    if(n==='mourningBell'){
+      playMourningBell189();
+      return;
+    }
+    return oldSfx.apply(this,arguments);
+  };
+  window.sfx.phase189MourningBell=true;
+}
+})();
 </script>
 
 </body>
 </html>
+
+<script id="phase188_death_notice_modal">
+(function(){
+'use strict';
+if(window.__phase188DeathNoticeModalApplied)return;
+window.__phase188DeathNoticeModalApplied=true;
+const PHASE='phase188_death_notice_modal';
+
+function ensureDeathNoticeState(){
+  State.pendingDeathNotices=Array.isArray(State.pendingDeathNotices)?State.pendingDeathNotices:[];
+  State.shownDeathNoticeKeys=State.shownDeathNoticeKeys||{};
+}
+function esc188(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function childName188(c){
+  try{if(typeof childTitle==='function')return childTitle(c);}catch(e){}
+  return c&&c.name?c.name:(c&&c.gender==='female'?'王女':'王子');
+}
+function spouseName188(id){
+  try{if(typeof spouseTitle==='function')return spouseTitle();}catch(e){}
+  const a=(DATA&&DATA.actors&&id)?DATA.actors[id]:null;
+  return (a&&a.name)||State.lastSpouseDeathName||'王妃';
+}
+function buildDeathNotice188(kind,name){
+  if(kind==='spouse'){
+    return {
+      kind,name,
+      title:'王宮に喪鐘が鳴る',
+      body:'王宮は黒衣に包まれ、誰もが声を潜めた。\nだがもっとも深い喪は、王の沈黙の中にあった。',
+      effects:['安定 -12','威信 -5','王妃関係 -20']
+    };
+  }
+  if(kind==='princess'){
+    return {
+      kind,name,
+      title:'小さな花、散る',
+      body:'王女の小さな靴は、もう廊下に音を立てなかった。\n彼女が笑った場所だけが、しばらく明るすぎるように見えた。',
+      effects:['安定 -10','威信 -5','宮廷に深い喪失']
+    };
+  }
+  return {
+    kind:'prince',name,
+    title:'王冠の未来、失われる',
+    body:'幼い王子の寝台を、沈黙だけが囲んでいた。\n廷臣たちは目を伏せ、王冠の行方を誰も口にしなかった。',
+    effects:['継承不安 +24','安定 -10','威信 -5']
+  };
+}
+function queueDeathNotice188(kind,name,extraKey){
+  try{
+    ensureDeathNoticeState();
+    const safeKind=kind||'prince';
+    const safeName=name||({spouse:'王妃',princess:'王女',prince:'王子'}[safeKind]||'王族');
+    const key=[safeKind,safeName,extraKey||State.turn||0].join(':');
+    if(State.shownDeathNoticeKeys[key])return false;
+    if(State.pendingDeathNotices.some(n=>n&&n.key===key))return false;
+    const notice=buildDeathNotice188(safeKind,safeName);
+    notice.key=key;
+    notice.turn=State.turn||0;
+    State.pendingDeathNotices.push(notice);
+    return true;
+  }catch(e){console.warn(PHASE,'queue skipped',e);return false;}
+}
+function installDeathNoticeCss188(){
+  if(document.getElementById('phase188DeathNoticeCss'))return;
+  const st=document.createElement('style');
+  st.id='phase188DeathNoticeCss';
+  st.textContent=`
+.mourningNoticeShade{position:absolute;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:rgba(3,5,10,.72);}
+.mourningNoticeBox{position:relative;width:620px;max-width:calc(100% - 70px);border:4px solid #c99b38;border-radius:20px;background:linear-gradient(180deg,#111722,#05070c);color:#fff1bf;box-shadow:0 20px 54px rgba(0,0,0,.68),inset 0 0 24px rgba(255,220,90,.08);padding:22px 26px 24px;text-align:left;overflow:hidden;}
+.mourningNoticeKicker{display:inline-block;margin-bottom:9px;padding:3px 10px;border-radius:999px;border:1px solid rgba(255,226,130,.68);background:rgba(255,241,191,.10);color:#d9b967;font-size:12px;font-weight:1000;letter-spacing:.14em;}
+.mourningNoticeTitle{font-size:30px;line-height:1.25;font-weight:1000;color:#fff1bf;text-shadow:0 3px 0 rgba(0,0,0,.62),0 0 16px rgba(255,210,80,.25);margin-bottom:8px;}
+.mourningNoticeName{font-size:15px;font-weight:1000;color:#d6bd82;margin-bottom:12px;}
+.mourningNoticeBody{white-space:pre-line;border-left:5px solid #c99b38;background:rgba(255,247,227,.06);border-radius:12px;padding:13px 15px;font-size:18px;line-height:1.72;font-weight:850;color:#fff4cf;}
+.mourningNoticeEffects{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;}
+.mourningNoticeEffect{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,226,130,.62);border-radius:999px;background:rgba(255,241,191,.10);color:#ffe0d7;padding:4px 10px;font-size:12px;font-weight:1000;}
+.mourningNoticeActions{display:flex;justify-content:flex-end;margin-top:18px;}
+.mourningNoticeBtn{min-width:132px!important;border-color:#fff0a8!important;background:linear-gradient(180deg,#fff1bf,#c99b38)!important;color:#102033!important;border-radius:999px!important;box-shadow:0 4px 0 #5a3b08!important;}
+.mourningNoticeCue{position:absolute;right:28px;bottom:22px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#ffe8a8;background:rgba(16,42,76,.80);border:2px solid rgba(255,226,130,.90);box-shadow:0 0 12px rgba(255,210,80,.32);font-size:20px;font-weight:1000;line-height:1;animation:storyCuePulse 1.15s ease-in-out infinite alternate;pointer-events:none;}
+`;
+  document.head.appendChild(st);
+}
+function showDeathNoticeIfNeeded188(){
+  try{
+    ensureDeathNoticeState();
+    if(document.querySelector('.mourningNoticeShade'))return true;
+    const notice=State.pendingDeathNotices[0];
+    if(!notice)return false;
+    const host=document.getElementById('game')||document.body;
+    installDeathNoticeCss188();
+    const shade=document.createElement('div');
+    shade.className='mourningNoticeShade';
+    shade.innerHTML=`<div class="mourningNoticeBox">
+      <div class="mourningNoticeKicker">喪報</div>
+      <div class="mourningNoticeTitle">${esc188(notice.title)}</div>
+      <div class="mourningNoticeName">${esc188(notice.name||'')}</div>
+      <div class="mourningNoticeBody">${esc188(notice.body)}</div>
+      <div class="mourningNoticeEffects">${(notice.effects||[]).map(x=>`<span class="mourningNoticeEffect">${esc188(x)}</span>`).join('')}</div>
+      <div class="mourningNoticeActions"><button class="mourningNoticeBtn" type="button">受け止める</button></div>
+      <div class="mourningNoticeCue">▼</div>
+    </div>`;
+    const btn=shade.querySelector('.mourningNoticeBtn');
+    let closed188=false;
+    const closeNotice188=function(){
+      if(closed188)return;
+      closed188=true;
+      try{sfx&&sfx('mourningBell');}catch(e){}
+      State.shownDeathNoticeKeys[notice.key]=true;
+      State.pendingDeathNotices.shift();
+      shade.remove();
+      try{document.removeEventListener('keydown',onDeathNoticeKey188,true);}catch(e){}
+      if(State.pendingDeathNotices.length)setTimeout(showDeathNoticeIfNeeded188,60);
+    };
+    const onDeathNoticeKey188=function(ev){
+      if(!document.querySelector('.mourningNoticeShade')){
+        try{document.removeEventListener('keydown',onDeathNoticeKey188,true);}catch(e){}
+        return;
+      }
+      const key=ev&&ev.key;
+      if(key==='Enter'||key===' '||key==='Spacebar'){
+        try{ev.preventDefault();}catch(e){}
+        closeNotice188();
+      }
+    };
+    btn.addEventListener('click',closeNotice188);
+    host.appendChild(shade);
+    try{document.addEventListener('keydown',onDeathNoticeKey188,true);}catch(e){}
+    setTimeout(function(){try{btn.focus({preventScroll:true});}catch(e){try{btn.focus();}catch(_){}}},0);
+    return true;
+  }catch(e){console.warn(PHASE,'show skipped',e);return false;}
+}
+window.phase188ShowDeathNoticeIfNeeded=showDeathNoticeIfNeeded188;
+window.phase188QueueDeathNotice=queueDeathNotice188;
+
+if(typeof setPatientStage==='function'&&!setPatientStage.phase188DeathNotice){
+  const oldSetPatientStage188=setPatientStage;
+  setPatientStage=function(p,stage){
+    let beforeDead=false, kind=null, name='', keyExtra='';
+    try{
+      if(p&&p.kind==='spouse'){
+        beforeDead=State&&State.familyHealth&&State.familyHealth.spouse==='dead';
+        kind='spouse';
+        name=spouseName188(State&&State.marriage&&State.marriage.spouseId);
+        keyExtra=State&&State.marriage&&State.marriage.spouseId||name;
+      }else if(p&&p.kind==='child'&&p.child){
+        beforeDead=p.child.status==='deceased'||p.child.healthStage==='dead';
+        kind=(p.child.gender==='female')?'princess':'prince';
+        name=childName188(p.child);
+        keyExtra=p.child.id||p.child.name||name;
+      }
+    }catch(e){}
+    const r=oldSetPatientStage188.apply(this,arguments);
+    try{
+      let afterDead=false;
+      if(kind==='spouse')afterDead=State&&State.familyHealth&&State.familyHealth.spouse==='dead';
+      else if(p&&p.child)afterDead=p.child.status==='deceased'||p.child.healthStage==='dead';
+      if(stage==='dead'&&kind&&afterDead&&!beforeDead){
+        queueDeathNotice188(kind,name,keyExtra);
+        setTimeout(showDeathNoticeIfNeeded188,80);
+      }
+    }catch(e){console.warn(PHASE,'post set skipped',e);}
+    return r;
+  };
+  setPatientStage.phase188DeathNotice=true;
+}
+
+if(typeof applySpouseDeath==='function'&&!applySpouseDeath.phase188DeathNotice){
+  const oldApplySpouseDeath188=applySpouseDeath;
+  applySpouseDeath=function(id){
+    const name=spouseName188(id);
+    const wasDead=State&&State.marriage&&State.marriage.state==='widower';
+    const r=oldApplySpouseDeath188.apply(this,arguments);
+    try{
+      const nowDead=State&&State.marriage&&State.marriage.state==='widower';
+      if(r!==false&&nowDead&&!wasDead){
+        queueDeathNotice188('spouse',name,id||name);
+        setTimeout(showDeathNoticeIfNeeded188,80);
+      }
+    }catch(e){}
+    return r;
+  };
+  applySpouseDeath.phase188DeathNotice=true;
+}
+
+function wrapView188(name){
+  try{
+    if(typeof View==='undefined'||!View||typeof View[name]!=='function'||View[name].phase188DeathNotice)return;
+    const old=View[name];
+    View[name]=function(){const r=old.apply(this,arguments);setTimeout(showDeathNoticeIfNeeded188,30);return r;};
+    View[name].phase188DeathNotice=true;
+  }catch(e){}
+}
+['main','summary','resultLane','powerCrisisNotice'].forEach(wrapView188);
+
+window.phase188DeathNoticeAudit=function(){
+  ensureDeathNoticeState();
+  return {
+    phase:PHASE,
+    pending:State.pendingDeathNotices,
+    shownKeys:Object.keys(State.shownDeathNoticeKeys||{}),
+    spouse:{state:State.marriage&&State.marriage.state,spouseId:State.marriage&&State.marriage.spouseId,health:State.familyHealth&&State.familyHealth.spouse},
+    children:Array.isArray(State.children)?State.children.map(c=>({name:c.name,gender:c.gender,status:c.status,health:c.health,healthStage:c.healthStage})):[]
+  };
+};
+})();
+</script>
+
+<script id="phase189-prince-complete-loss-health-link">
+(function(){
+'use strict';
+const PHASE='phase189_prince_complete_loss_health_link';
+const STAGES=['healthy','frail','sick','grave','critical'];
+const LABEL={healthy:'健やか',frail:'不調',sick:'発熱',grave:'重病',critical:'危篤'};
+function clampStageIndex(i){return Math.max(0,Math.min(STAGES.length-1,i));}
+function stageIndex(s){
+  if(s==='病弱')return 1;
+  if(s==='重病')return 3;
+  if(s==='病没'||s==='dead')return STAGES.length-1;
+  const i=STAGES.indexOf(s||'healthy');
+  return i<0?0:i;
+}
+function stageLabel(s){return LABEL[s]||s||'健やか';}
+function livingPrince189(){
+  try{ if(typeof ensureChildren==='function')ensureChildren(); }catch(e){}
+  const children=Array.isArray(State.children)?State.children:[];
+  const actorChildId=DATA&&DATA.actors&&DATA.actors.prince&&DATA.actors.prince.childId;
+  let prince=children.find(c=>c&&c.id===actorChildId&&c.gender==='male'&&c.status!=='deceased');
+  if(!prince)prince=children.find(c=>c&&c.gender==='male'&&c.status!=='deceased');
+  return prince||null;
+}
+function caseIsDangerous189(c){
+  const tags=(typeof caseMeta==='function'?caseMeta(c).tags:(c&&c.meta&&c.meta.tags))||[];
+  const id=String(c&&c.id||'');
+  return c&&(
+    c.difficulty==='desperate'||
+    Number(c.danger||0)>=3||
+    tags.includes('plague')||tags.includes('health')||tags.includes('disease')||
+    tags.includes('occult')||tags.includes('war')||tags.includes('military')||tags.includes('border')||
+    id.includes('fever')||id.includes('plague')||id.includes('dragon')
+  );
+}
+function syncPrinceActorHealth189(prince,next){
+  if(!State.actorStatus)State.actorStatus={};
+  const st=State.actorStatus.prince||{status:'normal',until:0};
+  if(st.status==='dead'||st.status==='captured')return;
+  if(next==='critical'||next==='grave')State.actorStatus.prince={status:'injured',until:Math.max(Number(st.until||0),State.turn+2)};
+  else if(next==='sick'||next==='frail')State.actorStatus.prince={status:'tired',until:Math.max(Number(st.until||0),State.turn+1)};
+}
+function worsenPrinceFromCompleteLoss189(lane){
+  if(!lane||lane.rank!=='completeLoss'||!lane.actor||lane.actor.id!=='prince')return '';
+  const prince=livingPrince189();
+  if(!prince)return '';
+  if(prince.status==='deceased'||prince.healthStage==='dead')return '';
+  const before=prince.healthStage||prince.health||'healthy';
+  const step=caseIsDangerous189(lane.case)?2:1;
+  const next=STAGES[clampStageIndex(stageIndex(before)+step)]||'critical';
+  prince.healthStage=next;
+  if(next==='critical')prince.health='重病';
+  else if(next==='grave')prince.health='重病';
+  else if(next==='sick'||next==='frail')prince.health='病弱';
+  else prince.health='健やか';
+  syncPrinceActorHealth189(prince,next);
+  State.caseCache=null;
+  if(typeof updateSuccessionAnxiety==='function'){
+    try{ updateSuccessionAnxiety('prince_complete_loss'); }catch(e){}
+  }
+  const name=prince.name?`${prince.name}王子`:'王子';
+  const line=`${name}は完全敗北の衝撃で容体を悪化させました。（${stageLabel(before)} → ${stageLabel(next)}）`;
+  try{
+    State.worldLog=State.worldLog||[];
+    State.worldLog.push({turn:State.turn,label:line});
+    if(State.worldLog.length>12)State.worldLog=State.worldLog.slice(-12);
+  }catch(e){}
+  return line;
+}
+try{
+  const oldApplyActorConsequences=window.applyActorConsequences||applyActorConsequences;
+  window.applyActorConsequences=applyActorConsequences=function(lanes=[]){
+    const lines=oldApplyActorConsequences?oldApplyActorConsequences(lanes):[];
+    const out=Array.isArray(lines)?lines:[];
+    const touched=new Set();
+    for(const r of lanes||[]){
+      if(!r||r.rank!=='completeLoss'||!r.actor||r.actor.id!=='prince')continue;
+      const key=`${r.case&&r.case.id||'case'}:${State.turn}`;
+      if(touched.has(key))continue;
+      touched.add(key);
+      const line=worsenPrinceFromCompleteLoss189(r);
+      if(line){
+        r.specialLines=r.specialLines||[];
+        r.specialLines.push(line);
+        out.push(line);
+      }
+    }
+    return out;
+  };
+}catch(e){console.warn(PHASE+' applyActorConsequences wrap failed',e);}
+window.phase189PrinceHealthAudit=function(){
+  const p=livingPrince189();
+  return {
+    phase:PHASE,
+    prince:p?{id:p.id,name:p.name,health:p.health,healthStage:p.healthStage,status:p.status,ageHalfTurns:p.ageHalfTurns}:null,
+    actor:DATA&&DATA.actors?DATA.actors.prince:null,
+    actorStatus:State.actorStatus&&State.actorStatus.prince,
+    applyActorConsequencesWrapped:typeof window.applyActorConsequences==='function'
+  };
+};
+console.info(PHASE+' applied');
+})();
+</script>
+
+<script id="phase190-brother-return-card-intro-shortener">
+(function(){
+  'use strict';
+  const PHASE='phase190_brother_return_card_intro_shortener';
+  const SHORT_INTROS={
+    brother_return_01:'腹違いの弟ルートヴィヒが、リックから帰還を望んでいる。帰国は再会であると同時に、政争の火種でもあった。',
+    brother_return_02:'リックが、弟の帰国に新たな条件を示した。王家の血を取り戻すため、信仰と面子を傷つけずに道を開く。'
+  };
+  function stripHtml(s){return String(s||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();}
+  try{
+    const oldPolished=(typeof polishedCaseIntro==='function')?polishedCaseIntro:null;
+    polishedCaseIntro=function(c){
+      const id=String(c&&c.id||'');
+      if(Object.prototype.hasOwnProperty.call(SHORT_INTROS,id))return SHORT_INTROS[id];
+      return oldPolished?oldPolished(c):stripHtml(c&&c.intro||'');
+    };
+    if(typeof window!=='undefined')window.polishedCaseIntro=polishedCaseIntro;
+  }catch(e){console.warn(PHASE+' polishedCaseIntro wrap failed',e);}
+  window.phase190BrotherReturnIntroAudit=function(){
+    const out={phase:PHASE,shortIntros:{...SHORT_INTROS},visible:[],raw:[]};
+    try{
+      const ids=Object.keys(SHORT_INTROS);
+      out.raw=ids.map(id=>{
+        let c=null;
+        try{c=(typeof getCase==='function'?getCase(id):null)||((DATA&&DATA.cases)||[]).find(x=>x&&x.id===id)||null;}catch(_){c=null;}
+        return {id,title:c&&c.title,rawIntro:stripHtml(c&&c.intro||''),cardIntro:(typeof polishedCaseIntro==='function'?polishedCaseIntro(c):'')};
+      });
+      if(typeof visibleCases==='function'){
+        out.visible=(visibleCases()||[]).filter(c=>ids.includes(String(c&&c.id||''))).map(c=>({id:c.id,title:c.title,cardIntro:polishedCaseIntro(c)}));
+      }
+    }catch(e){out.error=String(e&&e.message||e);}
+    return out;
+  };
+  console.info(PHASE+' applied');
+})();
+</script>
