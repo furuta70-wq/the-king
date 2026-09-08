@@ -13433,94 +13433,6 @@ document.head.appendChild(style);
 (function(){
 'use strict';
 
-/* 国境選帝侯危機：通常抽選ではなく、案件生成本体から条件成立時だけ注入する */
-const borderElectorCrisis=window.borderElectorCrisis=(function(){
-  const getStateBEC=()=>{try{return typeof State!=='undefined'&&State?State:(window.State||null);}catch(_){return window.State||null;}};
-  const caseIdBEC=c=>String(c&&c.id||'');
-  const turnBEC=()=>Number(getStateBEC()?.turn||1)||1;
-  const getCaseBEC=id=>{try{if(typeof getCase==='function'){const c=getCase(id);if(c)return c;}}catch(_){}try{return (DATA&&DATA.cases||[]).find(c=>c&&c.id===id)||null;}catch(_){return null;}};
-  const protectedBEC=c=>{const id=caseIdBEC(c);return id==='tutorial_butler'||id.startsWith('crisis_recovery_')||id==='brother_return_01'||id==='brother_return_02'||id.startsWith('marriage_')||!!(c&&c.mandatory)||!!(c&&c.borderElectorCrisis);};
-  const defs={
-    altrantLoire:{country:'ロアール',label:'ロアール方面',elector:'rosen',electorName:'コンラート両伯',enemyImg:'elector4',allyTitle:'コンラート両伯の国境檄',rebelTitle:'薔薇宮の独自停戦論',allyLine:'国境貴族の総結集',rebelLine:'宮廷主導権の回収',allyIntro:'ロアールに三つ以上の国境地を押し込まれた。コンラート両伯は、王への信頼が残るなら国境貴族と退役兵を集めると申し出る。',rebelIntro:'ロアールに三つ以上の国境地を奪われ、薔薇宮では独自の停戦を探る声が広がっている。'},
-    altrantRick:{country:'リック',label:'リック方面',elector:'clarissa',electorName:'クラリッサ',enemyImg:'elector3',allyTitle:'聖泉領の巡礼金庫',rebelTitle:'神罰を説く聖泉司祭団',allyLine:'巡礼金庫の開放',rebelLine:'説教壇の沈静',allyIntro:'リックに三つ以上の国境地を押し込まれた。クラリッサは修道院の備蓄と巡礼金を国境救済へ回すと申し出る。',rebelIntro:'リックに三つ以上の国境地を奪われ、司祭団は敗北を王の傲慢への警鐘だと説き始めた。'},
-    altrantRuthenia:{country:'ルテニア',label:'ルテニア方面',elector:'leopold',electorName:'レオポルト',enemyImg:'elector1',allyTitle:'白銀公の戦時金庫',rebelTitle:'白銀公の金庫閉鎖',allyLine:'銀山兵站の開放',rebelLine:'銀山特権の再確認',allyIntro:'ルテニアに三つ以上の国境地を押し込まれた。レオポルトは銀山の金庫と商人信用を一時的に開くと申し出る。',rebelIntro:'ルテニアに三つ以上の国境地を奪われ、レオポルトは銀山の帳簿を閉じた。'},
-    altrantSolia:{country:'ソリア',label:'ソリア方面',elector:'gerhard',electorName:'ゲルハルト',enemyImg:'elector5',allyTitle:'ゲルハルトの山地総動員',rebelTitle:'鉄森伯の城門閉鎖',allyLine:'山地守備兵の動員',rebelLine:'辺境軍権の回収',allyIntro:'ソリアに三つ以上の山地境界を押し込まれた。ゲルハルトは猟兵と要塞兵をまとめて動かすと申し出る。',rebelIntro:'ソリアに三つ以上の山地境界を奪われ、ゲルハルトは王都の命令より自領防衛を優先した。'},
-    altrantTreuval:{country:'トレウヴァル',label:'トレウヴァル方面',elector:'emil',electorName:'エーミール',enemyImg:'elector2',allyTitle:'星文伯の北岸地誌',rebelTitle:'大学自治派の北岸論',allyLine:'地誌と補給路の整理',rebelLine:'自治派論陣の制御',allyIntro:'トレウヴァルに三つ以上の北岸地を押し込まれた。エーミールは大学の地誌、古地図、通訳網を開くと申し出る。',rebelIntro:'トレウヴァルに三つ以上の北岸地を奪われ、大学自治派は戦争の失敗を王権批判へ結びつけている。'}
-  };
-  function shown(){const s=getStateBEC();s.borderElectorCrisisShown=s.borderElectorCrisisShown||{};return s.borderElectorCrisisShown;}
-  function trust(key){const s=getStateBEC();try{return Number((typeof ensureElectorTrust==='function'?ensureElectorTrust():(s.electorTrust||{}))[key]||0);}catch(_){return Number(s.electorTrust?.[key]||0);}}
-  function make(id,route,key,def){
-    const support=route==='support';
-    const tension={[key]:support?-1:1};
-    const influenceWin={[key]:support?28:18};
-    const influenceLoss={[key]:support?-8:-25};
-    const influenceIgnored={[key]:support?-5:-18};
-    const mapLoss=support?{}:{[key]:-1};
-    const mapIgnored=support?{}:{[key]:-1};
-    return {
-      id,title:support?def.allyTitle:def.rebelTitle,category:support?'選帝侯・国境支援':'選帝侯・国境離反',
-      difficulty:support?'easy':'normal',ignoreType:support?'機会損失':'放置不可',once:true,
-      injectedOnly:true,electorStory:true,electorKey:def.elector,borderElectorCrisis:true,borderCrisisKey:key,borderCrisisRoute:route,
-      danger:support?0:2,enemy:def.electorName,lineName:support?def.allyLine:def.rebelLine,enemyImg:def.enemyImg,initialLine:support?8:-8,
-      intro:support?def.allyIntro:def.rebelIntro,
-      effects:makeEffects({
-        win:support?{treasury:8,troops:360,stability:4,prestige:4,nobleSupport:2,influence:influenceWin,tension}:{stability:4,prestige:4,nobleSupport:2,troops:120,influence:influenceWin,tension:{[key]:-1}},
-        loss:support?{treasury:-1,prestige:-1,influence:influenceLoss}:{troops:-220,stability:-5,prestige:-4,nobleSupport:-4,influence:influenceLoss,tension,map:mapLoss},
-        ignored:support?{prestige:-1,influence:influenceIgnored}:{troops:-160,stability:-4,nobleSupport:-4,influence:influenceIgnored,tension,map:mapIgnored},
-        stories:support?[`${def.electorName}は王の名で金庫と兵站を開き、国境を支える金と兵を補った。`,`${def.electorName}の支援は一部にとどまったが、兵站にはわずかな余裕が戻った。`,`${def.electorName}の支援は動かず、地方権力を味方にする機会を失った。`]:[`${def.electorName}周辺の離反は押しとどめられ、王国の内側に踏みとどまった。`,`${def.electorName}の不満は消えず、国境の敗北は国内政治の傷として残った。`,`${def.electorName}周辺の離反が広がり、国境はさらに不安定になった。`]
-      })
-    };
-  }
-  function install(){
-    if(!DATA||!Array.isArray(DATA.cases)||typeof makeEffects!=='function')return;
-    for(const [key,def] of Object.entries(defs))for(const route of ['support','revolt']){
-      const id=`border_elector_${route}_${key}`;
-      if(DATA.cases.some(c=>c.id===id))continue;
-      const c=make(id,route,key,def);DATA.cases.push(c);
-      if(typeof CASE_STAGE_META==='object')CASE_STAGE_META[id]={scale:route==='support'?2:3,storyGate:1,tags:['elector',`elector_${def.elector}`,'border','territory','crisis',route==='support'?'support':'obstacle'],tensionKey:key};
-      if(typeof CASE_ARCHETYPE==='object')CASE_ARCHETYPE[id]=route==='support'?'sticky':'cunning';
-      if(typeof CASE_BG==='object')CASE_BG[id]=route==='support'?'fort':'council';
-    }
-  }
-  function candidate(current){
-    const s=getStateBEC(),done=shown(),ids=new Set((current||[]).map(c=>caseIdBEC(c)));
-    const rows=Object.keys(defs).map(key=>({key,value:Number(s.map?.[key]||0),tension:Number(s.tension?.[key]||0)}))
-      .filter(r=>r.value<=-3&&!done[r.key]).sort((a,b)=>a.value-b.value||b.tension-a.tension);
-    for(const row of rows){
-      const def=defs[row.key],route=trust(def.elector)>=1?'support':'revolt',id=`border_elector_${route}_${row.key}`,c=getCaseBEC(id);
-      if(c&&!ids.has(id))return c;
-    }
-    return null;
-  }
-  function inject(list,limit){
-    let out=(list||[]).filter(c=>!c?.borderElectorCrisis);
-    const c=candidate(out);if(!c)return out;
-    shown()[c.borderCrisisKey]={turn:turnBEC(),route:c.borderCrisisRoute,elector:c.electorKey,trust:trust(c.electorKey)};
-    out=[c,...out.filter(x=>caseIdBEC(x)!==caseIdBEC(c))];
-    while(out.length>limit){let cut=-1;for(let i=out.length-1;i>=0;i--){if(!protectedBEC(out[i])){cut=i;break;}}if(cut<0)cut=out.length-1;out.splice(cut,1);}
-    return out;
-  }
-  function decorate(){
-     
-     
-    if(typeof applySpecialCaseResult==='function'&&!window.__kingBorderElectorSpecialTailV478){
-      window.__kingBorderElectorSpecialTailV478=true;
-      window.__kingRegisterNamedSpecialTailHookV482('borderElectorCrisisNote','elector',function(r){
-        const c=r?.case;
-        if(c?.borderElectorCrisis){
-          const def=defs[c.borderCrisisKey];
-          const ok=typeof isSuccessRank==='function'?isSuccessRank(r.rank):SUCCESS_RANKS.includes(r.rank);
-          r.specialLines=r.specialLines||[];
-          r.specialLines.push(ok
-            ?`${def?.electorName||'選帝侯'}は王の処理を認め、王国の内側に踏みとどまりました。`
-            :`${def?.electorName||'選帝侯'}周辺の不満は残り、国境の敗北が国内政治にも影を落とします。`);
-        }
-        return r;
-      });
-    }
-  }
-  return {install,inject,decorate};
-})();
 const RECENT_LIMIT=3;
 const nowTurn=()=>Number(State&&State.turn)||0;
 const age=()=>typeof storyAge==='function'?Number(storyAge())||16:16;
@@ -16002,127 +15914,54 @@ background:rgba(96,66,12,.14)!important;
 }
 `;
 document.head.appendChild(style);
-const exists=id=>DATA.cases.some(c=>c.id===id);
-const addCase=c=>{if(!exists(c.id))DATA.cases.push(c);};
-const addMeta=(id,scale,gate,tags,extra={})=>{CASE_STAGE_META[id]={scale,storyGate:gate,tags,...extra};};
-const addArch=(id,arch,bg='council')=>{CASE_ARCHETYPE[id]=arch;CASE_BG[id]=bg;};
-const add=(c,meta,arch='cunning',bg='council')=>{addMeta(c.id,meta.scale,meta.storyGate,meta.tags,meta.extra||{});addArch(c.id,arch,bg);addCase(c);};
-const me=(def)=>makeEffects(def);
-function gf(){return ensureGreatFlow();}
-function n(x){return Number(x)||0;}
+const n=x=>Number(x)||0;
 function theme(){return(typeof historyUndercurrentEndingTheme==='function')?historyUndercurrentEndingTheme():{key:'legacy',title:'治世の総決算',score:0,reason:''};}
 function isAutumn(){return State.turn%2===0;}
-function completed(id){return(State.completedCases||[]).includes(id);}
-function getPrepIdByTheme(){
-const k=theme().key;
-if(k==='border')return 'finalprep_border_settlement';
-if(k==='faith')return 'finalprep_religious_settlement';
-if(k==='finance')return 'finalprep_debt_compact';
-if(k==='military')return 'finalprep_solia_military_protocol';
-if(k==='rebellion')return 'finalprep_noble_reconciliation';
-if(k==='brother')return brotherPoliticalEligible()?'finalprep_brother_private_audience':'finalprep_royal_reports_day';
-return 'finalprep_royal_reports_day';
+const THEME_TAGS={
+border:['border','diplomacy','war','peace','territory'],
+faith:['religion','rick','printing','church','faith'],
+finance:['finance','trade','seafeara','loan'],
+military:['military','reform','ruthenia','war','security'],
+rebellion:['noble','rebellion','politics','elector','internal'],
+brother:['brother','succession','dynasty','family']
+};
+function finalPreludePriority(c,index){
+const meta=typeof caseMeta==='function'?caseMeta(c):{};
+const tags=Array.isArray(meta.tags)?meta.tags:[];
+const wanted=THEME_TAGS[theme().key]||[];
+const difficulty={easy:0,normal:2,hard:4,desperate:7,growth:2,tutorial:-20}[String(c?.difficulty||'normal')]||0;
+let score=n(meta.scale)*5+n(c?.danger)*3+difficulty-index/100;
+if(c?.once)score+=2;
+if(tags.includes('late'))score+=5;
+if(tags.includes('ending')||tags.includes('fate'))score+=5;
+if(tags.includes('crisis'))score+=3;
+score+=wanted.reduce((sum,tag)=>sum+(tags.includes(tag)?5:0),0);
+return score;
 }
-add({
-id:'finalprep_royal_reports_day',title:"王の一日",category:'最終章前奏・総決算',difficulty:'hard',ignoreType:'悪化注意',once:true,finalPrelude:true,greatFlow:true,danger:2,enemy:"報告を抱えた書記官",lineName:'王の一日',enemyImg:'butler',initialLine:-16,
-intro:"三十歳の冬を前に、机には国境からの急報、聖職者からの訴え、商人の要求、密使の手紙が絶え間なく届き、処理したそばから新しい案件が積み上がっていく。",
-effects:me({win:{prestige:3,stability:3},loss:{prestige:-3,stability:-3},ignored:{stability:-2,prestige:-2},stories:["アルブレヒトは信頼する重臣と書記だけを集める小さな評議会を常設し、届いた報告や訴えはまずそこで調べ、現場で処理できるものと王自身が裁くべき大事に分けさせた。十六歳で即位して以来アルブレヒト一人の肩に載っていたアルトラント公国は、ようやく彼の手を離れても動く形を持ち始めた。","アルブレヒトは急を要する案件だけを選び、残りを重臣へ回すことでどうにか政務を回し続けた。だが夜更けまで机を離れられない日々は変わらず、王の疲労は宮廷の誰の目にも明らかだった。","アルブレヒトはすべてを自ら確かめようとして決裁を抱え込み、軍への返書も商人への回答も何日も机の上に積み残した。命令を待てない地方では領主や役人が勝手に動き始め、王の判断が届く頃には、いくつもの問題がすでに手のつけられない危機へ育っていた。"]})
-},{scale:3,storyGate:27,tags:['finalPrelude','historyUndercurrent','court','governance','ending','greatFlow']},'cunning','council');
-add({
-id:'finalprep_border_settlement',title:"王の一日",category:'最終章前奏・国境',difficulty:'desperate',ignoreType:'放置不可',once:true,finalPrelude:true,greatFlow:true,danger:4,enemy:"国境監察官と密使",lineName:'王の一日',enemyImg:'rutheniaSoldier',initialLine:-30,
-intro:"周辺諸国が一斉に動き始めた。ルテニアは国境で兵を増やし、ロアールは係争地への回答を迫り、リックは宗教問題で譲歩を求め、ソリアとセーフェアラの使節が新たな要求を携える。",
-effects:me({win:{diplomacy:5,prestige:4,treasury:-2,tension:{altrantRuthenia:-1,altrantLoire:-1,altrantRick:-1,altrantTreuval:-1,altrantSolia:-1}},loss:{diplomacy:-6,prestige:-5,tension:{altrantRuthenia:1,altrantLoire:1}},ignored:{diplomacy:-3,prestige:-3,tension:{altrantRuthenia:1}},stories:["アルブレヒトはルテニアにはロアールとの接近を匂わせ、ロアールには東でルテニアが勢力を伸ばす危険を説き、ソリアには中立を、セーフェアラには交易の保護を約束して、各国が足並みを揃えられないよう仕向けた。やがてアルトラントへの包囲網は、各国同士が牽制し合うことで崩れていった。","アルブレヒトは最も危険なルテニアとの国境問題を優先し、その間にロアールやセーフェアラへ小さな譲歩を重ねて時間を稼いだ。戦争は避けられたものの、関税や係争地でいくつか不利な条件を呑まざるを得なかった。","アルブレヒトは届いた要求すべてに自ら応じようとして判断を遅らせ、どの国にも明確な返答を与えられないまま時間だけを失った。ルテニアが国境へ兵を進めると、ロアールも係争地へ兵を入れ、他国も要求を強め始め、アルトラントは四方から同時に揺さぶられる危機へ追い込まれた。"]})
-},{scale:4,storyGate:27,tags:['finalPrelude','historyUndercurrent','border','diplomacy','greatFlow','peace']},'cunning','map');
-add({
-id:'finalprep_religious_settlement',title:"王の一日",category:'最終章前奏・信仰',difficulty:'desperate',ignoreType:'放置不可',once:true,finalPrelude:true,greatFlow:true,danger:4,enemy:"強硬派の説教師",lineName:'王の一日',enemyImg:'rickKing',initialLine:-30,
-intro:"国内で宗教和議が結ばれると、リックが、スタントの礼拝を認める条項を撤回するよう強く求めて来た。聖王ロレンツォは、「異端を守る王を、兄弟とは呼べない。」と警告する。",
-effects:me({win:{churchSupport:3,citySupport:3,stability:3,prestige:2,tension:{altrantRick:-1}},loss:{churchSupport:-5,citySupport:-4,stability:-5,tension:{altrantRick:2}},ignored:{churchSupport:-3,stability:-3,tension:{altrantRick:1}},stories:["アルブレヒトが宗教和議を守ると宣言すると、クラリッサをはじめ国内のトリック派領主や聖職者たちも、「リックは信仰の兄だが、我らの王はアルブレヒト一人だ。」とロレンツォの要求を退けた。信徒自身から介入を拒まれたリックはついに要求を引き下げるに至った。","アルブレヒトはスタントの礼拝を認める条項を守ったが、リックとの断交を避けるため、新たな礼拝所の建設や国外からの説教師受け入れには制限を設けた。和議そのものは残ったものの、スタント派には「結局リックに譲った」という不満が残った。","アルブレヒトはリックとの対立を恐れ、スタントの礼拝を認めた条項を一部修正した。約束を破られたスタント派の領主は激しく反発し、ようやく収まった宗教対立は「王の言葉を信じられないなら、この国で我らは何を信じればいいのか。」という怒りを伴って再燃した。"]})
-},{scale:4,storyGate:27,tags:['finalPrelude','historyUndercurrent','religion','rick','printing','law','greatFlow']},'sticky','cathedral');
-add({
-id:'finalprep_debt_compact',title:"王の一日",category:'最終章前奏・金融',difficulty:'hard',ignoreType:'悪化注意',once:true,finalPrelude:true,greatFlow:true,danger:3,enemy:"債権団代理人",lineName:'王の一日',enemyImg:'seafearaKing',initialLine:-22,
-intro:"セーフェアラの市場でアルトラントの債権が投げ売りされ、額面の半値でも買い手がつかなくなった。噂を聞いた国内商人まで王への貸付を止め始めている。",
-effects:me({win:{treasury:-2,diplomacy:4,citySupport:2,prestige:2},loss:{treasury:-5,diplomacy:-4,citySupport:-3,prestige:-2},ignored:{treasury:-3,diplomacy:-2,citySupport:-2},stories:["アルブレヒトは歴代の王が積み残してきた借金をすべて洗い直し、重複した請求や不明瞭な利息を整理したうえで、残った債務を一つの公債へまとめ直した。長く誰にも全貌の分からなかった借財はようやく管理できるものとなり、セーフェアラでもアルトラントの債権が再び買われ始めた。","アルブレヒトは有力都市や選帝侯たちに債権を買い支えるよう求め、自らも国庫を投じて相場はどうにか持ち直させた。だが、商人たちは一連の動きに不安を感じ、その後も新たな貸付には慎重なままだった。","アルブレヒトは債権価格の下落をただの投機だと軽視し、返済計画も示さないまま新たな借金を重ねた。やがて王家の手形は各地で受け取りを拒まれ、武器も穀物も掛けでは買えなくなって、戦争でも凶作でも銀を先に用意しなければ何一つ動かせない国になった。"]})
-},{scale:3,storyGate:27,tags:['finalPrelude','historyUndercurrent','seafeara','finance','trade','greatFlow']},'cunning','port');
-add({
-id:'finalprep_solia_military_protocol',title:"王の一日",category:'最終章前奏・軍制',difficulty:'hard',ignoreType:'悪化注意',once:true,finalPrelude:true,greatFlow:true,danger:3,enemy:"ソリア銃兵顧問団",lineName:'王の一日',enemyImg:'soliaKing',initialLine:-22,
-intro:"ソリアは新式のマスケット銃と野戦砲、その製造技術までアルトラントへ渡す軍事協定を提示した。ただし、ソリアがアズラクから侵攻された際に派兵を求める条項が含まれる。",
-effects:me({win:{troops:160,prestige:3,treasury:-3,diplomacy:2},loss:{troops:-80,prestige:-4,diplomacy:-3},ignored:{prestige:-2,troops:-50},stories:["王は派兵を受け入れる代わりに、他国がアルトラントへ侵攻した際にはソリアも同じだけの兵力を送る相互防衛条項を加えさせた。署名を終えたクラウディアは王へ手を差し出し、「これで我らの敵は、どちらを攻めても最強の二国を相手にすることになる。」と笑顔を見せた。","王はアズラクとの戦争に巻き込まれることを恐れ、派兵条項だけは受け入れなかった。協定そのものは結ばれたが、新式マスケットと野戦砲の製造技術は渡されず、届いたのは錆びた旧式の兵器だけだった。","王は新兵器に目を奪われ、派兵条件を曖昧なまま協定へ署名した。ほどなくアズラク軍がソリア南境へ迫るとクラウディアから出兵要請が届き、アルトラント軍は自国が攻められてもいない戦争へ大軍を送り込むことになった。"]})
-},{scale:3,storyGate:27,tags:['finalPrelude','historyUndercurrent','solia','military','reform','greatFlow']},'heavy','fort');
-add({
-id:'finalprep_noble_reconciliation',title:"王の一日",category:'最終章前奏・内乱後',difficulty:'hard',ignoreType:'放置不可',once:true,finalPrelude:true,greatFlow:true,danger:3,enemy:"誓約を渋る選帝侯",lineName:'王の一日',enemyImg:'elector4',initialLine:-24,
-intro:"大貴族同盟は、多くの傷を残した。反乱に加わった家々の旧領、相続権、特権は宙に浮いたままだ。アルブレヒトは諸侯を一家ずつ呼び出し、赦免と引き換えに領地の割譲を迫る。",
-effects:me({win:{nobleSupport:5,stability:4,prestige:2},loss:{nobleSupport:-5,stability:-4,prestige:-3},ignored:{nobleSupport:-3,stability:-3},stories:["アルブレヒトは反乱への加担が浅い家から順に赦免し、差し出された領地を自領に編入していった。最後まで拒んだ大諸侯が王都へ出頭したときには、かつての盟友はすべて王との誓約を終えており、彼は一人で膝をつき、震える手で領地の割譲文書へ印章を押した。","アルブレヒトは一家ずつ条件を変えながら妥協を重ね、どうにか大半の諸侯から新たな忠誠誓約を取りつけた。しかし返還された土地と没収された土地が家ごとに大きく違ったため、アルトラントは多くの課題を抱えた。","アルブレヒトが領地割譲を強く迫ると、呼び出しを待つ諸侯たちは自分も所領を奪われると悟り、王都へ出向くことを拒否した。鎮圧されたはずの大貴族同盟は形を変えて蘇り、王は再び武装した諸侯を相手にすることになった。"]})
-},{scale:3,storyGate:27,tags:['finalPrelude','historyUndercurrent','noble','court','rebellion','greatFlow']},'cunning','council');
-add({
-id:'finalprep_brother_private_audience',title:"弟との謁見",category:'最終章前奏・弟',difficulty:'desperate',ignoreType:'放置不可',once:true,finalPrelude:true,greatFlow:true,danger:4,enemy:"ルートヴィヒ派の貴族",lineName:'弟との謁見',enemyImg:'brother',initialLine:-32,
-intro:"反乱が終わっても、弟の名を掲げた貴族たちの記憶は鮮やかなままだ。アルブレヒトは弟を人目のない小部屋へ呼び、二人きりで意思を確かめる。",
-effects:me({win:{prestige:4,stability:4,nobleSupport:2},loss:{prestige:-6,stability:-5,nobleSupport:-4},ignored:{stability:-4,prestige:-3},stories:["アルブレヒトが何も問いたださず弟を抱きしめると、しばらく固まっていた弟も、やがて兄の背へ腕を回した。二人が並んで部屋を出たあと、王宮では弟を新たな旗印として担ごうとする声が急速にしぼんでいった。","アルブレヒトが手を差し出すと、弟は一瞬ためらったあと、その手を握り返した。二人は昔のように笑おうとしたが、どちらからともなく目を逸らし、短い会話だけを残して部屋を出た。","アルブレヒトが反乱中の書簡を机に並べて問いただすと、弟は一つずつ目を通したあと、「兄上も、私を彼らと同じ目で見るのですか。」とだけ言って席を立った。以後、二人の用件は侍従を通して伝えられるようになった。"]})
-},{scale:4,storyGate:27,tags:['finalPrelude','historyUndercurrent','brother','dynasty','noble','greatFlow']},'cunning','palace');
- 
- 
-function preferredPrepCases(all){
+function preferredPrepCases(current){
 if(currentAge()!==29)return[];
-const ids=['finalprep_royal_reports_day'];
-const themed=getPrepIdByTheme();
-if(themed&&!ids.includes(themed))ids.unshift(themed);
-const g=gf();
-if(n(g.foreignDebt)>=6&&!ids.includes('finalprep_debt_compact'))ids.push('finalprep_debt_compact');
-if(n(g.religiousTension)>=6&&!ids.includes('finalprep_religious_settlement'))ids.push('finalprep_religious_settlement');
-if(brotherPoliticalEligible()&&n(g.brotherRisk)>=5&&!ids.includes('finalprep_brother_private_audience'))ids.push('finalprep_brother_private_audience');
-return ids
-.filter(id=>!completed(id))
-.map(getCase)
-.filter(Boolean)
-.filter(c=>all.some(x=>x.id===c.id)&&caseAvailable(c,nationalPowerRank()))
-.slice(0,2);
+return current
+.map((c,index)=>({c,index,score:finalPreludePriority(c,index)}))
+.sort((a,b)=>b.score-a.score||a.index-b.index)
+.slice(0,Math.min(2,current.length))
+.map(x=>x.c);
 }
 window.coreFinalPrepVisiblePipeline=function(oldVisibleCases){
 let out=(typeof window.coreActiveBorderVisiblePipeline==='function'?window.coreActiveBorderVisiblePipeline(oldVisibleCases):oldVisibleCases());
-if(currentAge()!==29)return out;
-const rank=nationalPowerRank();
-const all=DATA.cases.filter(c=>!isPhase16ReservedCase(c)&&c.id!=='tutorial_butler'&&caseAvailable(c,rank));
-const prep=preferredPrepCases(all).filter(c=>!out.some(x=>x.id===c.id));
-if(!prep.length)return out;
-const keep=out.filter(c=>!c.finalPrelude);
-const merged=[...prep,...keep].slice(0,visibleCaseCount());
-out=finalizeVisibleCaseList(merged,all,visibleCaseCount());
-out=appendBorderWarSlots(out,DATA.cases);
-createFactionRequestForCases(out);
+if(currentAge()!==29||!out.length)return out;
+const prep=preferredPrepCases(out);
+const prepIds=new Set(prep.map(c=>c.id));
+out=[...prep,...out.filter(c=>!prepIds.has(c.id))];
 State.caseCache={turn:State.turn,cases:out.map(c=>c.id),warSlotKinds:{...(State.caseWarSlotKinds||{})},finalPreludeApplied:true};
 return out;
 };
 if(window.__kingSpecialAfterHooksV103){
- 
 window.__kingRegisterNamedSpecialAfterHookV480('finalPreludeResult','endingPrep',function(r){
-if(!r?.case?.finalPrelude)return r;
-const c=r.case,success=(typeof isSuccessRank==='function'?isSuccessRank(r.rank):SUCCESS_RANKS.includes(r.rank));
-const hard=(typeof isHardFailureRank==='function'?isHardFailureRank(r.rank):HARD_FAILURE_RANKS.includes(r.rank));
-const g=gf();
-r.specialLines=r.specialLines||[];
-const line=[];
-if(c.id==='finalprep_border_settlement'){
-if(success){g.rutheniaPressure=Math.max(0,n(g.rutheniaPressure)-2);line.push('国境総決算は整い、最終章の国境危機が少し軽くなりました。');}
-else{g.rutheniaPressure=Math.min(18,n(g.rutheniaPressure)+(hard?2:1));line.push('国境総決算はこじれ、最終章の国境危機が重くなります。');}
-}else if(c.id==='finalprep_religious_settlement'){
-if(success){g.religiousTension=Math.max(0,n(g.religiousTension)-2);line.push('和解令の骨格が整い、破門危機への耐性が上がりました。');}
-else{g.religiousTension=Math.min(18,n(g.religiousTension)+(hard?2:1));line.push('和解準備は失敗し、信仰の裂け目が最終章へ残ります。');}
-}else if(c.id==='finalprep_debt_compact'){
-if(success){g.foreignDebt=Math.max(0,n(g.foreignDebt)-2);line.push('債務整理が進み、セーフェアラ金融の鎖が少し緩みました。');}
-else{g.foreignDebt=Math.min(18,n(g.foreignDebt)+(hard?2:1));line.push('債務整理はこじれ、商館と債権団の発言力が増します。');}
-}else if(c.id==='finalprep_solia_military_protocol'){
-if(success){g.militaryReform=Math.min(18,n(g.militaryReform)+2);line.push('ソリア式軍制協定が整い、最終章の軍事危機への備えが強まりました。');}
-else{line.push('軍制協定は不十分で、新しい戦争への遅れが残りました。');}
-}else if(c.id==='finalprep_noble_reconciliation'){
-if(success){g.nobleAnger=Math.max(0,n(g.nobleAnger)-3);line.push('再誓約が進み、大貴族同盟の傷跡が少し制度へ縫い込まれました。');}
-else{g.nobleAnger=Math.min(18,n(g.nobleAnger)+(hard?2:1));line.push('再誓約は不完全で、反乱の傷が最終章へ残ります。');}
-}else if(c.id==='finalprep_brother_private_audience'){
-if(success){g.brotherRisk=Math.max(0,n(g.brotherRisk)-3);line.push('弟との非公開謁見により、第二王権の影が少し薄れました。');}
-else{g.brotherRisk=Math.min(18,n(g.brotherRisk)+(hard?2:1));line.push('弟問題は決着せず、最終章で重く響きます。');}
-}else if(c.id==='finalprep_royal_reports_day'){
-if(success){g.finalPreludeReady=true;line.push('王都諸報告は整理され、最終章で何を守るべきかが明確になりました。');}
-else{g.finalPreludeReady=false;line.push('諸報告は整理しきれず、最終章の判断に霧が残ります。');}
-}
-if(line.length)r.specialLines.push(line.join('<br>'));
+if(currentAge()!==29||!r?.case)return r;
+const success=(typeof isSuccessRank==='function'?isSuccessRank(r.rank):SUCCESS_RANKS.includes(r.rank));
+State.caseFlags=State.caseFlags||{};
+if(success)State.caseFlags.finalPreludeReady=true;
+else if(State.caseFlags.finalPreludeReady!==true)State.caseFlags.finalPreludeReady=false;
 return r;
 });
 }
@@ -27780,7 +27619,7 @@ function marriageCandidate(list){
 function visibleLimit(){try{return Math.max(5,Number(visibleCaseCount&&visibleCaseCount())||5);}catch(_){return 5;}}
 function protectedCase(c){
   const id=caseId(c);
-  return id==='tutorial_butler'||id.startsWith('crisis_recovery_')||isBrotherCase(c)||isMarriageCase(c)||!!(c&&c.mandatory)||!!(c&&c.borderElectorCrisis);
+  return id==='tutorial_butler'||id.startsWith('crisis_recovery_')||isBrotherCase(c)||isMarriageCase(c)||!!(c&&c.mandatory);
 }
 function injectStoryCases(list){
   applyGates();
@@ -27800,7 +27639,6 @@ function injectStoryCases(list){
       out.splice(cut,1);
     }
   }
-  out=borderElectorCrisis.inject(out,limit);
   const brother=brotherCandidate();
   if(brother)addFront(brother);
   const marriage=marriageCandidate(out);
@@ -27881,8 +27719,6 @@ function maybeShowTutorial(){
 }
 function scheduleTutorial(){[90,260,620,1200].forEach(ms=>setTimeout(maybeShowTutorial,ms));}
 
-borderElectorCrisis.install();
-borderElectorCrisis.decorate();
 applyGates();
 migrateTutorialFlags();
 try{const s=state();if(s)s.caseCache=null;}catch(_){ }
@@ -27904,7 +27740,7 @@ if(typeof View==='object'&&View&&typeof View.main==='function'&&!View.main.coreS
   };});
   View.main.coreStoryGates=true;
 }
-window.coreCaseGeneration={applyGates,injectStoryCases,maybeShowTutorial,borderElectorCrisis};
+window.coreCaseGeneration={applyGates,injectStoryCases,maybeShowTutorial};
 
 })();
 
@@ -28307,7 +28143,7 @@ function corePeaceInjectionProtected(c,s){
   if(id.startsWith('crisis_recovery_'))return true;
   if(id.includes('brother_return'))return true;
   if(c.unlockActor||c.marriageCandidate)return true;
-  if(c.mandatory||c.borderElectorCrisis)return true;
+  if(c.mandatory)return true;
   return false;
 }
 function injectCorePeaceCase(list,s,plan){
@@ -30374,118 +30210,6 @@ try{
   }
 }catch(_){}
 
-/* アズラクの段階危機を追加。既存の country_azraq 系はあるが、圧力蓄積で開く専用段階が薄かったため追加する。 */
-function fx(spec){return makeEffects(spec);}
-function addMeta(id,scale,gate,tags,extra={}){
-  if(window.CASE_STAGE_META)CASE_STAGE_META[id]={scale,storyGate:gate,tags:[...new Set(tags)],...extra};
-}
-function setBg(id,bg){try{if(window.CASE_BG)CASE_BG[id]=bg;}catch(_){}}
-function setArch(id,a){try{if(window.CASE_ARCHETYPE)CASE_ARCHETYPE[id]=a;}catch(_){}}
-function upsert(c,meta,bg,arch){
-  const old=getCase(c.id);
-  if(old)Object.assign(old,c);
-  else DATA.cases.push(c);
-  addMeta(c.id,meta.scale,meta.gate,meta.tags,meta.extra||{});
-  if(bg)setBg(c.id,bg);
-  if(arch)setArch(c.id,arch);
-}
-const azraqCases=[
-  {
-    id:'azraq_caravan_toll_crisis',
-    title:"逃げた駱駝",
-    category:'アズラク・隊商危機',
-    difficulty:'hard',
-    ignoreType:'悪化注意',
-    danger:2,
-    enemy:"アズラク隊商の総代",
-    lineName:'逃げた駱駝',
-    enemyImg:'azraqKing',
-    initialLine:-18,
-    intro:"アズラクの隊商の駱駝数十頭が嵐で逃げ出し、周辺の畑や果樹園へ入り込んだ。村人は作物を荒らされたと怒っているが、隊商側は高価な家畜なので殺さず返してほしいと訴える。",
-    effects:fx({
-      win:{treasury:4,diplomacy:3,troops:60},
-      loss:{treasury:-5,diplomacy:-4,troops:-80},
-      ignored:{treasury:-4,troops:-60},
-      stories:[
-        "アルブレヒトは隊商の駱駝使いたちを村へ呼び戻し、村人とともに一頭ずつ群れを囲い込み、荒らされた畑や果樹の損害もその場で隊商側に弁償させた。翌年、同じ隊商が戻ってきたとき、数十頭の駱駝は新しく設けられた村外れの囲い場で静かに膝を折り、前年に果樹を折られた農民はそのすぐ横で香辛料の値段を値切っていた。",
-        "アルブレヒトは駱駝を村で一時預かりにし、隊商側と村人に被害額を確かめさせてから返すよう命じた。補償はまとまったが、何十頭もの駱駝に水と飼料を与えるだけで村の備蓄は苦しくなり、「被害を受けた側がなぜ面倒まで見るのか。」と不満は絶えなかった。",
-        "アルブレヒトが隊商との関係を優先して駱駝をすぐ返すよう命じると、補償も決まらぬまま集められた数十頭が、慣れない村人の扱いに怯えて一斉に暴れ出した。荷車をひっくり返し、柵を踏み潰し、果樹園を突っ切った群れがようやく捕らえられた頃には、はるかに多くの被害者が生まれていた。"
-      ]
-    })
-  },
-  {
-    id:'azraq_holy_route_pressure',
-    title:"リックと付き合うな",
-    category:'アズラク・聖地外交',
-    difficulty:'hard',
-    ignoreType:'放置不可',
-    danger:2,
-    enemy:"アズラクの使節",
-    lineName:'リックと付き合うな',
-    enemyImg:'azraqKing',
-    initialLine:-22,
-    intro:"聖地奪還戦争が激しさを増す中、アズラクの使節が、リックとも取引するアルトラント商人には今後南方交易の通行証を与えないと通告した。",
-    effects:fx({
-      win:{diplomacy:5,prestige:3,churchSupport:2},
-      loss:{diplomacy:-5,prestige:-4,churchSupport:-3},
-      ignored:{diplomacy:-3,churchSupport:-2},
-      stories:[
-        "アルブレヒトは使節に、商人の相手国ではなく、運ぶ荷で通行を決めるよう迫り、武器や軍馬の輸出だけを制限する約束でアズラクを納得させた。春には同じ商人がリックへ毛織物を運び、秋には南から香辛料を積んで戻り、戦場で二国が争うあいだもアルトラントの隊商だけは街道を行き来し続けた。",
-        "アルブレヒトは、リックとつき合いの深い商人を切り捨てられないとして、使節の要求を断った。アズラクは通行証の発行を絞り込んだため、南へ向かう隊商は国境の宿場で何日も待たされ、王都では香辛料や染料がじわじわ品薄になっていった。",
-        "アルブレヒトが使節の要求を受け入れると、南方交易を失うことのできない商人たちはリックとの取引を次々と打ち切らざるを得なかった。リックではアルトラントへの恨みが広がり、報復的な締め出しまで始まったため、アルトラントは数年にわたる不況に沈んだ。"
-      ]
-    })
-  },
-  {
-    id:'azraq_safar_mobilization',
-    title:"サファルの大動員",
-    category:'アズラク・軍事圧力',
-    difficulty:'desperate',
-    ignoreType:'放置不可',
-    danger:3,
-    enemy:"サファル",
-    lineName:'サファルの大動員',
-    enemyImg:'azraqKing',
-    initialLine:-30,
-    intro:"サファルがアズラク全土へ動員令を発した。兵、馬、荷車が何日も途切れず、聖地から逃げてきた巡礼者が「地平線まで人影が蠢いていた。」と伝える中、リックは諸国へ救援を求めた。",
-    effects:fx({
-      win:{prestige:6,diplomacy:5,troops:80},
-      loss:{prestige:-7,diplomacy:-6,troops:-140},
-      ignored:{prestige:-4,diplomacy:-4,troops:-100},
-      stories:[
-        "アルブレヒトは援軍を求めるリックに、奪った拠点への増派と増築を止め、捕虜をアズラクに返すことを救援の条件として呑ませた。その合意を携えた使者はサファルの陣へ入り、「ここで止まれば、私はリックを止める。進むなら、我々アルトラントも進まざるを得ない。」と王の言葉を伝えた。翌月、聖地を埋め尽くしていたアズラクの兵たちは、その過半が故郷へ帰っていった。",
-        "アルブレヒトは参戦を求めるリックの要求を退けきれず、金と物資だけを送り、聖地奪還戦争を支えることで折り合った。だが、南へ向かう車列を見送るたび物資は苦しくなり、アズラクの商人たちはいつの間にか市場から姿を消した。兵を出していないはずなのに、アルトラントはいつの間にか戦争の片側に立っていた。",
-        "アルブレヒトはリックの圧力に押されて援軍を送り、聖地奪還戦争へ足を踏み入れた。南方交易は途絶え、遠征軍からは戦死者と負傷者が次々と送り返され、人々は「なぜ遠い聖地のためにアルトラントの兵が死なねばならないのか。」と王を責め始めた。"
-      ]
-    })
-  },
-  {
-    id:'azraq_rick_holywar_spark',
-    title:"巡礼路の小競り合い",
-    category:'アズラク・大陸危機',
-    difficulty:'desperate',
-    ignoreType:'放置不可',
-    danger:3,
-    enemy:"アズラクの使節",
-    lineName:'巡礼路の小競り合い',
-    enemyImg:'azraqKing',
-    initialLine:-34,
-    intro:"聖地周辺で、巡礼者に紛れたリック兵による襲撃が相次ぐ。アズラク使節は、今後は一人でも武器を隠していれば巡礼団全員を拘束すると通告し、アルトラントにも従うよう求めた。",
-    effects:fx({
-      win:{prestige:8,diplomacy:8,churchSupport:3},
-      loss:{prestige:-8,diplomacy:-8,churchSupport:-5},
-      ignored:{diplomacy:-5,churchSupport:-4,treasury:-3},
-      stories:[
-        "アルブレヒトは巡礼者の武装を禁じる代わりに、アルトラントが任じた護衛には剣と弓を持たせ、その印をアズラクにも認めさせた。翌年春の巡礼では、白い巡礼服の列の前後をアルトラントの護衛が堂々と歩き、アズラクの兵もその剣には手を触れることなく、長い隊列を聖地へと見送った。",
-        "アルブレヒトは、護身用の短剣の所持は認める代わりに、長槍や長剣、銃は持ち込ませないことで使節と折り合った。巡礼者は最低限の身を守る術を持って旅することができたが、関所では武器の長さや用途をめぐって検問がたびたび止まり、聖地への旅は以前よりずっと窮屈なものになった。",
-        "アルブレヒトが使節の要求を受け入れると、アルトラントの巡礼団は武器を持たずに聖地へ向かわざるを得なくなった。すると山道や荒野で盗賊や野盗に狙われる被害が相次ぎ、巡礼者たちはアズラク兵に捕らえられる恐れより、道中で命を落とす恐れに怯えるようになった。"
-      ]
-    })
-  }
-];
-for(const c of azraqCases){
-  upsert(c,{scale:c.difficulty==='desperate'?4:3,gate:c.id==='azraq_rick_holywar_spark'?11:c.id==='azraq_safar_mobilization'?10:8,tags:['country','azraq','diplomacy','trade','religion','crisis','phase147Escalation'],extra:{tensionKey:'azraqRick'}},c.id.includes('caravan')?'grass':c.id.includes('holy')?'palace':'grass',c.id.includes('caravan')?'cunning':'rush');
-}
 
 
 })();
@@ -30530,27 +30254,6 @@ try{
   }
 }catch(_){}
 
-/* phase147で足したアズラク段階案件を、無名→ムスタファ→サファル→総力危機に整理 */
-patchCase('azraq_caravan_toll_crisis',{
-  enemy:"アズラク隊商の総代",
-  enemyImg:'azraqKing',
-  intro:"アズラクの隊商の駱駝数十頭が嵐で逃げ出し、周辺の畑や果樹園へ入り込んだ。村人は作物を荒らされたと怒っているが、隊商側は高価な家畜なので殺さず返してほしいと訴える。"
-});
-patchCase('azraq_holy_route_pressure',{
-  enemy:"アズラクの使節",
-  enemyImg:'ibrahimPasha',
-  intro:"聖地奪還戦争が激しさを増す中、アズラクの使節が、リックとも取引するアルトラント商人には今後南方交易の通行証を与えないと通告した。"
-});
-patchCase('azraq_safar_mobilization',{
-  enemy:"サファル",
-  enemyImg:'azraqKing',
-  intro:"サファルがアズラク全土へ動員令を発した。兵、馬、荷車が何日も途切れず、聖地から逃げてきた巡礼者が「地平線まで人影が蠢いていた。」と伝える中、リックは諸国へ救援を求めた。"
-});
-patchCase('azraq_rick_holywar_spark',{
-  enemy:"アズラクの使節",
-  enemyImg:'ibrahimPasha',
-  intro:"聖地周辺で、巡礼者に紛れたリック兵による襲撃が相次ぐ。アズラク使節は、今後は一人でも武器を隠していれば巡礼団全員を拘束すると通告し、アルトラントにも従うよう求めた。"
-});
 
 /* 既存の代表的ムスタファ案件も段階に載せる */
 const MUSTAFA_STAGE_CASES=[
@@ -30882,10 +30585,6 @@ function setMeta164(id,meta){try{if(typeof CASE_STAGE_META!=='undefined'&&CASE_S
 function setVisual164(id,arch,bg){try{if(typeof CASE_ARCHETYPE!=='undefined'&&CASE_ARCHETYPE&&arch)CASE_ARCHETYPE[id]=arch;}catch(e){}try{if(typeof CASE_BG!=='undefined'&&CASE_BG&&bg)CASE_BG[id]=bg;}catch(e){}}
 function age164(){try{return typeof currentAge==='function'?currentAge():16+Math.floor(((State&&State.turn)||1)-1)/2;}catch(e){return 16;}}
 function turn164(){return Number((State&&State.turn)||1)||1;}
-function done164(id){return Array.isArray(State?.completedCases)&&State.completedCases.includes(id);}
-function res164(id){return State?.reignLog?.caseResults?.[id]||'';}
-function ok164(rank){try{return typeof isSuccessRank==='function'?isSuccessRank(rank):['success','greatSuccess','clear','win','majorWin','minorWin'].includes(rank);}catch(e){return ['success','greatSuccess','clear','win','majorWin','minorWin'].includes(rank);}}
-function bad164(rank){return ['minorLoss','majorLoss','completeLoss','ignored','loss'].includes(rank);}
 function group164(c){try{return typeof countryGroupKey==='function'?countryGroupKey(c):'';}catch(e){return '';}}
 function meta164(c){try{return typeof caseMeta==='function'?caseMeta(c):{};}catch(e){return c?.meta||{};}}
 function shuf164(a){try{return typeof shuffleCasesForDisplay==='function'?shuffleCasesForDisplay(a):[...a].sort(()=>Math.random()-.5);}catch(e){return [...a];}}
@@ -30906,24 +30605,7 @@ function looseReplace164(list,c){
  if(out.length<5)out.push(c); else if(idx!==undefined)out[idx]=c;
  return out.slice(0,5);
 }
-function treuvalIds164(){return ['marriage_wife6_treuval','local_treuval_signal_fire','country_treuval_guest_law','country_treuval_stolen_horn','country_treuval_winter_fleet','country_treuval_black_wolf_raid','country_treuval_great_council','country_treuval_war_princess_trial','foreshadow_treuval_cairn','border_treuval_shepherd_vale','border_treuval_longhouse_burns'];}
-function treuWins164(){return treuvalIds164().reduce((s,id)=>s+(done164(id)&&ok164(res164(id))?1:0),0);}
-function treuBads164(){return treuvalIds164().reduce((s,id)=>s+(done164(id)&&bad164(res164(id))?1:0),0);}
-function ensureTreuval164(){
- if(!State.caseFlags)State.caseFlags={};
- const a=age164();
- if(a<26&&!State.caseFlags.treuvalPacified&&!State.caseFlags.treuvalUnsettled)return State.caseFlags;
- const infl=Number(State.influence?.altrantTreuval||0),ten=Number(State.tension?.altrantTreuval||0),mapv=Number(State.map?.altrantTreuval||0);
- const wins=treuWins164(),bads=treuBads164();
- if(!State.caseFlags.treuvalPacified&&(wins>=2||infl>=35||done164('phase164_treuval_tide_oath')||(done164('marriage_wife6_treuval')&&ok164(res164('marriage_wife6_treuval'))))){State.caseFlags.treuvalPacified=true;State.caseFlags.treuvalUnsettled=false;}
- if(!State.caseFlags.treuvalPacified&&!State.caseFlags.treuvalUnsettled&&(bads>=2||ten>=3||mapv<=-1)){State.caseFlags.treuvalUnsettled=true;}
- return State.caseFlags;
-}
 const cases164=[
-{id:'phase164_treuval_north_sea_fleet',title:"トレウヴァルの気まぐれ",category:'トレウヴァル・海上同盟',difficulty:'normal',ignoreType:'機会損失',danger:1,once:true,requiresFlag:'treuvalPacified',enemy:"トレウヴァルの氏族長",lineName:'トレウヴァルの気まぐれ',enemyImg:'treuvalSoldier',initialLine:-5,intro:"かつてアルトラント沿岸を荒らしたトレウヴァルの氏族の数名が、今度は北海から来る襲撃船を追い払う役目を引き受けたいと申し出た。潮を知り尽くした彼らほど頼れる者はいないが。",effects:fx164({win:{troops:180,prestige:5,diplomacy:2,influence:{altrantTreuval:15}},loss:{treasury:-3,prestige:-2,influence:{altrantTreuval:-8}},ignored:{influence:{altrantTreuval:-15}},stories:["アルブレヒトは彼らに王の公認を与え、無実の船から一樽でも奪えば資格を失う代わりに、本物の襲撃船を捕らえれば船も積荷も正式に分け前を与えると定めた。爾来、彼らは敵船を丸ごと港へ引いてくるようになり、「今日は上物を捕ったぞ。」と笑いながら甲板から略奪品を山ほど降ろす彼らを、沿岸の者たちもいつしか頼もしい厄介者として出迎えるようになった。","トレウヴァルの戦士たちは襲撃船を見つければ誰より早く追いつき、荒っぽい臨検で実際に武器や略奪品を何度も見つけ出した。だが無実の商船まで甲板を荒らされ、酒や燻製肉を勝手につままれる被害が絶えず、沿岸では「役には立つが、海賊と変わらない。」と不満がくすぶり続けた。","トレウヴァルの戦士たちは怪しい船を見つけるたび乱暴に乗り込み、船員を甲板へ並ばせて積荷をひっくり返し、酒や干し肉の上物を「検分した。」と笑って自分たちの船へ運び込んだ。襲撃船は減ったものの、商人たちは彼らを王に雇われた海賊と呼ぶようになった。"]})},
-{id:'phase164_treuval_tide_oath',title:"海神に誓う",category:'トレウヴァル・海上誓約',difficulty:'hard',ignoreType:'悪化注意',danger:2,once:true,requiresFlag:'treuvalPacified',enemy:"ブリギッド",lineName:'海神に誓う',enemyImg:'wife6',initialLine:-14,intro:"アルトラントとの和平を確かなものにするため、ブリギッドは自らの氏族が二度と沿岸を襲わぬと、海神の前で誓うという。",effects:fx164({win:{prestige:4,citySupport:2,tension:{altrantTreuval:-1},influence:{altrantTreuval:18}},loss:{prestige:-3,tension:{altrantTreuval:1}},ignored:{influence:{altrantTreuval:-15}},stories:["ブリギッドは夜明けの浜で靴を脱ぎ、海水に足を浸したまま槍先で掌を浅く裂くと、その血を波へ落とし、潮と鉄と祖先の名にかけて二度とアルトラント沿岸を獲物にしないと誓った。彼女は、その夜ひそかに船を出そうとした若者たちの前へ立ちはだかり、槍を砂へ突き立てて道を塞いだ。誰も彼女を押しのけてまで海へ出ることはできず、それ以来トレウヴァルでは、誓いを軽んじる若者が出るたび「お前は槍を越えるのか。」とたしなめるのが習わしになった。","ブリギッドは海神の前で誓いを立て、氏族の大半もそれに従ったが、若い戦士たちは「祖先が自由に渡った海をつまらない約束で狭くするのか。」と憤った。以来、大きな略奪は止んだものの、漁場や酒場で小競り合いが起こるたびにブリギッドが自ら乗り込み、和平は彼女一人の腕力と面目でどうにか保たれることになった。","ブリギッドが海神の前で誓いを立てても、異なる氏族の戦士は「その誓いはお前のものだ。俺たちには関係ない。」と聞き入れずにアルトラントの漁村を襲った。誓いを破った者を自ら追わねばならなくなったブリギッドは、和平を守るために同胞の船へ刃を向けることになった。"]})},
-{id:'phase164_treuval_privateer_warrant',title:"コルム・黒狼の申し出",category:'トレウヴァル・私掠外交',difficulty:'hard',ignoreType:'悪化注意',danger:2,once:true,requiresFlag:'treuvalPacified',enemy:"コルム・黒狼",lineName:'コルム・黒狼の申し出',enemyImg:'treuvalSoldier',initialLine:-15,intro:"戦のない冬が続き、コルム・黒狼のもとには、略奪にも遠征にも出られず持て余した若い戦士たちが集まっていた。コルムは正規軍を動かせないような仕事を任せろと持ちかけてきた。",effects:fx164({win:{treasury:5,troops:100,prestige:3,influence:{altrantTreuval:12}},loss:{diplomacy:-3,citySupport:-2,tension:{altrantTreuval:1}},ignored:{tension:{altrantTreuval:1}},stories:["アルブレヒトはコルムと仕事ごとに契約を結び、標的と期限、報酬を決めたうえで、略奪や無用な狼藉があれば賠償をすべて黒狼の取り分から差し引くことにした。するとコルムは若者たちの首根っこを自分で押さえるようになり、盗賊の巣や逃亡兵の隠れ家には真っ先に踏み込みながら、獲物へ手を伸ばした仲間には拳を飛ばす頼りがいのある部隊長になった。","アルブレヒトは盗賊討伐や危険な護送のたびに彼らを雇った。彼らは正規兵が手を焼く荒事を見事に片づけたが、宿では喧嘩をし、道中では勝手に家畜を潰して食い、役人たちは黒狼たちが来るたび仕事より後始末の方に頭を抱えた。","アルブレヒトが「国を害する者を好きに始末しろ。」と許しを与えると、コルムたちは盗賊だけでなく密輸商人や徴税を拒む村にまで押しかけ、金品を取り上げては王に任された仕事だと言い張った。やがて街道では、黒狼の印を見ただけで旅人が荷を隠すようになり、アルブレヒトは自分の名を掲げた新しい盗賊団を作ったも同然になった。"]})},
-{id:'phase164_treuval_fog_cove_port',title:"難破した商船",category:'トレウヴァル・港湾交易',difficulty:'normal',ignoreType:'機会損失',danger:1,once:true,requiresFlag:'treuvalPacified',enemy:"穏健派の氏族",lineName:'難破した商船',enemyImg:'treuvalKing',initialLine:-5,intro:"嵐でセーフェアラの商船がトレウヴァルの浜に打ち上げられた。氏族の古い掟では、海が浜へ寄越した物は拾った者のものだが、生き残った船員たちは帰国を望む。",effects:fx164({win:{treasury:6,citySupport:4,influence:{altrantTreuval:20}},loss:{treasury:-4,prestige:-1},ignored:{influence:{altrantTreuval:-10}},stories:["アルブレヒトは、海が浜へ寄越すのは物であって、生きた人間まで獲物にしてよいはずはないと氏族長たちを説き、救い出した者を客人として扱い、故郷へ帰す取り決めを結ばせた。やがて難破船が出るたび、氏族の男たちは「海に取られる前に拾え。」と舟を出すようになり、人を助けて帰ることそのものが彼らの名誉になっていった。","アルブレヒトは船員だけは帰国させることで折り合いをつけたが、船と積荷の大半は「海の贈り物」として氏族の手に残った。セーフェアラ人たちは身一つで故郷へ戻れたものの、すべてを失った船長は帰国後に船主から責任を問われ、家も職も失って港町の片隅で暮らすことになった。","アルブレヒトの交渉は折り合わず、トレウヴァル側は船員の返還を拒んだまま、セーフェアラも身代金や交換条件を呑まなかった。帰る道を失った船員たちはそのまま冬を越し、やがて家を持ち、妻を迎え、何人かは二度と故郷へ戻らぬままトレウヴァルの者として生きることになった。"]})},
 {id:'phase164_azraq_caravanserai_pass',title:"ホット・ライン",category:'アズラク・隊商交易',difficulty:'normal',ignoreType:'悪化注意',danger:1,once:true,enemy:"アズラクの隊商",lineName:'ホット・ライン',enemyImg:'azraqKing',initialLine:-5,intro:"アズラク使節は、外交文書を早く運ぶため、アルトラント-アズラク間の主要街道に替え馬を置く駅所を置いてはどうかと提案した。馬と飼料を負担するのは街道沿いの村々になるが。",effects:fx164({win:{treasury:5,citySupport:2,diplomacy:2,influence:{altrantAzraq:15}},loss:{treasury:-2,citySupport:-2,diplomacy:-1},ignored:{influence:{altrantAzraq:-10}},stories:["アルブレヒトは街道沿いの村へ負担を押しつける代わりに、駅所へ馬や銀を出した商人にも替え馬を使う権利を認め、国と商人が共同で維持する仕組みを作った。アズラクへ向かう一本の街道から始まった駅所はやがてアルトラント各地へ広がり、遠い町の出来事が、風より早く王都へ届く国になった。","アルブレヒトは村々への無制限な徴発を避けるため、替え馬と飼料の代金を国庫から支払わせた。駅所は機能し、アズラクとの外交文書も早く届くようになったが、維持費が予想以上にかさみ、南へ続く一本の街道にしか整備できなかった。","アルブレヒトが駅所の設置を認めると、役人も使者も「急ぎの公用」を名乗って村の馬と飼料を次々と求め、駅所の負担はたちまち定めのない徴発へ変わった。耐えかねた村人たちは馬を森へ隠し、駅所を焼く者まで現れ、肝心の急使が替え馬を得られず、重大な報せが何日も街道の途中で止まるようになった。"]})},
 {id:'phase164_azraq_desert_calendar',title:"星読みの注進",category:'アズラク・暦法外交',difficulty:'normal',ignoreType:'機会損失',danger:1,once:true,enemy:"アズラクの星読み",lineName:'星読みの注進',enemyImg:'azraqKing',initialLine:-5,intro:"アズラクの星読みが、アルブレヒトの側近の一人を見て「この者が同席する限り交渉は破れる。」と告げた。アズラク使節は本気にして、次の会談からその側近を外すよう求めてきた。",effects:fx164({win:{prestige:3,stability:3,diplomacy:2},loss:{churchSupport:-3,prestige:-1},ignored:{diplomacy:-2},stories:["アルブレヒトは側近を会談から外さず、「お前には不愉快な時間になるかもしれぬが、許せ。」と告げて席へ伴った。会談では、アズラク使節が過去の紛争を持ち出して側近を名指しで責め、ついには「この男がいる限り貴国の言葉は信用できぬ。」と言い放ったが、側近は震える拳を膝の上で握りしめたまま耐え、アルブレヒトがその沈黙を破って交渉をまとめ上げた。協定が結ばれた後、星読みは側近へ歩み寄って深く頭を下げ、自らの過ちを詫びた。","アルブレヒトは交渉を壊すわけにはいかず、その一度だけ側近を会談から外すことを受け入れた。協定はまとまったものの、閉じた扉の外で待たされた側近はそれ以後アズラクとの交渉に口を挟まなくなり、アルブレヒトとの間にも以前にはなかった遠慮が生まれた。","アルブレヒトは星読みの言葉を一笑に付し、側近をいつも通り隣に座らせたうえ、使節の前でも占いなど外交には関係ないと言い切った。側近が何をしたかとは無関係に、侮辱されたと感じたアズラク使節は席を立ち、まとまりかけていた交渉そのものが破談となった。"]})},
 {id:'phase164_azraq_well_engineers',title:"アズラクの井戸",category:'アズラク・水利技術',difficulty:'hard',ignoreType:'悪化注意',danger:2,once:true,enemy:"アズラクの井戸掘り",lineName:'アズラクの井戸',enemyImg:'azraqKing',initialLine:-12,intro:"アズラクは、水不足に悩むアルトラント南部へ井戸掘り職人を送り、費用も半分負担すると申し出た。その代わり、新しく掘った井戸はアズラクの隊商も使えるようにしてほしいという。",effects:fx164({win:{stability:5,citySupport:3,diplomacy:2},loss:{churchSupport:-2,treasury:-2},ignored:{stability:-3},stories:["アズラクの職人たちはアルトラントの石工や井戸掘りに作業を手伝わせ、土の色を見、水音を聞き、深い穴を崩さず石で固める技を一つずつ教えた。やがて職人たちはアルトラント各地へ散り、数年もすると、旱魃のたび空を仰いでいた村々から豊かな井戸水が湧き上がるようになった。","アズラクの職人が掘り当てた井戸からは冷たい水が豊かに湧き、多くの人の喉を潤した。だがアズラクの隊商と同じ井戸の水を飲むことを嫌がる村人も多く、わざわざ遠くの川まで桶を担いで水を汲みに行く者が後を絶たなかった。","新しい深井戸は豊かな水を湧かせたが、ほどなく丘の向こうの古い井戸が次々と枯れ始めた。水脈を奪われたとは知らない村人たちは、異国の職人が地の底を乱して呪いを呼んだと恐れ、せっかく掘られた井戸へ石や土を投げ込んで塞いでしまった。"]})},
@@ -30933,13 +30615,13 @@ const cases164=[
 {id:'phase164_azraq_zahra_observatory',title:"亡命者の引き渡し",category:'アズラク・学問外交',difficulty:'hard',ignoreType:'機会損失',danger:2,once:true,enemy:"サファルの特使",lineName:'亡命者の引き渡し',enemyImg:'azraqKing',initialLine:-16,intro:"サファルの特使が極秘に王都を訪れ、アルトラントへ亡命したアズラクの元将軍を引き渡してほしいと求めた。その男は聖地奪還戦争の失敗をめぐってサファルと対立した人物でもある。",effects:fx164({win:{prestige:6,diplomacy:4,stability:3,influence:{altrantAzraq:25}},loss:{churchSupport:-4,treasury:-3},ignored:{influence:{altrantAzraq:-15}},stories:["アルブレヒトは元将軍の引き渡しを拒み、その代わり今後決して兵を集めず、武器を持たず、アズラクの政争に二度と関わらないことを本人に誓わせた。サファルもついにそれを受け入れ、かつて大軍を率いた男は、アルトラントの片田舎で一人の農夫としてその天寿を全うした。","アルブレヒトは元将軍をサファルへ渡すことも、王国に置き続けることも避け、身の安全を保証したうえでロアールへ送り出した。男の命は守られたが、サファルは「敵を逃がした」と怒り、以後アズラクの使節はアルトラントへ重要な軍事情報をほとんど明かさなくなった。","アルブレヒトはサファルとの関係を優先し、元将軍を特使へ引き渡した。数週間後、彼が処刑されたとの報せが届くと、同じく亡命していたアズラク人たちは荷をまとめて姿を消し、アルトラントは「庇護を求めても引き渡される非情な国」と見なされるようになった。"]})}
 ];
 cases164.forEach(add164);
-const META164={phase164_treuval_north_sea_fleet:{scale:3,storyGate:20,tags:['country','treuval','friendly','support','sea','fleet','military','diplomacy'],requiresFlag:'treuvalPacified'},phase164_treuval_tide_oath:{scale:3,storyGate:20,tags:['country','treuval','friendly','sea','oath','diplomacy'],requiresFlag:'treuvalPacified'},phase164_treuval_privateer_warrant:{scale:3,storyGate:21,tags:['country','treuval','friendly','sea','privateer','trade','military'],requiresFlag:'treuvalPacified'},phase164_treuval_fog_cove_port:{scale:2,storyGate:21,tags:['country','treuval','friendly','sea','port','trade'],requiresFlag:'treuvalPacified'},phase164_azraq_caravanserai_pass:{scale:2,storyGate:13,tags:['country','azraq','trade','caravan','port']},phase164_azraq_desert_calendar:{scale:2,storyGate:13,tags:['country','azraq','science','calendar','diplomacy']},phase164_azraq_well_engineers:{scale:3,storyGate:15,tags:['country','azraq','water','welfare','technology']},phase164_azraq_desert_physicians:{scale:3,storyGate:16,tags:['country','azraq','medicine','welfare','port']},phase164_azraq_white_flag_exchange:{scale:3,storyGate:16,tags:['country','azraq','peace','diplomacy','prisoner']},phase164_azraq_holy_caravan_road:{scale:4,storyGate:24,tags:['country','azraq','holyLand','trade','peace','crisis','rick']},phase164_azraq_zahra_observatory:{scale:3,storyGate:21,tags:['country','azraq','science','culture','diplomacy']}};
+const META164={phase164_azraq_caravanserai_pass:{scale:2,storyGate:13,tags:['country','azraq','trade','caravan','port']},phase164_azraq_desert_calendar:{scale:2,storyGate:13,tags:['country','azraq','science','calendar','diplomacy']},phase164_azraq_well_engineers:{scale:3,storyGate:15,tags:['country','azraq','water','welfare','technology']},phase164_azraq_desert_physicians:{scale:3,storyGate:16,tags:['country','azraq','medicine','welfare','port']},phase164_azraq_white_flag_exchange:{scale:3,storyGate:16,tags:['country','azraq','peace','diplomacy','prisoner']},phase164_azraq_holy_caravan_road:{scale:4,storyGate:24,tags:['country','azraq','holyLand','trade','peace','crisis','rick']},phase164_azraq_zahra_observatory:{scale:3,storyGate:21,tags:['country','azraq','science','culture','diplomacy']}};
 Object.entries(META164).forEach(([id,m])=>setMeta164(id,m));
 // phase167: 20〜21歳の前兆として許可する軽いトレウヴァル案件
 setMeta164('country_treuval_guest_law',{tags:[...new Set([...(CASE_STAGE_META.country_treuval_guest_law?.tags||[]),'foreshadow','sea','guestLaw'])]});
 setMeta164('country_treuval_stolen_horn',{tags:[...new Set([...(CASE_STAGE_META.country_treuval_stolen_horn?.tags||[]),'foreshadow','sea','oath'])]});
 setMeta164('foreshadow_treuval_cairn',{tags:[...new Set([...(CASE_STAGE_META.foreshadow_treuval_cairn?.tags||[]),'foreshadow','sea'])]});
-['phase164_treuval_north_sea_fleet','phase164_treuval_tide_oath','phase164_treuval_privateer_warrant','phase164_treuval_fog_cove_port','country_treuval_black_wolf_raid','country_treuval_winter_fleet','country_treuval_great_council','country_treuval_war_princess_trial','late_war_treuval_campaign','border_treuval_shepherd_vale','border_treuval_longhouse_burns','local_treuval_signal_fire','foreshadow_treuval_cairn'].forEach(id=>setVisual164(id,null,'port'));
+['country_treuval_black_wolf_raid','country_treuval_winter_fleet','country_treuval_great_council','country_treuval_war_princess_trial','late_war_treuval_campaign','border_treuval_shepherd_vale','border_treuval_longhouse_burns','local_treuval_signal_fire','foreshadow_treuval_cairn'].forEach(id=>setVisual164(id,null,'port'));
 ['phase164_azraq_caravanserai_pass','phase164_azraq_desert_physicians'].forEach(id=>setVisual164(id,'cunning','port'));
 ['phase164_azraq_desert_calendar','phase164_azraq_white_flag_exchange','phase164_azraq_zahra_observatory','phase164_azraq_holy_caravan_road'].forEach(id=>setVisual164(id,'cunning','palace'));
 setVisual164('phase164_azraq_well_engineers','standard','village');
@@ -30982,7 +30664,7 @@ function rawWeight164(c){
    if(a<20)w*=.02;
    else if(a<=21)w*=isTreuvalForeshadow164(c)?0.85:.02;
    else if(a<=25)w*=1.55;
-   else if(a<=29)w*=State?.caseFlags?.treuvalPacified?1.15:.95;
+   else if(a<=29)w*=.95;
  }
  if(g==='azraq'){
    if(a<22)w*=.65;
@@ -31007,7 +30689,6 @@ function boostedPool164(country){
    if(country==='treuval'){
      if(a<20)return false;
      if(a<=21)return isTreuvalForeshadow164(c);
-     if(State.caseFlags?.treuvalPacified)return tags.includes('friendly')||id.startsWith('phase164_treuval_');
      if(a>=22&&a<=25)return !tags.includes('friendly')&&!treuvalAgeFlowBlocked164(c);
      if(a>=26&&a<=29)return !tags.includes('friendly')&&!id.startsWith('phase164_treuval_')&&!treuvalAgeFlowBlocked164(c);
      return false;
@@ -31031,16 +30712,15 @@ function boostedPool164(country){
 }
 function sort164(list){return [...(list||[])].sort((x,y)=>{const gx=group164(x),gy=group164(y);const ax=Math.min(countryTurnsAgo164('azraq'),5),tx=Math.min(countryTurnsAgo164('treuval'),5),sxfg=Math.min(countryTurnsAgo164('seafeara'),5);const sx=rawWeight164(x)+(gx==='azraq'?ax*.07:0)+(gx==='treuval'?tx*.025:0)+(gx==='seafeara'?sxfg*.055:0);const sy=rawWeight164(y)+(gy==='azraq'?ax*.07:0)+(gy==='treuval'?tx*.025:0)+(gy==='seafeara'?sxfg*.055:0);return sy-sx;});}
 function flow164(list){
- let out=[...(list||[])].filter(Boolean);ensureTreuval164();const a=age164();
+ let out=[...(list||[])].filter(Boolean);const a=age164();
  out=out.filter(c=>!treuvalAgeFlowBlocked164(c));
  if(a>=20&&a<=21){let seenPreview=false;out=out.filter(c=>{if(!isTreuvalForeshadow164(c))return true;if(seenPreview)return false;seenPreview=true;return true;});}
  if(a>=30){out=out.filter(c=>!normalCountrySuppressedAtFinalAge164(c));}
  out=fillAfterFlowBlock164(out);
- if(a>=26&&a<=29&&State.caseFlags?.treuvalPacified&&!out.some(c=>group164(c)==='treuval'&&(meta164(c).tags||[]).includes('friendly'))){const c=boostedPool164('treuval').find(x=>!out.some(y=>y.id===x.id));if(c)out=looseReplace164(out,c);}
  if(a>=22&&a<=25&&!out.some(c=>group164(c)==='treuval')){const c=boostedPool164('treuval').find(x=>!out.some(y=>y.id===x.id));if(c)out=looseReplace164(out,c);}
  const azAgo=countryTurnsAgo164('azraq');const azNeed=a<=29&&((a>=24&&azAgo>=3)||(a>=27&&azAgo>=2)||azAgo>=5);if(azNeed&&!out.some(c=>group164(c)==='azraq')){const c=boostedPool164('azraq').find(x=>!out.some(y=>y.id===x.id));if(c)out=looseReplace164(out,c);}
  const sfAgo=countryTurnsAgo164('seafeara');const sfNeed=a<=29&&((a>=25&&sfAgo>=3)||(a>=28&&sfAgo>=2)||sfAgo>=5);if(sfNeed&&!out.some(c=>group164(c)==='seafeara')){const c=boostedPool164('seafeara').find(x=>!out.some(y=>y.id===x.id));if(c)out=looseReplace164(out,c);}
- if(a>=26&&a<=29&&!State.caseFlags?.treuvalPacified){const treu=out.filter(c=>group164(c)==='treuval');if(treu.length>1){const keep=treu[0];out=out.filter(c=>group164(c)!=='treuval'||c.id===keep.id);for(const c of sort164(DATA.cases.filter(c=>avail164(c)&&!out.some(x=>x.id===c.id)&&group164(c)!=='treuval'))){if(out.length>=5)break;out.push(c);}}}
+ if(a>=26&&a<=29){const treu=out.filter(c=>group164(c)==='treuval');if(treu.length>1){const keep=treu[0];out=out.filter(c=>group164(c)!=='treuval'||c.id===keep.id);for(const c of sort164(DATA.cases.filter(c=>avail164(c)&&!out.some(x=>x.id===c.id)&&group164(c)!=='treuval'))){if(out.length>=5)break;out.push(c);}}}
  out=sort164(out).slice(0,5);const crisis=out.filter(c=>String(c.id||'').startsWith('crisis_recovery_'));if(crisis.length)out=[...crisis,...out.filter(c=>!String(c.id||'').startsWith('crisis_recovery_'))].slice(0,5);return out;
 }
 function record164(list){try{const turn=turn164();const countries=[...new Set((list||[]).map(group164).filter(Boolean))];State.phase164CountryHistory=(State.phase164CountryHistory||[]).filter(x=>x.turn!==turn);State.phase164CountryHistory.push({turn,countries,age:age164()});State.phase164CountryHistory=State.phase164CountryHistory.slice(-16);}catch(e){}}
@@ -31055,7 +30735,7 @@ function purgeBlockedStarterTreuval164(){
   }
  }catch(e){}
 }
-if(typeof window.__kingRegisterCaseAvailableLayer==='function'){window.__kingRegisterCaseAvailableLayer(function(c){ensureTreuval164();if(treuvalAgeFlowBlocked164(c))return false;if(c&&c.requiresFlag&&!(State.caseFlags&&State.caseFlags[c.requiresFlag]))return false;});}
+if(typeof window.__kingRegisterCaseAvailableLayer==='function'){window.__kingRegisterCaseAvailableLayer(function(c){if(treuvalAgeFlowBlocked164(c))return false;if(c&&c.requiresFlag&&!(State.caseFlags&&State.caseFlags[c.requiresFlag]))return false;});}
 window.phase164VisiblePipeline=function(base,ctx,args){purgeBlockedStarterTreuval164();let out=base.apply(ctx,args)||[];try{if(typeof window.__phase149ApplyNameBasedImages==='function')window.__phase149ApplyNameBasedImages();}catch(_){}out=flow164(out);record164(out);try{if(State){State.caseCache={turn:State.turn,cases:out.map(c=>c.id),warSlotKinds:{...(State.caseWarSlotKinds||{})},phase164AgeFlow:true};}}catch(e){}return out;};
 try{if(typeof State!=='undefined'&&State)State.caseCache=null;}catch(e){}
 })();
@@ -31676,13 +31356,6 @@ function achievedBlocked171(c){
  return false;
 }
 function legal171(c){return !!c&&!ageFlowBlocked171(c)&&!achievedBlocked171(c)&&!(typeof caseBlockedByProgress==='function'&&caseBlockedByProgress(c));}
-function addAzraqPreludeMeta171(){
- try{
-   const id='azraq_caravan_toll_crisis'; const c=DATA?.cases?.find(x=>x&&x.id===id); if(!c)return;
-   c.tags=[...new Set([...(c.tags||[]),'country','azraq','foreshadow','trade','caravan','south'])];
-   if(typeof CASE_STAGE_META!=='undefined')CASE_STAGE_META[id]=Object.assign({},CASE_STAGE_META[id]||{},{scale:2,storyGate:13,tags:c.tags});
- }catch(e){console.warn('[phase171] azraq prelude meta failed',e);}
-}
 function aidRel171(k){try{if(typeof ensureFactionRelations==='function')ensureFactionRelations();return State.factionRelations?.[k]||{affinity:0,grievance:0};}catch(e){return {affinity:0,grievance:0};}}
 function fulfilled171(k){return Number(State?.factionRequestFulfilledCount?.[k]||0)||0;}
 function aidEligible171(k){const r=aidRel171(k);return fulfilled171(k)>=1||Number(r.affinity||0)>=4||State?.caseFlags?.['phase170_ally_'+k];}
@@ -31733,7 +31406,6 @@ window.phase171VisiblePipeline=function(old,ctx,args){
    }catch(e){console.warn('[phase171] visible cleanup failed',e);}
    return out;
 };
-try{addAzraqPreludeMeta171();}catch(e){console.warn('[phase171] init failed',e);}
 })();
 
 
@@ -35239,7 +34911,7 @@ function importantCaseV519(c){
  if(IMPORTANT_CASE_IDS_V519.has(id))return true;
  if(/^crisis_recovery_/.test(id)||/^brother_return_/.test(id)||/^brother_final_/.test(id)||/^chain_brother_/.test(id)||/^terminal_/.test(id)||/^chain_plague_/.test(id))return true;
  if(c.mandatory||c.finalCase||c.finalEnemyCase||Number(c.mandatoryAge)>0)return true;
- if(c.marriageCandidate||c.unlockActor||c.coreForcedPeace||c.borderElectorCrisis)return true;
+  if(c.marriageCandidate||c.unlockActor||c.coreForcedPeace)return true;
  let kind='';try{kind=phase16WarSlotKind(c)||warSlotKindForCase(c)||'';}catch(_){}
  if(kind==='war'||kind==='greatWar'||kind==='peace')return true;
  if(/^phase16_(war|greatwar|peace)_/.test(id))return true;
@@ -35317,7 +34989,7 @@ function important520(c){
  const id=idOf(c);
  return isFinal520(c)||!!c.mandatory||Number(c.mandatoryAge)>0||!!c.marriageCandidate||!!c.unlockActor||
   /^crisis_recovery_/.test(id)||/^brother_/.test(id)||/^chain_brother_/.test(id)||/^chain_plague_/.test(id)||
-  !!c.borderElectorCrisis||String(c.ignoreType||'')==='放置不可';
+  String(c.ignoreType||'')==='放置不可';
 }
 function story520(c){
  if(!c)return false;const id=idOf(c),ts=tags(c);
@@ -35632,7 +35304,10 @@ window.auditV524Editorial=window.auditV523Editorial=window.auditV522Editorial=fu
   const cases=Object.fromEntries(DATA.cases.map(c=>[c.id,c]));
   for(const [id,row] of Object.entries(rows)){
     /* V527/V528で低品質な自動生成国境案件を正式廃止。完成稿監査の欠落扱いからも外す。 */
-    if(V524_REMOVED_CASE_IDS.has(id)||id.startsWith('phase20AL_border_'))continue;
+    if(V524_REMOVED_CASE_IDS.has(id)||id.startsWith('phase20AL_border_')||id.startsWith('phase20EA_')||id.startsWith('border_elector_')||[
+      'azraq_caravan_toll_crisis','azraq_holy_route_pressure',
+      'azraq_safar_mobilization','azraq_rick_holywar_spark'
+    ].includes(id))continue;
     checked++;
     const c=cases[id];
     if(!c){failures.push(id+':missing');continue;}
@@ -35678,6 +35353,280 @@ window.auditV525FamilyAssignments=function(){
   return{version:'V525',declaredCases:Object.keys(CASE_OPPONENT_ACTOR_IDS).length,failures,ok:failures.length===0};
 };
 })();
+
+/* V531: authored Azraq/Rick escalation arc.
+   The four provisional phase147 cases are retired.  Existing authored cases keep
+   their prose, opponents, result stories and effects; this layer controls only
+   when they can be offered and how the authored thread advances. */
+(function(){
+'use strict';
+const PHASE='V531 authored Azraq/Rick arc';
+const RETIRED_IDS=new Set([
+  'azraq_caravan_toll_crisis',
+  'azraq_holy_route_pressure',
+  'azraq_safar_mobilization',
+  'azraq_rick_holywar_spark'
+]);
+const STAGES={
+  1:[
+    'foreshadow_azraq_horse_market',
+    'country_azraq_copper_caravan',
+    'country_azraq_prayer_time',
+    'mustafa_tariff_renegotiation',
+    'mustafa_pilgrim_safe_conduct'
+  ],
+  2:[
+    'country_azraq_prisoner_exchange',
+    'rick_azraq_relic_ransom',
+    'rick_azraq_prisoner_exchange',
+    'ruthenia_azraq_southern_pass',
+    'solia_azraq_caravan_mediation'
+  ],
+  3:[
+    'country_azraq_water_fort',
+    'mustafa_secret_common_enemy_pact'
+  ],
+  4:[
+    'flow_medical_mission',
+    'country_azraq_safar_truce'
+  ],
+  5:['late_war_holy_total']
+};
+const STAGE_BY_ID=Object.fromEntries(Object.entries(STAGES).flatMap(([stage,ids])=>ids.map(id=>[id,Number(stage)])));
+const ALL_IDS=new Set(Object.keys(STAGE_BY_ID));
+const SUCCESS_RANKS=new Set(['completeWin','majorWin','minorWin']);
+const LOSS_RANKS=new Set(['minorLoss','majorLoss','completeLoss']);
+const getCase531=id=>(DATA.cases||[]).find(c=>c&&c.id===id)||null;
+const currentTurn531=()=>Math.max(1,Number(State.turn)||1);
+const currentAge531=()=>{try{return typeof currentAge==='function'?Number(currentAge()):16+Math.floor((currentTurn531()-1)/2);}catch(_){return 16;}};
+
+/* Retire the generated prose at the data source used by every later selector. */
+DATA.cases=(DATA.cases||[]).filter(c=>c&&!RETIRED_IDS.has(c.id));
+for(const id of RETIRED_IDS){
+  try{if(window.CASE_STAGE_META)delete CASE_STAGE_META[id];}catch(_){ }
+  try{if(window.CASE_BG)delete CASE_BG[id];}catch(_){ }
+  try{if(window.CASE_ARCHETYPE)delete CASE_ARCHETYPE[id];}catch(_){ }
+}
+
+/* The stage members are authored one-shot story beats, including cases that were
+   previously repeatable.  This prevents the same prose from carrying two stages. */
+for(const [id,stage] of Object.entries(STAGE_BY_ID)){
+  const c=getCase531(id);
+  if(c){c.once=true;c.azraqRickArcStage=stage;}
+}
+/* The climax is opened by this arc's accumulated outcome, not by the older
+   generic tension-only gate.  Its original late-game story gate remains. */
+try{if(typeof CASE_STAGE_META==='object'&&CASE_STAGE_META.late_war_holy_total)delete CASE_STAGE_META.late_war_holy_total.tensionGate;}catch(_){ }
+
+function state531(){
+  State.azraqRickAuthoredArcV531=State.azraqRickAuthoredArcV531||{
+    stage:1,pressure:0,resolved:false,climaxRequired:false,lastResolvedTurn:0,lastOfferTurn:0,
+    offeredCounts:{},processed:{},offerCache:null
+  };
+  const s=State.azraqRickAuthoredArcV531;
+  s.stage=Math.max(1,Math.min(5,Number(s.stage)||1));
+  s.pressure=Math.max(0,Math.min(10,Number(s.pressure)||0));
+  s.offeredCounts=s.offeredCounts||{};
+  s.processed=s.processed||{};
+  migrate531(s);
+  return s;
+}
+function migrate531(s){
+  if(s.migrated)return;
+  const done=new Set(State.completedCases||[]);
+  let highest=0;
+  for(const [id,stage] of Object.entries(STAGE_BY_ID))if(done.has(id))highest=Math.max(highest,stage);
+  if(highest>=5){s.stage=5;s.resolved=true;}
+  else if(highest>0)s.stage=Math.max(s.stage,highest+1);
+  s.migrated=true;
+}
+function stageOpen531(stage,s=state531()){
+  if(stage!==s.stage)return false;
+  if(stage<5)return !s.resolved;
+  const holyTension=Math.max(0,Number(State.tension&&State.tension.azraqRick)||0);
+  return !s.resolved&&(s.climaxRequired||s.pressure>=4||holyTension>=6);
+}
+function availableStageCases531(s=state531()){
+  const done=new Set(State.completedCases||[]);
+  return(STAGES[s.stage]||[]).map(getCase531).filter(c=>c&&!done.has(c.id));
+}
+function normalizeExhaustedStage531(s=state531()){
+  let guard=0;
+  while(!s.resolved&&s.stage<5&&!availableStageCases531(s).length&&guard++<5)s.stage++;
+  if(s.stage===5&&!availableStageCases531(s).length)s.resolved=true;
+  return s;
+}
+
+/* A stage member is never allowed to leak into another part of the story. */
+let probingStageCandidate531=false;
+const gateLayer531=function(c){
+  const stage=STAGE_BY_ID[c&&c.id];
+  if(!stage)return undefined;
+  const s=normalizeExhaustedStage531(state531());
+  if(!stageOpen531(stage,s))return true;
+  if(stage===1&&currentAge531()<22)return true;
+  if(probingStageCandidate531)return undefined;
+  if(s.offerCache&&s.offerCache.turn===currentTurn531()&&s.offerCache.id===c.id)return undefined;
+  return true;
+};
+try{
+  if(typeof window.__kingRegisterCaseBlockedLayer==='function')window.__kingRegisterCaseBlockedLayer(gateLayer531);
+  else if(typeof caseBlockedByProgress==='function'){
+    const previousBlocked531=caseBlockedByProgress;
+    caseBlockedByProgress=function(c){const v=gateLayer531(c);return v===undefined?previousBlocked531.apply(this,arguments):v;};
+    window.caseBlockedByProgress=caseBlockedByProgress;
+  }
+}catch(e){try{console.error(PHASE+' gate install failed',e);}catch(_){ }}
+
+function protectedVisible531(c){
+  if(!c)return true;
+  if(c.id===window.FINAL_CASE_ID||c.finalNoChoice||c.mandatory||c.activeBorderMandatory)return true;
+  if(c.marriageCandidate||c.unlockActor||c.id==='brother_persuasion'||c.id==='brother_rebellion')return true;
+  if(String(c.id||'').startsWith('crisis_recovery_'))return true;
+  try{if(typeof isFormalBorderWarCaseV529==='function'&&isFormalBorderWarCaseV529(c))return true;}catch(_){ }
+  return false;
+}
+function candidateLegal531(c){
+  if(!c)return false;
+  try{
+    probingStageCandidate531=true;
+    if(typeof caseBlockedByProgress==='function'&&caseBlockedByProgress(c))return false;
+  }catch(_){
+  }finally{probingStageCandidate531=false;}
+  /* Arc pressure is the conflict gate for these cases.  Reapplying the generic
+     tension gate here would make a successfully staged story disappear. */
+  try{if(typeof caseMapBlockedByBounds==='function'&&caseMapBlockedByBounds(c))return false;}catch(_){ }
+  const m=typeof caseMeta==='function'?(caseMeta(c)||{}):(c.meta||{});
+  if(currentTurn531()<Math.max(1,Number(m.storyGate)||1))return false;
+  return true;
+}
+function stableValue531(id){
+  let x=2166136261>>>0,s=String(id)+'@'+currentTurn531();
+  for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,16777619)>>>0;}
+  return x;
+}
+function pickStageCase531(s){
+  return availableStageCases531(s).filter(candidateLegal531).sort((a,b)=>
+    (Number(s.offeredCounts[a.id])||0)-(Number(s.offeredCounts[b.id])||0)||stableValue531(a.id)-stableValue531(b.id)
+  )[0]||null;
+}
+function shouldEnsureOffer531(s,list){
+  if(s.resolved||!stageOpen531(s.stage,s)||list.some(c=>STAGE_BY_ID[c&&c.id]===s.stage))return false;
+  if(currentTurn531()-Number(s.lastResolvedTurn||0)<2)return false;
+  if(s.lastOfferTurn&&currentTurn531()-Number(s.lastOfferTurn)<3)return false;
+  if(s.stage===1)return currentAge531()>=22;
+  if(s.stage===5)return true;
+  return true;
+}
+function placeStageCase531(list,c){
+  if(!c||list.some(x=>x&&x.id===c.id))return list;
+  const out=list.slice();
+  let at=-1;
+  for(let i=out.length-1;i>=0;i--)if(!protectedVisible531(out[i])&&!ALL_IDS.has(out[i].id)){at=i;break;}
+  if(at>=0)out.splice(at,1,c);
+  else if(!out.length)out.push(c);
+  return out;
+}
+try{
+  const previousVisible531=typeof visibleCases==='function'?visibleCases:null;
+  if(previousVisible531&&!previousVisible531.azraqRickAuthoredArcV531){
+    let building=false;
+    const wrapped531=function(){
+      if(building)return previousVisible531.apply(this,arguments)||[];
+      building=true;
+      try{
+        let out=(previousVisible531.apply(this,arguments)||[]).filter(c=>c&&!RETIRED_IDS.has(c.id));
+        const s=normalizeExhaustedStage531(state531()),t=currentTurn531();
+        if(s.offerCache&&s.offerCache.turn===t){
+          const cached=getCase531(s.offerCache.id);
+          return cached&&candidateLegal531(cached)?placeStageCase531(out,cached):out;
+        }
+        if(shouldEnsureOffer531(s,out)){
+          const chosen=pickStageCase531(s);
+          if(chosen){
+            out=placeStageCase531(out,chosen);
+            if(out.some(c=>c&&c.id===chosen.id)){
+              s.offeredCounts[chosen.id]=(Number(s.offeredCounts[chosen.id])||0)+1;
+              s.offerCache={turn:t,id:chosen.id};
+              s.lastOfferTurn=t;
+            }
+          }
+        }
+        return out;
+      }finally{building=false;}
+    };
+    wrapped531.azraqRickAuthoredArcV531=true;
+    visibleCases=wrapped531;window.visibleCases=wrapped531;
+  }
+}catch(e){try{console.error(PHASE+' visible install failed',e);}catch(_){ }}
+
+function rankKind531(rank){
+  if(SUCCESS_RANKS.has(rank))return'success';
+  if(LOSS_RANKS.has(rank))return'failure';
+  return'draw';
+}
+function resolveBeat531(id,kind){
+  const stage=STAGE_BY_ID[id],s=normalizeExhaustedStage531(state531());
+  if(!stage||stage!==s.stage||s.processed[id])return;
+  s.processed[id]={turn:currentTurn531(),kind};
+  s.lastResolvedTurn=currentTurn531();
+  s.offerCache=null;
+  if(kind==='success')s.pressure=Math.max(0,s.pressure-1);
+  else if(kind==='failure'||kind==='ignored')s.pressure=Math.min(10,s.pressure+2);
+  if(stage<4)s.stage=stage+1;
+  else if(stage===4){
+    if(kind==='failure'||kind==='ignored'){
+      s.stage=5;s.climaxRequired=true;s.resolved=false;
+    }else{
+      s.resolved=true;s.climaxRequired=false;
+    }
+  }else{
+    s.resolved=true;s.climaxRequired=false;
+  }
+  try{State.caseCache=null;}catch(_){ }
+}
+try{
+  if(typeof Flow==='object'&&Flow&&typeof Flow.finishBattle==='function'&&!Flow.finishBattle.azraqRickAuthoredArcV531){
+    const previousFinish531=Flow.finishBattle;
+    Flow.finishBattle=function(){
+      const ret=previousFinish531.apply(this,arguments);
+      try{
+        for(const row of State.lastSummary&&State.lastSummary.lanes||[]){
+          const id=row&&row.case&&row.case.id;
+          if(STAGE_BY_ID[id])resolveBeat531(id,rankKind531(row.rank));
+        }
+        for(const row of State.lastSummary&&State.lastSummary.ignored||[]){
+          const id=row&&row.case&&row.case.id;
+          if(STAGE_BY_ID[id])resolveBeat531(id,'ignored');
+        }
+      }catch(e){try{console.warn(PHASE+' result update skipped',e);}catch(_){ }}
+      return ret;
+    };
+    Flow.finishBattle.azraqRickAuthoredArcV531=true;
+  }
+}catch(e){try{console.error(PHASE+' finish install failed',e);}catch(_){ }}
+
+window.AZRAQ_RICK_AUTHORED_STAGES_V531=Object.freeze(Object.fromEntries(Object.entries(STAGES).map(([k,v])=>[k,Object.freeze(v.slice())])));
+window.auditV531AzraqRickArc=function(){
+  const s=normalizeExhaustedStage531(state531());
+  const missing=[...ALL_IDS].filter(id=>!getCase531(id));
+  const retiredPresent=[...RETIRED_IDS].filter(id=>getCase531(id));
+  const alteredStageTexts=[...ALL_IDS].filter(id=>{
+    const c=getCase531(id);
+    return !c||!c.title||!c.intro||!c.effects||!c.effects.completeWin||!c.effects.draw||!c.effects.completeLoss||!c.effects.ignored;
+  });
+  return{
+    version:'V531',stage:s.stage,pressure:s.pressure,resolved:s.resolved,
+    retired:[...RETIRED_IDS],retiredPresent,missing,alteredStageTexts,
+    visibleWrapped:!!visibleCases.azraqRickAuthoredArcV531,
+    finishWrapped:!!Flow.finishBattle.azraqRickAuthoredArcV531,
+    holyLandMapKey:!!(State.map&&Object.prototype.hasOwnProperty.call(State.map,'azraqRick')),
+    ok:!retiredPresent.length&&!missing.length&&!alteredStageTexts.length&&!!visibleCases.azraqRickAuthoredArcV531&&!!Flow.finishBattle.azraqRickAuthoredArcV531
+  };
+};
+try{State.caseCache=null;}catch(_){ }
+window.__V531_AZRAQ_RICK_AUTHORED_ARC__=true;
+})();
 /* CANONICAL CASE TEXT LOCK V523
    Sources: finish.txt result text + V522 correction sheet editorial fields
    Protected: stories[0..2] remain canonical; title / intro / enemy change only through the V522 correction sheet
@@ -35688,7 +35637,7 @@ window.auditV525FamilyAssignments=function(){
 if(typeof window.normalizeAuthoredBorderRepairPoolsV528==='function')window.normalizeAuthoredBorderRepairPoolsV528();
 window.__FIX_V515_APPLIED__=true;
 window.__V523_CANONICAL_TEXT_HASH__='277cdfd681fb6ce084dda6d995c57850089125ac65a2c5d09257eedf2bb6f63f';
-window.__VERSION__='V529';
+window.__VERSION__='V533';
 })();
 </script>
 </html>
