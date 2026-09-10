@@ -1,4 +1,4 @@
-<!-- FIX V540: replaced marriage-offer score catch-up with a save-stable six-candidate deck; old inflated offer counters can no longer make one candidate recur. -->
+<!-- FIX V543: use the supplied Googleusercontent image as the document favicon without changing game data or behavior. -->
 <!-- V517: V516 balance plus first-use two-front and three-front butler tutorials. -->
 <!-- FIX V514: removed legacy active-war territory RNG/map moves, unified generic long-neglect loss to one path, and hid numeric pre-war pressure. -->
 <!DOCTYPE html>
@@ -173,6 +173,7 @@ IMPORTANT: phase numbers are NOT load order. Follow physical document order.
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>私は王である</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/d/1peQaXp7dhUHDXn5oohYQIs0bVewuvwCF"/>
 
 
 
@@ -855,11 +856,18 @@ button,.caseCard,.slot{-webkit-tap-highlight-color:transparent;}
 
 
 /* ===== 統合元CSS 10: family-princess-v15-css ===== */
-.princessWorkBox{margin:12px 0;padding:13px 15px;border:2px solid rgba(243,207,98,.82);border-radius:14px;background:linear-gradient(180deg,#fff5cf,#e7c879);color:#172337;box-shadow:0 5px 0 rgba(0,0,0,.18),inset 0 0 16px rgba(255,255,255,.38)}
-.princessWorkKicker{display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:999px;background:#102a4c;color:#fff1bf;border:1px solid #f3cf62;font-size:11px;font-weight:1000;letter-spacing:.08em}
-.princessWorkTitle{font-size:18px;line-height:1.35;font-weight:1000;color:#102a4c}
-.princessWorkText{margin-top:5px;font-size:13px;line-height:1.55;font-weight:850;color:#3d301d}
-.princessWorkEffect{margin-top:7px;font-size:12px;font-weight:1000;color:#07527a}
+.princessWorkBox{position:relative;margin:16px 0;padding:15px 17px 14px;border:2px solid #d8b95e;border-radius:16px;background:linear-gradient(135deg,#fff9e7 0%,#f5e6b9 62%,#e8cd83 100%);color:#172337;box-shadow:0 7px 18px rgba(16,42,76,.18),inset 0 0 0 1px rgba(255,255,255,.75);overflow:hidden}
+.princessWorkBox::after{content:"";position:absolute;right:-24px;top:-30px;width:112px;height:112px;border:1px solid rgba(160,119,31,.20);border-radius:50%;box-shadow:0 0 0 12px rgba(160,119,31,.06),0 0 0 24px rgba(160,119,31,.04);pointer-events:none}
+.princessWorkHead{position:relative;z-index:1;display:grid;grid-template-columns:48px 1fr auto;gap:11px;align-items:center}
+.princessWorkMonogram{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;border:2px solid #f6d979;background:radial-gradient(circle at 35% 30%,#294f78,#102a4c 72%);color:#fff2bf;font-family:serif;font-size:24px;font-weight:1000;box-shadow:0 3px 0 #80601f,0 0 0 3px rgba(255,255,255,.58)}
+.princessWorkKicker{margin-bottom:2px;color:#7c5c18;font-size:10px;font-weight:1000;letter-spacing:.16em}
+.princessWorkTitle{font-size:18px;line-height:1.28;font-weight:1000;color:#102a4c}
+.princessWorkDestination{position:relative;z-index:2;min-width:92px;padding:6px 10px;border:1px solid rgba(16,42,76,.34);border-radius:999px;background:rgba(255,253,244,.72);color:#294b69;font-size:11px;font-weight:1000;text-align:center}
+.princessWorkText{position:relative;z-index:1;margin:11px 0 0;padding:10px 12px;border-left:4px solid #c99b38;border-radius:8px;background:rgba(255,255,255,.56);font-size:13px;line-height:1.62;font-weight:850;color:#3d301d}
+.princessWorkOutcome{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.princessWorkOutcome strong{color:#17664b;font-size:12px;font-weight:1000}
+.princessWorkEffect{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.princessWorkEffect span{padding:4px 8px;border:1px solid rgba(37,100,156,.30);border-radius:999px;background:rgba(231,248,255,.78);color:#07527a;font-size:11px;font-weight:1000}
 
 /* ===== 統合元CSS 11: core-card-badge-result-story-v17-css ===== */
 
@@ -2834,6 +2842,24 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
   bottom:18px!important;
   z-index:9!important;
 }
+
+/* 王女六歳・外交解禁は慶事の手紙と分け、成長と新機能が一目で分かる専用画面にする。 */
+.princessUnlockScreen{background:radial-gradient(circle at 50% 45%,rgba(29,65,101,.35),rgba(3,8,15,.88))!important;backdrop-filter:blur(3px)}
+.princessUnlockCard{position:relative;width:720px;max-width:calc(100% - 48px);min-height:430px;padding:36px 46px 34px;border:3px solid #d9b95b;border-radius:24px;background:linear-gradient(145deg,#fffaf0 0%,#f4e5b9 64%,#e4c776 100%);color:#172337;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.66),inset 0 0 0 2px rgba(255,255,255,.72),inset 0 -24px 60px rgba(154,110,25,.10);overflow:hidden}
+.princessUnlockCard::before,.princessUnlockCard::after{content:"";position:absolute;width:170px;height:170px;border:1px solid rgba(160,119,31,.20);transform:rotate(45deg);pointer-events:none}
+.princessUnlockCard::before{left:-108px;top:-108px}.princessUnlockCard::after{right:-108px;bottom:-108px}
+.princessUnlockOrnament{width:76px;height:76px;margin:0 auto 12px;padding:5px;border:2px solid #c99b38;border-radius:50%;background:#fff8df;box-shadow:0 0 0 6px rgba(201,155,56,.13),0 7px 16px rgba(54,38,11,.18)}
+.princessUnlockOrnament span{width:100%;height:100%;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 35% 28%,#315b83,#102a4c 72%);color:#ffe7a1;font-family:serif;font-size:34px;font-weight:1000;text-shadow:0 2px 0 #000}
+.princessUnlockKicker{color:#88671e;font-size:10px;font-weight:1000;letter-spacing:.26em}
+.princessUnlockCard h2{margin:5px 0 1px;color:#102a4c;font-family:serif;font-size:30px;line-height:1.15;letter-spacing:.08em}
+.princessUnlockName{color:#6a4c17;font-size:16px;font-weight:1000;letter-spacing:.08em}
+.princessUnlockRule{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin:17px auto 11px;color:#8a681e;font-size:11px;letter-spacing:.08em}
+.princessUnlockRule i{height:1px;background:linear-gradient(90deg,transparent,#bd9235)}.princessUnlockRule i:last-child{background:linear-gradient(90deg,#bd9235,transparent)}
+.princessUnlockFeature{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;width:510px;max-width:100%;margin:0 auto;padding:13px 16px;border:2px solid #b58a35;border-radius:14px;background:linear-gradient(180deg,#173b64,#0d243f);color:#fff0bd;text-align:left;box-shadow:0 5px 0 #795b20,0 8px 18px rgba(16,42,76,.22)}
+.princessUnlockFeature span{grid-row:1/3;padding:5px 9px;border:1px solid #f3cf62;border-radius:999px;background:#f3cf62;color:#102a4c;font-size:11px;font-weight:1000;white-space:nowrap}
+.princessUnlockFeature strong{font-size:18px;line-height:1.25}.princessUnlockFeature small{margin-top:2px;color:#d9e7ef;font-size:11px;line-height:1.35;font-weight:800}
+.princessUnlockText{width:570px;max-width:100%;margin:16px auto 18px;color:#44351f;font-size:14px;line-height:1.7;font-weight:850;text-align:left}
+.princessUnlockContinue{min-width:220px;height:44px;border:2px solid #ffe7a0!important;border-radius:12px!important;background:linear-gradient(180deg,#ffe88c,#e3ad32)!important;color:#102a4c!important;font-size:16px!important;box-shadow:0 4px 0 #75541e,0 8px 16px rgba(66,45,11,.18)!important}
 @media (max-width:760px){
   .royalNoticeScreen .openingStoryBox.royalNoticeBox{
     width:calc(100% - 48px)!important;
@@ -2844,6 +2870,10 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
     font-size:19px!important;
     line-height:1.62!important;
   }
+  .princessUnlockCard{padding:28px 28px 26px;min-height:410px}
+  .princessUnlockFeature{width:100%}
+  .princessUnlockText{font-size:13px}
+  .princessUnlockCard h2{font-size:27px}
 }
 
 /* ===== V100 consolidated style 10: phase172-pc-key-ui-cleanup-css ===== */
@@ -3533,11 +3563,20 @@ function updateBorderPressureTick(){
 const bp=ensureBorderPressure();
 for(const k of ALTRANT_BORDER_KEYS)updateBorderPressureForKey(k,bp);
 }
+function borderFormalWarCaseId(k){return`phase16_war_${k}`}
+function borderGreatWarReady(k,current=''){
+if(current==='greatWar')return true;
+const fought=(State.completedCases||[]).includes(borderFormalWarCaseId(k));
+return fought&&Number(State.warTurns?.[k]||0)>=2;
+}
 function updateBorderWarStateForKey(k,bp){
 const p=Number(bp[k]||0);
 let next=borderSituationRankFromPressure(p);
 if(next==='tension'||next==='skirmish')next='peace';
 const cur=State.borderWarState[k]||'peace';
+/* 大戦争は圧力だけでは始めない。まず正式戦争を経験し、戦争が二半期続いた場合に限る。
+   旧セーブですでに大戦争中なら、その状態は維持する。 */
+if(next==='greatWar'&&!borderGreatWarReady(k,cur))next='war';
 if(next==='greatWar'||next==='war'){
 State.borderWarState[k]=next;
 State.warTurns[k]=(cur==='peace'?0:(State.warTurns[k]||0))+1;
@@ -7681,8 +7720,9 @@ return 5;
 function borderWarSlotRankValue(rank){return{peace:0,tension:0,skirmish:0,war:2,greatWar:3}[rank]||0}
 function effectiveBorderWarRank(key){
 ensureBorderWarState();
-const pRank=borderSituationRankFromPressure(ensureBorderPressure()[key]||0);
+let pRank=borderSituationRankFromPressure(ensureBorderPressure()[key]||0);
 const sRank=State.borderWarState?.[key]||'peace';
+if(pRank==='greatWar'&&!borderGreatWarReady(key,sRank))pRank='war';
 return borderWarSlotRankValue(pRank)>=borderWarSlotRankValue(sRank)?pRank:sRank;
 }
 function borderWarRows(){
@@ -7714,6 +7754,15 @@ let candidates=ids.map(id=>(all||DATA.cases).find(c=>c.id===id)).filter(Boolean)
 .filter(c=>!usedIds.has(c.id)&&!caseBlockedByProgress(c)&&caseAvailable(c,nationalPowerRank()))
 .filter(c=>kind!=='peace'||phase16WarSlotKind(c)==='peace');
 State._allowPhase16ReservedCase=false;
+/* 開戦の筋道を保証する。未処理の正式戦争は、流用した周辺案件より先に出す。 */
+if(kind==='war'){
+const formal=candidates.find(c=>c.id===`phase16_war_${key}`);
+if(formal)return formal;
+}
+if(kind==='greatWar'){
+const formal=candidates.find(c=>c.id===`phase16_greatwar_${key}`);
+if(formal)return formal;
+}
 if(kind==='greatWar'){
 candidates=candidates.sort((a,b)=>{
 const da={desperate:4,hard:3,normal:2,easy:1}[a.difficulty]||0;
@@ -7818,9 +7867,11 @@ const addSlot=makeBorderWarSlotAdder(result,all);
 const peaceRow=rows.find(r=>peaceConferenceReady(r));
 let peaceAdded=false;
 if(peaceRow)peaceAdded=addSlot(peaceRow,'peace');
-const {warRow,greatRow}=chooseBaseBorderWarSlotRows(rows,peaceAdded,peaceRow);
-addSlot(warRow,'war');
-addSlot(greatRow,'greatWar');
+/* 一つの半期には、一つの戦争局面だけを前面に出す。講和が出た半期は講和に集中する。 */
+if(!peaceAdded){
+const conflictRow=rows[0];
+if(conflictRow)addSlot(conflictRow,conflictRow.rank==='greatWar'?'greatWar':'war');
+}
 return result.slice(0,7);
 }
  
@@ -8332,7 +8383,7 @@ function caseCardClassList(c,selection={}){
 const isTutorial=!!c&&c.id==='tutorial_butler';
 const rec=caseCardRecoveryHtml(c);
 let out=['caseCard'];
-try{out.push(isTutorial?'tutorial':(typeof dynamicDifficultyClass==='function'?dynamicDifficultyClass(c):''));}catch(_){}
+try{out.push(isTutorial?'butlerGuideCard':(typeof dynamicDifficultyClass==='function'?dynamicDifficultyClass(c):''));}catch(_){}
 if(c&&c.greatFlow)out.push('greatFlowCase');
 if(c&&c.postwarBranch){out.push('postwarBranchCase');if(c.postwarScale)out.push('postwarBranch'+String(c.postwarScale).replace(/^./,m=>m.toUpperCase()));}
 if(c&&c.falloutCase)out.push('unresolvedFalloutCase');
@@ -11098,7 +11149,7 @@ applyWorldEffect(e,caseObj);
 /* 3. 基本資源だけ最終上限/下限へ収める。後段wrapperの危機回復保証はこの外側で動く。 */
 State.params.treasury=clamp(State.params.treasury,0,ECONOMY.treasuryMax);
 State.params.troops=clamp(State.params.troops,0,ECONOMY.troopsMax);
-},publicSnapshot(){return{treasury:State.params.treasury,troops:State.params.troops}},publicDelta(a,b){return{treasury:b.treasury-a.treasury,troops:b.troops-a.troops}},moneyValue(params={}){const v=params.treasury||0;return Math.round(Math.abs(v)<100?v*ECONOMY.treasuryUnit:v)},troopValue(params={}){return Math.round(params.troops||0)},economyLine(label,treasury=0,troops=0){return{label,treasury:Math.round(treasury),troops:Math.round(troops)}},economyBreakdownHtml(data){const lines=[];for(const r of data.lanes){const money=Flow.moneyValue(r.effect.params)+(r.extraTreasuryCost||0);const troops=Flow.troopValue(r.effect.params)+(r.extraTroopLoss||0);if(money||troops)lines.push(Flow.economyLine(`${r.case.title}：${r.label}`,money,troops));}for(const r of data.ignored||[]){if(!['放置不可','悪化注意'].includes(r.case.ignoreType))continue;const money=Flow.moneyValue(r.effect.params),troops=Flow.troopValue(r.effect.params);if(money||troops)lines.push(Flow.economyLine(`未対応：${r.case.title}`,money,troops));}if(State.borderLastCost&&(State.borderLastCost.treasury||State.borderLastCost.troops))lines.push(Flow.economyLine('国境緊張・維持費',State.borderLastCost.treasury,State.borderLastCost.troops));if(data.yearEnd){lines.push(Flow.economyLine(`年末税収${data.yearEnd.borderTaxMod?`（国境補正${data.yearEnd.borderTaxMod>=0?'+':''}${data.yearEnd.borderTaxMod}%）`:''}`,data.yearEnd.tax,0));lines.push(Flow.economyLine('兵維持費',-data.yearEnd.upkeepBase||-data.yearEnd.upkeep,0));if(data.yearEnd.upkeepSurcharge)lines.push(Flow.economyLine('大軍維持の追加負担',-data.yearEnd.upkeepSurcharge,0));lines.push(Flow.economyLine(`年末補充${data.yearEnd.borderRecruitMod?`（国境補正${data.yearEnd.borderRecruitMod>=0?'+':''}${data.yearEnd.borderRecruitMod}%）`:''}`,0,data.yearEnd.recruit));if(data.yearEnd.desert)lines.push(Flow.economyLine('離脱・脱走',0,data.yearEnd.desert));}if(!lines.length)return'';const row=x=>`<div class="econRow"><span>${x.label}</span><b class="${x.treasury<0?'neg':x.treasury>0?'pos':''}">${x.treasury?`${x.treasury>0?'+':''}${fmt(x.treasury)}`:'—'}</b><b class="${x.troops<0?'neg':x.troops>0?'pos':''}">${x.troops?`${x.troops>0?'+':''}${fmt(x.troops)}`:'—'}</b></div>`;return `<div class="economyBreakdown"><h3>国庫・兵数の内訳</h3><div class="econRow"><span></span><b>国庫</b><b>兵数</b></div>${lines.map(row).join('')}</div>`},battleTroopLoss(r){const base={completeWin:.003,majorWin:.007,minorWin:.014,draw:.024,minorLoss:.045,majorLoss:.075,completeLoss:.115}[r.rank]||0;const tags=caseMeta(r.case).tags||[];let mod=0;if(tags.includes('greatPower'))mod=1.15;else if(tags.includes('border'))mod=.9;else if(tags.includes('security'))mod=.55;else if(tags.includes('diplomacy')||tags.includes('politics')||tags.includes('religion'))mod=.16;if(mod<=0)return 0;const scale=caseMeta(r.case).scale||1;const pressure=1+(scale-1)*.18;const risk=riskMultiplierByGap(Number(r.powerGap||0));return-Math.max(1,Math.round(State.params.troops*base*mod*pressure*risk))},applyYearEnd(){const borderMod=borderIncomeModifier();const baseTax=Math.round(ECONOMY.yearTaxBase+(State.params.stability||50)*ECONOMY.stabilityTax+(State.params.citySupport||50)*ECONOMY.cityTax+(State.params.prestige||50)*ECONOMY.prestigeTax);const tax=Math.round(baseTax*(1+borderMod.tax/100));const upkeepDetail=calcUpkeepDetail();const upkeep=upkeepDetail.total;const baseRecruit=Math.round(ECONOMY.recruitBase+(State.params.prestige||50)*ECONOMY.prestigeRecruit+(State.params.stability||50)*ECONOMY.stabilityRecruit);let recruit=Math.round(baseRecruit*(1+borderMod.recruit/100));let desert=0;State.params.treasury+=tax-upkeep;if(State.params.treasury<0){const shortage=Math.abs(State.params.treasury);State.params.treasury=0;desert-=Math.round(shortage/10);State.params.stability=clamp((State.params.stability||50)-Math.ceil(shortage/1000),0,100);recruit=Math.floor(recruit/2)}if((State.params.stability||50)<20)desert-=Math.round(State.params.troops*.07);else if((State.params.stability||50)<30)desert-=Math.round(State.params.troops*.03);State.params.troops=clamp(State.params.troops+recruit+desert,0,ECONOMY.troopsMax);State.params.treasury=clamp(State.params.treasury,0,ECONOMY.treasuryMax);return{tax,upkeep,recruit,desert,netTreasury:tax-upkeep,upkeepBase:upkeepDetail.base,upkeepSurcharge:upkeepDetail.surcharge,borderTaxMod:borderMod.tax,borderRecruitMod:borderMod.recruit}},finishBattle(){
+},publicSnapshot(){return{treasury:State.params.treasury,troops:State.params.troops,support:supportHudState().score}},publicDelta(a,b){return{treasury:b.treasury-a.treasury,troops:b.troops-a.troops,support:(b.support||0)-(a.support||0)}},moneyValue(params={}){const v=params.treasury||0;return Math.round(Math.abs(v)<100?v*ECONOMY.treasuryUnit:v)},troopValue(params={}){return Math.round(params.troops||0)},economyLine(label,treasury=0,troops=0){return{label,treasury:Math.round(treasury),troops:Math.round(troops)}},economyBreakdownHtml(data){const lines=[];for(const r of data.lanes){const money=Flow.moneyValue(r.effect.params)+(r.extraTreasuryCost||0);const troops=Flow.troopValue(r.effect.params)+(r.extraTroopLoss||0);if(money||troops)lines.push(Flow.economyLine(`${r.case.title}：${r.label}`,money,troops));}for(const r of data.ignored||[]){if(!['放置不可','悪化注意'].includes(r.case.ignoreType))continue;const money=Flow.moneyValue(r.effect.params),troops=Flow.troopValue(r.effect.params);if(money||troops)lines.push(Flow.economyLine(`未対応：${r.case.title}`,money,troops));}if(State.borderLastCost&&(State.borderLastCost.treasury||State.borderLastCost.troops))lines.push(Flow.economyLine('国境緊張・維持費',State.borderLastCost.treasury,State.borderLastCost.troops));if(data.yearEnd){lines.push(Flow.economyLine(`年末税収${data.yearEnd.borderTaxMod?`（国境補正${data.yearEnd.borderTaxMod>=0?'+':''}${data.yearEnd.borderTaxMod}%）`:''}`,data.yearEnd.tax,0));lines.push(Flow.economyLine('兵維持費',-data.yearEnd.upkeepBase||-data.yearEnd.upkeep,0));if(data.yearEnd.upkeepSurcharge)lines.push(Flow.economyLine('大軍維持の追加負担',-data.yearEnd.upkeepSurcharge,0));lines.push(Flow.economyLine(`年末補充${data.yearEnd.borderRecruitMod?`（国境補正${data.yearEnd.borderRecruitMod>=0?'+':''}${data.yearEnd.borderRecruitMod}%）`:''}`,0,data.yearEnd.recruit));if(data.yearEnd.desert)lines.push(Flow.economyLine('離脱・脱走',0,data.yearEnd.desert));}if(!lines.length)return'';const row=x=>`<div class="econRow"><span>${x.label}</span><b class="${x.treasury<0?'neg':x.treasury>0?'pos':''}">${x.treasury?`${x.treasury>0?'+':''}${fmt(x.treasury)}`:'—'}</b><b class="${x.troops<0?'neg':x.troops>0?'pos':''}">${x.troops?`${x.troops>0?'+':''}${fmt(x.troops)}`:'—'}</b></div>`;return `<div class="economyBreakdown"><h3>国庫・兵数の内訳</h3><div class="econRow"><span></span><b>国庫</b><b>兵数</b></div>${lines.map(row).join('')}</div>`},battleTroopLoss(r){const base={completeWin:.003,majorWin:.007,minorWin:.014,draw:.024,minorLoss:.045,majorLoss:.075,completeLoss:.115}[r.rank]||0;const tags=caseMeta(r.case).tags||[];let mod=0;if(tags.includes('greatPower'))mod=1.15;else if(tags.includes('border'))mod=.9;else if(tags.includes('security'))mod=.55;else if(tags.includes('diplomacy')||tags.includes('politics')||tags.includes('religion'))mod=.16;if(mod<=0)return 0;const scale=caseMeta(r.case).scale||1;const pressure=1+(scale-1)*.18;const risk=riskMultiplierByGap(Number(r.powerGap||0));return-Math.max(1,Math.round(State.params.troops*base*mod*pressure*risk))},applyYearEnd(){const borderMod=borderIncomeModifier();const baseTax=Math.round(ECONOMY.yearTaxBase+(State.params.stability||50)*ECONOMY.stabilityTax+(State.params.citySupport||50)*ECONOMY.cityTax+(State.params.prestige||50)*ECONOMY.prestigeTax);const tax=Math.round(baseTax*(1+borderMod.tax/100));const upkeepDetail=calcUpkeepDetail();const upkeep=upkeepDetail.total;const baseRecruit=Math.round(ECONOMY.recruitBase+(State.params.prestige||50)*ECONOMY.prestigeRecruit+(State.params.stability||50)*ECONOMY.stabilityRecruit);let recruit=Math.round(baseRecruit*(1+borderMod.recruit/100));let desert=0;State.params.treasury+=tax-upkeep;if(State.params.treasury<0){const shortage=Math.abs(State.params.treasury);State.params.treasury=0;desert-=Math.round(shortage/10);State.params.stability=clamp((State.params.stability||50)-Math.ceil(shortage/1000),0,100);recruit=Math.floor(recruit/2)}if((State.params.stability||50)<20)desert-=Math.round(State.params.troops*.07);else if((State.params.stability||50)<30)desert-=Math.round(State.params.troops*.03);State.params.troops=clamp(State.params.troops+recruit+desert,0,ECONOMY.troopsMax);State.params.treasury=clamp(State.params.treasury,0,ECONOMY.treasuryMax);return{tax,upkeep,recruit,desert,netTreasury:tax-upkeep,upkeepBase:upkeepDetail.base,upkeepSurcharge:upkeepDetail.surcharge,borderTaxMod:borderMod.tax,borderRecruitMod:borderMod.recruit}},finishBattle(){
 /* 1. 戦闘結果を確定し、未対応案件を選ぶ。 */
 const before=Flow.publicSnapshot();
 const beforeMap={...(State.map||{})};
@@ -12117,7 +12168,7 @@ Opening.renderStory();
 },
 renderStory(){
 setScreen('screenOpening');
-$('screenOpening').innerHTML=`<div class="openingStoryScreen openingFadeIn" onclick="Opening.startGame()"><div class="openingStoryBox storyEnter"><img class="openingAlbrechtPortrait" src="https://lh3.googleusercontent.com/d/1_usv1_60KhMymVgFh1XVDS9IKx72yTN4" alt=""><div class="openingStoryText"><div class="openingPara">16歳の春。アルブレヒトは王となった。</div><div class="openingPara">５人の選帝侯は年若い彼を侮り、隣国は抜け目なく国境をうかがう。<br>17世紀初頭アルトラント公国の舵取りは困難を極めた。</div><div class="openingPara">彼の治世は決して長いものではない。しかしその生涯は、今なお親しく語り継がれている。<span class="openingCite">（『近世ショートッパ史概説』より）</span></div><div class="openingPara"><span class="quote">「鷲の羽ばたきは三十度目の冬を越えることはない」</span><span class="openingCite">（アルブレヒト誕生の日の占い師の言葉）</span></div></div><div class="storyCue">▼</div></div></div>`;
+$('screenOpening').innerHTML=`<div class="openingStoryScreen openingFadeIn" onclick="Opening.startGame()"><div class="openingStoryBox storyEnter"><img class="openingAlbrechtPortrait" src="https://lh3.googleusercontent.com/d/1_usv1_60KhMymVgFh1XVDS9IKx72yTN4" alt=""><div class="openingStoryText"><div class="openingPara">16歳の春。アルブレヒトは王となった。</div><div class="openingPara">５人の選帝侯は年若い彼を侮り、隣国は抜け目なく国境をうかがう。<br>17聖紀初頭アルトラント公国の舵取りは困難を極めた。</div><div class="openingPara">彼の治世は決して長いものではない。しかしその生涯は、今なお親しく語り継がれている。<span class="openingCite">（『近世ショートッパ史概説』より）</span></div><div class="openingPara"><span class="quote">「鷲の羽ばたきは三十度目の冬を越えることはない」</span><span class="openingCite">（アルブレヒト誕生の日の占い師の言葉）</span></div></div><div class="storyCue">▼</div></div></div>`;
 },
 startGame(){
 audio();sfx("next");
@@ -13385,10 +13436,23 @@ for(const k of BORDER_KEYS_AR)before[k]=n(bp[k]);
 nextUpdateBorderPressureTickAR.apply(this,arguments);
 const age=ageNow();
 const cap=age>=25?6:age>=21?4:age>=18?2:1;
+/* 全方面が同時に自動加熱しないよう、自然増加する戦域を最大二つに絞る。
+   案件結果による圧力変化はこの関数の外なので、そのまま尊重される。 */
+const active=new Set(BORDER_KEYS_AR.filter(k=>{
+const st=State.borderWarState?.[k]||'peace';
+return st==='war'||st==='greatWar';
+}));
+const developing=BORDER_KEYS_AR.map(k=>({
+k,score:before[k]+n(State.tension?.[k])*8+n(factObj(k).occupied)*12+n(factObj(k).escalation)*10
+})).sort((a,b)=>b.score-a.score).map(x=>x.k);
+const naturalLimit=age>=18?2:1;
+for(const k of developing){if(active.size>=naturalLimit)break;active.add(k);}
 for(const k of BORDER_KEYS_AR){
 const grew=n(bp[k])-before[k];
-if(grew>cap)bp[k]=Math.min(180,before[k]+cap);
+if(grew>0&&!active.has(k))bp[k]=before[k];
+else if(grew>cap)bp[k]=Math.min(180,before[k]+cap);
 }
+State.borderNaturalGrowthAudit={turn:Number(State.turn||1),fronts:[...active],cap};
 };
 }
 if(typeof resolveBorderPressureNeglect==='function'){
@@ -14027,7 +14091,7 @@ let list=[...(out||[])];
 if(Number(State.turn||1)<4)return list;
 const keys=activeAuthoredWarKeys();
 if(!keys.length)return list;
-const want=keys.some(k=>authoredWarRank(k)==='greatWar')?2:1;
+const want=1;
 let current=list.filter(isCurrentWarCase).length;
 if(current>=want)return list;
 const turn=Number(State.turn||1);
@@ -14041,11 +14105,12 @@ if(list.some(x=>x.id===c.id))continue;
 const replaceAt=list.findIndex(x=>!x.activeBorderMandatory&&!isCurrentWarCase(x)&&!String(x.id||'').startsWith('faction_pressure_')&&!x.marriageCandidate&&!x.unlockActor);
 if(replaceAt>=0)list[replaceAt]=c;else list.push(c);
 State.caseWarSlotKinds=State.caseWarSlotKinds||{};
-State.caseWarSlotKinds[c.id]='greatWar';
+const key=authoredWarSupportKey(c);
+State.caseWarSlotKinds[c.id]=authoredWarRank(key)==='greatWar'?'greatWar':'war';
 if(!carry.ids.includes(c.id))carry.ids.push(c.id);
 current++;
 }
-return list.slice(0,keys.some(k=>authoredWarRank(k)==='greatWar')?8:7);
+return list.slice(0,7);
 }
 const coreWarFinalizeVisiblePipelineBeforeV529=window.coreWarFinalizeVisiblePipeline;
 window.coreWarFinalizeVisiblePipeline=function(oldVisibleCases){
@@ -14625,9 +14690,27 @@ try{audio&&audio();sfx&&(sfx(notice.kind==='birth'?'reveal':'card'));}catch(e){}
 $('screenMain').classList.add('active');
 const title=escapeHtml(notice.title||'王宮の知らせ');
 const body=escapeHtml(notice.text||'').replace(/\n/g,'<br>');
-$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div><div class="royalNoticeScreen openingFadeIn" onclick="State.pendingRoyalBirthNotice=null;View.main()"><div class="openingStoryBox storyEnter adviceLetter royalNoticeBox" data-letter-sender="${title}" onclick="event.stopPropagation();State.pendingRoyalBirthNotice=null;View.main()"><div class="openingStoryText royalNoticeText"><div class="openingPara royalNoticeBody">${body}</div></div><div class="letterNoticeContinue">タップで続ける</div><div class="storyCue">▼</div></div></div>`;
+if(notice.kind==='princessUnlock'){
+ const child=(Array.isArray(State.children)?State.children:[]).find(c=>c&&c.id===notice.childId)||{};
+ const childName=escapeHtml(child.name||notice.childName||'王女');
+ const monogram=escapeHtml(String(child.name||notice.childName||'王').slice(0,1));
+ $('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div><div class="royalNoticeScreen princessUnlockScreen openingFadeIn" onclick="closeRoyalNotice21()"><section class="princessUnlockCard storyEnter" role="dialog" aria-label="${title}" onclick="event.stopPropagation()"><div class="princessUnlockOrnament" aria-hidden="true"><span>${monogram}</span></div><div class="princessUnlockKicker">ROYAL HOUSEHOLD</div><h2>${title}</h2><div class="princessUnlockName">${childName}王女、六歳</div><div class="princessUnlockRule"><i></i><b>新たな働きが解禁されました</b><i></i></div><div class="princessUnlockFeature"><span>王女外交</span><strong>小さな親善使節</strong><small>戦争中の国を除き、外国との緊張緩和や関係改善に力を貸します</small></div><div class="princessUnlockText">${body}</div><button class="princessUnlockContinue" onclick="event.stopPropagation();closeRoyalNotice21()">宮廷へ戻る</button></section></div>`;
+ return true;
+}
+$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div><div class="royalNoticeScreen openingFadeIn" onclick="closeRoyalNotice21()"><div class="openingStoryBox storyEnter adviceLetter royalNoticeBox" data-letter-sender="${title}" onclick="event.stopPropagation();closeRoyalNotice21()"><div class="openingStoryText royalNoticeText"><div class="openingPara royalNoticeBody">${body}</div></div><div class="letterNoticeContinue">タップで続ける</div><div class="storyCue">▼</div></div></div>`;
 return true;
 }
+function closeRoyalNotice21(){
+ const notice=State&&State.pendingRoyalBirthNotice;
+ if(notice&&notice.kind==='princessUnlock'){
+  State.princessDiplomacy=State.princessDiplomacy&&typeof State.princessDiplomacy==='object'?State.princessDiplomacy:{};
+  State.princessDiplomacy.announced=true;
+  State.princessDiplomacy.announcedTurn=State.turn;
+ }
+ State.pendingRoyalBirthNotice=null;
+ if(typeof View!=='undefined'&&View&&typeof View.main==='function')View.main();
+}
+window.closeRoyalNotice21=closeRoyalNotice21;
 
 if(typeof Flow!=='undefined'&&Flow&&typeof Flow.advancePeriodCore==='function'){
  
@@ -19719,16 +19802,9 @@ for(const k of BORDER_KEYS())before[k]=n(bp[k]);
 nextUpdateBorderPressureTickDM.apply(this,arguments);
 const top=topPressureRow();
 if(!top.key)return;
-const a=age();
-const minGain=a>=29?16:a>=25?14:a>=21?12:a>=18?9:5;
-const factBonus=Math.min(8,top.fact*2);
-const tensionBonus=Math.min(6,Math.max(0,n(State&&State.tension&&State.tension[top.key])-4)*2);
-const desired=minGain+factBonus+tensionBonus;
-const grew=n(bp[top.key])-before[top.key];
-if(grew<desired){
-bp[top.key]=clampLocal(before[top.key]+desired,0,180);
-}
-State.phase20DMBorderPacingAudit={turn:turn(),age:a,key:top.key,before:before[top.key],after:n(bp[top.key]),desiredGain:desired,actualGain:n(bp[top.key])-before[top.key]};
+/* 旧処理の強制加算（半期あたり最大16+補正）は、前段の上限を破壊していたため廃止。
+   ここでは観測だけを行い、進行量は統一済みの自然増加規則と案件結果に委ねる。 */
+State.phase20DMBorderPacingAudit={turn:turn(),age:age(),key:top.key,before:before[top.key],after:n(bp[top.key]),actualGain:n(bp[top.key])-before[top.key],controlledBy:'unifiedBorderPacingV541'};
 };
 }
 if(typeof borderBossLevel==='function'){
@@ -24460,8 +24536,10 @@ return function(out,all){
     };
     const peaceRow=rows.find(r=>typeof peaceConferenceReady==='function'&&peaceConferenceReady(r));
     if(peaceRow)addSlot(peaceRow,'peace');
-    const warRows=rows.filter(r=>!peaceRow||r.key!==peaceRow.key).slice(0,2);
-    for(const r of warRows)addSlot(r,r.rank==='greatWar'?'greatWar':'war');
+    else{
+      const row=rows[0];
+      if(row)addSlot(row,row.rank==='greatWar'?'greatWar':'war');
+    }
     if(result.length===out?.length){
       const fallback=nextAppendBorderWarSlots38.apply(this,arguments)||[];
       return fallback;
@@ -27482,6 +27560,10 @@ function peaceReady74(row){
   const fatigue=num(State.warFatigue&&State.warFatigue[row.key]);
   const pressure=num(ensureBorderPressure()[row.key]);
   const bias=num(State.borderPeaceBias&&State.borderPeaceBias[row.key]);
+  /* 開戦直後に講和だけが先に出ると、正式戦争を経ずに戦争が終わる。
+     正式戦争を処理済み、または戦争が二半期続いた場合だけ講和候補にする。 */
+  const formalSeen=(State.completedCases||[]).includes(`phase16_war_${row.key}`);
+  if(!formalSeen&&turns<2)return false;
   if(turns<2&&fatigue<45&&pressure<88+bias*-8)return false;
   return turns>=2||fatigue>=45||pressure>=88||bias>0;
 }
@@ -28469,9 +28551,21 @@ function childAgeYears(ch){
  if(Number.isFinite(Number(ch.ageHalfTurns)))return Math.floor(Number(ch.ageHalfTurns)/2);
  return Math.max(0,Math.floor(((State.turn||1)-Number(ch.bornTurn||State.turn))/2));
 }
+function princessDiplomacyState(){
+ State.princessDiplomacy=State.princessDiplomacy&&typeof State.princessDiplomacy==='object'?State.princessDiplomacy:{};
+ const state=State.princessDiplomacy;
+ if(!state.unlocked){
+  const notified=Array.isArray(State.phase182PrincessSixNotified)?State.phase182PrincessSixNotified:[];
+  const prior=(Array.isArray(State.children)?State.children:[]).find(ch=>ch&&ch.gender==='female'&&ch.status!=='deceased'&&childAgeYears(ch)>=6&&notified.includes(ch.id));
+  if(prior){state.unlocked=true;state.unlockedBy=prior.id;state.unlockedTurn=Number.isFinite(Number(state.unlockedTurn))?Number(state.unlockedTurn):Number(State.turn||0);state.migrated=true;}
+ }
+ return state;
+}
 function livingPrincess(){
+ const unlock=princessDiplomacyState();
+ if(!unlock.unlocked||!unlock.unlockedBy)return null;
  const list=Array.isArray(State&&State.children)?State.children:[];
- return list.find(ch=>ch&&ch.gender==='female'&&ch.status!=='deceased'&&childAgeYears(ch)>=6&&!["重病","critical","grave","dead"].includes(String(ch.healthStage||ch.health||'')))||null;
+ return list.find(ch=>ch&&ch.id===unlock.unlockedBy&&ch.gender==='female'&&ch.status!=='deceased'&&childAgeYears(ch)>=6&&!["重病","critical","grave","dead"].includes(String(ch.healthStage||ch.health||'')))||null;
 }
 const COUNTRY=[
  {key:'altrantLoire',label:'ロアール'},
@@ -28540,9 +28634,17 @@ function resolvePrincessWork(){
 }
 function princessWorkHtml(){
  const r=resolvePrincessWork();if(!r)return'';
- const effects=[`${r.country}への影響 +${r.influenceDelta}`,r.tensionDelta?`${r.country}との緊張 ${r.tensionDelta}`:'',r.diplomacyBonus?`外交 +${r.diplomacyBonus}`:''].filter(Boolean).join(' / ');
- return `<div class="princessWorkBox"><div class="princessWorkKicker">王女の働き</div><div class="princessWorkTitle">${r.princess}王女の小さな外交</div><div class="princessWorkText">${r.text}</div><div class="princessWorkEffect">${effects}</div></div>`;
+ const esc=v=>typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'');
+ const effects=[`${r.country}への影響 +${r.influenceDelta}`,r.tensionDelta?`${r.country}との緊張 ${r.tensionDelta}`:'',r.diplomacyBonus?`外交 +${r.diplomacyBonus}`:''].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join('');
+ const monogram=esc(String(r.princess||'王').slice(0,1));
+ return `<section class="princessWorkBox" aria-label="王女外交"><div class="princessWorkHead"><div class="princessWorkMonogram" aria-hidden="true">${monogram}</div><div><div class="princessWorkKicker">PRINCESS DIPLOMACY</div><div class="princessWorkTitle">${esc(r.princess)}王女の小さな外交</div></div><div class="princessWorkDestination">使節先　${esc(r.country)}</div></div><div class="princessWorkText">${esc(r.text)}</div><div class="princessWorkOutcome"><strong>両国の距離が近づきました</strong><div class="princessWorkEffect">${effects}</div></div></section>`;
 }
+
+window.auditPrincessDiplomacyV544=function(){
+ const state=princessDiplomacyState();
+ const princess=livingPrincess();
+ return {unlocked:!!state.unlocked,announced:!!state.announced,unlockedBy:state.unlockedBy||null,eligiblePrincess:princess?{id:princess.id,name:princess.name||'王女',age:childAgeYears(princess)}:null,candidateCountries:candidates().map(x=>x.label),currentTurnResolved:Object.prototype.hasOwnProperty.call(State.princessWorkByTurn||{},String(State.turn||0))};
+};
 
 // 総括画面の生成直前に一度だけ効果を確定し、画面内へ挿入する。
 if(typeof View==='object'&&View&&typeof View.summary==='function'){
@@ -29367,12 +29469,13 @@ function installCss95(){
 .countryExplanationList95{display:flex!important;flex-direction:column!important;gap:8px!important;}
 .countryExplanationItem95{border-top:1px solid rgba(138,104,50,.26)!important;padding-top:8px!important;}
 .countryExplanationItem95:first-child{border-top:0!important;padding-top:0!important;}
-.countryExplanationItem95.hasCountryImage{display:grid!important;grid-template-columns:164px minmax(0,1fr)!important;gap:12px!important;align-items:center!important;}
-.countryExplanationImage95{display:block!important;width:164px!important;height:96px!important;object-fit:cover!important;object-position:center!important;border:2px solid #8a6832!important;border-radius:10px!important;background:#d7c49a!important;box-shadow:0 3px 8px rgba(55,38,13,.25)!important;}
+.countryExplanationItem95.hasCountryImage{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:10px!important;}
+.countryExplanationItem95.hasCountryImage .countryExplanationCopy95{order:1!important;width:100%!important;}
+.countryExplanationImage95{order:2!important;display:block!important;width:328px!important;max-width:100%!important;height:auto!important;aspect-ratio:41/24!important;object-fit:cover!important;object-position:center!important;border:2px solid #8a6832!important;border-radius:10px!important;background:#d7c49a!important;box-shadow:0 3px 8px rgba(55,38,13,.25)!important;}
 .countryExplanationCopy95{min-width:0!important;}
 .countryExplanationTitle95{display:inline-block!important;margin-bottom:5px!important;padding:2px 9px!important;border-radius:999px!important;background:#102a4c!important;color:#fff1bf!important;border:1px solid #c99b38!important;font-size:12px!important;font-weight:1000!important;letter-spacing:.06em!important;}
 .countryExplanationText95{font-size:14px!important;line-height:1.66!important;font-weight:850!important;color:#30281a!important;}
-@media(max-width:720px){.countryExplanationItem95.hasCountryImage{grid-template-columns:132px minmax(0,1fr)!important;gap:9px!important;}.countryExplanationImage95{width:132px!important;height:82px!important;}.countryExplanationText95{font-size:13px!important;line-height:1.55!important;}}
+@media(max-width:720px){.countryExplanationItem95.hasCountryImage{gap:9px!important;}.countryExplanationImage95{width:328px!important;max-width:100%!important;height:auto!important;}.countryExplanationText95{font-size:13px!important;line-height:1.55!important;}}
 `;
   document.head.appendChild(st);
 }
@@ -29686,14 +29789,6 @@ function deepScrub(obj,seen=new WeakSet()){
   }
   return obj;
 }
-/* チュートリアル案件のバッジを老執事として表示 */
-window.__kingRegisterUnifiedCaseBadgeMiddlewareV157(function(next){return function(c){
-  if(c&&c.id==='tutorial_butler')return `<div class="requestRibbon unifiedCaseBadge req-foreign"><span class="reqKicker">案内</span><span class="reqFaction">老執事</span></div>`;
-  const html=next?next(c):'';
-  return scrubBrotherText(html||'');
-};});
- 
-
 /* 汎用 wife 画像を現在の王妃へ動的に差し替える */
 if(typeof window.__kingRegisterEffectiveEnemyImgMiddlewareV158==='function')window.__kingRegisterEffectiveEnemyImgMiddlewareV158(function(next){return function(c){
     const out=next.apply(this,arguments);
@@ -29820,13 +29915,6 @@ function labelForId(id){
   const a=(window.DATA&&DATA.actors&&DATA.actors[id])||(window.DATA&&DATA.supportActors&&DATA.supportActors[id]);
   return scrubBrotherText(a?(a.shortName||a.displayName||a.name||id):id);
 }
-/* phase112で一度「老執事」に変えたバッジを、見た目はそのまま文言だけチュートリアルへ戻す */
-window.__kingRegisterUnifiedCaseBadgeMiddlewareV157(function(next){return function(c){
-  if(c&&c.id==='tutorial_butler')return `<div class="requestRibbon unifiedCaseBadge req-foreign"><span class="reqKicker">案内</span><span class="reqFaction">チュートリアル</span></div>`;
-  const html=next?next.apply(this,arguments):'';
-  return scrubBrotherText(html||'');
-};});
- 
 /* 采配者名を返す関数があれば、臨時采配者も含めて略称を最優先にする */
 window.actorDisplayName=function(id){return labelForId(id);};
 
@@ -32355,29 +32443,50 @@ try{(DATA&&Array.isArray(DATA.cases)?DATA.cases:[]).forEach(tuneCase);}catch(_){
 (function(){
 'use strict';
 function n(v){v=Number(v);return Number.isFinite(v)?v:0;}
-function childYears182(ch){return Math.floor(n(ch&&ch.ageHalfTurns)/2);}
+function childYears182(ch){
+ if(!ch)return 0;
+ if(Number.isFinite(Number(ch.ageHalfTurns)))return Math.floor(Number(ch.ageHalfTurns)/2);
+ return Math.max(0,Math.floor(((Number(State&&State.turn)||1)-Number(ch.bornTurn||Number(State&&State.turn)||1))/2));
+}
 function liveChildren182(){return Array.isArray(State&&State.children)?State.children.filter(c=>c&&c.status!=='deceased'):[];}
 function princesses182(){return liveChildren182().filter(c=>c.gender==='female');}
 function notifiedSet182(){State.phase182PrincessSixNotified=Array.isArray(State.phase182PrincessSixNotified)?State.phase182PrincessSixNotified:[];return State.phase182PrincessSixNotified;}
 function princessSixText182(ch){
  const name=(ch&&ch.name)||'王女';
- return `${name}王女は六歳を越え、祝宴や使節謁見の席に姿を見せるようになった。\nほがらかな彼女は、宮廷の輪の中で自分の意思を持ち始めている。\nその挨拶や贈り物は、衝突とは別の形で、外国使節と宮廷人の心を少しずつ溶かすだろう。\n\n以後「王女の小さな外交」が起こることがある。`;
+ return `${name}王女は祝宴や使節謁見の席に姿を見せ、宮廷の輪の中で自分の意思を示し始めた。\nその挨拶や贈り物は、剣や条約とは違う形で、外国使節の心を少しずつ動かしていくだろう。`;
+}
+function unlockPrincessDiplomacy182(ch,reason){
+ State.princessDiplomacy=State.princessDiplomacy&&typeof State.princessDiplomacy==='object'?State.princessDiplomacy:{};
+ State.princessDiplomacy.unlocked=true;
+ State.princessDiplomacy.unlockedBy=ch.id;
+ State.princessDiplomacy.unlockedTurn=Number(State.turn||0);
+ State.princessDiplomacy.reason=reason||'ageSix';
+ return State.princessDiplomacy;
 }
 function syncPrincessSixNotice182(reason){
  if(typeof State==='undefined'||!State)return null;
- if(State.pendingRoyalBirthNotice)return null;
  const done=notifiedSet182();
+ const prior=princesses182().find(ch=>childYears182(ch)>=6&&done.includes(ch.id));
+ if(prior&&(!State.princessDiplomacy||!State.princessDiplomacy.unlocked))unlockPrincessDiplomacy182(prior,'savedNoticeMigration');
+ if(State.pendingRoyalBirthNotice)return null;
  const target=princesses182().find(ch=>childYears182(ch)>=6&&!done.includes(ch.id));
  if(!target)return null;
  done.push(target.id);
+ unlockPrincessDiplomacy182(target,reason||'ageSix');
  const text=princessSixText182(target);
- State.pendingRoyalBirthNotice={kind:'princessUnlock',title:'王女の成長',text,childId:target.id,phase182:true};
+ State.pendingRoyalBirthNotice={kind:'princessUnlock',title:'王女の成長',text,childId:target.id,childName:target.name||'王女',phase182:true};
  ensureWorldLogState();
  State.worldLog.push({turn:State.turn,label:`${target.name||'王女'}王女は六歳を迎え、外交の場に姿を見せ始めた。`});
  return State.pendingRoyalBirthNotice;
 }
 window.syncPrincessSixNotice182=syncPrincessSixNotice182;
 window.__cleanV3SyncPrincessSixNotice182=syncPrincessSixNotice182;
+window.auditPrincessSixNoticeV544=function(){
+ const done=notifiedSet182();
+ const princesses=princesses182().map(ch=>({id:ch.id,name:ch.name||'王女',age:childYears182(ch),notified:done.includes(ch.id)}));
+ const diplomacy=State.princessDiplomacy||{};
+ return {princesses,unlocked:!!diplomacy.unlocked,unlockedBy:diplomacy.unlockedBy||null,pending:State.pendingRoyalBirthNotice&&State.pendingRoyalBirthNotice.kind||null};
+};
 
 })();
 
@@ -34703,7 +34812,6 @@ style.textContent=`
 .multiFrontTutorialBox::before{content:attr(data-letter-sender);display:inline-block;margin-bottom:7px;padding:3px 11px;border-radius:999px;background:#102a4c;color:#ffe7ad;border:1px solid #c99b38;font-size:12px;font-weight:1000;letter-spacing:.08em;}
 .multiFrontTutorialBox h2{margin:0 0 11px;color:#102a4c;font-size:24px;}
 .multiFrontTutorialBox p{margin:8px 0;font-size:16px;line-height:1.62;font-weight:850;}
-.multiFrontTutorialBox .multiFrontOperation{margin-top:12px;padding:9px 12px;border:2px solid #8a6832;border-radius:11px;background:#fff7e3;color:#102a4c;text-align:center;font-weight:1000;}
 .multiFrontKeyGuide{display:flex;align-items:center;justify-content:center;gap:22px;margin:12px 0 5px;}
 .multiFrontKeyItem{display:flex;align-items:center;gap:8px;color:#102a4c;font-size:14px;font-weight:1000;}
 .multiFrontKeyCap{display:inline-flex;align-items:center;justify-content:center;width:44px;height:38px;border:3px solid #b48732;border-radius:9px;background:linear-gradient(180deg,#fff8df,#e2bd62);box-shadow:0 4px 0 #76531b,inset 0 1px 0 rgba(255,255,255,.85);font-size:20px;color:#102a4c;}
@@ -34742,8 +34850,8 @@ return `<div class="multiFrontKeyGuide">${keys.slice(0,count).map((key,i)=>`<div
 }
 function tutorialHtmlV517(count){
 const pc=pcModeV517();
-if(count===2)return `<h2>二つの戦線</h2><p>陛下、此度は二つの戦線を同時にお裁きいただきます。</p><p>二つの戦線はそれぞれ別に動きます。一方を処理している間も、もう一方は止まりません。画面全体を見て、衝突が近い戦線から操作してください。</p><p>どちらも完璧に、と気負われませぬよう。危うい戦線を見失わぬことが肝要です。</p><div class="multiFrontOperation">${pc?'対応するキーを押してください。':'それぞれの戦線にある操作ボタンを押してください。'}</div>${keyGuideV517(count)}<button class="tutorialStartBtn" type="button">二つの戦線を始める</button><div class="multiFrontTutorialCue">${pc?'クリックで続ける':'タップで続ける'}</div>`;
-return `<h2>三つの戦線</h2><p>陛下、国はもはや、一つずつ裁きを待ってはくれません。</p><p>三つの戦線は同時に進みます。一つの結果に目を奪われず、次に衝突する戦線へ視線を移してください。</p><p>すべてを完璧に押し返す必要はありません。三方を見失わず、崩れかけた戦線を先に支えるのです。</p><div class="multiFrontOperation">${pc?'対応するキーを押してください。':'それぞれの戦線にある操作ボタンを押してください。'}</div>${keyGuideV517(count)}<button class="tutorialStartBtn" type="button">三つの戦線を始める</button><div class="multiFrontTutorialCue">${pc?'クリックで続ける':'タップで続ける'}</div>`;
+if(count===2)return `<h2>二つの戦線</h2><p>陛下、此度は二つの戦線を同時にお裁きいただきます。</p><p>二つの戦線はそれぞれ別に動きます。一方を処理している間も、もう一方は止まりません。画面全体を見て、衝突が近い戦線から操作してください。</p><p>どちらも完璧に、と気負われませぬよう。危うい戦線を見失わぬことが肝要です。</p>${keyGuideV517(count)}<button class="tutorialStartBtn" type="button">二つの戦線を始める</button><div class="multiFrontTutorialCue">${pc?'クリックで続ける':'タップで続ける'}</div>`;
+return `<h2>三つの戦線</h2><p>陛下、国はもはや、一つずつ裁きを待ってはくれません。</p><p>三つの戦線は同時に進みます。一つの結果に目を奪われず、次に衝突する戦線へ視線を移してください。</p><p>すべてを完璧に押し返す必要はありません。三方を見失わず、崩れかけた戦線を先に支えるのです。</p>${keyGuideV517(count)}<button class="tutorialStartBtn" type="button">三つの戦線を始める</button><div class="multiFrontTutorialCue">${pc?'クリックで続ける':'タップで続ける'}</div>`;
 }
 function removeMultiFrontTutorialV517(){
 document.getElementById('multiFrontTutorialDim')?.remove();
@@ -34858,19 +34966,22 @@ V518_STYLE.textContent=`
 #screenAssign .dispatchActorChoice{position:relative;align-items:start!important}.v518ActorProgress{grid-column:2;display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;margin-top:7px;color:#6a5738;font-size:10px;font-weight:900}.v518ActorProgressTrack{height:6px;background:rgba(42,35,24,.16);border-radius:99px;overflow:hidden}.v518ActorProgressTrack i{display:block;height:100%;width:var(--xp,0%);background:linear-gradient(90deg,#397da6,#56c2cf,#c99b38)}.v518ActorDomain{color:#315e77}.dispatchActorChoice.selected .v518ActorProgress{color:#38515f}.v518AssignedMark{display:inline-flex;margin-left:7px;padding:2px 6px;border-radius:999px;border:1px solid rgba(229,197,111,.45);font-size:9px;color:#ffe5a0;background:rgba(6,24,40,.45);vertical-align:middle}
 /* 戦線ごとの結果 */
 #screenResult .resultBody{padding:14px;background:radial-gradient(circle at 50% 15%,#304969,#17263b 70%)}
-#screenResult .resultCard.v518LaneResult{position:relative;overflow:auto;padding:0!important;border:0!important;background:#101b29!important;color:#f7ead0;box-shadow:0 15px 38px rgba(0,0,0,.4);--tone:#c7a34c;--tone2:#f4db8d;--wash:rgba(199,163,76,.15)}
+#screenResult .resultCard.v518LaneResult{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;padding:0!important;border:0!important;background:#101b29!important;color:#f7ead0;box-shadow:0 15px 38px rgba(0,0,0,.4);--tone:#c7a34c;--tone2:#f4db8d;--wash:rgba(199,163,76,.15)}
 .v518LaneResult::before{content:"";position:absolute;inset:0 0 auto;height:7px;background:linear-gradient(90deg,transparent,var(--tone),var(--tone2),var(--tone),transparent);z-index:2}.v518LaneResult.tone-completeWin{--tone:#f0c64b;--tone2:#fff1a9;--wash:rgba(240,198,75,.20)}.v518LaneResult.tone-majorWin{--tone:#5ca8c9;--tone2:#d9f7ff;--wash:rgba(74,158,194,.18)}.v518LaneResult.tone-minorWin{--tone:#64a888;--tone2:#c8f0d8;--wash:rgba(75,153,113,.16)}.v518LaneResult.tone-draw{--tone:#9fa9b0;--tone2:#edf1ef;--wash:rgba(168,176,181,.13)}.v518LaneResult.tone-minorLoss{--tone:#c9854d;--tone2:#ffd2a4;--wash:rgba(190,112,57,.17)}.v518LaneResult.tone-majorLoss{--tone:#b34942;--tone2:#ffaca0;--wash:rgba(179,67,60,.19)}.v518LaneResult.tone-completeLoss{--tone:#802f35;--tone2:#e97870;--wash:rgba(111,32,38,.28)}
-.v518OutcomeHero{position:relative;min-height:126px;display:grid;grid-template-columns:126px 1fr;gap:18px;padding:25px 30px 18px;background:linear-gradient(120deg,var(--wash),transparent 66%),linear-gradient(180deg,#15283d,#101d2d);border-bottom:1px solid rgba(255,255,255,.09);overflow:hidden}.v518OutcomeSigil{width:104px;height:104px;display:grid;place-items:center;border-radius:50%;border:3px double var(--tone2);background:radial-gradient(circle,var(--wash),rgba(4,13,21,.8));color:var(--tone2);font-size:50px;font-family:serif;font-weight:900;box-shadow:0 0 28px var(--wash),inset 0 0 18px rgba(0,0,0,.55)}.v518OutcomeKicker{font-size:11px;letter-spacing:.18em;color:var(--tone2);font-weight:1000}.v518OutcomeRank{margin:2px 0 2px;font-family:serif;font-size:38px;line-height:1.05;letter-spacing:.10em;color:#fff7dc;text-shadow:0 3px 0 rgba(0,0,0,.3)}.v518OutcomeTitle{font-size:15px;color:#cbd8df;font-weight:900}.v518OutcomeLine{position:absolute;right:24px;top:20px;border:1px solid color-mix(in srgb,var(--tone) 55%,transparent);border-radius:999px;padding:5px 10px;color:var(--tone2);font-size:11px;font-weight:1000}
-.v518OutcomeBody{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(240px,.75fr);gap:14px;padding:14px}.v518OutcomeStory,.v518OutcomeChanges{border-radius:13px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.045);padding:14px}.v518OutcomeLabel{font-size:10px;letter-spacing:.14em;color:var(--tone2);font-weight:1000;margin-bottom:7px}.v518OutcomeStoryText{font-family:serif;font-size:16px;line-height:1.7;color:#f8efd9}.v518OutcomeActor{display:grid;grid-template-columns:50px 1fr;gap:8px;align-items:center;padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.1)}.v518OutcomeActor img{width:50px;height:58px;object-fit:contain;object-position:center bottom;border-radius:8px;background:radial-gradient(circle,#35506a,#122236 72%)}.v518OutcomeActor b{display:block;color:#fff3ce}.v518OutcomeActor span{font-size:10px;color:#adc2ce;font-weight:800}.v518ImpactItem{display:grid;grid-template-columns:50px 1fr;gap:7px;border-top:1px solid rgba(255,255,255,.08);padding:7px 0;font-size:12px;line-height:1.45}.v518ImpactItem:first-of-type{border-top:0}.v518ImpactItem b{color:var(--tone2);font-size:10px;letter-spacing:.05em}.v518OutcomeAction{padding:0 14px 14px;text-align:right}.v518OutcomeAction button{min-width:190px;background:linear-gradient(#f7d978,#d5a93b)}
+.v518OutcomeHero{position:relative;min-height:112px;display:grid;grid-template-columns:88px minmax(0,1fr) 190px;gap:17px;align-items:center;padding:18px 25px;background:linear-gradient(120deg,var(--wash),transparent 66%),linear-gradient(180deg,#15283d,#101d2d);border-bottom:1px solid rgba(255,255,255,.09);overflow:hidden}.v518OutcomeSigil{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;border:3px double var(--tone2);background:radial-gradient(circle,var(--wash),rgba(4,13,21,.8));color:var(--tone2);font-size:38px;font-family:serif;font-weight:900;box-shadow:0 0 28px var(--wash),inset 0 0 18px rgba(0,0,0,.55)}.v518OutcomeKicker{font-size:10px;letter-spacing:.18em;color:var(--tone2);font-weight:1000}.v518OutcomeRank{margin:2px 0 4px;font-family:serif;font-size:35px;line-height:1.05;letter-spacing:.10em;color:#fff7dc;text-shadow:0 3px 0 rgba(0,0,0,.3)}.v518OutcomeTitle{font-size:17px;color:#dce7eb;font-weight:1000}.v518OutcomeActor{display:grid;grid-template-columns:50px 1fr;gap:9px;align-items:center;padding:8px 10px;border:1px solid rgba(255,255,255,.11);border-radius:11px;background:rgba(4,15,25,.32)}.v518OutcomeActor img{width:50px;height:58px;object-fit:contain;object-position:center bottom;border-radius:8px;background:radial-gradient(circle,#35506a,#122236 72%)}.v518OutcomeActor b{display:block;color:#fff3ce;font-size:13px}.v518OutcomeActor span{display:block;margin-top:2px;font-size:9px;color:#adc2ce;font-weight:900;letter-spacing:.08em}.v518OutcomeBody{min-height:0;padding:18px 22px 12px;overflow:auto}.v518OutcomeStory{min-height:100%;border-radius:13px;border:1px solid rgba(255,255,255,.11);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));padding:17px 20px}.v518OutcomeLabel{font-size:10px;letter-spacing:.14em;color:var(--tone2);font-weight:1000;margin-bottom:9px}.v518OutcomeStoryText{font-family:serif;font-size:17px;line-height:1.82;color:#fff4dd}.v518OutcomeAction{padding:0 22px 16px;text-align:right}.v518OutcomeAction button{min-width:190px;background:linear-gradient(#f7d978,#d5a93b)}
 /* 半期総括 */
-#screenResult .resultCard.v518Summary{background:#e8d6ae!important;padding:0!important;border-color:#9f772e!important}.v518SummaryHero{position:relative;padding:17px 20px 15px;background:linear-gradient(120deg,#0d2339,#1b4761);color:#fff0c2;border-bottom:4px solid #c99b38}.v518SummaryKicker{font-size:10px;letter-spacing:.18em;color:#95c7d9;font-weight:1000}.v518SummaryTitle{font-family:serif;font-size:28px;font-weight:1000;letter-spacing:.08em}.v518SummaryMetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.v518Metric{border:1px solid rgba(255,230,155,.25);border-radius:10px;background:rgba(255,255,255,.06);padding:8px 10px}.v518Metric span{display:block;font-size:9px;color:#9fc4d1;font-weight:900;letter-spacing:.08em}.v518Metric b{display:block;margin-top:2px;font-size:15px;color:#fff2c9}.v518Metric em{font-style:normal;font-size:10px;margin-left:4px}.v518Metric em.pos{color:#82dfbf}.v518Metric em.neg{color:#ff9c8d}
-.v518Summary>.turnResultStories,.v518Summary>.summaryBlock,.v518Summary>.economyBreakdown,.v518Summary>.territorySummary,.v518Summary>.cardReward,.v518Summary>.actorConsequence,.v518Summary>.v518GrowthPanel{margin-left:14px!important;margin-right:14px!important}.v518Summary .turnResultStories{margin-top:14px;border:0;background:transparent;padding:0}.v518Summary .turnResultStories h3{font-size:12px;letter-spacing:.12em;color:#544321;margin:0 0 7px}.v518Summary .turnResultStory{position:relative;border:0!important;border-left:8px solid var(--outcome,#999)!important;border-radius:10px!important;background:#fff8e7!important;padding:10px 12px 10px 15px!important;box-shadow:0 3px 9px rgba(71,46,16,.12)}.v518Summary .turnResultStory.tone-completeWin{--outcome:#e0ae25}.v518Summary .turnResultStory.tone-majorWin{--outcome:#4386a6}.v518Summary .turnResultStory.tone-minorWin{--outcome:#5a9874}.v518Summary .turnResultStory.tone-draw{--outcome:#8e969a}.v518Summary .turnResultStory.tone-minorLoss{--outcome:#c17a43}.v518Summary .turnResultStory.tone-majorLoss{--outcome:#ae4740}.v518Summary .turnResultStory.tone-completeLoss{--outcome:#722c33}.v518Summary .turnResultStoryHead b{background:var(--outcome)!important;color:#fff!important;border:0!important;border-radius:999px;padding:3px 8px}.v518Summary .summaryBlock,.v518Summary .economyBreakdown{border-radius:13px!important;border:1px solid rgba(87,61,24,.24)!important;border-left:7px solid var(--section,#788)!important;background:#fff8e7!important;box-shadow:0 3px 9px rgba(71,46,16,.09)}.v518Summary .summaryBlock.v518SectionGrowth,.v518Summary .v518GrowthPanel{--section:#347d9a}.v518Summary .summaryBlock.v518SectionFire{--section:#aa443b}.v518Summary .summaryBlock.v518SectionLand{--section:#a47b2c}.v518Summary .summaryBlock.v518SectionCard{--section:#745893}.v518Summary .summaryBlock.v518SectionPerson{--section:#42775d}.v518Summary .economyBreakdown{--section:#3f7786}.v518Summary .v518GrowthPanel{background:linear-gradient(145deg,#10253b,#173a50)!important;border-left:7px solid #4f9ab1!important}.v518Summary>button,.v518Summary br+button{display:block;margin:14px 14px 16px auto;min-width:210px}
+#screenResult .resultCard.v518Summary{background:#e8d6ae!important;padding:0 0 68px!important;border-color:#9f772e!important}.v518SummaryHero{position:relative;padding:18px 20px 16px;background:linear-gradient(120deg,#0d2339,#1b4761);color:#fff0c2;border-bottom:4px solid #c99b38}.v518SummaryKicker{font-size:10px;letter-spacing:.18em;color:#95c7d9;font-weight:1000}.v518SummaryTitle{font-family:serif;font-size:28px;font-weight:1000;letter-spacing:.08em}.v518SummaryMetrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:11px}.v518Metric{border:1px solid rgba(255,230,155,.25);border-radius:10px;background:rgba(255,255,255,.06);padding:8px 10px}.v518Metric span{display:block;font-size:9px;color:#9fc4d1;font-weight:900;letter-spacing:.08em}.v518Metric b{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:2px;font-size:15px;color:#fff2c9}.v518Metric em{font-style:normal;font-size:12px}.v518Metric em.pos{color:#82dfbf}.v518Metric em.neg{color:#ff9c8d}.v518SummaryEmpty{margin-top:10px;color:#b7ced8;font-size:11px;font-weight:850}.v518Summary>.summaryBlock,.v518Summary>.economyBreakdown,.v518Summary>.actorConsequence,.v518Summary>.v518GrowthPanel,.v518Summary>.princessWorkBox{margin-left:14px!important;margin-right:14px!important}.v518Summary .summaryBlock,.v518Summary .economyBreakdown{border-radius:13px!important;border:1px solid rgba(87,61,24,.24)!important;border-left:7px solid var(--section,#788)!important;background:#fff8e7!important;box-shadow:0 3px 9px rgba(71,46,16,.09)}.v518Summary .summaryBlock.v518SectionCard{--section:#745893}.v518Summary .summaryBlock.v518SectionPerson{--section:#42775d}.v518Summary .summaryBlock.countryExplanationBlock95{--section:#a47b2c}.v518Summary .economyBreakdown{--section:#a53b36}.v518Summary .v518GrowthPanel{background:linear-gradient(145deg,#10253b,#173a50)!important;border-left:7px solid #4f9ab1!important}.v518Summary .v518GrowthActor.levelUp{position:relative;overflow:hidden;box-shadow:0 0 0 2px rgba(244,211,106,.48),0 0 24px rgba(244,211,106,.20)}.v518Summary .v518GrowthActor.levelUp::after{content:"";position:absolute;inset:-60% -30%;background:linear-gradient(105deg,transparent 42%,rgba(255,245,190,.32) 50%,transparent 58%);transform:translateX(-70%);animation:v518LevelSheen 1.15s ease-out both;pointer-events:none}.v518SummaryAction{position:sticky;z-index:80;left:0;right:0;bottom:0;height:68px;margin-top:14px;padding:10px 14px;background:linear-gradient(180deg,rgba(232,214,174,0),#e8d6ae 32%);text-align:right}.v518SummaryAction button{min-width:210px;background:linear-gradient(#f7d978,#d5a93b)}@keyframes v518LevelSheen{to{transform:translateX(70%)}}
+/* 老執事は専用チュートリアル様式を使わず、一般重要案件の水色カードとして扱う。 */
+#screenMain .caseCard.butlerGuideCard,#screenMain .caseCard.butlerGuideCard.selected,#screenMain .caseCard.butlerGuideCard.keyFocus{background:linear-gradient(145deg,#dff6fb,#bdeaf3)!important;border-color:#62b6cc!important;color:#173748!important;box-shadow:0 5px 14px rgba(34,112,136,.18)!important}
+#screenMain .caseCard.butlerGuideCard::before,#screenMain .caseCard.butlerGuideCard::after{content:none!important;display:none!important}
+#screenMain .caseCard.butlerGuideCard .caseTitle,#screenMain .caseCard.butlerGuideCard .caseStory{color:#173748!important;text-shadow:none!important}
+#screenMain .caseCard.butlerGuideCard .requestRibbon{background:linear-gradient(135deg,#d9f5fb,#9cd8e6)!important;border-color:#4fa9c0!important;color:#153848!important}
 /* V519: 重要案件は種類を問わず、レイアウトを変えない同一の金枠で示す。 */
 #screenMain .caseCard.v519ImportantCase{position:relative!important;isolation:isolate!important}
-#screenMain .caseCard .v519ImportanceFrame{position:absolute;inset:3px;z-index:42;pointer-events:none;border:3px solid #e7bd54;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,246,196,.55),inset 0 0 16px rgba(255,205,68,.24),0 0 13px rgba(242,192,56,.44);animation:v519ImportancePulse 1.65s ease-in-out infinite}
+#screenMain .caseCard .v519ImportanceFrame{position:absolute;inset:3px;z-index:42;pointer-events:none;border:3px solid #e7bd54;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(255,246,196,.70),inset 0 0 18px rgba(255,205,68,.34),0 0 14px rgba(242,192,56,.52);animation:v519ImportancePulse 1.32s ease-in-out infinite}
 #screenMain .caseCard.selected .v519ImportanceFrame{border-color:#f3ca61;box-shadow:inset 0 0 0 2px rgba(255,246,196,.62),inset 0 0 18px rgba(255,205,68,.32),0 0 16px rgba(242,192,56,.55)}
 #screenMain .caseCard .v519ImportanceFrame.v519ImportanceArrival{animation:v519ImportanceArrive .82s cubic-bezier(.2,.9,.2,1) 1,v519ImportancePulse 1.65s .82s ease-in-out infinite}
-@keyframes v519ImportancePulse{0%,100%{opacity:.62;filter:brightness(.92)}50%{opacity:1;filter:brightness(1.25)}}
+@keyframes v519ImportancePulse{0%,100%{opacity:.34;filter:brightness(.78)}50%{opacity:1;filter:brightness(1.55)}}
 @keyframes v519ImportanceArrive{0%{opacity:0;transform:scale(.94)}48%{opacity:1;transform:scale(1.025);filter:brightness(1.55)}100%{opacity:.74;transform:none;filter:none}}
 @media(prefers-reduced-motion:reduce){#screenMain .caseCard .v519ImportanceFrame{animation:none!important;opacity:1!important}}
 /* V519: 旧PCフォーカスと旧操作ガイドは視覚・DOMの双方から廃止。 */
@@ -34929,16 +35040,22 @@ function impactRows(r){
  if(!out.length)out.push(['情勢','数値に表れる大きな変化はありません']);return out.slice(0,3);
 }
 function renderLaneResult(r){
- const screen=document.getElementById('screenResult');if(!screen)return;const card=screen.querySelector('.resultCard');if(!card)return;const v=viewForRank(r.rank),line=Number(r.finalLine)||0,story=r.story||'';
- card.className=`resultCard v518LaneResult tone-${v.tone}`;card.innerHTML=`<section class="v518OutcomeHero"><div class="v518OutcomeSigil">${v.sigil}</div><div><div class="v518OutcomeKicker">戦線の決着</div><div class="v518OutcomeRank">${esc(r.label||v.label)}</div><div class="v518OutcomeTitle">${esc(r.case?.title||'')}</div><div class="v518OutcomeLine">決着ライン ${line>=0?'+':''}${line}</div></div></section><section class="v518OutcomeBody"><div class="v518OutcomeStory"><div class="v518OutcomeLabel">この戦線で起きたこと</div><div class="v518OutcomeStoryText">${story}${resultImportantSpecialHtml(r.specialLines||[],2)}</div></div><aside class="v518OutcomeChanges"><div class="v518OutcomeActor"><img src="${esc(actorPortrait(r.actor))}" draggable="false"><div><b>${esc(r.actor?.name||'采配者')}</b><span>${esc(r.actor?.type||'')}として采配</span></div></div><div class="v518OutcomeLabel">残った変化</div>${impactRows(r).map(([k,t])=>`<div class="v518ImpactItem"><b>${esc(k)}</b><span>${esc(t)}</span></div>`).join('')}</aside></section><div class="v518OutcomeAction"><button onclick="Flow.nextResult()">次の記録へ</button></div>`;
+ const screen=document.getElementById('screenResult');if(!screen)return;const card=screen.querySelector('.resultCard');if(!card)return;const v=viewForRank(r.rank),story=r.story||'',portrait=actorPortrait(r.actor);
+ card.className=`resultCard v518LaneResult tone-${v.tone}`;card.innerHTML=`<section class="v518OutcomeHero"><div class="v518OutcomeSigil">${v.sigil}</div><div><div class="v518OutcomeKicker">案件結果</div><div class="v518OutcomeRank">${esc(r.label||v.label)}</div><div class="v518OutcomeTitle">${esc(r.case?.title||'')}</div></div><div class="v518OutcomeActor">${portrait?`<img src="${esc(portrait)}" draggable="false" alt="">`:''}<div><b>${esc(r.actor?.name||'采配者')}</b><span>采配者</span></div></div></section><section class="v518OutcomeBody"><div class="v518OutcomeStory"><div class="v518OutcomeLabel">顛末</div><div class="v518OutcomeStoryText">${story}</div></div></section><div class="v518OutcomeAction"><button onclick="Flow.nextResult()">次の記録へ</button></div>`;
 }
 if(window.View&&typeof View.resultLane==='function'){const oldLaneResult=View.resultLane;View.resultLane=function(r){const ret=oldLaneResult.apply(this,arguments);renderLaneResult(r);return ret;};}
 
 function sectionClassFor(h){const t=h?.textContent||'';if(/成長|戦績/.test(t))return'v518SectionGrowth';if(/火種|余波|未対応/.test(t))return'v518SectionFire';if(/領土|国境|地図/.test(t))return'v518SectionLand';if(/切り札|獲得/.test(t))return'v518SectionCard';if(/人物|王家|負傷|帰還/.test(t))return'v518SectionPerson';return'';}
 function decorateSummary(data){
  const screen=document.getElementById('screenResult'),card=screen?.querySelector('.resultCard');if(!card)return;card.classList.add('v518Summary');
- if(!card.querySelector('.v518SummaryHero')){card.querySelector(':scope>h2')?.remove();card.querySelector(':scope>.resultMini')?.remove();const d=data?.publicDelta||{},money=Number(d.treasury)||0,troops=Number(d.troops)||0;card.insertAdjacentHTML('afterbegin',`<header class="v518SummaryHero"><div class="v518SummaryKicker">HALF-YEAR CHRONICLE</div><div class="v518SummaryTitle">${esc(periodLabel())}の記録</div><div class="v518SummaryMetrics"><div class="v518Metric"><span>国庫</span><b>${fmt(State.params.treasury)} <em class="${money>0?'pos':money<0?'neg':''}">${money?`${money>0?'+':''}${fmt(money)}`:'変動なし'}</em></b></div><div class="v518Metric"><span>兵数</span><b>${fmt(State.params.troops)} <em class="${troops>0?'pos':troops<0?'neg':''}">${troops?`${troops>0?'+':''}${fmt(troops)}`:'変動なし'}</em></b></div><div class="v518Metric"><span>国力</span><b>${esc(nationalPowerRank())}</b></div></div></header>`);}
- const persistent=card.querySelector('.persistentTurnStories');if(persistent)card.querySelector('.compactTurnStoriesV123')?.remove();const stories=card.querySelectorAll('.turnResultStory');stories.forEach((el,i)=>{const lane=data?.lanes?.[i];if(lane)el.classList.add(`tone-${viewForRank(lane.rank).tone}`);});card.querySelectorAll('.summaryBlock').forEach(block=>{const cls=sectionClassFor(block.querySelector('h3'));if(cls)block.classList.add(cls);});
+ card.querySelector(':scope>h2')?.remove();card.querySelector(':scope>.resultMini')?.remove();card.querySelectorAll(':scope>.turnResultStories,:scope>.persistentTurnStories,:scope>.territorySummary').forEach(el=>el.remove());
+ card.querySelectorAll(':scope>.summaryBlock,:scope>.economyBreakdown').forEach(block=>{const title=(block.querySelector('h3')?.textContent||'').trim();const keep=/人物の成長|采配者の状態|切り札|解説|死亡|負傷|離脱|加入|捕虜|帰還|王家/.test(title)||block.classList.contains('countryExplanationBlock95');if(!keep)block.remove();});
+ card.querySelectorAll(':scope>br').forEach(el=>el.remove());
+ if(!card.querySelector('.v518SummaryHero')){const d=data?.publicDelta||{},metrics=[['国庫',Number(State.params.treasury)||0,Number(d.treasury)||0],['兵数',Number(State.params.troops)||0,Number(d.troops)||0],['支持',supportHudState().score,Number(d.support)||0]].filter(([,value,delta])=>delta!==0);const metricHtml=metrics.map(([label,value,delta])=>`<div class="v518Metric"><span>${label}</span><b><strong>${fmt(value-delta)} → ${fmt(value)}</strong><em class="${delta>0?'pos':'neg'}">${delta>0?'+':''}${fmt(delta)}</em></b></div>`).join('');card.insertAdjacentHTML('afterbegin',`<header class="v518SummaryHero"><div class="v518SummaryKicker">この半期に生じた変化</div><div class="v518SummaryTitle">${esc(periodLabel())}の記録</div>${metricHtml?`<div class="v518SummaryMetrics">${metricHtml}</div>`:'<div class="v518SummaryEmpty">国庫・兵数・支持に変化はありませんでした</div>'}</header>`);}
+ card.querySelectorAll('.summaryBlock').forEach(block=>{const cls=sectionClassFor(block.querySelector('h3'));if(cls)block.classList.add(cls);});
+ const button=Array.from(card.querySelectorAll(':scope>button')).find(b=>/次の半期/.test(b.textContent||''))||card.querySelector(':scope>button:last-of-type');
+ if(button&&!button.parentElement.classList.contains('v518SummaryAction')){const action=document.createElement('div');action.className='v518SummaryAction';button.before(action);action.appendChild(button);}
+ const action=card.querySelector(':scope>.v518SummaryAction');if(action){const ordered=[card.querySelector(':scope>.v518GrowthPanel'),card.querySelector(':scope>.actorConsequence'),...Array.from(card.querySelectorAll(':scope>.economyBreakdown')).filter(el=>/采配者の状態/.test(el.textContent||'')),...Array.from(card.querySelectorAll(':scope>.summaryBlock')).filter(el=>/切り札/.test(el.querySelector('h3')?.textContent||'')),card.querySelector(':scope>.princessWorkBox'),card.querySelector(':scope>.countryExplanationBlock95')].filter(Boolean);ordered.forEach(el=>card.insertBefore(el,action));}
 }
 if(Array.isArray(window.__kingViewSummaryMiddlewareV116))window.__kingViewSummaryMiddlewareV116.push(function(next){return function(data){const r=next.apply(this,arguments);decorateSummary(data);requestAnimationFrame(()=>decorateSummary(data));setTimeout(()=>decorateSummary(data),120);return r;};});
 else if(window.View&&typeof View.summary==='function'){const oldSummary=View.summary;View.summary=function(data){const r=oldSummary.apply(this,arguments);decorateSummary(data);return r;};}
@@ -41895,7 +42012,7 @@ window.__V534_FORMAL_WAR_SHEET_SHA256__='46a2615c31ebfdd80074d5597f39834f54caa33
 if(typeof window.normalizeAuthoredBorderRepairPoolsV528==='function')window.normalizeAuthoredBorderRepairPoolsV528();
 window.__FIX_V515_APPLIED__=true;
 window.__V523_CANONICAL_TEXT_HASH__='277cdfd681fb6ce084dda6d995c57850089125ac65a2c5d09257eedf2bb6f63f';
-window.__VERSION__='V540';
+window.__VERSION__='V546';
 })();
 </script>
 </html>
