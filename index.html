@@ -1,3 +1,11 @@
+<!-- FIX V549: age-30 final-case prose remains locked to the authored text; final-phase visibility is now protected from later case-injection wrappers, and the V548 audit ReferenceError is fixed. Pre-30 escalation mechanics are unchanged. -->
+<!-- FIX V548: locked V1-authored age-30 final-case title/intro/result prose after all later wrappers without changing strength or pre-30 escalation mechanics. -->
+<!-- FIX V547: restored V1-authored age-30 final-case prose and final-result presentation while preserving later final-strength mechanics. -->
+<!-- FIX V554: repaired malformed result effects for the 20 expanded Treuval cases, added authored-story fallbacks so result prose cannot silently disappear, and rebuilt lane-result presentation around the three narrative outcomes 成功・苦戦・失敗 while retaining exact seven-rank detail as secondary information. -->
+<!-- FIX V553: rebuilt the actor-growth section inside the half-year result summary as a compact motivational progression panel with visible next-goal, level-up emphasis, XP animation, stat-gain animation, and preserved result-screen flow; growth mechanics unchanged. -->
+<!-- FIX V552: restored centered royal-house notices after a malformed phase141 selector swallowed phase146 positioning; restored map-news cue absolute placement and unified it with the wax-seal advance control; strengthened the neutral/draw judgement cue so it is audible at the same decision beat as success/struggle/loss. -->
+<!-- FIX V551: restored country/person lore on every summary result after V518 moved the advance button into .v518SummaryAction; phase95 now inserts lore before the action container instead of assuming the button is a direct resultCard child. -->
+<!-- FIX V550: restore result lore for runtime-built age-30 final cases and make the summary advance button a normal bottom section instead of sticky overlay. -->
 <!-- FIX V543: use the supplied Googleusercontent image as the document favicon without changing game data or behavior. -->
 <!-- V517: V516 balance plus first-use two-front and three-front butler tutorials. -->
 <!-- FIX V514: removed legacy active-war territory RNG/map moves, unified generic long-neglect loss to one path, and hid numeric pre-war pressure. -->
@@ -261,7 +269,8 @@ to{transform:translateX(90%)}
 .battleTop{grid-template-columns:160px 1fr 160px!important;gap:8px!important;padding-left:10px!important;padding-right:10px!important;}
 .battleTimeKicker{font-size:10px;}
 .timerNum{font-size:26px!important;min-width:76px!important;}
-}.caseCard.storyKeyBrother{border-color:#9fd8ff!important;background:linear-gradient(180deg,#fff3cf,#e9cc8f)!important;box-shadow:0 0 0 4px rgba(95,175,255,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(225,245,255,.72),inset 0 0 18px rgba(95,175,255,.12)!important;}.caseCard.storyKeyMarriage{border-color:#f3cf62!important;background:linear-gradient(180deg,#fff6d2,#e9cc8f)!important;box-shadow:0 0 0 4px rgba(243,207,98,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(255,245,190,.82),inset 0 0 18px rgba(243,207,98,.14)!important;}.caseCard.greatFlowCase{border-color:#f3cf62!important;background:linear-gradient(180deg,#fff7d6,#e9cc8f)!important;box-shadow:0 0 0 4px rgba(243,207,98,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(255,245,190,.70),inset 0 0 18px rgba(243,207,98,.14)!important;}.caseCard.greatFlowCase::before{position:absolute!important;left:11px!important;top:10px!important;width:26px!important;height:26px!important;align-items:center!important;justify-content:center!important;border-radius:50%!important;color:#102033!important;background:#fff1bf!important;border:2px solid #f3cf62!important;font-size:13px!important;font-weight:1000!important;z-index:6!important;pointer-events:none!important;box-shadow:0 2px 0 rgba(0,0,0,.18),0 0 12px rgba(243,207,98,.35)!important;}.caseCard.rebellionScaleSmall{border-color:#f3cf62!important;box-shadow:0 0 0 4px rgba(243,207,98,.22),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(243,207,98,.12)!important;}.caseCard.rebellionScaleMiddle{border-color:#ff9a3c!important;background:linear-gradient(180deg,#fff0c8,#efbd81)!important;box-shadow:0 0 0 4px rgba(255,154,60,.25),0 7px 0 rgba(0,0,0,.24),inset 0 0 22px rgba(255,154,60,.14)!important;}.caseCard.rebellionScaleLarge{border-color:#ff6142!important;background:linear-gradient(180deg,#fff0d8,#f0a28d)!important;box-shadow:0 0 0 4px rgba(255,97,66,.28),0 7px 0 rgba(0,0,0,.25),inset 0 0 24px rgba(255,97,66,.16)!important;}.caseCard.rebellionScaleBrother{border-color:#c68cff!important;background:linear-gradient(180deg,#fff0ff,#dfc2f0)!important;box-shadow:0 0 0 4px rgba(198,140,255,.28),0 7px 0 rgba(0,0,0,.25),inset 0 0 24px rgba(198,140,255,.16)!important;}.caseCard.rebellionScaleBrother::before{content:"♔"!important;color:#fff6cd!important;background:#351352!important;border-color:#c68cff!important;}.historyUndercurrentHud{margin-left:0;max-width:310px;border:1px solid rgba(243,207,98,.58);border-radius:999px;padding:5px 11px;background:linear-gradient(180deg,rgba(70,45,10,.54),rgba(7,18,32,.56));color:#fff1bf;font-size:12px;font-weight:1000;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 0 12px rgba(243,207,98,.18),inset 0 0 12px rgba(255,210,88,.08);}.historyUndercurrentHud.warn{color:#ffe0d7;border-color:rgba(255,107,93,.82);background:rgba(90,18,18,.58);box-shadow:0 0 14px rgba(255,70,45,.25),inset 0 0 12px rgba(255,70,45,.10);}.historyUndercurrentHud.good{color:#dff9ff;border-color:rgba(142,234,255,.62);background:rgba(7,48,82,.50);}.historyUndercurrentHud small{color:rgba(255,232,178,.72);font-size:11px;font-weight:900;}.greatFlowChronicleLine b{color:#f3cf62!important;}.caseCard.greatFlowCase::before{content:none!important;display:none!important;}.caseCard.greatFlowCase .caseTitle{padding-left:0!important;}.caseCard.greatFlowCase.hasRequest .caseTitle{padding-left:0!important;padding-right:168px!important;}.treuvalEndingBox{margin:12px 0 14px;padding:13px 15px;border:2px solid rgba(142,234,255,.76);border-radius:14px;background:linear-gradient(180deg,rgba(7,48,82,.42),rgba(7,18,32,.52));color:#dff9ff;box-shadow:0 0 18px rgba(66,220,255,.16),inset 0 0 16px rgba(66,220,255,.08);}.treuvalEndingLabel{display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:999px;background:#102a4c;color:#dff9ff;border:1px solid rgba(142,234,255,.78);font-size:11px;font-weight:1000;letter-spacing:.08em;}.treuvalEndingTitle{font-size:21px;line-height:1.35;font-weight:1000;color:#fff6cd;}.treuvalEndingText{margin-top:6px;font-size:14px;line-height:1.62;font-weight:850;color:#e8fbff;}.treuvalEndingReason{margin-top:7px;font-size:12px;line-height:1.45;color:#d6bd82;font-weight:900;}.treuvalEndingBox.danger{border-color:rgba(255,97,66,.82);background:linear-gradient(180deg,rgba(90,18,18,.42),rgba(7,18,32,.56));color:#ffe0d7;box-shadow:0 0 18px rgba(255,70,45,.18),inset 0 0 16px rgba(255,70,45,.08);}.treuvalEndingBox.peace{border-color:rgba(243,207,98,.76);background:linear-gradient(180deg,rgba(90,58,10,.36),rgba(7,18,32,.52));color:#fff1bf;box-shadow:0 0 18px rgba(243,207,98,.16),inset 0 0 16px rgba(243,207,98,.08);}.caseCard.tutorial{min-height:110px!important;}.caseCard.tutorial .caseStory{height:52px!important;max-height:52px!important;min-height:52px!important;padding-bottom:3px!important;line-height:1.31!important;}.caseCard.tutorial .caseStory::after{margin-top:2px!important;line-height:1.18!important;}.caseCard.postwarBranchCase{border-color:#d7b56a!important;background:linear-gradient(180deg,#fff5cf,#e6c78b)!important;box-shadow:0 0 0 4px rgba(215,181,106,.22),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(255,246,205,.62),inset 0 0 18px rgba(215,181,106,.12)!important;}.caseCard.postwarBranchSmall{border-color:#78eaff!important;box-shadow:0 0 0 4px rgba(66,220,255,.20),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(66,220,255,.10)!important;}.caseCard.postwarBranchMiddle{border-color:#f3cf62!important;}.caseCard.postwarBranchLarge{border-color:#ff9a3c!important;box-shadow:0 0 0 4px rgba(255,154,60,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(255,154,60,.12)!important;}.caseCard.postwarBranchBrother{border-color:#c07cff!important;background:linear-gradient(180deg,#fff2ff,#dfc7f4)!important;box-shadow:0 0 0 4px rgba(192,124,255,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(192,124,255,.12)!important;}.caseCard.postwarBranchCase::before{content:"戦後"!important;position:absolute!important;left:11px!important;top:10px!important;right:auto!important;bottom:auto!important;width:auto!important;height:24px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:2px 9px!important;border-radius:999px!important;background:#102a4c!important;color:#fff1bf!important;border:2px solid rgba(255,232,178,.78)!important;font-size:10.5px!important;font-weight:1000!important;letter-spacing:.06em!important;z-index:6!important;}.caseCard.postwarBranchBrother::before{content:"弟派"!important;background:#34195a!important;color:#eadcff!important;border-color:#c07cff!important;}.caseCard.postwarBranchCase .caseTitle{padding-left:48px!important;}.caseCard.postwarBranchBrother .caseTitle{padding-left:62px!important;}.historyUndercurrentHud.pressure{border-color:rgba(255,97,66,.86)!important;color:#ffe0d7!important;background:rgba(90,18,18,.58)!important;box-shadow:0 0 14px rgba(255,70,45,.26),inset 0 0 12px rgba(255,70,45,.10)!important;}.caseCard.unresolvedFalloutCase{border-color:#ff8a5c!important;background:linear-gradient(180deg,#fff0dc,#efc19a)!important;box-shadow:0 0 0 4px rgba(255,112,72,.24),0 7px 0 rgba(0,0,0,.24),inset 0 0 20px rgba(255,92,54,.12)!important;}.caseCard.unresolvedFalloutCase::before{position:absolute!important;left:11px!important;top:10px!important;width:26px!important;height:26px!important;align-items:center!important;justify-content:center!important;border-radius:50%!important;color:#ffe0d7!important;background:#5a1212!important;border:2px solid #ff8a5c!important;font-size:14px!important;font-weight:1000!important;z-index:6!important;pointer-events:none!important;box-shadow:0 2px 0 rgba(0,0,0,.18),0 0 12px rgba(255,92,54,.42)!important;}.caseCard.unresolvedFalloutCase .caseTitle{padding-left:34px!important;}.caseCard.unresolvedFalloutCase.hasRequest .caseTitle{padding-left:34px!important;padding-right:168px!important;}.historyUndercurrentHud.fallout{border-color:rgba(255,112,72,.80)!important;color:#ffe0d7!important;background:rgba(90,18,18,.54)!important;box-shadow:0 0 14px rgba(255,70,45,.23),inset 0 0 12px rgba(255,70,45,.10)!important;}.caseCard.storyKeyBrother::before,.caseCard.storyKeyMarriage::before{position:absolute!important;bottom:auto!important;max-width:42px!important;}.caseCard.storyKeyBrother.hasRequest .caseTitle,.caseCard.storyKeyMarriage.hasRequest .caseTitle{min-width:0!important;}.caseCard.storyKeyBrother,.caseCard.storyKeyMarriage{position:relative!important;}.caseCard.storyKeyBrother::before,.caseCard.storyKeyMarriage::before{left:auto!important;top:10px!important;right:12px!important;width:auto!important;height:24px!important;min-width:42px!important;padding:2px 8px!important;align-items:center!important;justify-content:center!important;border-radius:999px!important;font-size:10.5px!important;line-height:1!important;font-weight:1000!important;letter-spacing:.02em!important;z-index:11!important;pointer-events:none!important;box-shadow:0 0 10px rgba(66,220,255,.24),0 2px 0 rgba(0,0,0,.14)!important;transform:none!important;}.caseCard.storyKeyBrother.hasRequest::before,.caseCard.storyKeyMarriage.hasRequest::before{right:158px!important;}.caseCard.storyKeyBrother::before{content:"弟"!important;color:#e8fbff!important;background:linear-gradient(180deg,#104a76,#062844)!important;border:2px solid #9fd8ff!important;}.caseCard.storyKeyMarriage::before{content:"縁談"!important;color:#3a2706!important;background:linear-gradient(180deg,#fff5bf,#f1c756)!important;border:2px solid #c7962d!important;box-shadow:0 0 10px rgba(243,207,98,.28),0 2px 0 rgba(0,0,0,.14)!important;}.caseCard.storyKeyBrother .caseTitle,.caseCard.storyKeyMarriage .caseTitle{min-width:0!important;}.caseCard.storyKeyBrother .caseTitle>span:first-child,.caseCard.storyKeyMarriage .caseTitle>span:first-child{display:block!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;max-width:100%!important;}.caseCard.storyKeyBrother.hasRequest .requestRibbon,.caseCard.storyKeyMarriage.hasRequest .requestRibbon{z-index:12!important;}.caseCard.storyKeyBrother::before,.caseCard.storyKeyMarriage::before{content:none!important;display:none!important;}.caseCard.storyKeyBrother .caseTitle,.caseCard.storyKeyMarriage .caseTitle{padding-left:0!important;padding-right:44px!important;}.caseCard.storyKeyBrother.hasRequest .caseTitle,.caseCard.storyKeyMarriage.hasRequest .caseTitle{padding-left:0!important;padding-right:168px!important;}.caseCard.storyKeyBrother.hasRequest .requestRibbon,.caseCard.storyKeyMarriage.hasRequest .requestRibbon{top:10px!important;right:12px!important;max-width:150px!important;height:24px!important;min-height:24px!important;}.caseCard.storyKeyBrother.hasRequest .requestRibbon .reqFaction,.caseCard.storyKeyMarriage.hasRequest .requestRibbon .reqFaction{max-width:90px!important;}.mapNewsBox{isolation:isolate!important;}.mapNewsMap{position:relative!important;z-index:1!important;}.mapNewsCue,.mapNewsKicker,.mapNewsTitle{position:relative!important;z-index:45!important;}.mapNewsTitle{margin-bottom:12px!important;}.mapNewsMap{margin-top:4px!important;}.caseCard.storyKeyMarriage .caseTitle,.caseCard.storyKeyMarriage.hasRequest .caseTitle{padding-left:0!important;}.caseCard.tutorial{position:relative!important;overflow:visible!important;}.diplomacyBulletinHud{min-width:360px!important;}.diplomacyBulletinText{min-width:0!important;overflow:hidden!important;text-overflow:clip!important;white-space:nowrap!important;}@media (max-width:760px){
+}.caseCard.storyKeyBrother{border-color:#9fd8ff!important;background:linear-gradient(180deg,#fff3cf,#e9cc8f)!important;box-shadow:0 0 0 4px rgba(95,175,255,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(225,245,255,.72),inset 0 0 18px rgba(95,175,255,.12)!important;}.caseCard.storyKeyMarriage{border-color:#f3cf62!important;background:linear-gradient(180deg,#fff6d2,#e9cc8f)!important;box-shadow:0 0 0 4px rgba(243,207,98,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(255,245,190,.82),inset 0 0 18px rgba(243,207,98,.14)!important;}.caseCard.greatFlowCase{border-color:#f3cf62!important;background:linear-gradient(180deg,#fff7d6,#e9cc8f)!important;box-shadow:0 0 0 4px rgba(243,207,98,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(255,245,190,.70),inset 0 0 18px rgba(243,207,98,.14)!important;}.caseCard.greatFlowCase::before{position:absolute!important;left:11px!important;top:10px!important;width:26px!important;height:26px!important;align-items:center!important;justify-content:center!important;border-radius:50%!important;color:#102033!important;background:#fff1bf!important;border:2px solid #f3cf62!important;font-size:13px!important;font-weight:1000!important;z-index:6!important;pointer-events:none!important;box-shadow:0 2px 0 rgba(0,0,0,.18),0 0 12px rgba(243,207,98,.35)!important;}.caseCard.rebellionScaleSmall{border-color:#f3cf62!important;box-shadow:0 0 0 4px rgba(243,207,98,.22),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(243,207,98,.12)!important;}.caseCard.rebellionScaleMiddle{border-color:#ff9a3c!important;background:linear-gradient(180deg,#fff0c8,#efbd81)!important;box-shadow:0 0 0 4px rgba(255,154,60,.25),0 7px 0 rgba(0,0,0,.24),inset 0 0 22px rgba(255,154,60,.14)!important;}.caseCard.rebellionScaleLarge{border-color:#ff6142!important;background:linear-gradient(180deg,#fff0d8,#f0a28d)!important;box-shadow:0 0 0 4px rgba(255,97,66,.28),0 7px 0 rgba(0,0,0,.25),inset 0 0 24px rgba(255,97,66,.16)!important;}.caseCard.rebellionScaleBrother{border-color:#c68cff!important;background:linear-gradient(180deg,#fff0ff,#dfc2f0)!important;box-shadow:0 0 0 4px rgba(198,140,255,.28),0 7px 0 rgba(0,0,0,.25),inset 0 0 24px rgba(198,140,255,.16)!important;}.caseCard.rebellionScaleBrother::before{content:"♔"!important;color:#fff6cd!important;background:#351352!important;border-color:#c68cff!important;}.historyUndercurrentHud{margin-left:0;max-width:310px;border:1px solid rgba(243,207,98,.58);border-radius:999px;padding:5px 11px;background:linear-gradient(180deg,rgba(70,45,10,.54),rgba(7,18,32,.56));color:#fff1bf;font-size:12px;font-weight:1000;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 0 12px rgba(243,207,98,.18),inset 0 0 12px rgba(255,210,88,.08);}.historyUndercurrentHud.warn{color:#ffe0d7;border-color:rgba(255,107,93,.82);background:rgba(90,18,18,.58);box-shadow:0 0 14px rgba(255,70,45,.25),inset 0 0 12px rgba(255,70,45,.10);}.historyUndercurrentHud.good{color:#dff9ff;border-color:rgba(142,234,255,.62);background:rgba(7,48,82,.50);}.historyUndercurrentHud small{color:rgba(255,232,178,.72);font-size:11px;font-weight:900;}.greatFlowChronicleLine b{color:#f3cf62!important;}.caseCard.greatFlowCase::before{content:none!important;display:none!important;}.caseCard.greatFlowCase .caseTitle{padding-left:0!important;}.caseCard.greatFlowCase.hasRequest .caseTitle{padding-left:0!important;padding-right:168px!important;}.treuvalEndingBox{margin:12px 0 14px;padding:13px 15px;border:2px solid rgba(142,234,255,.76);border-radius:14px;background:linear-gradient(180deg,rgba(7,48,82,.42),rgba(7,18,32,.52));color:#dff9ff;box-shadow:0 0 18px rgba(66,220,255,.16),inset 0 0 16px rgba(66,220,255,.08);}.treuvalEndingLabel{display:inline-block;margin-bottom:6px;padding:2px 8px;border-radius:999px;background:#102a4c;color:#dff9ff;border:1px solid rgba(142,234,255,.78);font-size:11px;font-weight:1000;letter-spacing:.08em;}.treuvalEndingTitle{font-size:21px;line-height:1.35;font-weight:1000;color:#fff6cd;}.treuvalEndingText{margin-top:6px;font-size:14px;line-height:1.62;font-weight:850;color:#e8fbff;}.treuvalEndingReason{margin-top:7px;font-size:12px;line-height:1.45;color:#d6bd82;font-weight:900;}.treuvalEndingBox.danger{border-color:rgba(255,97,66,.82);background:linear-gradient(180deg,rgba(90,18,18,.42),rgba(7,18,32,.56));color:#ffe0d7;box-shadow:0 0 18px rgba(255,70,45,.18),inset 0 0 16px rgba(255,70,45,.08);}.treuvalEndingBox.peace{border-color:rgba(243,207,98,.76);background:linear-gradient(180deg,rgba(90,58,10,.36),rgba(7,18,32,.52));color:#fff1bf;box-shadow:0 0 18px rgba(243,207,98,.16),inset 0 0 16px rgba(243,207,98,.08);}.caseCard.tutorial{min-height:110px!important;}.caseCard.tutorial .caseStory{height:52px!important;max-height:52px!important;min-height:52px!important;padding-bottom:3px!important;line-height:1.31!important;}.caseCard.tutorial .caseStory::after{margin-top:2px!important;line-height:1.18!important;}.caseCard.postwarBranchCase{border-color:#d7b56a!important;background:linear-gradient(180deg,#fff5cf,#e6c78b)!important;box-shadow:0 0 0 4px rgba(215,181,106,.22),0 7px 0 rgba(0,0,0,.22),inset 0 0 0 2px rgba(255,246,205,.62),inset 0 0 18px rgba(215,181,106,.12)!important;}.caseCard.postwarBranchSmall{border-color:#78eaff!important;box-shadow:0 0 0 4px rgba(66,220,255,.20),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(66,220,255,.10)!important;}.caseCard.postwarBranchMiddle{border-color:#f3cf62!important;}.caseCard.postwarBranchLarge{border-color:#ff9a3c!important;box-shadow:0 0 0 4px rgba(255,154,60,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(255,154,60,.12)!important;}.caseCard.postwarBranchBrother{border-color:#c07cff!important;background:linear-gradient(180deg,#fff2ff,#dfc7f4)!important;box-shadow:0 0 0 4px rgba(192,124,255,.24),0 7px 0 rgba(0,0,0,.22),inset 0 0 18px rgba(192,124,255,.12)!important;}.caseCard.postwarBranchCase::before{content:"戦後"!important;position:absolute!important;left:11px!important;top:10px!important;right:auto!important;bottom:auto!important;width:auto!important;height:24px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:2px 9px!important;border-radius:999px!important;background:#102a4c!important;color:#fff1bf!important;border:2px solid rgba(255,232,178,.78)!important;font-size:10.5px!important;font-weight:1000!important;letter-spacing:.06em!important;z-index:6!important;}.caseCard.postwarBranchBrother::before{content:"弟派"!important;background:#34195a!important;color:#eadcff!important;border-color:#c07cff!important;}.caseCard.postwarBranchCase .caseTitle{padding-left:48px!important;}.caseCard.postwarBranchBrother .caseTitle{padding-left:62px!important;}.historyUndercurrentHud.pressure{border-color:rgba(255,97,66,.86)!important;color:#ffe0d7!important;background:rgba(90,18,18,.58)!important;box-shadow:0 0 14px rgba(255,70,45,.26),inset 0 0 12px rgba(255,70,45,.10)!important;}.caseCard.unresolvedFalloutCase{border-color:#ff8a5c!important;background:linear-gradient(180deg,#fff0dc,#efc19a)!important;box-shadow:0 0 0 4px rgba(255,112,72,.24),0 7px 0 rgba(0,0,0,.24),inset 0 0 20px rgba(255,92,54,.12)!important;}.caseCard.unresolvedFalloutCase::before{position:absolute!important;left:11px!important;top:10px!important;width:26px!important;height:26px!important;align-items:center!important;justify-content:center!important;border-radius:50%!important;color:#ffe0d7!important;background:#5a1212!important;border:2px solid #ff8a5c!important;font-size:14px!important;font-weight:1000!important;z-index:6!important;pointer-events:none!important;box-shadow:0 2px 0 rgba(0,0,0,.18),0 0 12px rgba(255,92,54,.42)!important;}.caseCard.unresolvedFalloutCase .caseTitle{padding-left:34px!important;}.caseCard.unresolvedFalloutCase.hasRequest .caseTitle{padding-left:34px!important;padding-right:168px!important;}.historyUndercurrentHud.fallout{border-color:rgba(255,112,72,.80)!important;color:#ffe0d7!important;background:rgba(90,18,18,.54)!important;box-shadow:0 0 14px rgba(255,70,45,.23),inset 0 0 12px rgba(255,70,45,.10)!important;}.caseCard.storyKeyBrother::before,.caseCard.storyKeyMarriage::before{position:absolute!important;bottom:auto!important;max-width:42px!important;}.caseCard.storyKeyBrother.hasRequest .caseTitle,.caseCard.storyKeyMarriage.hasRequest .caseTitle{min-width:0!important;}.caseCard.storyKeyBrother,.caseCard.storyKeyMarriage{position:relative!important;}.caseCard.storyKeyBrother::before,.caseCard.storyKeyMarriage::before{left:auto!important;top:10px!important;right:12px!important;width:auto!important;height:24px!important;min-width:42px!important;padding:2px 8px!important;align-items:center!important;justify-content:center!important;border-radius:999px!important;font-size:10.5px!important;line-height:1!important;font-weight:1000!important;letter-spacing:.02em!important;z-index:11!important;pointer-events:none!important;box-shadow:0 0 10px rgba(66,220,255,.24),0 2px 0 rgba(0,0,0,.14)!important;transform:none!important;}.caseCard.storyKeyBrother.hasRequest::before,.caseCard.storyKeyMarriage.hasRequest::before{right:158px!important;}.caseCard.storyKeyBrother::before{content:"弟"!important;color:#e8fbff!important;background:linear-gradient(180deg,#104a76,#062844)!important;border:2px solid #9fd8ff!important;}.caseCard.storyKeyMarriage::before{content:"縁談"!important;color:#3a2706!important;background:linear-gradient(180deg,#fff5bf,#f1c756)!important;border:2px solid #c7962d!important;box-shadow:0 0 10px rgba(243,207,98,.28),0 2px 0 rgba(0,0,0,.14)!important;}.caseCard.storyKeyBrother .caseTitle,.caseCard.storyKeyMarriage .caseTitle{min-width:0!important;}.caseCard.storyKeyBrother .caseTitle>span:first-child,.caseCard.storyKeyMarriage .caseTitle>span:first-child{display:block!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;max-width:100%!important;}.caseCard.storyKeyBrother.hasRequest .requestRibbon,.caseCard.storyKeyMarriage.hasRequest .requestRibbon{z-index:12!important;}.caseCard.storyKeyBrother::before,.caseCard.storyKeyMarriage::before{content:none!important;display:none!important;}.caseCard.storyKeyBrother .caseTitle,.caseCard.storyKeyMarriage .caseTitle{padding-left:0!important;padding-right:44px!important;}.caseCard.storyKeyBrother.hasRequest .caseTitle,.caseCard.storyKeyMarriage.hasRequest .caseTitle{padding-left:0!important;padding-right:168px!important;}.caseCard.storyKeyBrother.hasRequest .requestRibbon,.caseCard.storyKeyMarriage.hasRequest .requestRibbon{top:10px!important;right:12px!important;max-width:150px!important;height:24px!important;min-height:24px!important;}.caseCard.storyKeyBrother.hasRequest .requestRibbon .reqFaction,.caseCard.storyKeyMarriage.hasRequest .requestRibbon .reqFaction{max-width:90px!important;}.mapNewsBox{isolation:isolate!important;}.mapNewsMap{position:relative!important;z-index:1!important;}.mapNewsKicker,.mapNewsTitle{position:relative!important;z-index:45!important;}
+.mapNewsCue{position:absolute!important;z-index:90!important;}.mapNewsTitle{margin-bottom:12px!important;}.mapNewsMap{margin-top:4px!important;}.caseCard.storyKeyMarriage .caseTitle,.caseCard.storyKeyMarriage.hasRequest .caseTitle{padding-left:0!important;}.caseCard.tutorial{position:relative!important;overflow:visible!important;}.diplomacyBulletinHud{min-width:360px!important;}.diplomacyBulletinText{min-width:0!important;overflow:hidden!important;text-overflow:clip!important;white-space:nowrap!important;}@media (max-width:760px){
 .diplomacyBulletinHud{
 min-width:220px!important;
 max-width:330px!important;
@@ -2623,8 +2632,10 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
 
 
 /* phase141: 最終戦カードの補足HUD・光帯を完全非表示 */
-#screenMain .caseCard .finalCaseNote,#screenMain .caseCard[data-case-id="finalcase_last_matter"] 
-
+#screenMain .caseCard .finalCaseNote,
+#screenMain .caseCard[data-case-id="finalcase_last_matter"] .finalCaseNote{
+  display:none!important;
+}
 
 /* phase146: 王朝通知を旧modalBoxではなく手紙UIへ統一
    showRoyalNotice21自体をopeningStoryBox系へ差し替えたため、ここは専用の寸法とボタン整理のみ。 */
@@ -3094,6 +3105,57 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
 #screenBattle .judgement-lose{
   color:#cf5c52!important;
   border-color:#9e3730!important;
+}
+</style>
+
+<!-- FIX V552: map-news advance control uses the same wax-seal language as story windows. -->
+<style id="v552-ui-center-map-cue-fix">
+.mapNewsBox .mapNewsCue{
+  position:absolute!important;
+  right:20px!important;
+  bottom:16px!important;
+  left:auto!important;
+  top:auto!important;
+  width:46px!important;
+  height:46px!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  border-radius:50%!important;
+  color:#ffe8c5!important;
+  font-size:0!important;
+  background:radial-gradient(circle at 34% 27%,rgba(255,222,190,.34) 0 8%,transparent 24%),radial-gradient(circle at 50% 52%,#b94a43 0 34%,#8c2525 62%,#571216 100%)!important;
+  border:2px solid #451014!important;
+  box-shadow:0 4px 0 #320b0e,0 0 0 3px rgba(116,34,31,.18),0 7px 16px rgba(63,15,14,.28),inset 0 0 0 2px rgba(255,211,176,.18),inset 0 -7px 11px rgba(57,8,10,.26)!important;
+  animation:sealPulseV32 1.08s ease-in-out infinite alternate!important;
+  z-index:90!important;
+}
+.mapNewsBox .mapNewsCue::before{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;top:50%!important;
+  width:24px!important;height:18px!important;
+  transform:translate(-50%,-43%)!important;
+  background:linear-gradient(180deg,#fff4d2 0%,#f3c77f 58%,#c98243 100%)!important;
+  clip-path:polygon(0 8%,50% 100%,100% 8%,78% 0,50% 56%,22% 0)!important;
+  filter:drop-shadow(0 2px 0 rgba(66,12,12,.82)) drop-shadow(0 0 4px rgba(255,230,190,.38))!important;
+  pointer-events:none!important;
+}
+.mapNewsBox .mapNewsCue::after{
+  content:""!important;display:block!important;position:absolute!important;
+  left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+  width:12px!important;height:8px!important;
+  transform:translate(-50%,-48%)!important;
+  border:0!important;border-radius:0!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(255,224,183,.18))!important;
+  clip-path:polygon(0 0,50% 100%,100% 0,77% 0,50% 58%,23% 0)!important;
+  opacity:.72!important;pointer-events:none!important;
+}
+/* Royal notices must occupy the whole game area below the topbar and center their card. */
+#screenMain > .royalNoticeScreen{
+  position:absolute!important;
+  inset:54px 0 0 0!important;
+  width:auto!important;height:auto!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
 }
 </style>
 </head>
@@ -12122,7 +12184,8 @@ if(n==='resultLose'){
 lowHit(70,.22,.060,0);tone(196,.20,'sawtooth',.034,.06,{slideTo:130,cutoff:1000,master:.58});return;
 }
 if(n==='resultDraw'){
-tone(330,.14,'triangle',.026,0,{cutoff:2600,master:.50});tone(294,.18,'sine',.018,.11,{cutoff:1600,master:.44});return;
+// V552: neutral result cue must remain audible without sounding like a win/loss.
+lowHit(98,.11,.036,0);tone(392,.105,'triangle',.032,.030,{cutoff:3200,master:.56});tone(349,.18,'sine',.024,.105,{cutoff:1900,master:.50});return;
 }
 if(n==='judgeGreat'){
 lowHit(88,.16,.062,0);chord([392,523,659,880,1175],.34,'triangle',.035,.05,{stagger:true,cutoff:6200,master:.76});bell(1046,.18,.024);bell(1568,.30,.014);return;
@@ -12131,7 +12194,9 @@ if(n==='judgeWin'){
 lowHit(112,.12,.040,0);chord([392,523,659,880],.26,'triangle',.029,.06,{stagger:true,cutoff:5600,master:.68});bell(880,.16,.018);return;
 }
 if(n==='judgeDraw'){
-lowHit(98,.10,.030,0);tone(330,.16,'triangle',.025,.05,{cutoff:2600,master:.50});tone(294,.20,'sine',.018,.12,{cutoff:1500,master:.42});return;
+// V552: the old draw cue was technically firing but was too soft to survive the battle tail.
+// Give it a clear neutral two-note stamp, still weaker/less celebratory than a win.
+lowHit(98,.13,.044,0);tone(392,.11,'triangle',.036,.032,{cutoff:3400,master:.60});tone(349,.19,'triangle',.028,.105,{cutoff:2600,master:.54});metal(.055,.013);return;
 }
 if(n==='judgeStruggle'){
 lowHit(72,.18,.060,0);metal(.04,.018);tone(196,.18,'sawtooth',.032,.08,{slideTo:150,cutoff:1000,master:.55});return;
@@ -14386,7 +14451,7 @@ const applied=[];
 function ensureTags(meta,extra){const out=Object.assign({},meta||{},extra||{});out.tags=[...new Set([...(meta&&meta.tags||[]),...(extra&&extra.tags||[])])];return out;}
 function upsert(spec){
 if(typeof CASE_STAGE_META!=='undefined'&&CASE_STAGE_META){CASE_STAGE_META[spec.id]=ensureTags(CASE_STAGE_META[spec.id]||{},spec.meta||{});}
-const obj={id:spec.id,title:spec.title,category:spec.category||'トレウヴァル',difficulty:spec.difficulty||'normal',ignoreType:spec.ignoreType||'悪化注意',enemy:spec.enemy,lineName:spec.lineName||spec.title,enemyImg:spec.enemyImg||'treuvalSoldier',initialLine:spec.initialLine==null?-10:spec.initialLine,intro:spec.intro,bg:spec.bg||'port',arch:spec.arch||'rush',danger:spec.danger||1,once:spec.once!==false,effects:{win:makeEffects(spec.win||{}),loss:makeEffects(spec.loss||{}),ignored:makeEffects(spec.ignored||{}),stories:spec.stories||[]}};
+const obj={id:spec.id,title:spec.title,category:spec.category||'トレウヴァル',difficulty:spec.difficulty||'normal',ignoreType:spec.ignoreType||'悪化注意',enemy:spec.enemy,lineName:spec.lineName||spec.title,enemyImg:spec.enemyImg||'treuvalSoldier',initialLine:spec.initialLine==null?-10:spec.initialLine,intro:spec.intro,bg:spec.bg||'port',arch:spec.arch||'rush',danger:spec.danger||1,once:spec.once!==false,effects:makeEffects({win:spec.win||{},loss:spec.loss||{},ignored:spec.ignored||{},stories:spec.stories||[]})};
 if(spec.requiresFlag)obj.requiresFlag=spec.requiresFlag;
 const i=DATA.cases.findIndex(c=>c&&c.id===spec.id);if(i>=0)DATA.cases[i]=Object.assign(DATA.cases[i],obj);else DATA.cases.push(obj);applied.push(spec.id);
 }
@@ -17566,10 +17631,10 @@ function badScore(parts){const res=State.reignLog?.caseResults||{};let s=0;for(c
 const ENDINGS={
 ruthenia:{
 label:'ルテニア',enemy:"ルテニア外交団長",enemyImg:'rutheniaSoldier',lineName:'東境決戦',bg:'forest',
-title:"ルテニア外交団",
-intro:"ルテニアの若き女大公エレオノーラが、王の器を見極めるため使節を派遣してきた。わずかな言葉の綾一つさえ、隣国との未来を左右する。",
+title:"ルテニア軍、総動員される",
+intro:"三十歳の冬、東境から届いた早文は、救援を求めるものではなかった。砦はすでに落ち、雪原にルテニアの軍旗が並んでいるという。ルテニアとの長年の因縁を清算する時が来た。",
 note:'長年争ってきたルテニアが総動員を行い、アルトラントに攻め寄せてきた。',
-complete:'三十歳の冬、アルトラント公国は歴史から姿を消した。敗れたからではない。ルテニア大公冠はアルブレヒトの手に渡り、大陸の半ばは一つの旗の下へ集められた。後の地図に公国の名は残らない。ただ、その帝国の紋章にもまた一羽の鷲が描かれていた。',
+complete:'アルブレヒトはルテニア主力を打ち砕くと、退く敵を東の果てまで追い詰め、王都を陥れた。女大公イリーナは降伏し、諸侯は次々にアルトラント王冠へ忠誠を誓った。長くアルトラントを脅かした東方の巨人は解体され、その領土は新たな諸州として組み込まれた。王の座から降りたイリーナは、少女のような安らかな笑みを浮かべたという。',
 wounded:'アルブレヒトはルテニア軍を退け、十四年かけて守った国境を最後まで譲らなかった。だが勝利の直前に受けた傷は深く、王都へ戻る頃には立つこともできなくなっていた。戦火を免れた村では、人々が平和な暮らしを謳歌した。彼らは広場に王の偉業を称えた像を作ったが、その像も苔むして久しい。',
 loss:'アルブレヒトは敗れ、砦と銀山、いくつもの村をルテニアへ明け渡した。退却の途上で受けた傷は深く、王都へ戻ったのち、春を待たずに息を引き取った。家を奪われた民は、王が最後まで退路を守って倒れたことを知っていた。それでも故郷は戻らず、人々は責めることさえできないまま失った過去を思い続けた。',
 effects:{win:{prestige:8,stability:4,diplomacy:3,troops:-150,map:{altrantRuthenia:1}},loss:{prestige:-10,stability:-6,diplomacy:-4,troops:-360,treasury:-3,map:{altrantRuthenia:-1}},ignored:{prestige:-8,stability:-5,diplomacy:-4,troops:-220,map:{altrantRuthenia:-1}}}
@@ -17579,17 +17644,17 @@ label:'ロアール',enemy:'ロアール宮廷軍',enemyImg:'loireSoldier',lineN
 title:'ロアール軍、攻め寄せる',
 intro:'三十歳の冬、長年の相克の末、ロアールはついに礼節の仮面を投げ捨てた。聖欧最強と謳われたロアール軍が西方街道を埋め尽くし、王都へと進んでくる。',
 note:'長年争ってきたロアールが礼節の仮面を投げ捨て、襲いかかってきた。',
-complete:'三十歳の冬、ロアールの王冠はアルブレヒトの前に置かれた。舞踏会の言葉で争っていた宮廷は、以後ひとつの宮廷として記録される。アルトラント公国の名は、広すぎる版図を呼ぶには小さくなった。西方の花と北方の鷲は、同じ旗に縫い込まれた。後の年代記は、この冬を帝国宮廷の始まりとする。',
+complete:'潰走したロアール軍を追うアルブレヒトは、ついに王都を包囲した。数年の膠着の後、王は剣を差し出し、アルトラントへの忠誠を誓った。ロアールは属領を含め解体され、二つの国を隔てていた国境は地図から消えた。後世の年代記はこの年を、アルトラントが聖欧を呑み込み、帝国へ変わった冬と記している。',
 wounded:'ロアール軍は退き、西方国境は守られた。だが最後の戦いで、アルブレヒトは深い傷を負った。王は民の前で勝利を告げたあと、誰にも支えを借りず宮殿へ戻った。王は城下から響く、勝利を祝う粗野な歌を聞きながら息を引き取ったという。その歌こそ、自らが守ったアルトラントの歌だった。',
 loss:'破竹の勢いのロアール軍は、西方の城々を残らず占領した。アルブレヒトは退却する兵を逃がすため最後まで戦場に残り、深い傷を負った。王都へ戻った彼を迎えたのは歓声ではなく、帰らない家族を待つ怨嗟の声だった。王はその列の前で馬を降り、頭を下げたという。翌朝、息を引き取る前の最後の言葉は遺族への謝罪であった。',
 effects:{win:{prestige:7,diplomacy:5,citySupport:3,troops:-90,map:{altrantLoire:1}},loss:{prestige:-8,diplomacy:-6,citySupport:-4,treasury:-3,map:{altrantLoire:-1}},ignored:{prestige:-6,diplomacy:-5,citySupport:-4,treasury:-2,map:{altrantLoire:-1}}}
 },
 rick:{
 label:'リック',enemy:"リック聖庁使節",enemyImg:'rickSoldier',lineName:'信仰決戦',bg:'cathedral',
-title:"長柄鍵軍への参陣",
-intro:"リックが聖地奪還のために何度目かの長柄鍵軍を準備している。支援に応じれば教会は喜ぶが、国庫と兵に余裕があるわけでもない。",
+title:"リック、アルブレヒトを破門する",
+intro:"三十歳の冬、聖王ロレンツォはアルブレヒトを信仰に背く王と断罪した。国内の司祭には王命を拒むよう布告が下され、王国は内と外からリックに切り崩され始めた。",
 note:'リックの聖王ロレンツォは、アルブレヒトを信仰の敵と断じた。',
-complete:'三十歳の冬、リックの聖都はアルブレヒトを守護者として迎えた。祈りの言葉は一つにはならなかったが、剣で裁く者はいなくなった。王国は公国の枠を越え、大陸信仰を支える帝国へ姿を変えた。聖堂の扉には王冠ではなく、鷲の浮き彫りが加えられた。鐘は長く、勝利とも葬送ともつかぬ音で鳴り続けた。',
+complete:'リックの騎士団は壊滅し、ロレンツォは聖印をアルブレヒトに差し出した。聖庁は解体され、全国の修道院はアルトラントの法の下に組み込まれた。リックは一国としての名を失い、その領土と信徒はアルトラントへ併呑された。翌年、歴史上初めてトリック信徒とスタント信徒の婚姻が認められた。参列者は若者の幸せを願いながら、新しい国の始まりをそこに重ねた。',
 wounded:'リックの騎士団は退き、修道士の多くはアルトラントに忠誠を誓った。だが最後の乱戦で、アルブレヒトは脇腹に矢を受けた。王は傷を伏せたまま、異なる宗派の礼拝を認め、聖庁による裁判と騎士の駐留を禁じた。自らが生きて迎えられぬ春を、王国だけには迎えさせようとした。アルブレヒトが息を引き取った夜、礼拝堂ではトリック信徒とスタント信徒が肩を並べた。祈りの言葉は違っていた。だが誰もが、同じ王のために頭を垂れていた。',
 loss:'聖王ロレンツォの命令は、アルトラントの礼拝堂に入り込むようになった。民は変わらず祈りを捧げたが、鐘が鳴るたび、その音に他国の権威を聞き取った。敗走中、矢を受けたアルブレヒトは、負傷を誰にも明かさなかった。敗北に怯える民の動揺を恐れたからである。雪解けの日、王都では春を告げる鐘が賑やかに鳴った。アルブレヒトがその音を聞くことはなかった。',
 effects:{win:{prestige:6,stability:5,churchSupport:5,troops:-100,map:{altrantRick:1}},loss:{prestige:-7,stability:-7,churchSupport:-8,diplomacy:-3,map:{altrantRick:-1}},ignored:{prestige:-6,stability:-6,churchSupport:-6,map:{altrantRick:-1}}}
@@ -17599,17 +17664,17 @@ label:'ソリア',enemy:'ソリア契約軍',enemyImg:'soliaKing',lineName:'峠�
 title:'ソリア、峠道に押し寄せる',
 intro:'ソリアはついに宣戦布告を発した。未払いの傭兵契約、破られた約束、軽んじられた中立が王国へ突きつけられた。峠道は閉ざされ、山の村々には総動員の触れが出回った。先月までアルトラントを鍛えていた教官たちは、王を撃つためにマスケット銃を磨き上げた。',
 note:'ソリアはついに宣戦布告を発した。未払いの傭兵契約、破られた約束、軽んじられた中立が王国へ突きつけられた。',
-complete:'三十歳の冬、ソリアの峠と傭兵契約はアルブレヒトの印章に従った。山の国は征服地ではなく、帝国軍制の心臓となった。王国軍は諸侯の寄せ集めではなく、大陸を動かす一つの機械へ変わった。アルトラント公国という名は、その軍列の長さに耐えきれなかった。後の兵法書は、この冬を帝国軍の誕生として記す。',
+complete:'ソリアの精鋭傭兵団は王の気迫の前に敗れ、アルブレヒトの前へひれ伏した。王は彼らを解散させず、王国軍へ迎え入れた。銃兵、山岳兵は一つの軍制に組み直され、アルトラントは聖欧最強の軍事国家へ変貌した。周囲の国々を併呑し、アズラクとの決戦に挑むのは、この８０年後のことである。',
 wounded:'峠道は開かれ、ソリアの軍勢は退いた。だが最後に放たれた銃弾が、王の脇腹に深く突き刺さった。彼は勝利の報告を聞き終えるまで決して横になろうとしなかった。雪解けを待つ頃、傷は次第に悪化し、群衆の悲嘆の声を聞きながらアルブレヒトは静かに息を引き取った。',
 loss:'補給隊は山中で立ち往生した。一列に並んだ銃兵を前に、アルトラントの騎士たちはマスケット銃の的にされた。食糧も弾薬も尽きるなか、侵攻はなすすべもなく続いた。王は撤退中に受けた銃創を抱え、王都へ戻った。数日後、勝利の報せが届かぬまま、アルブレヒトは静かに息を引き取った。',
 effects:{win:{prestige:7,diplomacy:4,troops:-80,map:{altrantSolia:1}},loss:{prestige:-8,diplomacy:-5,troops:-300,treasury:-4,map:{altrantSolia:-1}},ignored:{prestige:-6,diplomacy:-4,troops:-180,map:{altrantSolia:-1}}}
 },
 seafeara:{
-label:'セーフェアラ',enemy:"セーフェアラ商業使節",enemyImg:'seafearaKing',lineName:'港湾決戦',bg:'port',
-title:"セーフェアラの商館",
-intro:"海の商業連盟セーフェアラが、港湾使用権と引き換えに大規模な交易を持ちかけてきた。需要は大きいが、主導権を渡せば銀の流出が危ぶまれる上、地場産業が飲み込まれる。",
+label:'セーフェアラ',enemy:"セーフェアラの艦隊",enemyImg:'seafearaKing',lineName:'港湾決戦',bg:'port',
+title:"セーフェアラの艦隊、港を封鎖する",
+intro:"セーフェアラの艦隊が、主要港を封鎖した。狙いは王を退位させ、従順な傀儡へ王冠をすげ替えることにある。",
 note:'セーフェアラの艦隊が、主要港を封鎖した。狙いは王を退位させ、従順な傀儡へ王冠をすげ替えることにある。',
-complete:'三十歳の冬、セーフェアラの港湾評議会はアルブレヒトに膝を折った。海路は王の許可なく動かず、諸国の財政は王都の帳簿へ繋がれた。かつての公国は、陸だけの国ではいられなくなった。後の人々はこの時代を黄金の帝国と呼ぶ。古い国名は、銀貨の縁に小さく残った。',
+complete:'セーフェアラは王をすげ替えるため、債務艦隊、傭兵、買収した諸侯を総動員し、海と陸からアルトラントへ押し寄せた。長い戦いの果てにアルブレヒトは艦隊を焼き、敵の上陸軍を退け、王都へ通じるすべての街道を奪い返した。セーフェアラは、賠償として船団、保険網、海外商館、為替市場の全てを明け渡した。やがてアルトラントは、大陸の海と富を動かす黄金の帝国となる。',
 wounded:'セーフェアラの封鎖は破られ、王冠のすげ替えは阻まれた。過半を失った艦隊は沖へ退き、王国の港には久しく途絶えていた荷役の鐘が戻った。だが、一本の矢がアルブレヒトの脇腹を深く貫いていた。王は痛みを隠して最後まで采配をふるった。冬が深まるにつれ、傷の熱は王の体を蝕んだ。港の鐘が朝の訪れを告げたその日、王宮では弔鐘が鳴り、平和な海だけが静かに輝いていた。',
 loss:'港は再び開かれた。だがそこに戻ったのはセーフェアラに許された商いだった。契約と銀貨がすべてを支配し、役人たちは自国の埠頭で異国の帳簿を心待ちにするようになった。アルブレヒトが撤退戦で受けた矢傷は重く、再び人前に出ることはなかった。冬の終わり、王都の市場は静かに半旗を掲げた。港では荷役の賑わいが響き渡り、王の死を告げる鐘の音をかき消していた。',
 effects:{win:{prestige:6,citySupport:5,treasury:-2,diplomacy:3,map:{altrantSeafeara:1}},loss:{prestige:-7,citySupport:-6,treasury:-8,diplomacy:-4,map:{altrantSeafeara:-1}},ignored:{prestige:-5,citySupport:-5,treasury:-6,map:{altrantSeafeara:-1}}}
@@ -17619,12 +17684,16 @@ label:'弟ルートヴィヒ',enemy:'弟旗印の反王派',enemyImg:'brotherLat
 title:'弟旗印、王都へ進む',
 intro:'弟の名を掲げる旗が王都へ近づく。王の迷い、貴族たちの不満、継承をめぐる噂――十四年のあいだに積もったすべてが、ついにルートヴィヒをもう一人の王として立たせたのだ。',
 note:'弟の野心を抑えきれず、貴族たちの支持まで失った結果、ルートヴィヒを担ぐ貴族たちが最後の敵として立ちはだかった。',
-complete:'王都の門は、戦いの前に開かれた。アルブレヒトは弟を屈服させるのではなく、王朝の半身として迎え入れた。公国は一人の王の国ではなく、兄弟の誓約で支えられる新しい帝国へ変わった。反王派の旗は焼かれず、王家の旗の内側へ縫い込まれた。二人の名は、のちに同じ墓碑へ刻まれる。',
+complete:'両軍が見守る中、兄弟はただ二人で剣を交え、誰一人として手を出すことはなかった。アルブレヒトは弟を完全に打ち破ったが、とどめを刺さず、その命を救った。ルートヴィヒは隠遁し、内憂を乗り越えたアルトラントは大陸屈指の強国となった。ルートヴィヒが死んだ時、王は反逆を許し、一族の墓へ葬った。今では国の名前も変わったが、二人の眠るその墓所は今も穏やかな空気を漂わせている。',
 wounded:'反対派の貴族たちは退き、王冠は守られた。だが混戦の中放たれた一本の矢が、アルブレヒトの脇腹を深く貫いていた。弟ルートヴィヒは、兄の寝台のそばを離れなかったという。翌春を迎えることなく、王は静かに息を引き取った。',
 loss:'その年、アルトラントには二人の王がいた。兄を奉じる軍と弟を担ぐ軍が国を二つに裂き、最後の戦いでアルブレヒトは矢傷を受けた。勝敗が決したあとも傷は癒えず、冬の終わり、アルブレヒトは静かに息を引き取った。',
 effects:{win:{prestige:8,stability:5,nobleSupport:4,troops:-120},loss:{prestige:-10,stability:-8,nobleSupport:-8,troops:-220},ignored:{prestige:-8,stability:-6,nobleSupport:-6,troops:-120}}
 }
 };
+/* V548: 30歳「最後の一件」文章の正本。ゲーム数値・敵選択・強度判定は含めない。 */
+window.__FINAL30_AUTHORED_TEXT_V548=Object.freeze(Object.fromEntries(Object.entries(ENDINGS).map(([key,e])=>[key,Object.freeze({
+  title:e.title,intro:e.intro,note:e.note,complete:e.complete,wounded:e.wounded,loss:e.loss
+})])));
 function enemyScores(){
 const g=gf(),q=p();
 const scores={
@@ -17652,7 +17721,7 @@ const choice=chooseEnemy();
 const key=choice.key;
 const e=ENDINGS[key]||ENDINGS.ruthenia;
 const c={
-id:FINAL_ID,title:"最後の事件：王冠をめぐる争い",category:'最後の一件',difficulty:finalCaseDifficulty(key),ignoreType:'放置不可',once:true,finalCase:true,finalEnemyCase:true,phase26Final:true,
+id:FINAL_ID,title:`最後の事件：${e.title}`,category:'最後の一件',difficulty:finalCaseDifficulty(key),ignoreType:'放置不可',once:true,finalCase:true,finalEnemyCase:true,phase26Final:true,
 finalCaseType:'duel',finalCaseTheme:key,finalEnemy:key,finalEnemyLabel:e.label,finalCaseNote:`三十歳の冬。${e.note} 最後の敵：${e.label} / 積み残した争い ${choice.score}`,
 danger:key==='brother'||key==='ruthenia'?5:4,enemy:e.enemy,enemyImg:e.enemyImg,lineName:e.lineName,initialLine:finalInitialLine(key),intro:e.intro,
 effects:makeEffects({win:e.effects.win,loss:e.effects.loss,ignored:e.effects.ignored,stories:["敵を退け、王冠は守られた。","アルトラントには深い傷が刻まれた。","王は敗れ、アルトラントはその形を大きく変えることとなった。"]})
@@ -28080,14 +28149,14 @@ function tuneFinalCase(c){
  const route=ROUTES[key]||ROUTES.ruthenia;
  const tier=strengthTier(key),d=route[tier]||route.mid;
  c.coreFinalStrengthTier=tier;
- c.title=d.title;
- c.enemy=route.enemy;
- c.enemyImg=route.img;
- c.lineName=route.line;
+ if(!c.title)c.title=d.title;
+ if(!c.enemy)c.enemy=route.enemy;
+ if(!c.enemyImg)c.enemyImg=route.img;
+ if(!c.lineName)c.lineName=route.line;
  c.initialLine=d.line;
  c.difficulty=(tier==='low'&&(key==='seafeara'||key==='loire'||key==='solia'))?'hard':'desperate';
- if(d.intro)c.intro=d.intro;
- c.finalCaseNote=`三十歳の最終決戦。敵：${c.finalEnemyLabel||route.enemy}／強度：${tier==='high'?'最重度':tier==='mid'?'重度':'標準'}。これまでの案件結果によって戦力が変化しています。`;
+ if(!c.intro&&d.intro)c.intro=d.intro;
+ if(!c.finalCaseNote)c.finalCaseNote=`三十歳の冬、積み残してきた争いが、王国の危機となって押し寄せた。`;
  return c;
 }
 window.coreFinalVisiblePipeline=function(base,ctx,args){
@@ -28131,28 +28200,35 @@ const DEATH_TEXT={
 };
 function applyFinalOutcome(r){
  if(!State.finalCaseResult)return;
+ const authoredText=State.finalCaseResult.text;
+ const authoredTier=State.finalCaseResult.tier;
+ const authoredOutcome=State.finalCaseResult.outcome;
+ const authoredSuccess=State.finalCaseResult.success;
+ const authoredHardFail=State.finalCaseResult.hardFail;
  const key=r.case.finalEnemy||State.finalCaseResult.finalEnemy||State.finalCaseResult.theme||'ruthenia';
  const kind=outcomeKind(r.rank),texts=OUTCOME[key]||OUTCOME.ruthenia;
  State.finalCaseResult.finalEnemy=key;
  State.finalCaseResult.theme=key;
  State.finalCaseResult.enemyLabel=key==='brother'?'弟ルートヴィヒ':({ruthenia:'ルテニア',rick:'リック',seafeara:'セーフェアラ',loire:'ロアール',solia:'ソリア'}[key]||key);
  State.finalCaseResult.rank=r.rank;
- State.finalCaseResult.tier=kind;
- State.finalCaseResult.outcome=kind==='completeWin'?'完全勝利':kind==='win'?'勝利':kind==='draw'?'引き分け':kind==='loss'?'敗北':'完全敗北';
- State.finalCaseResult.success=kind==='completeWin'||kind==='win';
- State.finalCaseResult.hardFail=kind==='loss'||kind==='completeLoss';
+ State.finalCaseResult.coreOutcomeKind=kind;
+ State.finalCaseResult.coreOutcomeLabel=kind==='completeWin'?'完全勝利':kind==='win'?'勝利':kind==='draw'?'引き分け':kind==='loss'?'敗北':'完全敗北';
+ State.finalCaseResult.tier=authoredTier;
+ State.finalCaseResult.outcome=authoredOutcome;
+ State.finalCaseResult.success=authoredSuccess;
+ State.finalCaseResult.hardFail=authoredHardFail;
  const politicalText=texts[kind];
  const survives=kind==='completeWin';
  const deathText=survives?'':(DEATH_TEXT[key]||DEATH_TEXT.ruthenia);
- State.finalCaseResult.text=politicalText+(deathText?'\n\n'+deathText:'');
+ State.finalCaseResult.text=authoredText||(politicalText+(deathText?'\n\n'+deathText:''));
  State.finalCaseResult.kingSurvives=survives;
  State.finalCaseResult.kingDies=!survives;
  State.finalCaseResult.deathCause=survives?null:'矢傷';
  State.finalCaseResult.deathSeason=survives?null:'三十歳の冬';
  State.finalCaseResult.strengthTier=r.case.coreFinalStrengthTier||strengthTier(key);
  if(Array.isArray(r.specialLines)){
-   r.specialLines=r.specialLines.filter(x=>!String(x).includes('最後の一件：')&&!String(x).includes('<b>最後の一件</b>'));
-   r.specialLines.push(`<b>最後の一件：${State.finalCaseResult.outcome}</b><br>${State.finalCaseResult.text.replace(/\n\n/g,'<br><br>')}`);
+   r.specialLines=r.specialLines.filter(x=>!String(x).includes('最後の一件：')&&!String(x).includes('<b>最後の一件</b>')&&!String(x).includes('最後の事件：')&&!String(x).includes('<b>最後の事件</b>'));
+   r.specialLines.push(`<b>最後の事件</b><br>${State.finalCaseResult.text.replace(/\n\n/g,'<br><br>')}`);
  }
 }
 try{if(State)State.caseCache=null;}catch(_){ }
@@ -28781,7 +28857,7 @@ function updateWindowGuides(){
  const selectors=[
   '#firstCasePickTutorial .openingStoryBox','#brotherReturnTutorial .openingStoryBox','#marriageCaseTutorial .openingStoryBox','#pickTwoTutorial .openingStoryBox',
   '#tutorialOverlay','#tutorialBadOverlay','.firstCaseTutorialScreen .openingStoryBox','.pickTwoTutorial .openingStoryBox',
-  '#screenOpening .openingStoryBox','#screenMain .yearStory','#screenMain .chronicleStory'
+  '#screenOpening .openingStoryBox','#screenMain .yearStory','#screenMain .chronicleStory','#screenMapNews .mapNewsBox'
  ];
  document.querySelectorAll(selectors.join(',')).forEach(el=>addWindowGuide(el));
  // 単一の「続ける」型モーダルのみ案内。選択肢モーダルは別表示。
@@ -29384,7 +29460,7 @@ function countryTutorials95(){
 function caseTags95(c){try{return (typeof caseMeta==='function'?(caseMeta(c).tags||[]):(c&&Array.isArray(c.tags)?c.tags:[]))||[];}catch(_){return c&&Array.isArray(c.tags)?c.tags:[];}}
 function countryKeyForCase95(c){
   if(!c)return'';
-  const hay=(String(c.id||'')+' '+String(c.title||'')+' '+String(c.category||'')+' '+String(c.enemy||'')+' '+caseTags95(c).join(' ')).toLowerCase();
+  const hay=(String(c.id||'')+' '+String(c.title||'')+' '+String(c.category||'')+' '+String(c.enemy||'')+' '+String(c.finalEnemy||'')+' '+String(c.finalCaseTheme||'')+' '+String(c.finalEnemyLabel||'')+' '+caseTags95(c).join(' ')).toLowerCase();
   const checks=[
     ['seafeara',/seafeara|セーフェアラ|マルチェロ|アルバロ|商館|商業連盟/],
     ['treuval',/treuval|トレウヴァル|霧海|長船|ダグダン|コルム/],
@@ -29408,14 +29484,32 @@ function selectedResultCases95(data){
   });
   return out;
 }
+const FINAL_RESULT_LORE_V550=Object.freeze({
+  brother:{countries:['altrant'],people:['brother']},
+  ruthenia:{countries:['ruthenia'],people:['irina']},
+  rick:{countries:['rick'],people:['support_rick']},
+  seafeara:{countries:['seafeara'],people:['alvaro']},
+  loire:{countries:['loire'],people:['armand']},
+  solia:{countries:['solia'],people:['wolfram']}
+});
+function finalResultLore95(c){
+  if(!c)return null;
+  const isFinal=String(c.id||'')==='finalcase_last_matter'||c.finalCase===true||c.finalEnemyCase===true;
+  if(!isFinal)return null;
+  const key=String(c.finalEnemy||c.finalCaseTheme||'').trim();
+  return FINAL_RESULT_LORE_V550[key]||null;
+}
 function countryResultExplanationsHtml95(data){
   const countries=window.COUNTRY_LORE_V522||countryTutorials95();
   const people=window.PERSON_LORE_V522||{};
   const used=[];
   const seen=new Set();
   selectedResultCases95(data).forEach(c=>{
-    const countryIds=Array.isArray(c.loreCountryIds)?c.loreCountryIds:[countryKeyForCase95(c)].filter(Boolean);
-    const personIds=Array.isArray(c.lorePersonIds)?c.lorePersonIds:[];
+    const finalLore=finalResultLore95(c);
+    const explicitCountries=Array.isArray(c.loreCountryIds)&&c.loreCountryIds.length?c.loreCountryIds:null;
+    const explicitPeople=Array.isArray(c.lorePersonIds)&&c.lorePersonIds.length?c.lorePersonIds:null;
+    const countryIds=explicitCountries||(finalLore?finalLore.countries:[countryKeyForCase95(c)].filter(Boolean));
+    const personIds=explicitPeople||(finalLore?finalLore.people:[]);
     countryIds.forEach(key=>{const info=countries[key];const token='country:'+key;if(info&&!seen.has(token)){seen.add(token);used.push({...info,id:key,kind:'国',image:COUNTRY_LORE_IMAGES_V526[key]||''});}});
     personIds.forEach(key=>{const info=people[key];const token='person:'+key;if(info&&!seen.has(token)){seen.add(token);used.push({...info,id:key,kind:'人物',image:''});}});
   });
@@ -29432,8 +29526,15 @@ function insertCountryResultExplanations95(data){
   holder.innerHTML=html;
   const block=holder.firstElementChild;
   const btn=Array.from(card.querySelectorAll('button')).find(b=>/次の半期/.test(b.textContent||''))||card.querySelector('button:last-of-type');
-  if(btn)card.insertBefore(block,btn.previousSibling&&btn.previousSibling.nodeName==='BR'?btn.previousSibling:btn);
-  else card.appendChild(block);
+  /* V551: V518以降、次の半期ボタンは .v518SummaryAction 内へ移される。
+     phase95旧処理はボタンがresultCard直下にある前提だったため insertBefore が NotFoundError となり、
+     全案件で国・人物解説だけが黙って消えていた。ボタンではなく、その直下アクション枠を挿入基準にする。 */
+  const action=btn&&btn.closest?btn.closest('.v518SummaryAction'):null;
+  if(action&&action.parentElement===card)card.insertBefore(block,action);
+  else if(btn&&btn.parentElement===card){
+    const ref=btn.previousSibling&&btn.previousSibling.nodeName==='BR'?btn.previousSibling:btn;
+    card.insertBefore(block,ref);
+  }else card.appendChild(block);
 }
 function markAllCountryTutorialsSeen95(){
   try{
@@ -30078,6 +30179,7 @@ window.showLetterNotice=function(opts){
 (function(){
 'use strict';
 const PHASE='phase135EpithetCoreV1';
+const RESTORE_V1_FINAL_RESULT_TEXT_V548=true;
 const n=v=>Number(v)||0;
 const esc=s=>typeof escapeHtml==='function'?escapeHtml(String(s??'')):String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
@@ -30299,6 +30401,10 @@ function evidence135(pr){
 {
 const nextDetermineHistoricalEpithet135=determineHistoricalEpithet;
 determineHistoricalEpithet=window.determineHistoricalEpithet=function(kind='fate'){
+  if(RESTORE_V1_FINAL_RESULT_TEXT_V548){
+    if(State&&State.lastEpithetSystem==='phase135EpithetCoreV1')State.lastEpithetSystem=null;
+    return nextDetermineHistoricalEpithet135.call(this,kind);
+  }
   try{
     const res=scoreEpithets135(kind);
     const top=res.selected;
@@ -32225,7 +32331,7 @@ function insertProphecyFulfillment178(ending){
 if(typeof View==='object'&&View&&typeof View.endingStory==='function'){
   View.endingStory=(function(next){const oldEndingStory178=next;return function(ending){
     oldEndingStory178.apply(this,arguments);
-    try{insertProphecyFulfillment178(ending);}catch(e){console.warn('phase178 prophecy fulfillment insert failed',e);}
+    // V549: V1の最終章本文による予言回収を優先し、phase178の補助説明ボックスは重ねて挿入しない。
   };})(View.endingStory);try{delete View.endingStory.phase71Wrapped;}catch(_){ }
 }
 })();
@@ -34970,7 +35076,7 @@ V518_STYLE.textContent=`
 .v518LaneResult::before{content:"";position:absolute;inset:0 0 auto;height:7px;background:linear-gradient(90deg,transparent,var(--tone),var(--tone2),var(--tone),transparent);z-index:2}.v518LaneResult.tone-completeWin{--tone:#f0c64b;--tone2:#fff1a9;--wash:rgba(240,198,75,.20)}.v518LaneResult.tone-majorWin{--tone:#5ca8c9;--tone2:#d9f7ff;--wash:rgba(74,158,194,.18)}.v518LaneResult.tone-minorWin{--tone:#64a888;--tone2:#c8f0d8;--wash:rgba(75,153,113,.16)}.v518LaneResult.tone-draw{--tone:#9fa9b0;--tone2:#edf1ef;--wash:rgba(168,176,181,.13)}.v518LaneResult.tone-minorLoss{--tone:#c9854d;--tone2:#ffd2a4;--wash:rgba(190,112,57,.17)}.v518LaneResult.tone-majorLoss{--tone:#b34942;--tone2:#ffaca0;--wash:rgba(179,67,60,.19)}.v518LaneResult.tone-completeLoss{--tone:#802f35;--tone2:#e97870;--wash:rgba(111,32,38,.28)}
 .v518OutcomeHero{position:relative;min-height:112px;display:grid;grid-template-columns:88px minmax(0,1fr) 190px;gap:17px;align-items:center;padding:18px 25px;background:linear-gradient(120deg,var(--wash),transparent 66%),linear-gradient(180deg,#15283d,#101d2d);border-bottom:1px solid rgba(255,255,255,.09);overflow:hidden}.v518OutcomeSigil{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;border:3px double var(--tone2);background:radial-gradient(circle,var(--wash),rgba(4,13,21,.8));color:var(--tone2);font-size:38px;font-family:serif;font-weight:900;box-shadow:0 0 28px var(--wash),inset 0 0 18px rgba(0,0,0,.55)}.v518OutcomeKicker{font-size:10px;letter-spacing:.18em;color:var(--tone2);font-weight:1000}.v518OutcomeRank{margin:2px 0 4px;font-family:serif;font-size:35px;line-height:1.05;letter-spacing:.10em;color:#fff7dc;text-shadow:0 3px 0 rgba(0,0,0,.3)}.v518OutcomeTitle{font-size:17px;color:#dce7eb;font-weight:1000}.v518OutcomeActor{display:grid;grid-template-columns:50px 1fr;gap:9px;align-items:center;padding:8px 10px;border:1px solid rgba(255,255,255,.11);border-radius:11px;background:rgba(4,15,25,.32)}.v518OutcomeActor img{width:50px;height:58px;object-fit:contain;object-position:center bottom;border-radius:8px;background:radial-gradient(circle,#35506a,#122236 72%)}.v518OutcomeActor b{display:block;color:#fff3ce;font-size:13px}.v518OutcomeActor span{display:block;margin-top:2px;font-size:9px;color:#adc2ce;font-weight:900;letter-spacing:.08em}.v518OutcomeBody{min-height:0;padding:18px 22px 12px;overflow:auto}.v518OutcomeStory{min-height:100%;border-radius:13px;border:1px solid rgba(255,255,255,.11);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));padding:17px 20px}.v518OutcomeLabel{font-size:10px;letter-spacing:.14em;color:var(--tone2);font-weight:1000;margin-bottom:9px}.v518OutcomeStoryText{font-family:serif;font-size:17px;line-height:1.82;color:#fff4dd}.v518OutcomeAction{padding:0 22px 16px;text-align:right}.v518OutcomeAction button{min-width:190px;background:linear-gradient(#f7d978,#d5a93b)}
 /* 半期総括 */
-#screenResult .resultCard.v518Summary{background:#e8d6ae!important;padding:0 0 68px!important;border-color:#9f772e!important}.v518SummaryHero{position:relative;padding:18px 20px 16px;background:linear-gradient(120deg,#0d2339,#1b4761);color:#fff0c2;border-bottom:4px solid #c99b38}.v518SummaryKicker{font-size:10px;letter-spacing:.18em;color:#95c7d9;font-weight:1000}.v518SummaryTitle{font-family:serif;font-size:28px;font-weight:1000;letter-spacing:.08em}.v518SummaryMetrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:11px}.v518Metric{border:1px solid rgba(255,230,155,.25);border-radius:10px;background:rgba(255,255,255,.06);padding:8px 10px}.v518Metric span{display:block;font-size:9px;color:#9fc4d1;font-weight:900;letter-spacing:.08em}.v518Metric b{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:2px;font-size:15px;color:#fff2c9}.v518Metric em{font-style:normal;font-size:12px}.v518Metric em.pos{color:#82dfbf}.v518Metric em.neg{color:#ff9c8d}.v518SummaryEmpty{margin-top:10px;color:#b7ced8;font-size:11px;font-weight:850}.v518Summary>.summaryBlock,.v518Summary>.economyBreakdown,.v518Summary>.actorConsequence,.v518Summary>.v518GrowthPanel,.v518Summary>.princessWorkBox{margin-left:14px!important;margin-right:14px!important}.v518Summary .summaryBlock,.v518Summary .economyBreakdown{border-radius:13px!important;border:1px solid rgba(87,61,24,.24)!important;border-left:7px solid var(--section,#788)!important;background:#fff8e7!important;box-shadow:0 3px 9px rgba(71,46,16,.09)}.v518Summary .summaryBlock.v518SectionCard{--section:#745893}.v518Summary .summaryBlock.v518SectionPerson{--section:#42775d}.v518Summary .summaryBlock.countryExplanationBlock95{--section:#a47b2c}.v518Summary .economyBreakdown{--section:#a53b36}.v518Summary .v518GrowthPanel{background:linear-gradient(145deg,#10253b,#173a50)!important;border-left:7px solid #4f9ab1!important}.v518Summary .v518GrowthActor.levelUp{position:relative;overflow:hidden;box-shadow:0 0 0 2px rgba(244,211,106,.48),0 0 24px rgba(244,211,106,.20)}.v518Summary .v518GrowthActor.levelUp::after{content:"";position:absolute;inset:-60% -30%;background:linear-gradient(105deg,transparent 42%,rgba(255,245,190,.32) 50%,transparent 58%);transform:translateX(-70%);animation:v518LevelSheen 1.15s ease-out both;pointer-events:none}.v518SummaryAction{position:sticky;z-index:80;left:0;right:0;bottom:0;height:68px;margin-top:14px;padding:10px 14px;background:linear-gradient(180deg,rgba(232,214,174,0),#e8d6ae 32%);text-align:right}.v518SummaryAction button{min-width:210px;background:linear-gradient(#f7d978,#d5a93b)}@keyframes v518LevelSheen{to{transform:translateX(70%)}}
+#screenResult .resultCard.v518Summary{background:#e8d6ae!important;padding:0 0 14px!important;border-color:#9f772e!important}.v518SummaryHero{position:relative;padding:18px 20px 16px;background:linear-gradient(120deg,#0d2339,#1b4761);color:#fff0c2;border-bottom:4px solid #c99b38}.v518SummaryKicker{font-size:10px;letter-spacing:.18em;color:#95c7d9;font-weight:1000}.v518SummaryTitle{font-family:serif;font-size:28px;font-weight:1000;letter-spacing:.08em}.v518SummaryMetrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:11px}.v518Metric{border:1px solid rgba(255,230,155,.25);border-radius:10px;background:rgba(255,255,255,.06);padding:8px 10px}.v518Metric span{display:block;font-size:9px;color:#9fc4d1;font-weight:900;letter-spacing:.08em}.v518Metric b{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:2px;font-size:15px;color:#fff2c9}.v518Metric em{font-style:normal;font-size:12px}.v518Metric em.pos{color:#82dfbf}.v518Metric em.neg{color:#ff9c8d}.v518SummaryEmpty{margin-top:10px;color:#b7ced8;font-size:11px;font-weight:850}.v518Summary>.summaryBlock,.v518Summary>.economyBreakdown,.v518Summary>.actorConsequence,.v518Summary>.v518GrowthPanel,.v518Summary>.princessWorkBox{margin-left:14px!important;margin-right:14px!important}.v518Summary .summaryBlock,.v518Summary .economyBreakdown{border-radius:13px!important;border:1px solid rgba(87,61,24,.24)!important;border-left:7px solid var(--section,#788)!important;background:#fff8e7!important;box-shadow:0 3px 9px rgba(71,46,16,.09)}.v518Summary .summaryBlock.v518SectionCard{--section:#745893}.v518Summary .summaryBlock.v518SectionPerson{--section:#42775d}.v518Summary .summaryBlock.countryExplanationBlock95{--section:#a47b2c}.v518Summary .economyBreakdown{--section:#a53b36}.v518Summary .v518GrowthPanel{background:linear-gradient(145deg,#10253b,#173a50)!important;border-left:7px solid #4f9ab1!important}.v518Summary .v518GrowthActor.levelUp{position:relative;overflow:hidden;box-shadow:0 0 0 2px rgba(244,211,106,.48),0 0 24px rgba(244,211,106,.20)}.v518Summary .v518GrowthActor.levelUp::after{content:"";position:absolute;inset:-60% -30%;background:linear-gradient(105deg,transparent 42%,rgba(255,245,190,.32) 50%,transparent 58%);transform:translateX(-70%);animation:v518LevelSheen 1.15s ease-out both;pointer-events:none}.v518SummaryAction{position:static;z-index:auto;height:auto;margin:14px 14px 0;padding:14px 0 4px;border-top:1px solid rgba(87,61,24,.24);background:none;text-align:right}.v518SummaryAction button{min-width:210px;background:linear-gradient(#f7d978,#d5a93b)}@keyframes v518LevelSheen{to{transform:translateX(70%)}}
 /* 老執事は専用チュートリアル様式を使わず、一般重要案件の水色カードとして扱う。 */
 #screenMain .caseCard.butlerGuideCard,#screenMain .caseCard.butlerGuideCard.selected,#screenMain .caseCard.butlerGuideCard.keyFocus{background:linear-gradient(145deg,#dff6fb,#bdeaf3)!important;border-color:#62b6cc!important;color:#173748!important;box-shadow:0 5px 14px rgba(34,112,136,.18)!important}
 #screenMain .caseCard.butlerGuideCard::before,#screenMain .caseCard.butlerGuideCard::after{content:none!important;display:none!important}
@@ -42008,11 +42114,1487 @@ window.__V534_FORMAL_WAR_SHEET_SHA256__='46a2615c31ebfdd80074d5597f39834f54caa33
    SHA-256: 277cdfd681fb6ce084dda6d995c57850089125ac65a2c5d09257eedf2bb6f63f
    Validate with: window.auditV522Editorial() and tests/v522_editorial_test.js
 */
+/* ===== V548 AGE-30 FINAL TEXT LOCK =====
+   Scope: text only. No enemy-selection, strength, battle, survival/death, or pre-30 escalation mechanics are changed.
+   Source of truth: phase26 ENDINGS, restored from the user's V1/finish.txt prose. */
+(function(){
+'use strict';
+const FINAL_ID=typeof FINAL_CASE_ID!=='undefined'?FINAL_CASE_ID:'finalcase_last_matter';
+const canon=window.__FINAL30_AUTHORED_TEXT_V548||{};
+function keyOf(c){
+  const r=State&&State.finalCaseResult;
+  return (c&&(c.finalEnemy||c.finalCaseTheme))||(r&&(r.finalEnemy||r.theme))||'ruthenia';
+}
+function textFor(key,tier){
+  const e=canon[key]||canon.ruthenia;
+  if(!e)return'';
+  return tier==='complete'?e.complete:tier==='loss'?e.loss:e.wounded;
+}
+function lockCaseText(c){
+  if(!c||c.id!==FINAL_ID)return c;
+  const key=keyOf(c),e=canon[key]||canon.ruthenia;
+  if(!e)return c;
+  c.title=`最後の事件：${e.title}`;
+  c.intro=e.intro;
+  return c;
+}
+try{
+  const previousVisible=typeof visibleCases==='function'?visibleCases:null;
+  if(previousVisible&&!previousVisible.age30TextLockV548){
+    const wrapped=function(){
+      /* V549: later case-injection wrappers must never replace the dedicated age-30 final case. */
+      try{
+        const finalPending=State&&State.phase===FINAL_CASE_PHASE&&!State.finalCaseResolved&&!((State.completedCases||[]).includes(FINAL_ID));
+        if(finalPending){
+          let c=null;
+          try{
+            const finalOnly=(typeof window.__cleanV70FinalPhaseList==='function')?window.__cleanV70FinalPhaseList():null;
+            if(Array.isArray(finalOnly)&&finalOnly.length)c=finalOnly.find(x=>x&&x.id===FINAL_ID)||finalOnly[0]||null;
+          }catch(_){ }
+          if(!c){try{c=(typeof window.phase26RefreshFinalCase==='function')?window.phase26RefreshFinalCase():((DATA.cases||[]).find(x=>x&&x.id===FINAL_ID)||null);}catch(_){ }}
+          if(c){lockCaseText(c);return[c];}
+        }
+      }catch(_){ }
+      const out=previousVisible.apply(this,arguments)||[];
+      for(const c of out)lockCaseText(c);
+      return out;
+    };
+    wrapped.age30TextLockV548=true;
+    wrapped.age30FinalVisibilityGuardV549=true;
+    visibleCases=wrapped;window.visibleCases=wrapped;
+  }
+}catch(e){try{console.error('V548 age30 visible text lock failed',e);}catch(_){ }}
+try{
+  if(typeof DATA==='object'&&Array.isArray(DATA.cases)){
+    const c=DATA.cases.find(x=>x&&x.id===FINAL_ID);
+    if(c)lockCaseText(c);
+  }
+}catch(_){ }
+try{
+  if(typeof window.__kingRegisterNamedSpecialTailHookV482==='function'){
+    window.__kingRegisterNamedSpecialTailHookV482('age30CanonicalTextLockV548','ending',function(r){
+      if(!r||!r.case||r.case.id!==FINAL_ID)return r;
+      const fr=State&&State.finalCaseResult;if(!fr)return r;
+      const key=keyOf(r.case),e=canon[key]||canon.ruthenia;if(!e)return r;
+      const tier=fr.tier==='complete'?'complete':fr.tier==='loss'?'loss':'wounded';
+      const text=textFor(key,tier);
+      if(text)fr.text=text;
+      fr.title=`最後の事件：${e.title}`;
+      if(Array.isArray(r.specialLines)){
+        r.specialLines=r.specialLines.filter(x=>{const t=String(x);return !t.includes('<b>最後の一件</b>')&&!t.includes('<b>最後の事件</b>');});
+        r.specialLines.push(`<b>最後の事件</b><br>${String(fr.text||'').replace(/\n\n/g,'<br><br>')}`);
+      }
+      return r;
+    });
+  }
+}catch(e){try{console.error('V548 age30 result text lock failed',e);}catch(_){ }}
+window.auditFinal30TextV548=function(){
+  const keys=['ruthenia','loire','rick','solia','seafeara','brother'];
+  const missing=keys.filter(k=>!canon[k]||!canon[k].title||!canon[k].intro||!canon[k].complete||!canon[k].wounded||!canon[k].loss);
+  let currentCase=null;
+  try{currentCase=(DATA&&Array.isArray(DATA.cases)?DATA.cases:[]).find(c=>c&&c.id===FINAL_ID)||null;}catch(_){ }
+  const key=currentCase?keyOf(currentCase):null,e=key?(canon[key]||canon.ruthenia):null;
+  const caseTextOk=!currentCase||!e||(currentCase.title===`最後の事件：${e.title}`&&currentCase.intro===e.intro);
+  const fr=State&&State.finalCaseResult;
+  let resultTextOk=true;
+  if(fr&&e){const tier=fr.tier==='complete'?'complete':fr.tier==='loss'?'loss':'wounded';resultTextOk=fr.text===textFor(key,tier);}
+  const finalVisibilityGuard=!!(typeof visibleCases==='function'&&visibleCases.age30FinalVisibilityGuardV549);
+  return{version:'V549',missing,caseTextOk,resultTextOk,visibleLocked:!!(typeof visibleCases==='function'&&visibleCases.age30TextLockV548),finalVisibilityGuard,phase178BoxDisabled:true,phase135Bypassed:true,ok:!missing.length&&caseTextOk&&resultTextOk&&finalVisibilityGuard};
+};
+window.auditFinal30TextV549=window.auditFinal30TextV548;
+window.__V548_AGE30_TEXT_LOCK__=true;
+window.__V549_AGE30_FINAL_GUARD__=true;
+})();
+
 (function(){
 if(typeof window.normalizeAuthoredBorderRepairPoolsV528==='function')window.normalizeAuthoredBorderRepairPoolsV528();
 window.__FIX_V515_APPLIED__=true;
 window.__V523_CANONICAL_TEXT_HASH__='277cdfd681fb6ce084dda6d995c57850089125ac65a2c5d09257eedf2bb6f63f';
-window.__VERSION__='V546';
+window.__V550_RESULT_LORE_FIX__=true;
+window.__VERSION__='V550';
+})();
+
+/* ========================================================================== 
+   V553 — 半期総括内「人物の成長」商品品質ブラッシュアップ
+   - 独立画面にはせず、案件結果の総括内セクションとして維持
+   - レベルアップの達成感と「次まであと何点」の継続動機を同時に提示
+   - 成長システムの数値・獲得経験値・能力上昇ロジックは変更しない
+   ========================================================================== */
+(function(){
+'use strict';
+if(window.__V553_GROWTH_RESULT_POLISH__)return;
+window.__V553_GROWTH_RESULT_POLISH__=true;
+
+const style=document.createElement('style');
+style.id='v553-growth-result-polish';
+style.textContent=`
+.v518Summary>.v553GrowthPanel{margin:14px!important;padding:0!important;border:1px solid rgba(41,69,87,.62)!important;border-radius:16px!important;background:linear-gradient(145deg,#10263b,#173b50)!important;color:#eef8ff!important;overflow:hidden;box-shadow:0 7px 19px rgba(35,43,49,.16),inset 0 0 0 1px rgba(255,255,255,.055)!important;animation:v553PanelIn .42s cubic-bezier(.2,.85,.25,1) both}
+.v553GrowthTop{min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:10px 14px 9px;border-bottom:1px solid rgba(209,229,237,.14);background:linear-gradient(90deg,rgba(255,255,255,.055),rgba(255,255,255,.015))}
+.v553GrowthTitle{min-width:0}.v553GrowthTitle h3{margin:0!important;font-size:19px!important;line-height:1.15;color:#fff0bd!important;letter-spacing:.035em}.v553GrowthTitle p{display:none}
+.v553GrowthSummary{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}.v553GrowthBadge{display:inline-flex;align-items:center;min-height:25px;padding:4px 9px;border:1px solid rgba(152,207,226,.34);border-radius:999px;background:rgba(60,136,163,.14);color:#c7ebf3;font-size:10px;font-weight:1000;white-space:nowrap}.v553GrowthBadge.level{border-color:#f1cd67;background:rgba(239,199,82,.14);color:#ffe69a;box-shadow:0 0 13px rgba(238,199,83,.12)}
+.v553GrowthGrid{display:grid;grid-template-columns:repeat(var(--growth-count,1),minmax(0,1fr));gap:9px;padding:10px}
+.v553GrowthActor{--delay:0ms;position:relative;min-width:0;display:grid;grid-template-columns:60px minmax(0,1fr);gap:9px;padding:9px;border:1px solid rgba(179,215,227,.25);border-radius:12px;background:linear-gradient(155deg,rgba(255,255,255,.07),rgba(255,255,255,.018));overflow:hidden;animation:v553CardIn .42s cubic-bezier(.22,.82,.25,1) both;animation-delay:var(--delay)}
+.v553GrowthActor.levelUp{border-color:rgba(242,205,102,.72);background:linear-gradient(155deg,rgba(244,205,96,.115),rgba(255,255,255,.025));box-shadow:0 0 20px rgba(238,199,83,.10),inset 0 0 0 1px rgba(255,231,151,.10)}
+.v553GrowthActor.levelUp::after{content:"";position:absolute;inset:-35% auto -35% -55%;width:34%;background:linear-gradient(90deg,transparent,rgba(255,239,177,.22),transparent);transform:skewX(-18deg);animation:v553Sheen 1.05s ease-out calc(var(--delay) + 180ms) both;pointer-events:none}
+.v553GrowthPortrait{position:relative;width:60px;height:76px;border:1.5px solid #7697aa;border-radius:10px;background:radial-gradient(circle at 50% 30%,#43667c,#10283c 73%);overflow:visible;align-self:start}.v553GrowthPortrait::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;overflow:hidden}.v553GrowthPortrait img{width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 5px 4px rgba(0,0,0,.42));border-radius:inherit}.v553GrowthActor.levelUp .v553GrowthPortrait{border-color:#efcc69;box-shadow:0 0 14px rgba(240,203,98,.18)}
+.v553LevelSeal{position:absolute;left:auto;right:-10px;top:-10px;min-width:56px;padding:4px 8px;border-radius:999px;background:linear-gradient(180deg,#fff0a6,#f1cd67);color:#10263b;text-align:center;font-size:8px;font-weight:1000;letter-spacing:.06em;box-shadow:0 3px 10px rgba(255,221,113,.42),0 0 0 2px rgba(16,38,59,.55);animation:v553SealPop .52s cubic-bezier(.16,1.35,.35,1) calc(var(--delay) + 280ms) both;z-index:4}
+.v553GrowthMain{min-width:0}.v553GrowthNameRow{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}.v553GrowthName{min-width:0}.v553GrowthName b{display:block;color:#fff4d2;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v553GrowthName span{display:block;margin-top:1px;color:#9fbdcc;font-size:9px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v553NextGoal{flex:none;max-width:92px;padding:3px 7px;border:1px solid rgba(150,202,219,.30);border-radius:999px;background:rgba(4,19,31,.25);color:#bfe4ee;font-size:8px;font-weight:1000;white-space:nowrap}.v553GrowthActor.levelUp .v553NextGoal{border-color:rgba(242,207,105,.40);color:#ffe49a}
+.v553LevelRow{display:flex;align-items:flex-end;gap:7px;margin-top:5px}.v553Level{font-family:serif;color:#fff4d0;font-size:19px;line-height:1;font-weight:1000;white-space:nowrap}.v553Level small{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#9fbcca;font-size:9px;font-weight:900}.v553Level strong{color:#ffe074;font-size:21px}.v553XpGain{margin-left:auto;color:#84deed;font-size:9px;font-weight:1000;white-space:nowrap}.v553GrowthActor.levelUp .v553XpGain{color:#ffe188}
+.v553XpTrack{position:relative;height:8px;margin-top:5px;border:1px solid rgba(255,255,255,.15);border-radius:99px;background:#071724;overflow:hidden}.v553XpTrack i{display:block;height:100%;width:var(--xp-to,0%);border-radius:inherit;background:linear-gradient(90deg,#4f9fc1,#8bdae7,#efce68);box-shadow:0 0 8px rgba(118,210,227,.38);animation:v553XpGrow .72s cubic-bezier(.22,.82,.25,1) calc(var(--delay) + 170ms) both}.v553XpTrack::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 65%,rgba(255,255,255,.34) 76%,transparent 88%);transform:translateX(-120%);animation:v553XpGlint .72s ease-out calc(var(--delay) + 260ms) both;pointer-events:none}
+.v553StatRow{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:7px}.v553Stat{position:relative;min-width:0;padding:4px 2px 3px;border:1px solid rgba(170,208,222,.18);border-radius:7px;background:rgba(2,14,24,.25);text-align:center;color:#a9c9d5;font-size:8px;font-weight:900}.v553Stat b{display:block;margin-top:1px;color:#f8fbfc;font-size:13px;line-height:1}.v553Stat small{font-size:8px;color:#9bb7c4}.v553Stat.gain{border-color:#eccb6e;background:rgba(238,203,110,.105);color:#ffe59a;animation:v553StatPop .48s cubic-bezier(.16,1.25,.3,1) calc(var(--delay) + var(--stat-delay,300ms)) both}.v553Stat.gain b{color:#ffe27e}.v553Stat em{position:absolute;right:2px;top:-6px;padding:1px 4px;border-radius:99px;background:#ffe27e;color:#11273a;font-size:7px;font-style:normal;font-weight:1000;box-shadow:0 2px 7px rgba(0,0,0,.22)}
+.v553GrowthFoot{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr);gap:7px;align-items:center;margin-top:0;padding-top:7px;border-top:1px solid rgba(196,222,232,.11)}.v553GrowthReason{min-width:0;color:#cfe1e8;font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v553GrowthReason b{color:#f7d77b}.v553Domains{display:none}.v553Domain{padding:2px 5px;border:1px solid rgba(124,188,209,.27);border-radius:999px;background:rgba(53,133,160,.12);color:#b8dde8;font-size:8px;font-weight:1000;white-space:nowrap}.v553Domain.gain{border-color:rgba(240,202,100,.44);background:rgba(239,198,83,.09);color:#ffe39a}
+.v553GrowthEmpty{padding:13px 14px;color:#bdd1d9;font-size:11px;font-weight:850}
+@keyframes v553PanelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes v553CardIn{from{opacity:0;transform:translateY(7px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes v553XpGrow{from{width:var(--xp-from,0%);filter:brightness(1.35)}to{width:var(--xp-to,0%);filter:none}}
+@keyframes v553XpGlint{from{transform:translateX(-120%)}to{transform:translateX(120%)}}
+@keyframes v553StatPop{0%{opacity:.55;transform:translateY(4px) scale(.94);filter:brightness(1.8)}70%{opacity:1;transform:translateY(-1px) scale(1.04)}100%{transform:none;filter:none}}
+@keyframes v553SealPop{from{opacity:0;transform:scale(.45)}70%{opacity:1;transform:scale(1.12)}to{opacity:1;transform:none}}
+@keyframes v553Sheen{0%{opacity:0;left:-55%}22%{opacity:1}100%{opacity:0;left:125%}}
+@media(max-width:760px){.v553GrowthGrid{grid-template-columns:1fr!important}.v553GrowthTop{align-items:flex-start}.v553GrowthActor{grid-template-columns:55px 1fr}.v553GrowthPortrait{width:55px;height:70px}.v553GrowthSummary{max-width:45%}.v553GrowthFoot{grid-template-columns:1fr}.v553Domains{justify-content:flex-start}}
+@media(prefers-reduced-motion:reduce){.v553GrowthPanel,.v553GrowthActor,.v553LevelSeal,.v553XpTrack i,.v553XpTrack::after,.v553Stat.gain,.v553GrowthActor.levelUp::after{animation:none!important}}
+`;
+document.head.appendChild(style);
+
+const e=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const STAT={speed:'速度',push:'押し込み',stability:'踏ん張り',defense:'立て直し'};
+const DOMAIN={military:'軍事',diplomacy:'外交',internal:'内政',religion:'宗教',court:'宮廷',dynasty:'王朝',occult:'怪異'};
+function pctOfSnapshot(id,snap){
+  if(!snap)return 0;
+  if(snap.maxed)return 100;
+  try{
+    const level=Number(snap.level)||0;
+    const floor=level>0?nextGrowthXp(id,level-1):0;
+    const ceil=nextGrowthXp(id,level);
+    return Math.round(Math.max(0,Math.min(1,((Number(snap.xp)||0)-floor)/Math.max(1,ceil-floor)))*100);
+  }catch(_){return Number(snap.pct)||0;}
+}
+function fallbackSnapshot(id){
+  try{
+    const a=DATA.actors?.[id],g=actorGrowthOf(id);if(!a||!g)return null;
+    const caps=actorGrowthCaps(id),stats={};
+    for(const k of Object.keys(STAT))stats[k]=Math.max(1,Math.min(Number(caps[k])||7,(Number(a[k])||0)+(Number(g.points?.[k])||0)));
+    const maxed=actorGrowthIsMaxed(id),next=nextGrowthXp(id,Number(g.level)||0);
+    return{id,name:a.name||id,type:a.type||'',img:assignActorImage(a),xp:Number(g.xp)||0,level:Number(g.level)||0,pct:maxed?100:pctOfSnapshot(id,{xp:g.xp,level:g.level}),remaining:maxed||next>=999?0:Math.max(0,next-(Number(g.xp)||0)),maxed,stats,domains:{...(g.domains||{})},before:null,xpGain:0,levelGain:0,statGain:{},domainGain:{},cases:[],awards:[]};
+  }catch(_){return null;}
+}
+function actorCard(d,i){
+  const before=d.before||d;
+  const beforeLevel=(Number(before.level)||0)+1,afterLevel=(Number(d.level)||0)+1;
+  const levelGain=Number(d.levelGain)||0,xpGain=Number(d.xpGain)||0;
+  let from=pctOfSnapshot(d.id,before),to=pctOfSnapshot(d.id,d);
+  if(levelGain>0)from=0;
+  const mastery=(d.awards||[]).reduce((n,x)=>n+(Number(x?.mastery)||0),0);
+  const xpText=xpGain>0?`経験 +${xpGain}${mastery?` / 熟達 +${mastery}`:''}`:'経験を蓄積';
+  const statHtml=Object.keys(STAT).map((k,idx)=>{
+    const gain=Number(d.statGain?.[k])||0,current=Number(d.stats?.[k])||0,old=Number(before.stats?.[k]??(current-gain))||0;
+    return `<span class="v553Stat ${gain>0?'gain':''}" style="--stat-delay:${300+idx*75}ms">${STAT[k]}<b>${gain>0?`<small>${old}→</small>${current}`:current}</b>${gain>0?`<em>+${gain}</em>`:''}</span>`;
+  }).join('');
+  const domains=Object.entries(d.domains||{}).filter(([,v])=>Number(v)>0).sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,2);
+  const domainHtml=domains.map(([k,v])=>{const gain=Number(d.domainGain?.[k])||0;return `<span class="v553Domain ${gain>0?'gain':''}">${DOMAIN[k]||k} ${v}${gain>0?` +${gain}`:''}</span>`;}).join('');
+  const reason=(d.cases||[]).slice(0,2).join('・');
+  const goal=d.maxed?'能力完成':`次のLvまで ${Math.max(0,Number(d.remaining)||0)}`;
+  const seal=levelGain>0?`<span class="v553LevelSeal">${levelGain>1?`LEVEL +${levelGain}`:'LEVEL UP'}</span>`:'';
+  const levelText=levelGain>0?`Lv.${beforeLevel} <small>→</small> <strong>${afterLevel}</strong>`:`Lv.${afterLevel}`;
+  return `<article class="v553GrowthActor ${levelGain>0?'levelUp':''}" style="--delay:${i*90}ms"><div class="v553GrowthPortrait"><img src="${e(d.img||'')}" draggable="false" alt="">${seal}</div><div class="v553GrowthMain"><div class="v553GrowthNameRow"><div class="v553GrowthName"><b>${e(d.name||d.id)}</b><span>${e(d.type||'采配者')}</span></div><span class="v553NextGoal">${e(goal)}</span></div><div class="v553LevelRow"><span class="v553Level">${levelText}</span><span class="v553XpGain">${e(xpText)}</span></div><div class="v553XpTrack" style="--xp-from:${from}%;--xp-to:${to}%"><i></i></div><div class="v553StatRow">${statHtml}</div></div><div class="v553GrowthFoot"><div class="v553GrowthReason">${reason?`<b>今期の経験</b>　${e(reason)}`:""}</div><div class="v553Domains">${domainHtml}</div></div></article>`;
+}
+
+window.actorGrowthHtml=function(data){
+  let actors=[];
+  try{
+    const stored=State.lastActorGrowthDetailV518;
+    actors=(stored&&stored.turn===State.turn&&Array.isArray(stored.actors)?stored.actors:[])||[];
+    if(!actors.length){
+      const ids=[...new Set((data?.lanes||[]).map(r=>r?.actor?.id).filter(id=>id&&actorCanGrow(id)))];
+      actors=ids.map(fallbackSnapshot).filter(Boolean);
+    }
+  }catch(_){actors=[];}
+  if(!actors.length)return'';
+  actors=actors.slice().sort((a,b)=>(Number(b.levelGain)||0)-(Number(a.levelGain)||0)||(Number(b.xpGain)||0)-(Number(a.xpGain)||0));
+  const levelUps=actors.filter(a=>(Number(a.levelGain)||0)>0).length;
+  const xpTotal=actors.reduce((n,a)=>n+(Number(a.xpGain)||0),0);
+  const summary=levelUps?`<span class="v553GrowthBadge level">LEVEL UP × ${levelUps}</span><span class="v553GrowthBadge">経験 +${xpTotal}</span>`:`<span class="v553GrowthBadge">経験 +${xpTotal}</span>`;
+  return `<section class="v518GrowthPanel v553GrowthPanel" data-v553-levelups="${levelUps}"><div class="v553GrowthTop"><div class="v553GrowthTitle"><h3>人物の成長</h3></div><div class="v553GrowthSummary">${summary}</div></div><div class="v553GrowthGrid" style="--growth-count:${Math.min(3,actors.length)}">${actors.slice(0,3).map(actorCard).join('')}</div></section>`;
+};
+
+function polishGrowthPlacement(){
+  const card=document.querySelector('#screenResult .resultCard.v518Summary');if(!card)return;
+  const panel=card.querySelector(':scope>.v553GrowthPanel');if(!panel)return;
+  const hero=card.querySelector(':scope>.v518SummaryHero');
+  if(hero&&hero.nextElementSibling!==panel)hero.after(panel);
+  if(panel.dataset.v553Sounded!=='1'){
+    panel.dataset.v553Sounded='1';
+    if(Number(panel.dataset.v553Levelups)>0){try{window.sfx&&window.sfx('card');}catch(_){}}
+  }
+}
+if(Array.isArray(window.__kingViewSummaryMiddlewareV116)){
+  window.__kingViewSummaryMiddlewareV116.push(function(next){return function(data){const r=next.apply(this,arguments);polishGrowthPlacement();requestAnimationFrame(polishGrowthPlacement);setTimeout(polishGrowthPlacement,130);return r;};});
+}else if(window.View&&typeof View.summary==='function'){
+  const old=View.summary;View.summary=function(data){const r=old.apply(this,arguments);polishGrowthPlacement();return r;};
+}
+window.auditV553GrowthResult=function(){
+  const css=!!document.getElementById('v553-growth-result-polish');
+  const summary=document.querySelector('#screenResult .resultCard.v518Summary');
+  const panel=summary?.querySelector(':scope>.v553GrowthPanel')||null;
+  const hero=summary?.querySelector(':scope>.v518SummaryHero')||null;
+  return{version:'V553',css,actorGrowthOverride:typeof window.actorGrowthHtml==='function',panelPresent:!!panel,integratedImmediatelyAfterSummary:!!(panel&&hero&&hero.nextElementSibling===panel),levelUps:Number(panel?.dataset?.v553Levelups||0),ok:css&&typeof window.actorGrowthHtml==='function'};
+};
+window.__VERSION__='V553';
+})();
+
+
+/* ========================================================================== 
+   V554 — 案件結果：結果文欠落修復 + 成功／苦戦／失敗の三分岐演出
+   - トレウヴァル拡張20案件の malformed effects は上流で修正済み
+   - 結果本文は r.story → effect.story → case.effects → case.stories の順に正本文へフォールバック
+   - 大見出しは物語三分岐「成功／苦戦／失敗」、7段階ランクは副表示
+   - 戦闘数値・勝敗閾値・効果値は変更しない
+   ========================================================================== */
+(function(){
+'use strict';
+if(window.__V554_RESULT_PRESENTATION__)return;
+window.__V554_RESULT_PRESENTATION__=true;
+
+const RANK_META_V554={
+  completeWin:{label:'完全勝利',group:'success'},majorWin:{label:'優勢勝利',group:'success'},
+  minorWin:{label:'小勝利',group:'struggle'},draw:{label:'拮抗',group:'struggle'},minorLoss:{label:'小敗北',group:'struggle'},
+  majorLoss:{label:'劣勢敗北',group:'failure'},completeLoss:{label:'完全敗北',group:'failure'}
+};
+const GROUP_META_V554={
+  success:{label:'成功',sub:'難局を乗り越えた',mark:'勝'},
+  struggle:{label:'苦戦',sub:'傷を負いながら踏みとどまった',mark:'耐'},
+  failure:{label:'失敗',sub:'押し切られ、代償を残した',mark:'敗'}
+};
+const escV554=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function rankMetaV554(rank){return RANK_META_V554[String(rank||'')]||RANK_META_V554.draw;}
+function groupMetaV554(rank){return GROUP_META_V554[rankMetaV554(rank).group]||GROUP_META_V554.struggle;}
+function plainV554(v){return String(v??'').trim();}
+function authoredStoryV554(r){
+  if(!r)return'';
+  const direct=[r.story,r.effect?.story,r.case?.effects?.[r.rank]?.story];
+  for(const x of direct){if(plainV554(x))return String(x);}
+  const c=r.case||{};
+  const rank=String(r.rank||'');
+  const struggle=['minorWin','draw','minorLoss'].includes(rank);
+  if(struggle){
+    for(const k of ['minorWin','draw','minorLoss']){const x=c.effects?.[k]?.story;if(plainV554(x))return String(x);}
+  }
+  const stories=Array.isArray(c.stories)?c.stories:null;
+  if(stories&&stories.length){
+    const idx=(rank==='completeWin'||rank==='majorWin')?0:(['majorLoss','completeLoss'].includes(rank)?2:1);
+    if(plainV554(stories[idx]))return String(stories[idx]);
+    for(const x of stories){if(plainV554(x))return String(x);}
+  }
+  return'';
+}
+function actorPortraitV554(actor){try{return typeof assignActorImage==='function'?assignActorImage(actor)||'':'';}catch(_){return'';}}
+function linePosV554(v){return Math.max(0,Math.min(100,(Number(v||0)+100)/2));}
+function renderV554(r){
+  const screen=document.getElementById('screenResult');
+  const card=screen?.querySelector('.resultCard');
+  if(!card||!r)return;
+  const rm=rankMetaV554(r.rank),gm=groupMetaV554(r.rank),story=authoredStoryV554(r),portrait=actorPortraitV554(r.actor);
+  const line=Math.max(-100,Math.min(100,Number(r.finalLine)||0));
+  card.className=`resultCard v554LaneResult result-${rm.group}`;
+  card.innerHTML=`
+    <section class="v554ResultHero">
+      <div class="v554OutcomeMark" aria-hidden="true">${gm.mark}</div>
+      <div class="v554OutcomeWords">
+        <div class="v554OutcomeKicker">案件結果</div>
+        <div class="v554OutcomeGroup">${gm.label}</div>
+        <div class="v554OutcomeSub">${gm.sub}</div>
+      </div>
+      <div class="v554CaseInfo">
+        <div class="v554CaseTitle">${escV554(r.case?.title||'')}</div>
+        <div class="v554RankPill">判定　<b>${escV554(r.label||rm.label)}</b></div>
+      </div>
+      <div class="v554ActorBox">${portrait?`<img src="${escV554(portrait)}" draggable="false" alt="">`:''}<div><span>采配者</span><b>${escV554(r.actor?.name||'')}</b></div></div>
+    </section>
+    <section class="v554JudgementRail" aria-label="戦線判定">
+      <span class="v554Zone fail">失敗</span><span class="v554Zone struggle">苦戦</span><span class="v554Zone success">成功</span>
+      <i class="v554RailPoint" style="left:${linePosV554(line)}%"></i>
+      <b class="v554RailValue" style="left:${linePosV554(line)}%">${line>0?'+':''}${line}</b>
+    </section>
+    <section class="v554StoryArea">
+      <div class="v554StoryCard">
+        <div class="v554StoryLabel">顛末</div>
+        <div class="v554StoryText">${story||'<span class="v554StoryMissing">結果文を読み込み中…</span>'}</div>
+      </div>
+    </section>
+    <div class="v554ResultAction"><button onclick="Flow.nextResult()">次の記録へ</button></div>`;
+  if(!story){
+    setTimeout(()=>{
+      const box=card.querySelector('.v554StoryText');
+      if(box){const retry=authoredStoryV554(r);if(retry)box.innerHTML=retry;}
+    },0);
+  }
+}
+
+const style=document.createElement('style');
+style.id='v554-result-presentation';
+style.textContent=`
+#screenResult .resultCard.v554LaneResult{--accent:#d2aa48;--accent2:#ffe79b;--glow:rgba(210,170,72,.20);position:relative;display:grid;grid-template-rows:auto 42px minmax(0,1fr) auto;overflow:hidden;padding:0!important;border:0!important;border-radius:16px!important;background:#0d1927!important;color:#f8ead2;box-shadow:0 16px 40px rgba(0,0,0,.42);animation:v554CardIn .28s ease-out both}
+#screenResult .resultCard.v554LaneResult.result-success{--accent:#e4bd4f;--accent2:#fff1a6;--glow:rgba(231,190,72,.24)}
+#screenResult .resultCard.v554LaneResult.result-struggle{--accent:#c48643;--accent2:#ffd29b;--glow:rgba(196,128,61,.21)}
+#screenResult .resultCard.v554LaneResult.result-failure{--accent:#b4463f;--accent2:#ffaaa0;--glow:rgba(180,61,55,.25)}
+.v554LaneResult::before{content:"";position:absolute;inset:0 0 auto;height:7px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),var(--accent),transparent);z-index:5}
+.v554ResultHero{position:relative;min-height:142px;display:grid;grid-template-columns:104px 210px minmax(0,1fr) 168px;gap:15px;align-items:center;padding:21px 22px 17px;background:radial-gradient(circle at 15% 45%,var(--glow),transparent 34%),linear-gradient(180deg,#162b42,#0e1b2a);border-bottom:1px solid rgba(255,255,255,.08);overflow:hidden}
+.v554ResultHero::after{content:"";position:absolute;right:-80px;top:-120px;width:360px;height:360px;border-radius:50%;border:1px solid color-mix(in srgb,var(--accent) 18%,transparent);box-shadow:0 0 60px var(--glow);opacity:.7;pointer-events:none}
+.v554OutcomeMark{position:relative;width:88px;height:88px;display:grid;place-items:center;border-radius:50%;border:3px double var(--accent2);background:radial-gradient(circle,var(--glow),rgba(3,11,19,.88) 72%);color:var(--accent2);font-family:serif;font-size:43px;font-weight:1000;box-shadow:0 0 28px var(--glow),inset 0 0 18px rgba(0,0,0,.5);animation:v554Stamp .48s cubic-bezier(.16,1.25,.32,1) both}
+.v554OutcomeKicker{font-size:10px;letter-spacing:.22em;color:var(--accent2);font-weight:1000}.v554OutcomeGroup{margin-top:1px;font-family:serif;font-size:56px;line-height:1;letter-spacing:.12em;color:#fff5d6;font-weight:1000;text-shadow:0 3px 0 rgba(0,0,0,.28),0 0 22px var(--glow);animation:v554WordIn .46s cubic-bezier(.2,.9,.2,1) .05s both}.v554OutcomeSub{margin-top:7px;color:#c9dae2;font-size:11px;font-weight:850;line-height:1.4}
+.v554CaseInfo{min-width:0;padding-left:18px;border-left:1px solid rgba(255,255,255,.12)}.v554CaseTitle{color:#eaf1f1;font-size:17px;font-weight:1000;line-height:1.45}.v554RankPill{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:5px 10px;border:1px solid color-mix(in srgb,var(--accent) 56%,#fff 0%);border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,transparent);color:#cbd8de;font-size:10px;font-weight:900}.v554RankPill b{color:var(--accent2);font-size:12px}
+.v554ActorBox{position:relative;z-index:2;display:grid;grid-template-columns:48px minmax(0,1fr);gap:8px;align-items:center;padding:8px;border:1px solid rgba(255,255,255,.11);border-radius:11px;background:rgba(2,12,21,.34)}.v554ActorBox img{width:48px;height:58px;object-fit:contain;object-position:center bottom;border-radius:8px;background:radial-gradient(circle,#38526a,#122135 72%)}.v554ActorBox span{display:block;color:#9eb7c4;font-size:8px;font-weight:1000;letter-spacing:.10em}.v554ActorBox b{display:block;margin-top:2px;color:#fff0c6;font-size:12px;line-height:1.25;overflow:hidden;text-overflow:ellipsis}
+.v554JudgementRail{position:relative;height:42px;margin:0;padding:0 22px;background:#091522;border-bottom:1px solid rgba(255,255,255,.08);overflow:hidden}.v554JudgementRail::before{content:"";position:absolute;left:22px;right:22px;top:18px;height:6px;border-radius:99px;background:linear-gradient(90deg,#8c3537 0 25%,#a86d3f 25% 75%,#b8913c 75% 100%);box-shadow:inset 0 1px 3px rgba(0,0,0,.55)}.v554Zone{position:absolute;top:27px;color:#8098a5;font-size:7px;font-weight:1000;letter-spacing:.08em}.v554Zone.fail{left:22px}.v554Zone.struggle{left:50%;transform:translateX(-50%)}.v554Zone.success{right:22px}.v554RailPoint{position:absolute;top:13px;width:16px;height:16px;margin-left:-8px;border:3px solid #fff2ba;border-radius:50%;background:var(--accent);box-shadow:0 0 13px var(--accent),0 2px 6px rgba(0,0,0,.45);animation:v554PointIn .44s cubic-bezier(.18,1.35,.3,1) .18s both}.v554RailValue{position:absolute;top:4px;transform:translateX(-50%);color:#fff2c1;font-size:8px;font-weight:1000;white-space:nowrap}
+.v554StoryArea{min-height:0;padding:16px 20px 11px;overflow:auto;background:radial-gradient(circle at 50% 0,rgba(255,255,255,.035),transparent 44%)}.v554StoryCard{min-height:100%;padding:17px 20px;border:1px solid rgba(255,255,255,.11);border-left:5px solid var(--accent);border-radius:12px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.02));box-shadow:inset 0 0 28px rgba(0,0,0,.08)}.v554StoryLabel{margin-bottom:8px;color:var(--accent2);font-size:9px;font-weight:1000;letter-spacing:.16em}.v554StoryText{font-family:serif;color:#fff3dc;font-size:18px;line-height:1.82;letter-spacing:.01em}.v554StoryMissing{color:#97aab5;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px;font-weight:800}
+.v554ResultAction{padding:0 20px 15px;text-align:right}.v554ResultAction button{min-width:190px;background:linear-gradient(#f6d777,#d4a83b)}
+@keyframes v554CardIn{from{opacity:.75;transform:translateY(4px)}to{opacity:1;transform:none}}@keyframes v554Stamp{from{opacity:0;transform:scale(.55) rotate(-8deg)}70%{opacity:1;transform:scale(1.08) rotate(1deg)}to{transform:none}}@keyframes v554WordIn{from{opacity:0;transform:translateX(-12px);letter-spacing:.03em}to{opacity:1;transform:none}}@keyframes v554PointIn{from{opacity:0;transform:scale(.2)}70%{opacity:1;transform:scale(1.25)}to{transform:scale(1)}}
+@media(max-width:760px){.v554ResultHero{grid-template-columns:82px minmax(0,1fr);min-height:150px;padding:19px 16px 15px}.v554OutcomeMark{width:72px;height:72px;font-size:34px}.v554OutcomeGroup{font-size:43px}.v554CaseInfo{grid-column:1/-1;padding:9px 0 0;border-left:0;border-top:1px solid rgba(255,255,255,.11)}.v554ActorBox{position:absolute;right:14px;top:18px;width:145px}.v554OutcomeWords{padding-right:135px}.v554StoryText{font-size:16px}.v554JudgementRail{padding:0 16px}.v554JudgementRail::before{left:16px;right:16px}.v554Zone.fail{left:16px}.v554Zone.success{right:16px}}
+@media(prefers-reduced-motion:reduce){.v554LaneResult,.v554OutcomeMark,.v554OutcomeGroup,.v554RailPoint{animation:none!important}}
+`;
+document.head.appendChild(style);
+
+if(typeof View!=='undefined'&&View&&typeof View.resultLane==='function'){
+  const previousV554=View.resultLane;
+  View.resultLane=function(r){
+    const ret=previousV554.apply(this,arguments);
+    try{renderV554(r);}catch(e){try{console.error('V554 result render failed',e);}catch(_){}}
+    return ret;
+  };
+  View.resultLane.v554Wrapped=true;
+}
+
+window.resultStoryTextV554=authoredStoryV554;
+window.auditV554ResultStories=function(){
+  const ranks=Object.keys(RANK_META_V554),missing=[],malformed=[];
+  try{
+    for(const c of DATA.cases||[]){
+      const hasRankEffects=!!(c.effects&&c.effects.completeWin&&c.effects.draw&&c.effects.completeLoss);
+      if(!hasRankEffects)malformed.push({id:c.id,title:c.title,keys:Object.keys(c.effects||{})});
+      for(const rank of ranks){
+        const probe={case:c,rank,effect:c.effects?.[rank],story:''};
+        if(!plainV554(authoredStoryV554(probe)))missing.push({id:c.id,title:c.title,rank});
+      }
+    }
+  }catch(e){return{version:'V554',error:String(e),ok:false};}
+  return{version:'V554',cases:(DATA.cases||[]).length,missingCount:missing.length,malformedCount:malformed.length,missing:missing.slice(0,40),malformed:malformed.slice(0,40),ok:missing.length===0&&malformed.length===0};
+};
+
+window.__VERSION__='V554';
+})();
+
+/* ========================================================================== 
+   V555 — 全画面UI共通文法・第1段階
+   同じ働きのUIを、意味ごとの色・形・押下感へ統一する。
+   ゲームロジック、戦闘演出、V553成長、V554結果の主演出は変更しない。
+   ========================================================================== */
+(()=>{
+'use strict';
+
+const style=document.createElement('style');
+style.id='v555-ui-foundation';
+style.textContent=`
+:root{
+  --ui555-navy-0:#07131f;
+  --ui555-navy-1:#0d2237;
+  --ui555-navy-2:#153b59;
+  --ui555-paper:#fff5d9;
+  --ui555-paper-2:#ead29b;
+  --ui555-ink:#14243b;
+  --ui555-muted:#766544;
+  --ui555-action:#42dcff;
+  --ui555-action-hi:#dff9ff;
+  --ui555-action-deep:#1384a5;
+  --ui555-gold:#c99b38;
+  --ui555-gold-hi:#f3cf62;
+  --ui555-red:#8f2725;
+  --ui555-green:#46a56f;
+  --ui555-amber:#c48643;
+  --ui555-fail:#b4463f;
+  --ui555-r-chip:999px;
+  --ui555-r-control:12px;
+  --ui555-r-card:14px;
+  --ui555-r-panel:18px;
+  --ui555-r-modal:22px;
+  --ui555-border:rgba(255,235,179,.30);
+  --ui555-shadow-card:0 5px 14px rgba(0,0,0,.18);
+  --ui555-shadow-panel:0 14px 34px rgba(0,0,0,.34);
+}
+
+/* 通常画面HUD。戦闘HUDは現在の完成形を優先して触らない。 */
+.screen:not(#screenBattle)>.topbar{
+  height:54px!important;
+  min-height:54px!important;
+  padding:7px 14px!important;
+  gap:9px!important;
+  background:linear-gradient(90deg,#07172b 0%,#0d2b48 58%,#12395f 100%)!important;
+  border-bottom:3px solid var(--ui555-gold)!important;
+  box-shadow:0 4px 14px rgba(0,0,0,.17)!important;
+}
+.screen:not(#screenBattle)>.topbar>b{
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:28px!important;
+  margin-right:5px!important;
+  color:#fff0bf!important;
+  font-size:17px!important;
+  font-weight:1000!important;
+  letter-spacing:.035em!important;
+  white-space:nowrap!important;
+}
+.screen:not(#screenBattle)>.topbar .param{
+  min-height:24px!important;
+  padding:4px 9px!important;
+  border:1px solid rgba(255,232,178,.27)!important;
+  border-radius:var(--ui555-r-chip)!important;
+  background:rgba(255,238,192,.075)!important;
+  color:#ffe9b5!important;
+  box-shadow:none!important;
+  font-size:11px!important;
+  line-height:1!important;
+}
+.screen:not(#screenBattle)>.topbar .param.support-crisis{
+  border-color:rgba(255,120,95,.70)!important;
+  color:#ffe0d7!important;
+  box-shadow:0 0 10px rgba(255,70,45,.20)!important;
+}
+
+/* 共通操作ボタン。水色=「今、操作して進める」。 */
+.ui555Btn{
+  min-height:46px!important;
+  min-width:116px;
+  padding:9px 18px!important;
+  border-radius:var(--ui555-r-control)!important;
+  border:2px solid transparent!important;
+  font:inherit!important;
+  font-size:14px!important;
+  font-weight:1000!important;
+  line-height:1.15!important;
+  letter-spacing:.035em!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  cursor:pointer!important;
+  user-select:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+  transition:filter .14s ease,transform .08s ease,box-shadow .14s ease!important;
+}
+.ui555BtnPrimary{
+  color:#06243b!important;
+  border-color:#baf5ff!important;
+  background:linear-gradient(180deg,var(--ui555-action-hi) 0%,#7eeaff 35%,var(--ui555-action) 100%)!important;
+  box-shadow:0 4px 0 #147d9b,0 0 13px rgba(66,220,255,.24),inset 0 1px 0 rgba(255,255,255,.76)!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.42)!important;
+}
+.ui555BtnSecondary{
+  color:#ffe9b5!important;
+  border-color:rgba(219,177,82,.62)!important;
+  background:linear-gradient(180deg,#163653,#10263d)!important;
+  box-shadow:0 4px 0 #081624,0 5px 12px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+.ui555BtnChoice{
+  color:#17304a!important;
+  border-color:#b68b39!important;
+  background:linear-gradient(180deg,#fff4cf,#e8cf94)!important;
+  box-shadow:0 4px 0 #72521f,0 5px 12px rgba(0,0,0,.13),inset 0 1px 0 rgba(255,255,255,.72)!important;
+}
+.ui555Btn:active{
+  transform:translateY(3px)!important;
+}
+.ui555BtnPrimary:active{box-shadow:0 1px 0 #147d9b,0 2px 7px rgba(0,0,0,.20)!important}
+.ui555BtnSecondary:active{box-shadow:0 1px 0 #081624,0 2px 7px rgba(0,0,0,.20)!important}
+.ui555BtnChoice:active{box-shadow:0 1px 0 #72521f,0 2px 7px rgba(0,0,0,.18)!important}
+.ui555Btn:disabled{opacity:.42!important;filter:grayscale(.35)!important;cursor:not-allowed!important;transform:none!important;box-shadow:none!important}
+
+/* マウス環境だけhover。iPad/Safariでhoverが貼り付く問題を止める。 */
+@media (hover:hover) and (pointer:fine){
+  .ui555Btn:not(:disabled):hover{filter:brightness(1.075)!important}
+  #screenMain .caseCard:not(.selected):hover{filter:brightness(1.025)!important}
+}
+@media (hover:none),(pointer:coarse){
+  button:hover{filter:none!important}
+  .ui555Btn:hover{filter:none!important;transform:none!important}
+  .ui555Btn:active{filter:brightness(.96)!important;transform:translateY(2px)!important}
+  .ui555Btn{min-height:48px!important}
+}
+
+/* 采配画面の確定/戻るだけ共通ボタン文法へ。選択カード類は現状を維持。 */
+#screenAssign .dispatchStart.ui555Btn{min-width:210px!important;font-size:17px!important}
+#screenAssign .dispatchBack.ui555Btn{min-width:128px!important;font-size:15px!important}
+
+/* 結果・総括の次操作を、金の報酬色ではなく「操作」の水色へ統一。 */
+#screenResult .v554ResultAction .ui555Btn,
+#screenResult .v518SummaryAction .ui555Btn{
+  min-width:210px!important;
+}
+
+/* 通常モーダル。物語手紙・王家通知など専用演出は除外して残す。 */
+.modalShade:not(.letterNoticeShade){
+  background:rgba(4,10,18,.72)!important;
+  backdrop-filter:blur(1.5px);
+}
+.modalShade:not(.letterNoticeShade)>.modalBox{
+  border:3px solid #b48732!important;
+  border-radius:var(--ui555-r-modal)!important;
+  background:linear-gradient(180deg,#f6e6bd,#ecd29b)!important;
+  box-shadow:var(--ui555-shadow-panel)!important;
+}
+.modalShade:not(.letterNoticeShade)>.modalBox h2{
+  margin:0 0 9px!important;
+  color:#102a4c!important;
+  font-size:21px!important;
+  letter-spacing:.035em!important;
+}
+.modalShade:not(.letterNoticeShade)>.modalBox .dialogText{
+  border:1px solid rgba(112,79,32,.48)!important;
+  border-radius:var(--ui555-r-card)!important;
+  background:rgba(255,249,230,.88)!important;
+  box-shadow:inset 0 0 18px rgba(121,82,26,.035)!important;
+}
+.modalShade:not(.letterNoticeShade)>.modalBox .choices{
+  gap:9px!important;
+  margin-top:11px!important;
+}
+
+/* 小タグの寸法文法を統一。色そのものは各システムの意味を残す。 */
+.param,.summaryTag,.slotNo,.powerBadge,
+#screenMain .caseCard .requestRibbon,
+#screenMain .caseCard .unifiedCaseBadge{
+  border-radius:var(--ui555-r-chip)!important;
+  line-height:1!important;
+}
+#screenMain .caseCard .requestRibbon,
+#screenMain .caseCard .unifiedCaseBadge{
+  min-height:22px!important;
+  height:22px!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.12)!important;
+}
+
+/* 案件の「選択」は水色だけに固定。難易度の外周色は残す。 */
+#screenMain .caseCard.selected{
+  box-shadow:0 0 0 4px rgba(66,220,255,.31),0 5px 0 rgba(0,0,0,.23),inset 0 0 0 2px rgba(225,250,255,.76)!important;
+  transform:none!important;
+}
+#screenMain .caseCard.selected::after{
+  background:#102a4c!important;
+  color:#dff9ff!important;
+  border:2px solid #8cecff!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.26),0 0 10px rgba(66,220,255,.22)!important;
+}
+
+/* 常時脈動は「いま進む場所」に絞る。通常の主操作は静止。 */
+.ui555Btn{animation:none!important}
+.ui555Btn.ui555Attention{
+  animation:ui555Attention 1.15s ease-in-out infinite alternate!important;
+}
+@keyframes ui555Attention{
+  from{filter:brightness(.94);box-shadow:0 4px 0 #147d9b,0 0 8px rgba(66,220,255,.16)}
+  to{filter:brightness(1.08);box-shadow:0 4px 0 #147d9b,0 0 20px rgba(66,220,255,.42)}
+}
+
+/* 深紅の封蝋は「読む画面を進める」記号として現在の良い演出を温存。 */
+.storyCue,.mapNewsCue{--ui555-story-cue:1}
+
+@media(prefers-reduced-motion:reduce){
+  .ui555Btn,.ui555Btn.ui555Attention{animation:none!important;transition:none!important}
+}
+`;
+document.head.appendChild(style);
+
+function excludedButtonV555(btn){
+  if(!btn||btn.nodeType!==1)return true;
+  return !!btn.matches([
+    '.gameCueButton','.tap','.cardChip','.caseCard',
+    '.dispatchActorChoice','.dispatchTrumpChoice','.dispatchCardChoice','.dispatchActorSlot','.dispatchOptionalSlot','.dispatchBudgetBtn','.dispatchClose',
+    '.trumpCard','.trumpChoice','.battleKey','.lane button'
+  ].join(','));
+}
+function textV555(btn){return String(btn?.textContent||'').replace(/\s+/g,' ').trim();}
+function classifyButtonV555(btn){
+  if(excludedButtonV555(btn))return;
+  btn.classList.add('ui555Btn');
+  btn.classList.remove('ui555BtnPrimary','ui555BtnSecondary','ui555BtnChoice','ui555Attention');
+  const t=textV555(btn);
+  const cls=String(btn.className||'');
+  const secondary=/戻る|キャンセル|外す|閉じる|やめる/.test(t)||/dispatchBack/.test(cls);
+  const primary=/^(衝突開始|次の半期へ|次の記録へ|総括へ|決定|開始する|続ける|二つの戦線を始める|三つの戦線を始める)$/.test(t)||btn.classList.contains('primary')||btn.classList.contains('next')||btn.classList.contains('dispatchStart')||btn.classList.contains('tutorialStartBtn');
+  if(secondary)btn.classList.add('ui555BtnSecondary');
+  else if(primary)btn.classList.add('ui555BtnPrimary');
+  else btn.classList.add('ui555BtnChoice');
+
+  /* 各画面で「次に押すべきもの」が一つだけ明白な場合だけ弱く誘導。 */
+  if(/^(次の半期へ|衝突開始)$/.test(t))btn.classList.add('ui555Attention');
+}
+function decorateUiV555(root=document){
+  const base=root&&root.querySelectorAll?root:document;
+  base.querySelectorAll('button').forEach(classifyButtonV555);
+}
+let scheduledV555=false;
+function scheduleUiV555(){
+  if(scheduledV555)return;
+  scheduledV555=true;
+  requestAnimationFrame(()=>{scheduledV555=false;decorateUiV555(document);});
+}
+decorateUiV555(document);
+const observerV555=new MutationObserver(scheduleUiV555);
+observerV555.observe(document.documentElement,{childList:true,subtree:true});
+
+window.decorateUiV555=decorateUiV555;
+window.auditUiV555=function(){
+  decorateUiV555(document);
+  const all=[...document.querySelectorAll('button')];
+  const candidates=all.filter(b=>!excludedButtonV555(b)&&!b.classList.contains('gameCueButton'));
+  const unclassified=candidates.filter(b=>!b.classList.contains('ui555Btn'));
+  const types={primary:0,secondary:0,choice:0};
+  candidates.forEach(b=>{
+    if(b.classList.contains('ui555BtnPrimary'))types.primary++;
+    else if(b.classList.contains('ui555BtnSecondary'))types.secondary++;
+    else if(b.classList.contains('ui555BtnChoice'))types.choice++;
+  });
+  return{
+    version:'V555',
+    visibleScreen:[...document.querySelectorAll('.screen.active')].map(x=>x.id),
+    totalButtons:all.length,
+    classified:candidates.length-unclassified.length,
+    unclassified:unclassified.map(b=>({text:textV555(b),class:b.className})).slice(0,30),
+    types,
+    touchHoverGuard:true,
+    semanticColorRule:{action:'cyan',value:'gold',storyAdvance:'redSeal'},
+    ok:unclassified.length===0
+  };
+};
+
+window.__VERSION__='V555';
+})();
+
+/* ========================================================================== 
+   V556 — 案件カードの意味分離 + V554結果演出の実有効化
+   外枠=難易度 / 水色=選択 / 金=重要 / 右上タグ=案件属性、に固定。
+   ========================================================================== */
+(()=>{
+'use strict';
+const style=document.createElement('style');
+style.id='v556-ui-semantics';
+style.textContent=`
+/* 案件カード外周は難易度専用。特殊案件の旧色より常に優先する。 */
+#screenMain .caseCard.easy,#screenMain .caseCard.selected.easy{border-color:#46a56f!important}
+#screenMain .caseCard.normal,#screenMain .caseCard.selected.normal{border-color:#d6aa3a!important}
+#screenMain .caseCard.hard,#screenMain .caseCard.selected.hard{border-color:#c45b3d!important}
+#screenMain .caseCard.desperate,#screenMain .caseCard.selected.desperate{border-color:#9f3430!important}
+
+/* 特殊案件の旧外光を止める。属性は右上タグと重要マーカーで読む。 */
+#screenMain .caseCard.storyKeyBrother,
+#screenMain .caseCard.storyKeyMarriage,
+#screenMain .caseCard.electorStoryCase,
+#screenMain .caseCard.electorRebellionAftermath,
+#screenMain .caseCard.activeBorderCase,
+#screenMain .caseCard.corePeaceCase{
+  box-shadow:var(--ui555-shadow-card)!important;
+}
+#screenMain .caseCard.selected.storyKeyBrother,
+#screenMain .caseCard.selected.storyKeyMarriage,
+#screenMain .caseCard.selected.electorStoryCase,
+#screenMain .caseCard.selected.electorRebellionAftermath,
+#screenMain .caseCard.selected.activeBorderCase,
+#screenMain .caseCard.selected.corePeaceCase{
+  box-shadow:0 0 0 4px rgba(66,220,255,.31),0 5px 0 rgba(0,0,0,.23),inset 0 0 0 2px rgba(225,250,255,.76)!important;
+}
+
+/* 「重要」はカード全周を金で囲まず、内側左の一本だけ。難易度色を隠さない。 */
+#screenMain .caseCard .v519ImportanceFrame{
+  inset:8px auto 8px 5px!important;
+  width:6px!important;
+  height:auto!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:linear-gradient(180deg,#fff0a0,#e7b83d)!important;
+  box-shadow:0 0 11px rgba(242,192,56,.58),inset 0 0 0 1px rgba(255,250,215,.62)!important;
+}
+#screenMain .caseCard.selected .v519ImportanceFrame{
+  background:linear-gradient(180deg,#fff3ad,#efc448)!important;
+  box-shadow:0 0 12px rgba(242,192,56,.62)!important;
+}
+@keyframes v519ImportancePulse{0%,100%{opacity:.44;filter:brightness(.86)}50%{opacity:1;filter:brightness(1.34)}}
+@keyframes v519ImportanceArrive{0%{opacity:0;transform:scaleY(.35)}48%{opacity:1;transform:scaleY(1.08);filter:brightness(1.45)}100%{opacity:.78;transform:none;filter:none}}
+
+/* 選択は内側の水色リング。外周難易度色はそのまま見える。 */
+#screenMain .caseCard.selected{
+  box-shadow:0 0 0 4px rgba(66,220,255,.29),0 5px 0 rgba(0,0,0,.23),inset 0 0 0 2px rgba(223,249,255,.82)!important;
+}
+
+/* 采配モーダルも同じ操作窓の規格へ。カード選択UI自体の強みは維持。 */
+#screenAssign .dispatchModal{
+  border-radius:var(--ui555-r-modal)!important;
+  border-color:#b48732!important;
+  box-shadow:var(--ui555-shadow-panel)!important;
+}
+#screenAssign .dispatchModalShade{background:rgba(4,10,18,.72)!important;backdrop-filter:blur(1.5px)}
+#screenAssign .dispatchModalHead{padding:13px 15px 11px!important;background:rgba(255,248,222,.34)!important}
+#screenAssign .dispatchClose{background:#102a4c!important;color:#ffe9b5!important;border-color:#b48732!important;box-shadow:0 3px 0 #071624!important}
+
+/* タッチ端末ではカード型選択肢・終幕ボタンにもhoverを残さない。 */
+@media (hover:none),(pointer:coarse){
+  #screenAssign .dispatchActorChoice:hover,#screenAssign .dispatchTrumpChoice:hover{filter:none!important;transform:none!important}
+  .gameCueButton:hover,#screenResult button.gameCueButton:hover{filter:none!important;transform:none!important}
+  #screenMain .caseCard:hover{filter:none!important;transform:none!important}
+}
+`;
+document.head.appendChild(style);
+
+/* V554の意図した三分岐結果画面が実際に有効かを監査する。 */
+window.auditUiV556=function(){
+  const base=window.auditUiV555?window.auditUiV555():{};
+  const resultWrapped=(typeof View!=='undefined'&&View&&typeof View.resultLane==='function'&&!!View.resultLane.v554Wrapped);
+  const cards=[...document.querySelectorAll('#screenMain .caseCard')];
+  const difficultyReadable=cards.every(c=>c.matches('.butlerGuideCard,.easy,.normal,.hard,.desperate')||!c.offsetParent);
+  return{version:'V556',...base,resultV554Active:resultWrapped,difficultyBorderSemantic:true,importantMarkerSemantic:true,difficultyReadable,ok:!!base.ok&&resultWrapped};
+};
+window.__VERSION__='V556';
+})();
+
+/* ============================================================================
+   V557 — 王家・臨時采配者・敵脅威の長期成長曲線
+   - アルブレヒトは2/2/2/2を維持し、30歳前後で4中心へ
+   - 妻・弟・王子は低い初期値から専門家へ成長
+   - 老執事を含む臨時采配者は固定値。序盤は頼れるが王家が追い越す
+   - 一半期の能力上昇は人物ごと最大1回。XPは余剰を持ち越す
+   - 得意補正は最大+2、分野熟練は8回/18回へ遅延
+   - 戦力計算から growthLevel×7 の二重加算を撤去
+   - 一般案件の敵インフレを抑え、大国・危機ほど後半に伸びる
+   - 戦力差を初期戦線位置にも反映し、昔の格上を追い抜く感覚を可視化
+   ========================================================================== */
+(function(){
+'use strict';
+if(window.__V557_LONG_GROWTH_CURVE__)return;
+window.__V557_LONG_GROWTH_CURVE__=true;
+
+const V557_BASE={
+  albrecht:{speed:2,push:2,stability:2,defense:2,type:'若き万能成長型'},
+  brother:{speed:2,push:2,stability:1,defense:1,type:'若き軍事成長型'},
+  wife:{speed:1,push:1,stability:2,defense:2,type:'王妃支援型'},
+  wife1:{speed:1,push:1,stability:2,defense:2,type:'内政成長型'},
+  wife2:{speed:2,push:1,stability:2,defense:1,type:'西方外交成長型'},
+  wife3:{speed:1,push:1,stability:2,defense:2,type:'信仰支援成長型'},
+  wife4:{speed:2,push:2,stability:1,defense:1,type:'大国外交成長型'},
+  wife5:{speed:2,push:2,stability:1,defense:1,type:'交易外交成長型'},
+  wife6:{speed:2,push:2,stability:1,defense:1,type:'辺境軍事成長型'},
+  prince:{speed:1,push:1,stability:1,defense:1,type:'幼い王子・成長型'}
+};
+for(const [id,v] of Object.entries(V557_BASE))if(DATA.actors?.[id])Object.assign(DATA.actors[id],v);
+
+const V557_CAPS={
+  albrecht:{speed:5,push:5,stability:5,defense:5},
+  brother:{speed:5,push:5,stability:3,defense:3},
+  wife:{speed:4,push:3,stability:5,defense:5},
+  wife1:{speed:3,push:3,stability:5,defense:5},
+  wife2:{speed:4,push:3,stability:4,defense:4},
+  wife3:{speed:3,push:3,stability:5,defense:5},
+  wife4:{speed:4,push:5,stability:4,defense:4},
+  wife5:{speed:4,push:5,stability:3,defense:4},
+  wife6:{speed:5,push:5,stability:3,defense:3},
+  prince:{speed:4,push:3,stability:4,defense:4}
+};
+const V557_SEQ={
+  albrecht:['stability','defense','push','speed'],
+  brother:['speed','push','speed','push','stability','defense'],
+  wife:['stability','defense','stability','defense','speed','push'],
+  wife1:['stability','defense','stability','defense','speed','push'],
+  wife2:['stability','speed','defense','stability','speed','push'],
+  wife3:['defense','stability','defense','stability','speed','push'],
+  wife4:['push','defense','stability','push','speed','defense'],
+  wife5:['push','speed','defense','push','speed','stability'],
+  wife6:['speed','push','speed','push','defense','stability'],
+  prince:['stability','defense','speed','stability','defense','push']
+};
+for(const id of Object.keys(V557_CAPS)){
+  if(!ACTOR_GROWTH_RULES[id])ACTOR_GROWTH_RULES[id]={};
+  ACTOR_GROWTH_RULES[id].caps={...V557_CAPS[id]};
+  ACTOR_GROWTH_RULES[id].sequence=[...(V557_SEQ[id]||['stability','defense','push','speed'])];
+}
+
+const V557_SUPPORT={
+  support_butler:{speed:2,push:1,stability:4,defense:4,earlyOnly:false},
+  support_leopold:{speed:1,push:2,stability:4,defense:3},
+  support_emil:{speed:2,push:1,stability:3,defense:4},
+  support_clarissa:{speed:1,push:1,stability:4,defense:4},
+  support_rosen:{speed:3,push:2,stability:2,defense:2},
+  support_gerhard:{speed:2,push:4,stability:2,defense:1},
+  support_loire:{speed:2,push:1,stability:3,defense:3},
+  support_rick:{speed:1,push:1,stability:4,defense:4},
+  support_ruthenia:{speed:2,push:4,stability:3,defense:1},
+  support_solia:{speed:2,push:2,stability:3,defense:3},
+  support_azraq:{speed:3,push:3,stability:2,defense:2},
+  support_seafeara:{speed:3,push:2,stability:2,defense:3},
+  support_treuval:{speed:3,push:3,stability:2,defense:1},
+  wolfram:{speed:3,push:4,stability:2,defense:2},
+  alvaro:{speed:4,push:2,stability:3,defense:2},
+  armand:{speed:3,push:3,stability:3,defense:2},
+  irina:{speed:2,push:3,stability:4,defense:3},
+  dagdan:{speed:3,push:4,stability:3,defense:2},
+  safar:{speed:2,push:3,stability:4,defense:3},
+  renato:{speed:4,push:4,stability:2,defense:1},
+  vera:{speed:3,push:1,stability:4,defense:4},
+  fingal_review:{speed:3,push:4,stability:3,defense:2}
+};
+for(const [id,v] of Object.entries(V557_SUPPORT))if(DATA.supportActors?.[id])Object.assign(DATA.supportActors[id],v);
+
+const V557_XP={
+  albrecht:[5,10,15,21,27,34,41,49,58,68,79,91],
+  family:[4,8,13,19,26,34,43,53,64,76],
+  prince:[2,5,9,14,20,27,35,44,54]
+};
+nextGrowthXp=function(id,level){
+  if(typeof id!=='string'){level=id;id='albrecht';}
+  const table=id==='albrecht'?V557_XP.albrecht:(id==='prince'?V557_XP.prince:V557_XP.family);
+  return table[Number(level)||0]||999;
+};
+
+const V557_FIT={
+  albrecht:{label:'万能',tags:['military','diplomacy','internal','religion','court','dynasty','occult'],bonus:{},weak:[]},
+  brother:{label:'軍事・国境',tags:['military','border','security','fort','war','treuval','ruthenia'],bonus:{speed:1,push:1},weak:['court','religion']},
+  wife:{label:'安定支援',tags:['internal','welfare','religion','dynasty','family'],bonus:{stability:1,defense:1},weak:['war','fort']},
+  wife1:{label:'内政・民心',tags:['internal','welfare','people','city','village','dynasty','family','food'],bonus:{stability:1,defense:1},weak:['war','greatPower']},
+  wife2:{label:'宮廷・ロアール',tags:['court','loire','diplomacy','culture','marriage','scandal','noble'],bonus:{speed:1,stability:1},weak:['treuval','occult']},
+  wife3:{label:'宗教・巡礼',tags:['religion','church','rick','pilgrimage','faith','stunt','welfare'],bonus:{stability:1,defense:1},weak:['trade','seafeara','war']},
+  wife4:{label:'大国外交',tags:['ruthenia','greatPower','diplomacy','military','border','law'],bonus:{push:1,stability:1},weak:['people','village','occult']},
+  wife5:{label:'交易・南方',tags:['azraq','trade','port','seafeara','finance','diplomacy','culture'],bonus:{speed:1,push:1},weak:['rick','church']},
+  wife6:{label:'辺境・軍事',tags:['treuval','military','border','security','war','forest','occult','animal'],bonus:{speed:1,push:1},weak:['court','law','university']},
+  prince:{label:'王朝・教育',tags:['dynasty','family','court','education','law'],bonus:{stability:1,defense:1},weak:['war','greatPower']}
+};
+actorSuitabilityProfile=function(id){return V557_FIT[id]||null;};
+actorSuitabilityForCase=function(id,c){
+  const p=actorSuitabilityProfile(id);
+  if(!p||!c)return{match:0,penalty:0,label:'',bonus:{}};
+  if(id==='albrecht')return{match:1,penalty:0,label:p.label,bonus:{}};
+  const tags=actorCaseTagSet(c),match=p.tags.filter(t=>tags.has(t)).length,penalty=p.weak.filter(t=>tags.has(t)).length;
+  const bonus=match>=1?{...p.bonus}:{};
+  if(penalty>=1){const k=id==='brother'?'stability':'push';bonus[k]=(bonus[k]||0)-1;}
+  return{match,penalty,label:p.label,bonus};
+};
+
+applyDomainExperienceStats=function(actor,c){
+  if(!actor||actor.support||!actorCanGrow(actor.id))return actor;
+  const g=actorGrowthOf(actor.id),ds=caseExperienceDomains(c);
+  if(!ds.length)return actor;
+  let out={...actor};
+  const relevant=Math.max(0,...ds.map(k=>Number(g.domains?.[k])||0));
+  const pair=[];
+  for(const d of ds)for(const stat of (DOMAIN_GROWTH_STATS[d]||[]))if(!pair.includes(stat))pair.push(stat);
+  if(relevant>=8&&pair[0])out[pair[0]]=(out[pair[0]]||0)+1;
+  if(relevant>=18&&pair[1])out[pair[1]]=(out[pair[1]]||0)+1;
+  const cp=actorGrowthCaps(actor.id);
+  out.speed=clamp(out.speed,1,cp.speed);out.push=clamp(out.push,1,cp.push);out.stability=clamp(out.stability,1,cp.stability);out.defense=clamp(out.defense,1,cp.defense);
+  out.domainNote=relevant>=18?'熟練補正大':relevant>=8?'熟練補正':'';
+  return out;
+};
+
+actorGrowthGain=function(r){
+  const base={completeWin:3,majorWin:2,minorWin:2,draw:1,minorLoss:1,majorLoss:0,completeLoss:0}[r?.rank]??0;
+  const s=r?.judgeStats||{},perfect=Number(s.perfect)||0,total=perfect+(Number(s.good)||0)+(Number(s.normal)||0)+(Number(s.bad)||0);
+  const won=['completeWin','majorWin','minorWin'].includes(r?.rank);
+  const mastery=won&&total>=4&&perfect/total>=.80?1:0;
+  return{base,mastery,gain:base+mastery,perfect,total,perfectRate:total?perfect/total:0};
+};
+
+function v557GrowthSnapshot(id){
+  const a=DATA.actors?.[id],g=actorGrowthOf(id);if(!a||!g)return null;
+  const cp=actorGrowthCaps(id),stats={};
+  for(const k of ['speed','push','stability','defense'])stats[k]=clamp((Number(a[k])||1)+(Number(g.points?.[k])||0),1,Number(cp[k])||5);
+  const maxed=actorGrowthIsMaxed(id),next=nextGrowthXp(id,Number(g.level)||0);
+  return{id,name:a.name||id,type:a.type||'',img:typeof assignActorImage==='function'?assignActorImage(a):(a.img||''),xp:Number(g.xp)||0,level:Number(g.level)||0,maxed,remaining:maxed||next>=999?0:Math.max(0,next-(Number(g.xp)||0)),stats,domains:{...(g.domains||{})}};
+}
+applyActorGrowth=function(lanes=[]){
+  const groups=new Map();
+  for(const r of lanes||[]){
+    const id=r?.actor?.id;if(!actorCanGrow(id)||actorIsDead(id))continue;
+    if(!groups.has(id))groups.set(id,{id,lanes:[],before:v557GrowthSnapshot(id)});
+    groups.get(id).lanes.push(r);
+  }
+  const lines=[],details=[];
+  for(const pack of groups.values()){
+    const id=pack.id,g=actorGrowthOf(id);let totalXp=0,mastery=0;
+    for(const r of pack.lanes){
+      const earned=actorGrowthGain(r);totalXp+=earned.gain;mastery+=earned.mastery;
+      if(earned.gain>0)for(const d of caseExperienceDomains(r.case))g.domains[d]=(g.domains[d]||0)+1;
+    }
+    g.xp=(g.xp||0)+totalXp;
+    const domainNames=[...new Set(pack.lanes.flatMap(r=>caseExperienceDomains(r.case)))].map(domainLabel);
+    lines.push(totalXp>0?`${DATA.actors[id].name} 経験値 +${totalXp}${mastery?`（熟達 +${mastery}を含む）`:''}${domainNames.length?` / ${domainNames.join('・')}経験`:''}`:`${DATA.actors[id].name} 経験値獲得なし`);
+    /* 一半期で能力上昇は1回まで。余剰XPはそのまま持ち越す。 */
+    let levelLine='';
+    if(g.xp>=nextGrowthXp(id,g.level||0))levelLine=growActorStat(id,pack.lanes[0]?.case)||'';
+    if(levelLine)lines.push(levelLine);
+    const after=v557GrowthSnapshot(id),before=pack.before;
+    details.push({...after,before,xpGain:(after?.xp||0)-(before?.xp||0),levelGain:(after?.level||0)-(before?.level||0),cases:pack.lanes.map(r=>r?.case?.title).filter(Boolean),awards:pack.lanes.map(actorGrowthGain),statGain:Object.fromEntries(['speed','push','stability','defense'].map(k=>[k,(after?.stats?.[k]||0)-(before?.stats?.[k]||0)])),domainGain:Object.fromEntries(['military','diplomacy','internal','religion','court','dynasty','occult'].map(k=>[k,(after?.domains?.[k]||0)-(before?.domains?.[k]||0)]))});
+  }
+  State.lastActorGrowthDetailV518={turn:State.turn,actors:details};
+  return lines;
+};
+window.applyActorGrowth=applyActorGrowth;
+
+/* 能力そのものだけで戦力を評価。レベル値の二重加算をしない。 */
+actorStrategicPower=function(actor,c){
+  if(!actor)return 0;
+  const tags=caseMeta(c).tags||[];
+  let p=(actor.speed||1)*7+(actor.push||1)*10+(actor.stability||1)*8+(actor.defense||1)*7;
+  if(tags.includes('military')||tags.includes('border')||tags.includes('security')||tags.includes('war'))p+=(actor.push||1)*5+(actor.speed||1)*2;
+  if(tags.includes('diplomacy')||tags.includes('court')||tags.includes('politics')||tags.includes('noble'))p+=(actor.stability||1)*4+(actor.defense||1)*2;
+  if(tags.includes('welfare')||tags.includes('religion')||tags.includes('church')||tags.includes('plague'))p+=(actor.defense||1)*4+(actor.stability||1)*2;
+  if(tags.includes('dynasty')||tags.includes('family')||tags.includes('marriage'))p+=(actor.stability||1)*5;
+  if(tags.includes('occult')||tags.includes('witch')||tags.includes('fate'))p+=(actor.defense||1)*3+(actor.stability||1)*2;
+  return Math.round(p);
+};
+
+/* 案件一覧の難易度は恒常采配者で見る。臨時助力者を置いた時に初めて難度が下がる。 */
+bestAvailableCasePower=function(c){
+  const ids=[...(availableActorIds?availableActorIds():[])];let best=0;
+  for(const id of ids)best=Math.max(best,actorStrategicPower(effectiveActorForPower(DATA.actors[id],c),c));
+  return best||actorStrategicPower(effectiveActorForPower(DATA.actors.albrecht,c),c);
+};
+
+function v557ThreatTier(c){
+  const tags=caseMeta(c).tags||[],id=String(c?.id||''),danger=Number(c?.danger)||0;
+  if(c?.difficulty==='tutorial')return'tutorial';
+  if(tags.includes('final')||tags.includes('ending')||tags.includes('fate')||tags.includes('war')||tags.includes('crisis')||id.startsWith('phase16_'))return'crisis';
+  if(tags.includes('greatPower')||danger>=3)return'great';
+  if(tags.includes('border')||danger>=2)return'skilled';
+  return'general';
+}
+function v557ThreatMultiplier(c,progress){
+  const tier=v557ThreatTier(c);
+  if(tier==='tutorial')return 1;
+  if(c?.once&&(State.turn||1)<=3)return 1;
+  if(tier==='crisis')return .98+progress*.37;
+  if(tier==='great')return .94+progress*.31;
+  if(tier==='skilled')return .92+progress*.23;
+  return .92+progress*.13;
+}
+caseThreat=function(c){
+  if(!c)return 85;
+  const meta=caseMeta(c);let t=Number(c.threat||meta.threat||defaultThreatByDifficulty(c.difficulty));
+  t+=threatTagBonus(c);t+=Number(caseBattleBalance(c)?.threatOffset||0);
+  const progress=clamp((State.turn||1)/(typeof ENDING_TURN==='number'?ENDING_TURN:30),0,1);
+  t*=v557ThreatMultiplier(c,progress);
+  const scale=Number(meta.scale||1);t+=(scale-1)*12;
+  for(const k of caseTensionKeys(c)||[]){t+=(State.tension?.[k]||0)*3.5;t+=Math.abs(State.map?.[k]||0)*6.5;t+=(State.borderPressure?.[k]||0)*.10;}
+  const floor=caseBossFloor(c);if(floor)t=Math.max(t,floor);
+  return Math.round(t);
+};
+
+function v557GapLineBonus(gap){
+  if(gap<=-45)return 8;
+  if(gap<=-20)return 4;
+  if(gap<=20)return 0;
+  if(gap<=55)return-6;
+  if(gap<=90)return-12;
+  return-18;
+}
+if(typeof Battle==='object'&&Battle&&typeof Battle.makeLane==='function'){
+  const nextMakeLaneV557=Battle.makeLane;
+  Battle.makeLane=function(){
+    const lane=nextMakeLaneV557.apply(this,arguments);if(!lane)return lane;
+    const d=v557GapLineBonus(Number(lane.powerGap)||0);lane.v557GapLineBonus=d;
+    lane.line=clamp((Number(lane.line)||0)+d,-100,100);
+    if(Number.isFinite(Number(lane.budgetIntroFromLine)))lane.budgetIntroFromLine=clamp(Number(lane.budgetIntroFromLine)+d,-100,100);
+    if(Number.isFinite(Number(lane.budgetIntroToLine)))lane.budgetIntroToLine=clamp(Number(lane.budgetIntroToLine)+d,-100,100);
+    const clash=Battle.xFromLine(lane.line),overlap=CONFIG.actorW*CONFIG.overlapRatio;
+    lane.playerX=clash-CONFIG.actorW+overlap-270;lane.enemyX=clash-overlap+270;
+    return lane;
+  };
+  Battle.makeLane.v557LongCurve=true;
+}
+
+window.auditBalanceV557=function(){
+  const A=DATA.actors.albrecht,B=DATA.supportActors.support_butler,P=DATA.actors.prince;
+  return{version:'V557',albrecht:[A.speed,A.push,A.stability,A.defense],butler:[B.speed,B.push,B.stability,B.defense],butlerPersistent:B.earlyOnly===false,prince:P?[P.speed,P.push,P.stability,P.defense]:null,albrechtCaps:actorGrowthCaps('albrecht'),brotherCaps:actorGrowthCaps('brother'),xp0:nextGrowthXp('albrecht',0),xp5:nextGrowthXp('albrecht',5),levelPowerDoubleCountRemoved:!String(actorStrategicPower).includes('growthLevel'),gapLineWrapper:!!Battle.makeLane.v557LongCurve,ok:A.speed===2&&A.push===2&&B.stability===4&&B.defense===4&&B.earlyOnly===false&&nextGrowthXp('albrecht',0)===5};
+};
+window.__VERSION__='V557';
+})();
+
+
+
+
+/* ============================================================================
+   V558 — 敵の格と手触りのバリエーション
+   - 案件難易度とは別に、敵そのものへ「手薄〜大敵」の格を付与
+   - 格はケースID/相手名から決定的に決まり、同じ相手は同じ手触りを保つ
+   - 一般案件には弱い敵も残し、名のある君主・将軍・怪異は明確な壁にする
+   - 差は脅威値だけでなく、初期位置・接近速度・押し返し・踏ん張りにも反映
+   - 既存の突撃型/重量型/策謀型/怪異型などの個性は維持し、その上に敵格を重ねる
+   ========================================================================== */
+(function(){
+'use strict';
+if(window.__V558_ENEMY_VARIATION__)return;
+window.__V558_ENEMY_VARIATION__=true;
+
+const V558_GRADE_ORDER=['soft','standard','tough','elite','nemesis','boss'];
+const V558_ENEMY_GRADES={
+  soft:{id:'soft',label:'手薄',threat:-10,line:4,speed:.94,pressure:.88,stability:.90,weight:.95},
+  standard:{id:'standard',label:'標準',threat:0,line:0,speed:1,pressure:1,stability:1,weight:1},
+  tough:{id:'tough',label:'手強い',threat:5,line:-1,speed:1.00,pressure:1.04,stability:1.05,weight:1.02},
+  elite:{id:'elite',label:'強敵',threat:10,line:-3,speed:1.02,pressure:1.08,stability:1.09,weight:1.04},
+  nemesis:{id:'nemesis',label:'難敵',threat:15,line:-5,speed:1.04,pressure:1.12,stability:1.13,weight:1.07},
+  boss:{id:'boss',label:'大敵',threat:20,line:-8,speed:1.05,pressure:1.16,stability:1.18,weight:1.10}
+};
+const V558_NAMED=[
+  {re:/(森の魔女|黒麦冠|鏡の怪異|赤き竜|湖の赤き竜|亡き先王|死んだ先王)/,grade:'boss',mod:{pressure:1.04,stability:1.05}},
+  {re:/(グリゴリー・オルロフ|オルロフ)/,grade:'nemesis',mod:{speed:1.04,pressure:1.05}},
+  {re:/(ヴォルフラム・アイゼンハルト|ヴォルフラム)/,grade:'nemesis',mod:{weight:1.06,pressure:1.04}},
+  {re:/(レナート・ベルナッチ|レナート)/,grade:'nemesis',mod:{speed:1.07,stability:.97}},
+  {re:/^ルートヴィヒ$/,grade:'nemesis',mod:{speed:1.04,pressure:1.03}},
+  {re:/(イリーナ・ヴェリカヤ|イリーナ女大公|イリーナ)/,grade:'elite',mod:{stability:1.05}},
+  {re:/(聖王ロレンツォ・アルベルティ|聖王ロレンツォ|ロレンツォ)/,grade:'elite',mod:{stability:1.06,pressure:1.03}},
+  {re:/(サファル・アル＝ハーディル|サファル)/,grade:'elite',mod:{stability:1.04}},
+  {re:/(アルマン・ド・ヴァロワール|アルマン)/,grade:'elite',mod:{pressure:1.03,stability:1.03}},
+  {re:/(アルバロ・デ・メンドーサ|アルバロ)/,grade:'elite',mod:{speed:1.03,pressure:1.03}},
+  {re:/(ダグダン・マク・ロクラン|ダグダン)/,grade:'elite',mod:{weight:1.05,pressure:1.04}},
+  {re:/(カラ・ムスタファ・アガ|ムスタファ)/,grade:'elite',mod:{stability:1.04}},
+  {re:/(ゲルハルト)/,grade:'elite',mod:{weight:1.04,pressure:1.03}}
+];
+function v558Hash(text){let h=2166136261>>>0;for(const ch of String(text||'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0;}return h>>>0;}
+function v558GradeMax(a,b){return V558_GRADE_ORDER[Math.max(V558_GRADE_ORDER.indexOf(a),V558_GRADE_ORDER.indexOf(b))]||'standard';}
+function v558CaseDanger(c){const d=Number(c?.danger);if(Number.isFinite(d))return d;return{tutorial:0,easy:0,normal:1,growth:1,hard:2,desperate:3}[c?.difficulty]??1;}
+function v558NamedRule(c){const enemy=String(c?.enemy||c?.lineName||'');for(const r of V558_NAMED)if(r.re.test(enemy))return r;return null;}
+function v558BaseGrade(c){
+  if(!c)return'standard';
+  const tags=caseMeta(c).tags||[],id=String(c.id||''),d=v558CaseDanger(c),h=v558Hash(id)%100;
+  if(c.difficulty==='tutorial')return'soft';
+  if(tags.includes('final')||tags.includes('ending')||id==='finalcase_last_matter'||d>=4)return'boss';
+  if((tags.includes('war')||tags.includes('crisis')||tags.includes('greatPower'))&&d>=3)return h<35?'nemesis':'elite';
+  if(d>=3)return h<20?'nemesis':h<78?'elite':'tough';
+  if(d===2)return h<24?'elite':h<82?'tough':'standard';
+  if(d===1)return h<20?'tough':h<62?'standard':'soft';
+  return h<12?'tough':h<50?'standard':'soft';
+}
+function v558NamedAdjustedGrade(c,grade){
+  if(!grade)return null;if(grade==='boss')return'boss';
+  const d=v558CaseDanger(c),diff=c?.difficulty||'normal';
+  if(grade==='nemesis'){if(diff==='easy'||d<=0)return'tough';if(diff==='normal'||d===1)return'elite';return'nemesis';}
+  if(grade==='elite'){if(diff==='easy'||d<=0)return'tough';return'elite';}
+  return grade;
+}
+function v558EnemyGrade(c){
+  const base=v558BaseGrade(c),named=v558NamedRule(c),namedGrade=named?v558NamedAdjustedGrade(c,named.grade):null;
+  const id=namedGrade?v558GradeMax(base,namedGrade):base;
+  const g={...V558_ENEMY_GRADES[id]};
+  const seedText=named?String(c?.enemy||c?.lineName||c?.id):String(c?.id||'');
+  const micro=(v558Hash(seedText)%7)-3; // -3..+3。毎回同じ。
+  g.threat+=micro;
+  if(named?.mod)g.namedMod={...named.mod};
+  g.named=!!named;
+  return g;
+}
+window.v558EnemyGrade=v558EnemyGrade;
+
+/* V557の時間曲線に、敵固有の格を加える。 */
+const nextCaseThreatV558=caseThreat;
+caseThreat=function(c){const base=Number(nextCaseThreatV558(c))||0;const g=v558EnemyGrade(c);return Math.round(base+(Number(g.threat)||0));};
+
+/* 戦闘開始時、格を敵プロファイルと開始位置へ反映。 */
+if(typeof Battle==='object'&&Battle&&typeof Battle.makeLane==='function'){
+  const nextMakeLaneV558=Battle.makeLane;
+  Battle.makeLane=function(c,i,assist){
+    const lane=nextMakeLaneV558.apply(this,arguments);if(!lane||!c)return lane;
+    const g=v558EnemyGrade(c),m=g.namedMod||{};
+    const ep={...(lane.enemyProfile||ENEMY_ARCHETYPES.standard)};
+    ep.speed=(ep.speed||1)*g.speed*(m.speed||1);
+    ep.pressure=(ep.pressure||1)*g.pressure*(m.pressure||1);
+    ep.stability=(ep.stability||1)*g.stability*(m.stability||1);
+    ep.weight=(ep.weight||1)*g.weight*(m.weight||1);
+    ep.label=`${ep.label||'標準型'}・${g.label}`;
+    ep.v558Grade=g.id;ep.v558GradeLabel=g.label;
+    lane.enemyProfile=ep;
+    lane.enemyGrade=g.id;lane.enemyGradeLabel=g.label;
+    lane.enemySpeed=(Number(lane.enemySpeed)||0)*g.speed*(m.speed||1);
+    const shift=Number(g.line)||0;
+    lane.v558EnemyGradeLine=shift;
+    lane.line=clamp((Number(lane.line)||0)+shift,-100,100);
+    if(Number.isFinite(Number(lane.budgetIntroFromLine)))lane.budgetIntroFromLine=clamp(Number(lane.budgetIntroFromLine)+shift,-100,100);
+    if(Number.isFinite(Number(lane.budgetIntroToLine)))lane.budgetIntroToLine=clamp(Number(lane.budgetIntroToLine)+shift,-100,100);
+    const clash=Battle.xFromLine(lane.line),overlap=CONFIG.actorW*CONFIG.overlapRatio;
+    lane.playerX=clash-CONFIG.actorW+overlap-270;lane.enemyX=clash-overlap+270;
+    return lane;
+  };
+  Battle.makeLane.v558EnemyVariation=true;
+}
+
+window.auditEnemyVariationV558=function(){
+  const counts=Object.fromEntries(V558_GRADE_ORDER.map(k=>[k,0]));
+  const byDifficulty={};
+  for(const c of DATA.cases||[]){const g=v558EnemyGrade(c).id;counts[g]=(counts[g]||0)+1;const d=c.difficulty||'none';(byDifficulty[d]||(byDifficulty[d]={}))[g]=((byDifficulty[d]||{})[g]||0)+1;}
+  const find=(q)=>(DATA.cases||[]).find(c=>String(c.enemy||'').includes(q)||String(c.title||'').includes(q));
+  const sampleNames=['オルロフ','ヴォルフラム','レナート','イリーナ','ロレンツォ','アルバロ','ダグダン','魔女','赤き竜'];
+  const samples={};
+  for(const q of sampleNames){const c=find(q);if(c)samples[q]={id:c.id,title:c.title,enemy:c.enemy,grade:v558EnemyGrade(c).label,threat:caseThreat(c),initial:c.initialLine||0};}
+  return{version:'V558',counts,byDifficulty,samples,wrapper:!!Battle.makeLane.v558EnemyVariation,ok:counts.soft>0&&counts.standard>0&&counts.tough>0&&counts.elite>0&&counts.nemesis>0&&counts.boss>0&&!!Battle.makeLane.v558EnemyVariation};
+};
+window.__VERSION__='V558';
 })();
 </script>
+
+
+<script>
+/* ============================================================================
+   V559 — 成長曲線の実戦調整＋二大ボスの別格化
+   - 一般案件は王家の成長によって相対的に楽になるV557/V558曲線を維持
+   - 大貴族同盟の反乱を「王国級」、30歳最終戦を「終局級」として通常の大敵から分離
+   - 両戦は成長後でも必ずdesperate。敵の強さを脅威値だけでなく開始位置・圧力・踏ん張りへ反映
+   - 大貴族同盟は戦略選択の意味を残し、最終戦はlow/mid/highで圧倒感を段階化
+   - 開始位置には下限を置き、圧倒的でも一手で即終了する理不尽さは避ける
+   ========================================================================== */
+(function(){
+'use strict';
+if(window.__V559_BOSS_CURVE__)return;
+window.__V559_BOSS_CURVE__=true;
+
+const FINAL_ID=(typeof FINAL_CASE_ID!=='undefined'?FINAL_CASE_ID:'finalcase_last_matter');
+const REBELLION_ID='flow_great_noble_rebellion';
+const clamp559=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+function finalTier559(c){
+  const t=String(c?.coreFinalStrengthTier||'mid');
+  return ['low','mid','high'].includes(t)?t:'mid';
+}
+function rebellionStrategy559(){
+  const k=String((typeof State!=='undefined'&&State&&(State.phase105RebellionStrategy||State.phase181RebellionStrategy))||'defend');
+  return ['divide','defend','artillery'].includes(k)?k:'defend';
+}
+function bossBand559(c){
+  if(!c)return null;
+  if(String(c.id||'')===FINAL_ID){
+    const t=finalTier559(c);
+    const d={
+      low:{id:'finalLow',label:'終局級',threat:18,targetLine:-54,minLine:-76,speed:1.03,pressure:1.10,stability:1.10,weight:1.05},
+      mid:{id:'finalMid',label:'終局級',threat:26,targetLine:-62,minLine:-79,speed:1.05,pressure:1.14,stability:1.14,weight:1.08},
+      high:{id:'finalHigh',label:'終局級',threat:34,targetLine:-70,minLine:-82,speed:1.07,pressure:1.18,stability:1.18,weight:1.10}
+    }[t];
+    return {...d,kind:'final',tier:t};
+  }
+  if(String(c.id||'')===REBELLION_ID){
+    const k=rebellionStrategy559();
+    const d={
+      divide:{id:'rebellionDivide',label:'王国級',threat:24,targetLine:-62,minLine:-78,speed:1.08,pressure:1.12,stability:1.08,weight:1.04},
+      defend:{id:'rebellionDefend',label:'王国級',threat:24,targetLine:-50,minLine:-72,speed:.99,pressure:1.13,stability:1.17,weight:1.12},
+      artillery:{id:'rebellionArtillery',label:'王国級',threat:30,targetLine:-58,minLine:-76,speed:1.05,pressure:1.17,stability:1.14,weight:1.08}
+    }[k];
+    return {...d,kind:'rebellion',strategy:k};
+  }
+  return null;
+}
+window.v559BossBand=bossBand559;
+
+/* 二大ボスは王家が最大成長しても通常難度へ落ちない。 */
+if(typeof dynamicDifficultyForCase==='function'){
+  const nextDynamic559=dynamicDifficultyForCase;
+  dynamicDifficultyForCase=function(c,actor=null){
+    if(c&&(String(c.id||'')===FINAL_ID||String(c.id||'')===REBELLION_ID))return'desperate';
+    return nextDynamic559.apply(this,arguments);
+  };
+  dynamicDifficultyForCase.v559BossCurve=true;
+}
+
+/* 一般案件は序盤から処理しやすくし、成長後には明確に追い越せる。
+   ネームド・国境・戦争・危機・怪異には適用せず、壁になる相手との差を広げる。 */
+function ordinaryRelief559(c,base){
+  if(!c||bossBand559(c))return base;
+  const tags=(typeof caseMeta==='function'?(caseMeta(c).tags||[]):[]).map(String);
+  const blocked=['final','ending','fate','war','crisis','greatPower','border','occult','witch'];
+  if(tags.some(t=>blocked.includes(t)))return base;
+  const danger=Number(c.danger)||0;if(danger>=2)return base;
+  const g=(typeof v558EnemyGrade==='function'?v558EnemyGrade(c):null);
+  if(g&&g.named)return base;
+  if(String(c.difficulty||'normal')==='tutorial'||String(c.difficulty||'')==='growth')return base;
+  const end=(typeof ENDING_TURN==='number'?ENDING_TURN:30);
+  const progress=clamp559((Number(State?.turn)||1)/end,0,1);
+  const factor=.90+.05*progress; // 約10%軽減→終盤約5%軽減
+  return Math.round(base*factor);
+}
+window.v559OrdinaryRelief=ordinaryRelief559;
+
+/* 敵格そのものへ追加脅威を与える。V558の大敵補正の上へ重ねる。 */
+if(typeof caseThreat==='function'){
+  const nextThreat559=caseThreat;
+  caseThreat=function(c){
+    let base=Number(nextThreat559.apply(this,arguments))||0;
+    const b=bossBand559(c);
+    if(b)return Math.round(base+(Number(b.threat)||0));
+    return ordinaryRelief559(c,base);
+  };
+  caseThreat.v559BossCurve=true;
+}
+
+/* 実戦の手触り：開始位置・敵圧力・踏ん張り・重量・接近速度を別格化。 */
+if(typeof Battle==='object'&&Battle&&typeof Battle.makeLane==='function'){
+  const nextLane559=Battle.makeLane;
+  Battle.makeLane=function(c,i,assist){
+    const lane=nextLane559.apply(this,arguments);if(!lane||!c)return lane;
+    const b=bossBand559(c);if(!b)return lane;
+
+    const ep={...(lane.enemyProfile||ENEMY_ARCHETYPES.standard)};
+    ep.speed=(ep.speed||1)*(b.speed||1);
+    ep.pressure=(ep.pressure||1)*(b.pressure||1);
+    ep.stability=(ep.stability||1)*(b.stability||1);
+    ep.weight=(ep.weight||1)*(b.weight||1);
+    const baseLabel=String(ep.label||'標準型').replace(/・(?:手薄|標準|手強い|強敵|難敵|大敵|王国級|終局級)$/,'');
+    ep.label=`${baseLabel}・${b.label}`;
+    ep.v559BossBand=b.id;
+    lane.enemyProfile=ep;
+    lane.enemyGradeLabel=b.label;
+    lane.v559BossBand=b.id;
+    lane.v559BossLabel=b.label;
+    lane.enemySpeed=(Number(lane.enemySpeed)||0)*(b.speed||1);
+
+    /* 成長して戦力差を縮めても、決戦らしい不利位置から始まる。
+       ただし極端な補正が重なっても minLine より後ろには置かない。 */
+    let line=Number(lane.line)||0;
+    line=Math.min(line,Number(b.targetLine)||line);
+    line=Math.max(line,Number(b.minLine)||-82);
+    lane.v559BossLine=line-(Number(lane.line)||0);
+    lane.line=clamp559(line,-100,100);
+    if(Number.isFinite(Number(lane.budgetIntroFromLine)))lane.budgetIntroFromLine=lane.line;
+    if(Number.isFinite(Number(lane.budgetIntroToLine)))lane.budgetIntroToLine=Math.max(lane.line,Number(lane.budgetIntroToLine)||lane.line);
+    const clash=Battle.xFromLine(lane.line),overlap=CONFIG.actorW*CONFIG.overlapRatio;
+    lane.playerX=clash-CONFIG.actorW+overlap-270;lane.enemyX=clash-overlap+270;
+    return lane;
+  };
+  Battle.makeLane.v559BossCurve=true;
+}
+
+window.auditBossCurveV559=function(){
+  const cases=(DATA&&Array.isArray(DATA.cases))?DATA.cases:[];
+  const f=cases.find(c=>c&&c.id===FINAL_ID)||null;
+  const r=cases.find(c=>c&&c.id===REBELLION_ID)||null;
+  const snap=c=>c?{id:c.id,title:c.title,difficulty:dynamicDifficultyForCase(c,DATA.actors?.albrecht),threat:caseThreat(c),band:bossBand559(c)?.label||null,bandData:bossBand559(c)}:null;
+  return{version:'V559',final:snap(f),rebellion:snap(r),finalForcedDesperate:!!f&&dynamicDifficultyForCase(f,DATA.actors?.albrecht)==='desperate',rebellionForcedDesperate:!!r&&dynamicDifficultyForCase(r,DATA.actors?.albrecht)==='desperate',laneWrapper:!!Battle.makeLane.v559BossCurve,ok:!!f&&!!r&&!!Battle.makeLane.v559BossCurve};
+};
+window.__VERSION__='V559';
+})();
+</script>
+
 </html>
+<script>
+(function(){
+  const style=document.createElement('style');
+  style.id='v560-important-case-pulse';
+  style.textContent=`
+  @keyframes v560ImportantBandPulse{0%{opacity:.62;filter:brightness(.96)}50%{opacity:1;filter:brightness(1.18)}100%{opacity:.62;filter:brightness(.96)}}
+  #screenMain .caseCard.electorStoryCase,
+  #screenMain .caseCard.storyKeyBrother,
+  #screenMain .caseCard.storyKeyMarriage,
+  #screenMain .caseCard.greatFlowCase,
+  #screenMain .caseCard.finalCase,
+  #screenMain .caseCard.activeBorderCase,
+  #screenMain .caseCard.territoryStakeCase,
+  #screenMain .caseCard.postwarBranchCase,
+  #screenMain .caseCard.unresolvedFalloutCase,
+  #screenMain .caseCard.tutorial{
+    position:relative!important;
+    overflow:hidden!important;
+  }
+  #screenMain .caseCard.electorStoryCase::after,
+  #screenMain .caseCard.storyKeyBrother::after,
+  #screenMain .caseCard.storyKeyMarriage::after,
+  #screenMain .caseCard.greatFlowCase::after,
+  #screenMain .caseCard.finalCase::after,
+  #screenMain .caseCard.activeBorderCase::after,
+  #screenMain .caseCard.territoryStakeCase::after,
+  #screenMain .caseCard.postwarBranchCase::after,
+  #screenMain .caseCard.unresolvedFalloutCase::after,
+  #screenMain .caseCard.tutorial::after{
+    content:""!important;
+    position:absolute!important;
+    left:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:8px!important;
+    background:linear-gradient(180deg,#fff3b0 0%,#f3cf62 50%,#b98622 100%)!important;
+    box-shadow:0 0 16px rgba(243,207,98,.52), inset -1px 0 0 rgba(255,255,255,.38)!important;
+    animation:v560ImportantBandPulse 1.08s ease-in-out infinite!important;
+    z-index:8!important;
+    pointer-events:none!important;
+  }
+  #screenMain .caseCard.electorStoryCase .caseTitle,
+  #screenMain .caseCard.storyKeyBrother .caseTitle,
+  #screenMain .caseCard.storyKeyMarriage .caseTitle,
+  #screenMain .caseCard.greatFlowCase .caseTitle,
+  #screenMain .caseCard.finalCase .caseTitle,
+  #screenMain .caseCard.activeBorderCase .caseTitle,
+  #screenMain .caseCard.territoryStakeCase .caseTitle,
+  #screenMain .caseCard.postwarBranchCase .caseTitle,
+  #screenMain .caseCard.unresolvedFalloutCase .caseTitle,
+  #screenMain .caseCard.tutorial .caseTitle{
+    padding-left:14px!important;
+  }
+  #screenMain .caseCard.electorStoryCase.hasRequest .caseTitle,
+  #screenMain .caseCard.storyKeyBrother.hasRequest .caseTitle,
+  #screenMain .caseCard.storyKeyMarriage.hasRequest .caseTitle,
+  #screenMain .caseCard.greatFlowCase.hasRequest .caseTitle,
+  #screenMain .caseCard.finalCase.hasRequest .caseTitle,
+  #screenMain .caseCard.activeBorderCase.hasRequest .caseTitle,
+  #screenMain .caseCard.territoryStakeCase.hasRequest .caseTitle,
+  #screenMain .caseCard.postwarBranchCase.hasRequest .caseTitle,
+  #screenMain .caseCard.unresolvedFalloutCase.hasRequest .caseTitle,
+  #screenMain .caseCard.tutorial.hasRequest .caseTitle{
+    padding-left:14px!important;
+  }
+  `;
+  document.head.appendChild(style);
+})();
+</script>
+<style id="v561-battle-cleanup-important-style">
+/* V561: 衝突画面の不要HUD削除 */
+#screenBattle .battleLaneCount{display:none!important;}
+#screenBattle .laneHeader{display:none!important;}
+#screenBattle .battleTop{grid-template-columns:132px 1fr 228px!important;}
+#screenBattle .battleTopLeft{justify-content:center!important;}
+#screenBattle .battleTopLeft .battleModeLabel{font-size:20px!important;}
+
+/* V561: 重要案件の強調を大型化 */
+@keyframes v561ImportantBandPulse{
+  0%{opacity:.70;filter:brightness(.96);transform:scaleY(.96)}
+  50%{opacity:1;filter:brightness(1.26);transform:scaleY(1)}
+  100%{opacity:.70;filter:brightness(.96);transform:scaleY(.96)}
+}
+@keyframes v561ImportantCardBreath{
+  0%{box-shadow:0 0 0 0 rgba(243,207,98,.00),0 4px 0 rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.45)}
+  50%{box-shadow:0 0 0 6px rgba(243,207,98,.16),0 6px 0 rgba(0,0,0,.25),inset 0 0 0 1px rgba(255,255,255,.58)}
+  100%{box-shadow:0 0 0 0 rgba(243,207,98,.00),0 4px 0 rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.45)}
+}
+#screenMain .caseCard.electorStoryCase,
+#screenMain .caseCard.storyKeyBrother,
+#screenMain .caseCard.storyKeyMarriage,
+#screenMain .caseCard.greatFlowCase,
+#screenMain .caseCard.finalCase,
+#screenMain .caseCard.activeBorderCase,
+#screenMain .caseCard.territoryStakeCase,
+#screenMain .caseCard.postwarBranchCase,
+#screenMain .caseCard.unresolvedFalloutCase,
+#screenMain .caseCard.tutorial{
+  position:relative!important;
+  overflow:hidden!important;
+  animation:v561ImportantCardBreath 1.08s ease-in-out infinite!important;
+}
+#screenMain .caseCard.electorStoryCase::after,
+#screenMain .caseCard.storyKeyBrother::after,
+#screenMain .caseCard.storyKeyMarriage::after,
+#screenMain .caseCard.greatFlowCase::after,
+#screenMain .caseCard.finalCase::after,
+#screenMain .caseCard.activeBorderCase::after,
+#screenMain .caseCard.territoryStakeCase::after,
+#screenMain .caseCard.postwarBranchCase::after,
+#screenMain .caseCard.unresolvedFalloutCase::after,
+#screenMain .caseCard.tutorial::after{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  bottom:0!important;
+  width:16px!important;
+  background:linear-gradient(180deg,#fff7c8 0%,#f3cf62 44%,#d79a21 100%)!important;
+  box-shadow:0 0 22px rgba(243,207,98,.78), inset -2px 0 0 rgba(255,255,255,.45)!important;
+  animation:v561ImportantBandPulse .88s ease-in-out infinite!important;
+  z-index:14!important;
+  pointer-events:none!important;
+}
+#screenMain .caseCard.electorStoryCase .caseTitle,
+#screenMain .caseCard.storyKeyBrother .caseTitle,
+#screenMain .caseCard.storyKeyMarriage .caseTitle,
+#screenMain .caseCard.greatFlowCase .caseTitle,
+#screenMain .caseCard.finalCase .caseTitle,
+#screenMain .caseCard.activeBorderCase .caseTitle,
+#screenMain .caseCard.territoryStakeCase .caseTitle,
+#screenMain .caseCard.postwarBranchCase .caseTitle,
+#screenMain .caseCard.unresolvedFalloutCase .caseTitle,
+#screenMain .caseCard.tutorial .caseTitle{
+  padding-left:20px!important;
+}
+#screenMain .caseCard.electorStoryCase.hasRequest .caseTitle,
+#screenMain .caseCard.storyKeyBrother.hasRequest .caseTitle,
+#screenMain .caseCard.storyKeyMarriage.hasRequest .caseTitle,
+#screenMain .caseCard.greatFlowCase.hasRequest .caseTitle,
+#screenMain .caseCard.finalCase.hasRequest .caseTitle,
+#screenMain .caseCard.activeBorderCase.hasRequest .caseTitle,
+#screenMain .caseCard.territoryStakeCase.hasRequest .caseTitle,
+#screenMain .caseCard.postwarBranchCase.hasRequest .caseTitle,
+#screenMain .caseCard.unresolvedFalloutCase.hasRequest .caseTitle,
+#screenMain .caseCard.tutorial.hasRequest .caseTitle{
+  padding-left:20px!important;
+}
+</style>
+<script id="v561-battle-cleanup-important-script">
+(function(){
+  'use strict';
+
+  /* 衝突上部の不要文言を生成しない */
+  window.battleLaneCountText=function(){return '';};
+  window.battleLaneHeaderHtml=function(){return '';};
+
+  function importantRankForCard(el){
+    if(!el) return 999;
+    const id=String(el.dataset.caseId||'');
+    const cls=el.classList;
+    if(id==='tutorial_butler') return 0;
+    if(cls.contains('finalCase')) return 1;
+    if(cls.contains('greatFlowCase')) return 2;
+    if(cls.contains('unresolvedFalloutCase')) return 3;
+    if(cls.contains('storyKeyBrother')) return 4;
+    if(cls.contains('storyKeyMarriage')) return 5;
+    if(cls.contains('electorStoryCase')) return 6;
+    if(cls.contains('territoryStakeCase')) return 7;
+    if(cls.contains('activeBorderCase')) return 8;
+    if(cls.contains('postwarBranchCase')) return 9;
+    if(cls.contains('tutorial')) return 10;
+    return 999;
+  }
+
+  function prioritizeMainCaseCards(){
+    const panel=document.querySelector('#screenMain .casePanel');
+    if(!panel) return;
+    const cards=[...panel.querySelectorAll('.caseCard')];
+    if(!cards.length) return;
+    cards.forEach((el,idx)=>{
+      if(!el.dataset.priorityBirthIndex) el.dataset.priorityBirthIndex=String(idx);
+    });
+    const sorted=[...cards].sort((a,b)=>{
+      const ra=importantRankForCard(a);
+      const rb=importantRankForCard(b);
+      if(ra!==rb) return ra-rb;
+      return Number(a.dataset.priorityBirthIndex||0)-Number(b.dataset.priorityBirthIndex||0);
+    });
+    let changed=false;
+    for(let i=0;i<sorted.length;i++){
+      if(panel.children[i]!==sorted[i]){changed=true;break;}
+    }
+    if(!changed) return;
+    const frag=document.createDocumentFragment();
+    sorted.forEach(el=>frag.appendChild(el));
+    panel.appendChild(frag);
+  }
+
+  let sortTickQueued=false;
+  function queuePrioritize(){
+    if(sortTickQueued) return;
+    sortTickQueued=true;
+    requestAnimationFrame(()=>{
+      sortTickQueued=false;
+      try{prioritizeMainCaseCards();}catch(_){ }
+    });
+  }
+
+  function installPriorityObserver(){
+    const screen=document.getElementById('screenMain');
+    if(!screen || screen.dataset.v561PriorityInstalled==='1') return;
+    screen.dataset.v561PriorityInstalled='1';
+    const mo=new MutationObserver(()=>queuePrioritize());
+    mo.observe(screen,{childList:true,subtree:true});
+    queuePrioritize();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',installPriorityObserver,{once:true});
+  }else{
+    installPriorityObserver();
+  }
+  setTimeout(installPriorityObserver,0);
+})();
+</script>
