@@ -11120,7 +11120,9 @@ function showJudgementOverlay(done){
 if(!battle){done&&done();return}
 battle.phase='judgement';
 const j=battleJudgement();
-sfx(j.sfx);
+const allCompleteLoss=!!(battle.lanes&&battle.lanes.length&&battle.lanes.every(l=>{try{return typeof Battle==='object'&&Battle&&typeof Battle.rank==='function'?Battle.rank(Number(l.line||0))==='completeLoss':Number(l.line||0)<=-100}catch(_){return Number(l&&l.line||0)<=-100}}));
+if(typeof State!=='undefined'&&State){State.v600BattleTailActive=true;State.v600CompleteLossJudgementPlayed=allCompleteLoss;}
+if(allCompleteLoss)sfx('turnCompleteLoss');else sfx(j.sfx);
 const host=$('screenBattle')||document.body;
 let box=$('judgementOverlay');
 if(!box){
@@ -11259,7 +11261,7 @@ lanes,ignored,yearEnd,cardRewards,actorGrowthLines,actorConsequences,legacyLines
 };
 }
 
-const Flow={pendingEvent(){if(State.butlerRetirementPending&&!State.shownEvents.butler_retirement_notice)return DATA.events.find(e=>e.id==='butler_retirement_notice');return DATA.events.find(e=>!['butler_report','butler_retirement_notice'].includes(e.id)&&e.when===State.turn&&!State.shownEvents[e.id])},chooseEvent(id,idx){audio();sfx("next");const ev=DATA.events.find(e=>e.id===id),ch=ev.choices[idx];State.shownEvents[id]=true;if(id==='butler_retirement_notice')State.butlerRetirementPending=false;if(ch.hidden)for(const[k,v]of Object.entries(ch.hidden))State.params[k]=(State.params[k]||0)+v;if(ch.flags)Object.assign(State,ch.flags);$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div>`;if(window.showLetterNotice){window.showLetterNotice({host:$('screenMain'),className:'eventResultLetterShade',sender:(ev.speaker?ev.speaker+'より':'王宮より'),title:ev.title||'',bodyHtml:ch.result||'',onClose:function(){View.main();}})}else{$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div><div class="modalShade"><div class="modalBox"><h2>${ev.title}</h2><div class="dialogText">${ch.result}</div><div class="choices"><button onclick="View.main()">続ける</button></div></div></div>`}},revealYear(){audio();sfx('reveal');State.yearStoryRead=true;State.justRevealed=true;View.main()},toggleCase(id){audio();const wasSelected=State.selected.includes(id);if(wasSelected){sfx('cancel');State.selected=State.selected.filter(x=>x!==id);delete State.assignments[id];refundCaseBudget(id);removeCardAssignmentsForCase(id)}else if(State.selected.length>=maxSelectableCases()){let replaceAt=-1;for(let i=State.selected.length-1;i>=0;i--){const current=getCase(State.selected[i]);if(!(current&&current.mandatory)){replaceAt=i;break}}if(replaceAt<0){State.warn=true;sfx('warn')}else{const removed=State.selected[replaceAt];delete State.assignments[removed];refundCaseBudget(removed);removeCardAssignmentsForCase(removed);if(State.cardAssignment?.caseId===removed)State.cardAssignment=null;State.selected.splice(replaceAt,1,id);State.cursor=replaceAt;State.warn=false;sfx('select')}}else{State.selected.push(id);State.warn=false;sfx('select')}const liveList=document.querySelector('.casePanel.revealList');if(liveList&&View.updateMainSelection){View.updateMainSelection();if(State.warn)setTimeout(()=>{State.warn=false;View.updateMainSelection()},700)}else{View.main()}},toAssign(){if(!State.selected.length)return;audio();sfx("next");clearInvalidSelectedAssignments();State.cursor=State.selected.findIndex(id=>!State.assignments[id]);if(State.cursor<0)State.cursor=0;View.assign()},allAssigned(){return State.selected.every(id=>{const actorId=State.assignments[id];return!!actorId&&actorIsSelectableForCase(actorId,id)})},startBattle(){const invalid=clearInvalidSelectedAssignments();if(invalid.length||!Flow.allAssigned()){sfx("warn");View.assign();return}audio();sfx("next");Battle.start()},effectText(p={}){const a=[];if(p.treasury)a.push(`国庫 ${p.treasury>0?'+':''}${fmt(Math.abs(p.treasury)<100?p.treasury*ECONOMY.treasuryUnit:p.treasury)}`);if(p.troops)a.push(`兵数 ${p.troops>0?'+':''}${fmt(p.troops)}`);return a.join('<br>')||'数値上の大きな変化はない'},effectWorldText(e={}){const a=[];for(const[k,v]of Object.entries(e.influence||{})){if(v)a.push(`${mapDef(k)?.label||k} 影響 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.tension||{})){if(v)a.push(`${mapDef(k)?.label||k} 緊張 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.map||{})){if(v)a.push(`${mapDef(k)?.label||k} 勢力圏 ${v>0?'+':''}${v}`)}return a.join('<br>')},applyEffect(e,caseObj=null){
+const Flow={pendingEvent(){if(State.butlerRetirementPending&&!State.shownEvents.butler_retirement_notice)return DATA.events.find(e=>e.id==='butler_retirement_notice');return DATA.events.find(e=>!['butler_report','butler_retirement_notice'].includes(e.id)&&e.when===State.turn&&!State.shownEvents[e.id])},chooseEvent(id,idx){audio();sfx("next");const ev=DATA.events.find(e=>e.id===id),ch=ev.choices[idx];State.shownEvents[id]=true;if(id==='butler_retirement_notice')State.butlerRetirementPending=false;if(ch.hidden)for(const[k,v]of Object.entries(ch.hidden))State.params[k]=(State.params[k]||0)+v;if(ch.flags)Object.assign(State,ch.flags);$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div>`;if(window.showLetterNotice){window.showLetterNotice({host:$('screenMain'),className:'eventResultLetterShade',sender:(ev.speaker?ev.speaker+'より':'王宮より'),title:ev.title||'',bodyHtml:ch.result||'',onClose:function(){View.main();}})}else{$('screenMain').innerHTML=`<div class="topbar"><b>${periodLabel()}</b>${paramHud()}</div><div class="modalShade"><div class="modalBox"><h2>${ev.title}</h2><div class="dialogText">${ch.result}</div><div class="choices"><button onclick="View.main()">続ける</button></div></div></div>`}},revealYear(){audio();sfx('reveal');State.yearStoryRead=true;State.justRevealed=true;View.main()},toggleCase(id){audio();const wasSelected=State.selected.includes(id);if(wasSelected){sfx('cancel');State.selected=State.selected.filter(x=>x!==id);delete State.assignments[id];refundCaseBudget(id);removeCardAssignmentsForCase(id)}else if(State.selected.length>=maxSelectableCases()){let replaceAt=-1;for(let i=State.selected.length-1;i>=0;i--){const current=getCase(State.selected[i]);if(!(current&&current.mandatory)){replaceAt=i;break}}if(replaceAt<0){State.warn=true;sfx('warn')}else{const removed=State.selected[replaceAt];delete State.assignments[removed];refundCaseBudget(removed);removeCardAssignmentsForCase(removed);if(State.cardAssignment?.caseId===removed)State.cardAssignment=null;State.selected.splice(replaceAt,1,id);State.cursor=replaceAt;State.warn=false;sfx('replace')}}else{State.selected.push(id);State.warn=false;sfx('select')}const liveList=document.querySelector('.casePanel.revealList');if(liveList&&View.updateMainSelection){View.updateMainSelection();if(State.warn)setTimeout(()=>{State.warn=false;View.updateMainSelection()},700)}else{View.main()}},toAssign(){if(!State.selected.length)return;audio();sfx("next");clearInvalidSelectedAssignments();State.cursor=State.selected.findIndex(id=>!State.assignments[id]);if(State.cursor<0)State.cursor=0;View.assign()},allAssigned(){return State.selected.every(id=>{const actorId=State.assignments[id];return!!actorId&&actorIsSelectableForCase(actorId,id)})},startBattle(){const invalid=clearInvalidSelectedAssignments();if(invalid.length||!Flow.allAssigned()){sfx("warn");View.assign();return}audio();sfx("next");Battle.start()},effectText(p={}){const a=[];if(p.treasury)a.push(`国庫 ${p.treasury>0?'+':''}${fmt(Math.abs(p.treasury)<100?p.treasury*ECONOMY.treasuryUnit:p.treasury)}`);if(p.troops)a.push(`兵数 ${p.troops>0?'+':''}${fmt(p.troops)}`);return a.join('<br>')||'数値上の大きな変化はない'},effectWorldText(e={}){const a=[];for(const[k,v]of Object.entries(e.influence||{})){if(v)a.push(`${mapDef(k)?.label||k} 影響 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.tension||{})){if(v)a.push(`${mapDef(k)?.label||k} 緊張 ${v>0?'+':''}${v}`)}for(const[k,v]of Object.entries(e.map||{})){if(v)a.push(`${mapDef(k)?.label||k} 勢力圏 ${v>0?'+':''}${v}`)}return a.join('<br>')},applyEffect(e,caseObj=null){
 /* 1. 国内パラメータ。国庫だけは小さい値をゲーム内通貨単位へ換算する。 */
 for(const[k,raw]of Object.entries(e.params||{})){
 let v=raw;
@@ -11407,7 +11409,7 @@ catch(_){return true;}
 }
 function battleTutorialBasicHtml(){
 if(battleTutorialPcMode()) return `<h2>衝突の基本</h2><p>敵とぶつかる直前にAキーを押します。</p><p>近いほど判定が良くなり、Perfectなら大きく押し返せます。</p><p>陛下、焦らず。相手と間合いが重なる、その一瞬でございます。</p><button class="tutorialStartBtn" type="button">開始する</button>`;
-return `<h2>衝突の基本</h2><p>敵とぶつかる直前にTAPします。</p><p>近いほど判定が良くなり、Perfectなら大きく押し返せます。</p><p>陛下、焦らず。相手と間合いが重なる、その一瞬でございます。</p><button class="tutorialStartBtn" type="button">開始する</button>`;
+return `<h2>衝突の基本</h2><p>敵とぶつかる直前に、画面右のTAPボタンをお押しなさい。</p><p>近いほど判定が良くなり、Perfectなら大きく押し返せます。</p><p>陛下、焦らず。相手と間合いが重なる、その一瞬でございます。</p><button class="tutorialStartBtn" type="button">開始する</button>`;
 }
 function battleTutorialBadHtml(){
 if(battleTutorialPcMode()) return `<h2>崩された時の心得</h2><p>陛下、ただ今のは一拍遅うございました。</p><p>ぶつかってからでは、相手の勢いを正面から受けてしまいます。間合いが重なる直前に、こちらから踏み込むのでございます。</p><p>敵と肩が重なりかけたその一瞬に、Aキーで踏み込んでくださいませ。</p><button class="tutorialStartBtn" type="button">続ける</button>`;
@@ -12173,6 +12175,25 @@ tone(116,.085,'sine',.026,.010,{slideTo:86,cutoff:460,master:.48,attack:.002,rel
 tone(238,.060,'triangle',.014,.058,{slideTo:205,cutoff:1100,master:.30,attack:.003,release:.040});
 return;
 }
+if(n==='replace'){
+// 戦線の入替：外れる低い印→入る明るい印を一息で。
+tone(300,.055,'triangle',.024,0,{slideTo:245,cutoff:2800,master:.48});
+tone(560,.060,'triangle',.029,.060,{slideTo:700,cutoff:4600,master:.60});
+tone(980,.035,'sine',.012,.105,{cutoff:6200,master:.38});return;
+}
+if(n==='budgetUp'){
+// 国庫投入を増やす：軽い硬貨の上昇音。
+metal(0,.014);tone(740,.050,'triangle',.020,.018,{slideTo:880,cutoff:5200,master:.48});bell(988,.055,.010);return;
+}
+if(n==='budgetDown'){
+// 国庫投入を戻す：同系統で下降。
+metal(0,.010);tone(620,.060,'triangle',.018,.018,{slideTo:470,cutoff:4200,master:.44});tone(330,.055,'sine',.012,.060,{cutoff:1800,master:.34});return;
+}
+if(n==='summary'&&typeof State!=='undefined'&&State&&State.v600BattleTailActive){
+// 衝突の正式な決着音は中央判定で済んでいる。総括は紙をめくるだけ。
+paper(0,.017);tone(210,.055,'triangle',.010,.050,{slideTo:188,cutoff:1200,master:.26});
+State.v600BattleTailActive=false;State.v600CompleteLossJudgementPlayed=false;return;
+}
 if(n==='summary'){
 bell(523,0,.024);chord([392,523,659,784],.28,'triangle',.022,.07,{stagger:true,cutoff:5200,master:.64});return;
 }
@@ -12221,10 +12242,12 @@ if(n==='bad'){
 lowHit(68,.20,.075,0);tone(170,.16,'sawtooth',.044,.025,{slideTo:105,cutoff:950,master:.62});noise(.12,.040,.02,{type:'lowpass',freq:900,q:.7,master:.54});return;
 }
 if(n==='finishWin'){
-lowHit(95,.15,.052,0);chord([392,523,659,784],.34,'triangle',.035,.05,{stagger:true,cutoff:5600,master:.74});bell(1046,.22,.022);return;
+// 一戦線を端まで押し切った印。最後の衝突音を邪魔しない短さ。
+lowHit(108,.075,.026,0);tone(620,.070,'triangle',.021,.035,{slideTo:760,cutoff:4600,master:.48});tone(1046,.035,'sine',.010,.082,{cutoff:6200,master:.34});return;
 }
 if(n==='finishLose'){
-lowHit(58,.26,.080,0);tone(145,.22,'sawtooth',.043,.06,{slideTo:82,cutoff:850,master:.63});noise(.18,.034,.08,{type:'lowpass',freq:650,q:.6,master:.48});return;
+// 一戦線を端まで押し込まれた印。重いが、全体敗北ジングルとは分離。
+lowHit(72,.115,.040,0);tone(185,.105,'triangle',.024,.035,{slideTo:132,cutoff:1500,master:.46});noise(.070,.014,.030,{type:'lowpass',freq:720,q:.65,master:.30});return;
 }
 if(n==='budget'){
 paper(0,.012);metal(.025,.018);bell(740,.010,.020);chord([440,660,880],.18,'triangle',.022,.045,{stagger:true,cutoff:5600,master:.62});return;
@@ -12239,31 +12262,49 @@ if(n==='mapNews'){
 lowHit(72,.18,.055,0);bell(392,.05,.020);tone(262,.36,'sine',.018,.08,{cutoff:1200,master:.44,release:.22});return;
 }
 if(n==='resultWin'){
-bell(659,0,.026);chord([392,523,659,880],.30,'triangle',.030,.08,{stagger:true,cutoff:5600,master:.70});return;
+// 戦線結果画面は確認音だけ。
+tone(523,.075,'triangle',.018,0,{slideTo:620,cutoff:3900,master:.42});bell(784,.060,.010);return;
 }
 if(n==='resultLose'){
-lowHit(70,.22,.060,0);tone(196,.20,'sawtooth',.034,.06,{slideTo:130,cutoff:1000,master:.58});return;
+lowHit(82,.100,.030,0);tone(196,.095,'triangle',.020,.030,{slideTo:150,cutoff:1600,master:.40});return;
 }
 if(n==='resultDraw'){
-// V552: neutral result cue must remain audible without sounding like a win/loss.
-lowHit(98,.11,.036,0);tone(392,.105,'triangle',.032,.030,{cutoff:3200,master:.56});tone(349,.18,'sine',.024,.105,{cutoff:1900,master:.50});return;
+// 戦線結果画面の中立確認音。
+tone(392,.075,'triangle',.018,0,{cutoff:3000,master:.40});tone(370,.090,'sine',.014,.060,{cutoff:2200,master:.34});return;
 }
 if(n==='judgeGreat'){
-lowHit(88,.16,.062,0);chord([392,523,659,880,1175],.34,'triangle',.035,.05,{stagger:true,cutoff:6200,master:.76});bell(1046,.18,.024);bell(1568,.30,.014);return;
+// 大成功：柔らかい衝撃から明快な上昇。最も祝祭的だが長引かせない。
+lowHit(86,.135,.054,0);
+tone(392,.115,'triangle',.028,.035,{slideTo:430,cutoff:3900,master:.58});
+tone(523,.125,'triangle',.030,.085,{slideTo:580,cutoff:4500,master:.62});
+tone(659,.140,'triangle',.030,.140,{slideTo:740,cutoff:5200,master:.64});
+bell(988,.205,.018);bell(1318,.285,.011);return;
 }
 if(n==='judgeWin'){
-lowHit(112,.12,.040,0);chord([392,523,659,880],.26,'triangle',.029,.06,{stagger:true,cutoff:5600,master:.68});bell(880,.16,.018);return;
+// 成功：三段の短い上昇。大成功より一段控えめ。
+lowHit(104,.105,.036,0);
+tone(392,.105,'triangle',.024,.040,{slideTo:430,cutoff:3600,master:.52});
+tone(523,.115,'triangle',.025,.095,{slideTo:565,cutoff:4200,master:.54});
+tone(659,.130,'triangle',.024,.150,{slideTo:700,cutoff:4800,master:.54});return;
 }
 if(n==='judgeDraw'){
-// V552: the old draw cue was technically firing but was too soft to survive the battle tail.
-// Give it a clear neutral two-note stamp, still weaker/less celebratory than a win.
-lowHit(98,.13,.044,0);tone(392,.11,'triangle',.036,.032,{cutoff:3400,master:.60});tone(349,.19,'triangle',.028,.105,{cutoff:2600,master:.54});metal(.055,.013);return;
+// 拮抗：上下へ解決しない二音。勝利にも敗北にも聞こえない。
+lowHit(102,.090,.028,0);
+tone(392,.115,'triangle',.026,.035,{cutoff:3200,master:.50});
+tone(370,.145,'triangle',.023,.120,{cutoff:2900,master:.46});return;
 }
 if(n==='judgeStruggle'){
-lowHit(72,.18,.060,0);metal(.04,.018);tone(196,.18,'sawtooth',.032,.08,{slideTo:150,cutoff:1000,master:.55});return;
+// 苦戦：少し沈むが、敗北の崩落までは行かない。
+lowHit(78,.135,.042,0);
+tone(247,.125,'triangle',.024,.045,{slideTo:220,cutoff:2200,master:.47});
+tone(196,.155,'sine',.021,.135,{slideTo:174,cutoff:1500,master:.43});return;
 }
 if(n==='judgeLose'){
-lowHit(54,.27,.085,0);tone(145,.23,'sawtooth',.045,.05,{slideTo:82,cutoff:850,master:.62});noise(.18,.038,.05,{type:'lowpass',freq:620,q:.7,master:.50});bell(220,.18,.012);return;
+// 敗北：低く沈む二段。完全敗北だけは別の崩落＋遠鐘へ分岐する。
+lowHit(60,.205,.066,0);
+tone(165,.185,'triangle',.034,.040,{slideTo:108,cutoff:1200,master:.56});
+noise(.120,.025,.055,{type:'lowpass',freq:650,q:.68,master:.40});
+tone(92,.230,'sine',.026,.155,{slideTo:76,cutoff:620,master:.46,release:.14});return;
 }
 if(n==='ending'){playEndingTheme();return}
 if(n==='opening'){
@@ -29363,7 +29404,7 @@ window.DispatchV36={
  },
  clearTrumps(caseId){removeCardAssignmentsForCase(caseId);sfx('cancel');closeModal();this.openTrumps(caseId);},
  closeAndRender(){closeModal();renderAssign();},
- changeBudget(ev,id,delta){if(ev){ev.preventDefault();ev.stopPropagation();}const c=getCase(id);if(!c)return;const before=caseBudgetSteps(c);if(setCaseBudgetSteps(id,before+delta)){try{if(typeof audio==='function')audio();if(typeof sfx==='function')sfx(delta>0?'card':'cancel');}catch(e){}renderAssign();}},
+ changeBudget(ev,id,delta){if(ev){ev.preventDefault();ev.stopPropagation();}const c=getCase(id);if(!c)return;const before=caseBudgetSteps(c);if(setCaseBudgetSteps(id,before+delta)){try{if(typeof audio==='function')audio();if(typeof sfx==='function')sfx(delta>0?'budgetUp':'budgetDown');}catch(e){}renderAssign();}},
 };
 View.assign=function(){return renderAssign();};
 window.addEventListener('keydown',function(e){if(!$('screenAssign')?.classList.contains('active'))return;if(e.key==='Escape'){e.preventDefault();if(document.querySelector('#screenAssign .dispatchModalShade'))closeModal();else View.main();}},true);
@@ -33819,7 +33860,7 @@ try{
   window.__cleanV4BeforeFinishBattle189=function(){
     try{
       const allLoss=allBattleLanesCompleteLoss189();
-      State.phase189BattleResultSfx=allLoss?'completeLoss':null;
+      State.phase189BattleResultSfx=(allLoss&&!State.v600CompleteLossJudgementPlayed)?'completeLoss':null;
       State.phase189AllCompleteLossBattle=!!allLoss;
     }catch(_){ }
   };
@@ -44329,7 +44370,7 @@ function aiueo20Eligible568(){try{return currentAge()===20&&!State.aiueo20SeenV5
 function showAiueo20V568(){
  if(!aiueo20Eligible568())return false;
  if(typeof setScreen==='function')setScreen('screenResult');const el=document.getElementById('screenResult');if(!el)return false;
- el.innerHTML=`<div class="v568Aiueo20Screen"><div class="v568Topbar"><b>二十歳の節目</b><small>王の五文字</small></div><div class="v568Stage"><section class="v568Paper"><div class="v568Kicker">王の五文字</div><h2 class="v568Heading">誰も意味を知らない標語</h2><div class="v568AiueoLead">二十歳の誕生日の夜、アルブレヒトは執務室の机の隅へ、小刀で五つの文字を刻んだ。</div><div class="v568AiueoMark">A.I.U.E.O.</div><div class="v568AiueoLead">意味を尋ねられても、王は答えなかった。やがて五文字は国境を越え、人々はそれぞれのアルブレヒト像をそこへ読み込んだ。</div><div class="v568InterpretGrid"><article class="v568Interpret"><b>外国宮廷で囁かれた読み</b><div class="v568InterpretLatin">Altranti Imperio Universa Erunt Obnoxia.</div><div class="v568InterpretJa">「万物はアルトラントの支配に服する。」</div><p>ロアールやルテニアでは、若き王がいつか大陸を呑み込むという宣言ではないかと恐れられた。</p></article><article class="v568Interpret"><b>リックの聖職者が唱えた読み</b><div class="v568InterpretLatin">Adiuva, Immortalis; Urget Enim Onus.</div><div class="v568InterpretJa">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</div><p>十六歳で王冠を負った少年が、誰にも見せられなかった祈りではないかと論じる者もいた。</p></article><article class="v568Interpret domestic"><b>アルトラントでの噂</b><p>王都の学者は統治の標語だと言い、宮廷人は誰か一人へ向けた言葉だと言い、兵士たちは勝利を願う誓いだと信じた。五文字には、読む者の数だけ意味が生まれた。</p></article></div><div class="v568AiueoClose">アルブレヒトは、どの説も否定しなかった。</div><div class="v568Nav"><button class="v568SealNext" aria-label="次へ" onclick="View.closeAiueo20V568()"></button></div></section></div></div>`;
+ el.innerHTML=`<div class="v568Aiueo20Screen"><div class="v568Topbar"><b>二十歳の節目</b><small>王の五文字</small></div><div class="v568Stage"><section class="v568Paper"><div class="v568Kicker">王の五文字</div><div class="v568AiueoLead">二十歳になったその夜、アルブレヒトは執務机の片隅に、ナイフで文字を刻んだ。</div><div class="v568AiueoMark">A.I.U.E.O.</div><div class="v568AiueoLead">意味を尋ねられても彼は答えなかった。やがて、人々はその５文字に思い思いの解釈を重ねるようになる。</div><div class="v568InterpretGrid"><article class="v568Interpret"><b>外国の宮廷で囁かれた解釈</b><div class="v568InterpretLatin">Altranti Imperio Universa Erunt Obnoxia.</div><div class="v568InterpretJa">「万物はアルトラントの支配に服する。」</div><p>ロアールやルテニアでは、いつか聖欧を併呑したいという若き王の傲慢だと受け取られた。</p></article><article class="v568Interpret"><b>リックの聖職者が唱えた読み</b><div class="v568InterpretLatin">Adiuva, Immortalis; Urget Enim Onus.</div><div class="v568InterpretJa">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</div><p>十六歳で責務を負った少年の、誰にも見せられなかった祈りではないかと読み解く者もいた。</p></article><article class="v568Interpret domestic"><b>アルトラントでの噂</b><p>王都の学者は統治の理念といい、噂高い貴族女性は密かなロマンスを読み取り、兵士たちは勝利を願う誓いだと自らを鼓舞した。五つの文字には、それを聞いた者の数だけ意味が生まれた。</p></article></div><div class="v568Nav"><button class="v568SealNext" aria-label="次へ" onclick="View.closeAiueo20V568()"></button></div></section></div></div>`;
  return true;
 }
 View.closeAiueo20V568=function(){State.aiueo20SeenV568=true;try{View.main();}catch(_){ }};
@@ -44686,7 +44727,7 @@ window.showAiueo20V568=function(){
   try{if(!(currentAge()===20&&!State.aiueo20SeenV568&&!State.gameOver))return false;}catch(_){return false;}
   if(typeof setScreen==='function')setScreen('screenResult');
   const el=document.getElementById('screenResult');if(!el)return false;
-  el.innerHTML=`<div class="v568Aiueo20Screen"><div class="v568Topbar"><b>二十歳の節目</b></div><div class="v568Stage"><section class="v568Paper"><h2 class="v568Heading">誰も意味を知らない標語</h2><div class="v568AiueoLead">二十歳の誕生日の夜、アルブレヒトは執務机の隅へ、小刀で五つの文字を刻んだ。</div><div class="v568AiueoMark">A.I.U.E.O.</div><div class="v568AiueoLead">意味を問われても、王は答えなかった。やがてその五文字は国境を越え、見る者ごとに別のアルブレヒト像を映す標語になっていった。</div><div class="v568InterpretGrid"><article class="v568Interpret"><b>外国宮廷で囁かれた読み</b><div class="v568InterpretLatin">Altranti Imperio Universa Erunt Obnoxia.</div><div class="v568InterpretJa">「万物はアルトラントの支配に服する。」</div><p>ロアールやルテニアでは、若き王がいつか大陸そのものを呑み込むと宣した言葉ではないかと恐れられた。</p></article><article class="v568Interpret"><b>リックの聖職者が唱えた読み</b><div class="v568InterpretLatin">Adiuva, Immortalis; Urget Enim Onus.</div><div class="v568InterpretJa">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</div><p>十六歳で王冠を負った少年が、誰にも見せられなかった祈りを、ただ机にだけ残したのだと語る者もいた。</p></article><article class="v568Interpret domestic"><b>アルトラントでの噂</b><p>王都の学者は統治の標語だと言い、宮廷人は誰か一人へ向けた秘めた言葉だと言い、兵たちは勝利を誓う合言葉だと信じた。五文字には、読む者の数だけ意味が生まれた。</p></article></div><div class="v568AiueoClose">アルブレヒトは、どの読みも否定しなかった。</div><div class="v568Nav"><button class="v568SealNext v573AiueoContinue" aria-label="続ける" onclick="View.closeAiueo20V568()"></button><div class="v568NavLabel">続ける</div><div class="v573AiueoHint">クリック・タップ・Enterキーでも進む</div></div></section></div></div>`;
+  el.innerHTML=`<div class="v568Aiueo20Screen"><div class="v568Topbar"><b>二十歳の節目</b></div><div class="v568Stage"><section class="v568Paper"><div class="v568AiueoLead">二十歳になったその夜、アルブレヒトは執務机の片隅に、ナイフで文字を刻んだ。</div><div class="v568AiueoMark">A.I.U.E.O.</div><div class="v568AiueoLead">意味を尋ねられても彼は答えなかった。やがて、人々はその５文字に思い思いの解釈を重ねるようになる。</div><div class="v568InterpretGrid"><article class="v568Interpret"><b>外国の宮廷で囁かれた解釈</b><div class="v568InterpretLatin">Altranti Imperio Universa Erunt Obnoxia.</div><div class="v568InterpretJa">「万物はアルトラントの支配に服する。」</div><p>ロアールやルテニアでは、いつか聖欧を併呑したいという若き王の傲慢だと受け取られた。</p></article><article class="v568Interpret"><b>リックの聖職者が唱えた読み</b><div class="v568InterpretLatin">Adiuva, Immortalis; Urget Enim Onus.</div><div class="v568InterpretJa">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</div><p>十六歳で責務を負った少年の、誰にも見せられなかった祈りではないかと読み解く者もいた。</p></article><article class="v568Interpret domestic"><b>アルトラントでの噂</b><p>王都の学者は統治の理念といい、噂高い貴族女性は密かなロマンスを読み取り、兵士たちは勝利を願う誓いだと自らを鼓舞した。五つの文字には、それを聞いた者の数だけ意味が生まれた。</p></article></div><div class="v568Nav"><button class="v568SealNext v573AiueoContinue" aria-label="続ける" onclick="View.closeAiueo20V568()"></button><div class="v568NavLabel">続ける</div><div class="v573AiueoHint">クリック・タップ・Enterキーでも進む</div></div></section></div></div>`;
   return true;
 };
 View.closeAiueo20V568=function(){State.aiueo20SeenV568=true;try{sfx('next');}catch(_){};try{View.main();}catch(_){}};
@@ -44852,7 +44893,7 @@ window.showAiueo20V568=function(){
  try{if(!(currentAge()===20&&!State.aiueo20SeenV568&&!State.gameOver))return false;}catch(_){return false;}
  if(typeof setScreen==='function')setScreen('screenResult');
  const el=document.getElementById('screenResult');if(!el)return false;
- el.innerHTML=`<div class="v568Aiueo20Screen"><div class="v568Topbar"><b>二十歳の節目</b></div><div class="v568Stage"><section class="v568Paper"><h2 class="v568Heading">誰も意味を知らない標語</h2><div class="v568AiueoLead">二十歳の誕生日の夜、アルブレヒトは執務机の隅へ、小刀で五つの文字を刻んだ。</div><div class="v568AiueoMark">A.I.U.E.O.</div><div class="v568AiueoLead">王は、その意味を誰にも語らなかった。やがて五文字だけが国境を越え、人々はそこへ、自分たちの知るアルブレヒトの姿を読み込んでいった。</div><div class="v568InterpretGrid"><article class="v568Interpret"><b>外国宮廷で囁かれた読み</b><div class="v568InterpretLatin">Altranti Imperio Universa Erunt Obnoxia.</div><div class="v568InterpretJa">「万物はアルトラントの支配に服する。」</div><p>ロアールやルテニアでは、若き王がいつか聖欧を呑み込むと宣した言葉ではないかと恐れられた。</p></article><article class="v568Interpret"><b>リックの聖職者が唱えた読み</b><div class="v568InterpretLatin">Adiuva, Immortalis; Urget Enim Onus.</div><div class="v568InterpretJa">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</div><p>十六歳で王冠を負った少年が、誰にも聞かせられぬ祈りを机にだけ残したのだ、と説く者もいた。</p></article><article class="v568Interpret domestic"><b>アルトラントでの噂</b><p>学者は統治の標語だと言い、宮廷人は誰か一人へ向けた言葉だと言い、兵たちは勝利を願う誓いだと信じた。五文字には、読む者の数だけ意味が生まれた。</p></article></div><div class="v568AiueoClose">アルブレヒトは、どの読みも否定しなかった。</div></section><div class="v568Nav v574AiueoNav"><button class="v568SealNext" aria-label="続ける" onclick="View.closeAiueo20V568()"></button><div class="v568NavLabel">続ける</div><div class="v573AiueoHint">Enter / Space / クリック・タップ</div></div></div></div>`;
+ el.innerHTML=`<div class="v568Aiueo20Screen"><div class="v568Topbar"><b>二十歳の節目</b></div><div class="v568Stage"><section class="v568Paper"><div class="v568AiueoLead">二十歳になったその夜、アルブレヒトは執務机の片隅に、ナイフで文字を刻んだ。</div><div class="v568AiueoMark">A.I.U.E.O.</div><div class="v568AiueoLead">意味を尋ねられても彼は答えなかった。やがて、人々はその５文字に思い思いの解釈を重ねるようになる。</div><div class="v568InterpretGrid"><article class="v568Interpret"><b>外国の宮廷で囁かれた解釈</b><div class="v568InterpretLatin">Altranti Imperio Universa Erunt Obnoxia.</div><div class="v568InterpretJa">「万物はアルトラントの支配に服する。」</div><p>ロアールやルテニアでは、いつか聖欧を併呑したいという若き王の傲慢だと受け取られた。</p></article><article class="v568Interpret"><b>リックの聖職者が唱えた読み</b><div class="v568InterpretLatin">Adiuva, Immortalis; Urget Enim Onus.</div><div class="v568InterpretJa">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</div><p>十六歳で責務を負った少年の、誰にも見せられなかった祈りではないかと読み解く者もいた。</p></article><article class="v568Interpret domestic"><b>アルトラントでの噂</b><p>王都の学者は統治の理念といい、噂高い貴族女性は密かなロマンスを読み取り、兵士たちは勝利を願う誓いだと自らを鼓舞した。五つの文字には、それを聞いた者の数だけ意味が生まれた。</p></article></div></section><div class="v568Nav v574AiueoNav"><button class="v568SealNext" aria-label="続ける" onclick="View.closeAiueo20V568()"></button><div class="v568NavLabel">続ける</div><div class="v573AiueoHint">Enter / Space / クリック・タップ</div></div></div></div>`;
  return true;
 };
 })();
@@ -46360,5 +46401,1975 @@ try{
   if(typeof Battle==='object'&&Battle&&typeof Battle.makeLane==='function'&&!Battle.makeLane.v589QualifiedFinal){const prev=Battle.makeLane;Battle.makeLane=function(c){if(c?.finalCase)enforce(c);return prev.apply(this,arguments);};Battle.makeLane.v589QualifiedFinal=true;}
 }catch(_){ }
 window.enforceFinalPreludeQualificationV589=enforce;
+})();
+</script>
+
+
+<!-- V590: recovery tags are derived only from numeric effects -->
+<script id="v590-numeric-recovery-tags">
+(function(){
+'use strict';
+if(window.__V590_NUMERIC_RECOVERY_TAGS__)return;
+window.__V590_NUMERIC_RECOVERY_TAGS__=true;
+
+function v590RecoveryEffectParams(c){
+  const effects=c?.effects||{};
+  const candidates=[
+    effects.completeWin?.params,
+    effects.majorWin?.params,
+    effects.minorWin?.params,
+    effects.win?.params,
+    c?.win?.params,
+    c?.win,
+    effects.win
+  ];
+  const keys=['treasury','troops','stability','citySupport','nobleSupport','churchSupport'];
+  const out={};
+  for(const obj of candidates){
+    if(!obj||typeof obj!=='object')continue;
+    for(const key of keys){
+      const value=Number(obj[key]);
+      if(Number.isFinite(value)&&value>Number(out[key]||0))out[key]=value;
+    }
+  }
+  return out;
+}
+function v590TreasuryActual(v){
+  v=Number(v)||0;
+  if(v<=0)return 0;
+  const unit=(typeof ECONOMY==='object'&&ECONOMY&&Number(ECONOMY.treasuryUnit))||100;
+  return Math.round(Math.abs(v)<100?v*unit:v);
+}
+function v590SupportGain(effect){
+  const keys=['stability','citySupport','nobleSupport','churchSupport'];
+  const sum=keys.reduce((a,k)=>a+Math.max(0,Number(effect[k])||0),0);
+  return Math.max(0,Math.round(sum/4));
+}
+function v590CaseRecoveryTags(c){
+  if(!c||c.id==='tutorial_butler')return[];
+  const effect=v590RecoveryEffectParams(c);
+  const out=[];
+  const treasury=v590TreasuryActual(effect.treasury);
+  const troops=Math.max(0,Math.round(Number(effect.troops)||0));
+  const support=v590SupportGain(effect);
+  if(treasury>=500)out.push({kind:'treasury',label:treasury>=2000?'国庫大回復':'国庫回復',value:treasury});
+  if(troops>0)out.push({kind:'troops',label:troops>=180?'兵数大回復':'兵数回復',value:troops});
+  if(support>0)out.push({kind:'support',label:support>=4?'支持大回復':'支持回復',value:support});
+  return out.slice(0,3);
+}
+caseRecoveryEffectParams=v590RecoveryEffectParams;
+caseRecoveryTags=v590CaseRecoveryTags;
+try{window.caseRecoveryEffectParams=v590RecoveryEffectParams;window.caseRecoveryTags=v590CaseRecoveryTags;}catch(_){ }
+window.__V590_RECOVERY_RULES__={
+  treasury:{showFrom:500,strongFrom:2000},
+  troops:{showFrom:1,strongFrom:180},
+  support:{showFrom:1,strongFrom:4,keys:['stability','citySupport','nobleSupport','churchSupport'],prestigeExcluded:true}
+};
+window.__VERSION__='V590';
+})();
+</script>
+
+
+<!-- V591: hand-reviewed recovery effects from case intro/success prose -->
+<script id="v591-curated-recovery-balance">
+(function(){
+'use strict';
+if(window.__V591_CURATED_RECOVERY__)return;
+window.__V591_CURATED_RECOVERY__=true;
+const TREASURY={"peasant_revolt":0,"early_tax_collector_embezzlement":20,"early_winter_logistics_stop":5,"marriage_wife5_azraq":0,"seafeara":25,"elector_leopold_bad_coin":0,"elector_leopold_war_tax":8,"local_bridge_collapse":0,"local_road_bandits":0,"local_port_smuggling":5,"elector_leopold_seafeara_loan":10,"elector_leopold_silver_league_pressure":0,"local_tax_collector_missing":0,"crisis_leopold_port_tax_pact":0,"country_loire_vineyard_border":0,"country_ruthenia_road_tax":5,"country_solia_avalanche_road":5,"country_azraq_copper_caravan":25,"country_azraq_prayer_time":5,"country_azraq_zahra_festival":5,"country_azraq_water_fort":0,"country_seafeara_trading_house":8,"country_seafeara_exchange_rate":7,"country_seafeara_smuggling_fleet":5,"country_seafeara_insurance_refusal":0,"country_seafeara_trade_sanction":0,"infra_stone_bridge":5,"infra_drydock":10,"occult_black_boar":0,"occult_marsh_dragon":0,"occult_old_castle_ghost":0,"occult_witch_treasure":0,"late_elector_leopold_tax_stop":10,"late_religion_lyam_arson":0,"late_war_solia_neutrality":0,"late_war_seafeara_blockade":12,"late_finance_empty_treasury":30,"late_finance_currency_collapse":10,"crisis_recovery_treasury":9000,"foreshadow_solia_pass_toll":8,"foreshadow_seafeara_harbor_lease":10,"border_solia_mountain_pasture":0,"flow_royal_archive":0,"flow_seafeara_loan":15,"flow_merchant_quarter":8,"elector_leopold_silver_muster":12,"elector_leopold_tax_resistance":15,"treuval_seafeara_convoy_loss":8,"phase20EB_war_tax_arrears":10,"loire_alman_exposition":5,"loire_eleonore_artisans":0,"loire_frontier_mill_bridge":0,"rick_pilgrim_tax":0,"rick_clarissa_pilgrim_hostels":0,"ruthenia_winter_grain_convoy":5,"ruthenia_river_customs":0,"ruthenia_border_peasant_oath":0,"ruthenia_azraq_southern_pass":0,"solia_claudia_gunworks_loan":0,"solia_bankers_war_bonds":0,"solia_mountain_pass_toll":0,"solia_azraq_caravan_mediation":8,"solia_powder_saltpeter_trade":12,"celestine_perfume_petition":8,"zakharova_well_prophecy":0,"witch_stolen_harvest":0,"mustafa_pilgrim_safe_conduct":0,"mustafa_tariff_renegotiation":8,"mustafa_border_well_dispute":5,"mustafa_truce_festival":8,"rowan_winter_livestock":5,"phase164_azraq_caravanserai_pass":8,"phase164_azraq_holy_caravan_road":0,"ruthenia_winter_market_embassy":6,"solia_alpine_wool_contract":8,"wife5_desert_name":8,"phase164_azraq_white_flag_exchange":8,"mustafa_prisoner_exchange_proposal":8,"solia_lost_territory_reform_delay":20};
+const TROOPS={"early_barracks_food_shortage":0,"early_winter_logistics_stop":0,"training_sword_tournament":0,"training_star_fort_inspection":0,"marriage_wife6_treuval":0,"elector_leopold_war_tax":80,"elector_gerhard_fort_repair":0,"elector_gerhard_conscription_list":60,"elector_gerhard_ruthenia_scouts":0,"local_guild_dispute":0,"local_fort_dry_well":0,"local_treuval_signal_fire":0,"elector_gerhard_solia_merc_unpaid":140,"elector_gerhard_independent_sortie":0,"elector_gerhard_ironwood_mobilization":0,"local_deserter_return":0,"crisis_gerhard_solia_enemy_contract":180,"crisis_gerhard_ruthenia_occupation":0,"country_loire_musketeer_crossing":0,"country_ruthenia_grigory_drill":0,"country_solia_claudia_contract":180,"country_solia_wolfram_duel":0,"country_solia_alliance_breach":0,"country_treuval_winter_fleet":0,"country_treuval_black_wolf_raid":0,"infra_stone_bridge":0,"infra_star_fort":0,"late_elector_gerhard_command":0,"late_war_treuval_campaign":0,"late_finance_mercenary_collapse":180,"late_finance_conscription_age":120,"late_finance_veterans_unrest":0,"wife6_prince_shield_oath":0,"wife6_clan_fosterage":0,"wife6_princess_bow":0,"crisis_recovery_troops":1000,"foreshadow_treuval_cairn":0,"foreshadow_azraq_horse_market":0,"brother_frontier_inspection":0,"brother_independent_sortie":0,"brother_loyal_command":0,"brother_rival_victory":0,"brother_final_oath":0,"chain_border_raid":100,"chain_border_supply":0,"flow_solia_instructors":0,"flow_standing_army":300,"flow_ruthenia_siege_guns":0,"elector_leopold_silver_muster":0,"elector_gerhard_border_muster":160,"elector_gerhard_knight_pride":0,"treuval_coastal_fog_beacons":0,"treuval_burned_watchtower":0,"treuval_solia_hired_oars":0,"treuval_coast_winter_settlement":0,"treuval_mist_fleet_grand_raid":0,"flow_postwar_confiscated_castles":0,"phase20EB_wounded_relief":120,"loire_captain_bridge_salute":0,"rick_temple_knight_pursuit":0,"rick_holy_road_fort":0,"ruthenia_orlov_border_survey":0,"ruthenia_frozen_ford_incident":0,"ruthenia_fort_blueprint":100,"ruthenia_orlov_supply_depot":0,"ruthenia_anastasia_officer_exchange":0,"ruthenia_ultimatum_frozen_eagle":0,"solia_volfram_musketeer_drill":0,"solia_renato_impossible_contract":0,"solia_mercenary_market_drain":120,"solia_road_fort_engineers":0,"solia_ruthenia_hired_guns":0,"solia_musket_monopoly_offer":0,"solia_musket_completion_parade":0,"solia_final_musket_ultimatum":0,"zakharova_missing_conscription_roll":0,"zakharova_north_wind_envoy":100,"ghost_weeping_wall":0,"dragon_red_mountains_23":0,"phase38_support_altrantSolia":240,"phase38_support_altrantTreuval":220,"mustafa_prisoner_exchange_proposal":0,"mustafa_secret_common_enemy_pact":0,"rowan_mist_raid_young_warriors":0,"rowan_last_duel":0,"solia_ally_renato_royal_contract":180,"solia_ally_mercenary_relief":0,"loire_ally_white_lily_guard":120,"ruthenia_ally_artillery_advisors":100,"ruthenia_ally_fort_survey":180,"ruthenia_engineer_visit":0,"solia_alpine_wool_contract":0,"solia_mountain_guide_school":0,"solia_musket_peace_guarantee":120,"phase38_support_altrantRick":120,"phase38_support_altrantLoire":80};
+const SUPPORT={"training_sword_tournament":{"stability":3},"elector_emil_ruthenia_students":{"nobleSupport":3},"wife1_old_garden":{"stability":4,"citySupport":5},"wife2_princess_betrothal":{"nobleSupport":3},"foreshadow_ruthenia_winter_map":{"stability":4},"border_loire_mill_field":{"stability":3},"border_loire_watchtower_line":{"stability":3},"border_ruthenia_frozen_village":{"stability":4},"phase16_war_altrantLoire":{"citySupport":4,"stability":3},"phase16_greatwar_altrantLoire":{"nobleSupport":3,"stability":3},"phase16_peace_altrantLoire":{"stability":3},"phase16_peace_altrantRick":{"stability":3},"phase16_peace_altrantRuthenia":{"stability":3},"phase16_peace_altrantSolia":{"stability":3},"phase16_peace_altrantTreuval":{"stability":3},"brother_frontier_inspection":{"stability":3},"loire_alman_exposition":{"citySupport":3},"rick_pilgrim_tax":{"citySupport":3},"mustafa_prisoner_exchange_proposal":{"citySupport":3},"phase164_azraq_white_flag_exchange":{"citySupport":3},"wife5_desert_name":{"citySupport":3},"solia_alpine_wool_contract":{"citySupport":3},"rick_beatrice_two_tables":{"stability":3,"citySupport":0,"churchSupport":2}};
+const BIG_TREASURY=new Set(["country_azraq_copper_caravan", "crisis_recovery_treasury", "early_tax_collector_embezzlement", "late_finance_empty_treasury", "seafeara", "solia_lost_territory_reform_delay"]);
+const BIG_TROOPS=new Set(["country_solia_claudia_contract", "crisis_gerhard_solia_enemy_contract", "crisis_recovery_troops", "flow_standing_army", "late_finance_mercenary_collapse", "phase38_support_altrantSolia", "phase38_support_altrantTreuval", "ruthenia_ally_fort_survey", "solia_ally_renato_royal_contract"]);
+const BIG_SUPPORT=new Set(["brother_final_joint_rule", "brother_final_rebellion", "crisis_clarissa_false_prophet", "crisis_recovery_authority", "crisis_recovery_stability", "early_grain_price_spike", "early_well_contamination", "fire_execution_square", "health_red_fever", "late_elector_joint_council", "late_fate_eve_council", "late_fate_succession_law", "late_religion_religious_edict", "late_religion_spring_divide", "rick_beatrice_plague_relief", "support_recovery_church"]);
+const CLEAR_TIER=new Set(["elector_gerhard_ironwood_mobilization", "local_deserter_return", "marriage_wife6_treuval"]);
+const RANK_MULT={completeWin:1.4,majorWin:1,minorWin:.55};
+function cround(v){return v<0?-Math.round(-v):Math.round(v);}
+function paramsFor(c,rank){
+ const e=c?.effects?.[rank];
+ if(!e)return null;
+ if(!e.params||typeof e.params!=='object')e.params={};
+ return e.params;
+}
+function setBase(c,key,base){
+ for(const [rank,m] of Object.entries(RANK_MULT)){
+  const p=paramsFor(c,rank); if(!p)continue;
+  if(base===0||base===null) delete p[key];
+  else p[key]=cround(Number(base)*m);
+ }
+}
+function findCase(id){return Array.isArray(DATA?.cases)?DATA.cases.find(c=>c?.id===id):null;}
+for(const [id,v] of Object.entries(TREASURY)){const c=findCase(id);if(c)setBase(c,'treasury',v);}
+for(const [id,v] of Object.entries(TROOPS)){const c=findCase(id);if(c)setBase(c,'troops',v);}
+for(const [id,fields] of Object.entries(SUPPORT)){const c=findCase(id);if(!c)continue;for(const [k,v] of Object.entries(fields))setBase(c,k,v);}
+for(const id of CLEAR_TIER){const c=findCase(id);if(c){try{delete c.rewardTier;delete c.rewardNoteInternal;}catch(_){c.rewardTier=null;}}}
+function majorParams(c){return c?.effects?.majorWin?.params||{};}
+function treasuryActual(v){v=Number(v)||0;if(v<=0)return 0;const unit=(typeof ECONOMY==='object'&&ECONOMY&&Number(ECONOMY.treasuryUnit))||100;return Math.round(Math.abs(v)<100?v*unit:v);}
+function supportGain(p){const ks=['stability','citySupport','nobleSupport','churchSupport'];return Math.max(0,Math.round(ks.reduce((a,k)=>a+Math.max(0,Number(p[k])||0),0)/4));}
+function v591CaseRecoveryTags(c){
+ if(!c||c.id==='tutorial_butler')return[];
+ const p=majorParams(c),out=[];
+ const t=treasuryActual(p.treasury),n=Math.max(0,Math.round(Number(p.troops)||0)),sp=supportGain(p);
+ if(t>=500)out.push({kind:'treasury',label:BIG_TREASURY.has(c.id)?'国庫大回復':'国庫回復',value:t});
+ if(n>0)out.push({kind:'troops',label:BIG_TROOPS.has(c.id)?'兵数大回復':'兵数回復',value:n});
+ if(sp>0)out.push({kind:'support',label:BIG_SUPPORT.has(c.id)?'支持大回復':'支持回復',value:sp});
+ return out.slice(0,3);
+}
+function v591RecoveryEffectParams(c){return Object.assign({},majorParams(c));}
+caseRecoveryEffectParams=v591RecoveryEffectParams;
+caseRecoveryTags=v591CaseRecoveryTags;
+try{window.caseRecoveryEffectParams=v591RecoveryEffectParams;window.caseRecoveryTags=v591CaseRecoveryTags;}catch(_){}
+window.__V591_RECOVERY_CURATION__={
+ treasuryReviewed:Object.keys(TREASURY).length,
+ troopsReviewed:Object.keys(TROOPS).length,
+ supportCorrections:Object.keys(SUPPORT).length,
+ bigTreasury:[...BIG_TREASURY],bigTroops:[...BIG_TROOPS],bigSupport:[...BIG_SUPPORT]
+};
+window.__VERSION__='V591';
+})();
+</script>
+
+<script id="v591-recovery-review-audit">
+(function(){
+'use strict';
+const reviewed=new Set(["tutorial_butler", "peasant_revolt", "hospital", "loire_border", "horse", "early_grain_price_spike", "early_tax_collector_embezzlement", "early_barracks_food_shortage", "early_well_contamination", "early_private_judgement", "early_winter_logistics_stop", "training_sword_tournament", "training_dawn_council", "training_brother_spar", "training_star_fort_inspection", "training_university_lecture", "training_occult_inquiry", "landlord", "elector", "rick", "ruthenia", "brother_return_01", "brother_return_02", "brother_persuasion", "brother_rebellion", "marriage_wife1_childhood", "marriage_wife2_loire", "marriage_wife3_rick", "marriage_wife4_ruthenia", "marriage_wife5_azraq", "marriage_wife6_treuval", "seafeara", "elector_leopold_mine_collapse", "elector_leopold_bad_coin", "elector_leopold_war_tax", "elector_emil_dormitory_fire_tax", "elector_emil_satire_pamphlet", "elector_emil_royal_law_commentary", "elector_clarissa_orphan_food", "elector_clarissa_pilgrim_bandits", "elector_clarissa_azraq_refugees", "elector_rosen_first_ball", "elector_rosen_loire_etiquette", "elector_rosen_bride_slander", "elector_gerhard_fort_repair", "elector_gerhard_conscription_list", "elector_gerhard_ruthenia_scouts", "local_market_prices", "local_guild_dispute", "local_capital_fire", "local_sewer_plague", "local_seed_shortage", "local_bridge_collapse", "local_road_bandits", "local_port_smuggling", "local_fort_dry_well", "local_treuval_signal_fire", "elector_leopold_seafeara_loan", "elector_leopold_secret_pact", "elector_leopold_silver_league_pressure", "elector_emil_rick_theology_debate", "elector_emil_ruthenia_students", "elector_emil_forbidden_books", "elector_clarissa_loire_charity", "elector_clarissa_holy_spring_miracle", "elector_clarissa_spring_siege", "elector_rosen_seafeara_scandal", "elector_rosen_loire_masked_ball", "elector_rosen_bribery_web", "elector_gerhard_solia_merc_unpaid", "elector_gerhard_independent_sortie", "elector_gerhard_ironwood_mobilization", "local_theatre_riot", "local_livestock_disease", "local_tax_collector_missing", "local_salt_price", "local_cargo_soaked", "local_pilgrim_inn_beds", "local_small_monastery_bell", "local_infirmary_herb_garden", "local_deserter_return", "local_border_dual_loyalty", "crisis_leopold_mine_riot", "crisis_leopold_port_tax_pact", "crisis_emil_loire_satire_play", "crisis_emil_holy_inquiry", "crisis_clarissa_refugee_quarter", "crisis_clarissa_false_prophet", "crisis_rosen_marriage_sabotage", "crisis_rosen_court_refusal", "crisis_gerhard_solia_enemy_contract", "crisis_gerhard_ruthenia_occupation", "country_loire_gift", "country_loire_vineyard_border", "country_loire_musketeer_crossing", "country_loire_isabel_charity", "country_loire_celestine_letter", "country_loire_ultimatum", "country_rick_pilgrims", "country_rick_stunt_chapel", "country_rick_cardinal_question", "country_rick_stunt_brawl", "country_rick_knight_guard", "country_rick_lorenzo_decree", "country_ruthenia_road_tax", "country_ruthenia_irina_letter", "country_ruthenia_vera_prophecy", "country_ruthenia_sergei_envoy", "country_ruthenia_grigory_drill", "country_ruthenia_old_deed", "country_solia_avalanche_road", "country_solia_stunt_festival", "country_solia_claudia_contract", "country_solia_neutral_mediation", "country_solia_wolfram_duel", "country_solia_alliance_breach", "country_azraq_copper_caravan", "country_azraq_prayer_time", "country_azraq_prisoner_exchange", "country_azraq_zahra_festival", "country_azraq_water_fort", "country_azraq_safar_truce", "country_seafeara_trading_house", "country_seafeara_exchange_rate", "country_seafeara_smuggling_fleet", "country_seafeara_debt_ledger", "country_seafeara_insurance_refusal", "country_seafeara_trade_sanction", "country_treuval_guest_law", "country_treuval_stolen_horn", "country_treuval_winter_fleet", "country_treuval_war_princess_trial", "country_treuval_black_wolf_raid", "country_treuval_great_council", "infra_stone_bridge", "infra_royal_library", "infra_infirmary_wing", "infra_star_fort", "infra_rose_theatre", "infra_drydock", "occult_white_stag", "occult_black_boar", "occult_marsh_dragon", "occult_old_castle_ghost", "occult_dead_king_ghost", "occult_witch_trial", "occult_witch_hunt", "occult_witch_pilgrimage", "occult_witch_hunt_chain", "occult_witch_treasure", "occult_witch_public_trial", "occult_black_gathering", "occult_forest_witch_final", "late_elector_leopold_tax_stop", "late_elector_emil_critique", "late_elector_clarissa_protection", "late_elector_rosen_diplomacy", "late_elector_gerhard_command", "late_elector_joint_council", "late_religion_stunt_autonomy", "late_religion_trick_march", "late_religion_lyam_arson", "late_religion_three_debate", "late_religion_spring_divide", "late_religion_religious_edict", "late_war_holy_total", "late_war_loire_ruthenia_secret", "late_war_solia_neutrality", "late_war_seafeara_blockade", "late_war_treuval_campaign", "late_war_continental_peace", "late_finance_empty_treasury", "late_finance_mercenary_collapse", "late_finance_currency_collapse", "late_finance_conscription_age", "late_finance_veterans_unrest", "late_finance_grand_reform", "late_fate_thirty_redivination", "late_fate_apprentice", "late_fate_delayed_decrees", "late_fate_brother_return", "late_fate_succession_law", "late_fate_eve_council", "diplomacy_border_envoys", "diplomacy_truce_conference", "diplomacy_reparation_offer", "wife1_old_garden", "wife1_kitchen_relief", "wife1_household_accounts", "wife1_village_visit", "wife1_children_room", "wife2_ladies_arrival", "wife2_prince_first_dance", "wife2_princess_portrait", "wife2_charity_salon", "wife2_princess_betrothal", "wife3_baptism_name", "wife3_confessor", "wife3_cathedral", "wife3_princess_convent", "wife3_godparent", "wife4_nurse", "wife4_second_name", "wife4_secret_tutor", "wife4_princess_betrothal", "wife4_dual_succession", "wife5_lyam_nurse", "wife5_stargazer", "wife5_desert_name", "wife5_holy_truce_blessing", "wife5_caravan_inheritance", "wife6_prince_shield_oath", "wife6_clan_fosterage", "wife6_bards_song", "wife6_princess_bow", "dynasty_first_child_naming", "dynasty_guardian_choice", "dynasty_prince_fever", "dynasty_princess_first_duty", "dynasty_prince_tutor", "dynasty_princess_languages", "dynasty_prince_missing", "dynasty_bloodline_rumor", "dynasty_brother_faction_whisper", "dynasty_elise_position", "dynasty_prince_play_battle", "dynasty_princess_betrothal_offer", "dynasty_prince_study_abroad", "dynasty_twins_succession", "crisis_recovery_treasury", "crisis_recovery_troops", "crisis_recovery_stability", "crisis_recovery_authority", "dynasty_child_of_fate", "foreshadow_loire_milepost", "foreshadow_rick_boundary_chapel", "foreshadow_ruthenia_winter_map", "foreshadow_solia_pass_toll", "foreshadow_treuval_cairn", "foreshadow_seafeara_harbor_lease", "foreshadow_azraq_horse_market", "border_loire_mill_field", "border_loire_watchtower_line", "border_rick_monastery_meadow", "border_rick_relic_road", "border_ruthenia_frozen_village", "border_ruthenia_fort_chain", "border_solia_mountain_pasture", "border_solia_road_fort", "border_treuval_shepherd_vale", "border_treuval_longhouse_burns", "phase16_war_altrantLoire", "phase16_greatwar_altrantLoire", "phase16_war_altrantRick", "phase16_greatwar_altrantRick", "phase16_war_altrantRuthenia", "phase16_greatwar_altrantRuthenia", "phase16_war_altrantSolia", "phase16_greatwar_altrantSolia", "phase16_war_altrantTreuval", "phase16_greatwar_altrantTreuval", "phase16_peace_altrantLoire", "phase16_peace_altrantRick", "phase16_peace_altrantRuthenia", "phase16_peace_altrantSolia", "phase16_peace_altrantTreuval", "brother_private_supper", "brother_frontier_inspection", "brother_elector_approach", "brother_elise_guardianship", "brother_independent_sortie", "brother_joint_council", "brother_loyal_command", "brother_rival_victory", "brother_court_faction", "brother_rebellion_warning", "brother_joint_regency", "health_barracks_cough", "health_port_fever", "health_monastery_fever", "health_provincial_outbreak", "health_pilgrim_road_infection", "health_quarantine_dispute", "health_black_spot_fever", "health_capital_plague_scare", "health_red_fever", "brother_final_oath", "brother_final_duel", "brother_final_acclamation", "brother_final_rebellion", "brother_final_joint_rule", "queen_illness_vigil", "royal_child_baptism", "royal_child_health_watch", "royal_child_guardian", "royal_child_education", "chain_plague_quarantine", "chain_plague_capital_lockdown", "chain_border_raid", "chain_border_supply", "chain_brother_noble_approach", "chain_brother_petition", "great_plague_council", "plague_sanitation_wells", "plague_pesthouse_wards", "family_spouse_fever", "family_child_fever", "family_critical_vigil", "plague_witch_herbs", "royal_postpartum_recovery", "queen_mourning_court", "queen_dowager_house_envoy", "remarriage_council", "flow_solia_instructors", "flow_royal_archive", "flow_ruthenia_survey", "flow_seafeara_loan", "flow_printing_license", "flow_inquisition_request", "flow_standing_army", "flow_brother_first_plot", "flow_merchant_quarter", "flow_border_dual_loyalty", "flow_loire_exiles", "flow_noble_secret_league", "flow_medical_mission", "flow_noble_petition", "flow_great_noble_rebellion", "flow_postwar_trial", "flow_debt_repayment", "flow_religious_compromise", "flow_ruthenia_siege_guns", "elector_leopold_silver_muster", "elector_leopold_tax_resistance", "elector_emil_law_codex", "elector_emil_university_autonomy", "elector_clarissa_war_orphans", "elector_clarissa_tithe_pressure", "elector_rosen_marriage_salon", "elector_rosen_masked_pact", "elector_gerhard_border_muster", "elector_gerhard_knight_pride", "treuval_mist_stone_omen", "treuval_coastal_fog_beacons", "treuval_raid_captive_ransom", "treuval_sea_god_oath", "treuval_burned_watchtower", "treuval_loire_coast_plunder", "treuval_seafeara_convoy_loss", "treuval_solia_hired_oars", "treuval_coast_winter_settlement", "treuval_dagdan_whale_bone_throne", "treuval_lua_marriage_bridge", "treuval_child_hostage_custom", "treuval_mist_fleet_grand_raid", "treuval_oath_peace_conference", "flow_postwar_reconciliation_oaths", "flow_postwar_confiscated_castles", "flow_postwar_bloody_assizes", "flow_postwar_brother_remnants", "flow_postwar_returning_soldiers", "flow_postwar_city_charter_demand", "flow_postwar_brother_shadow", "fallout_border_raids", "fallout_market_arson", "fallout_pulpit_fire", "fallout_noble_conspiracy", "fallout_bandit_waves", "elector_postwar_reoath", "phase20EB_wounded_relief", "phase20EB_war_tax_arrears", "phase20EB_peace_pressure", "phase20EB_demobilization_plan", "loire_alman_royal_opera", "loire_alman_white_lily_order", "loire_alman_exposition", "loire_isabella_protocol", "loire_isabella_orphan_convoy", "loire_isabella_ladies_exchange", "loire_celestine_broadsheets", "loire_celestine_missing_envoy", "loire_celestine_blackmail", "loire_eleonore_artisans", "loire_eleonore_homecoming", "loire_frontier_mill_bridge", "loire_frontier_stunt_chapel", "loire_soldier_deserters", "loire_captain_bridge_salute", "loire_late_court_faction", "loire_late_dual_claim", "rick_lorenzo_blessing", "rick_relic_procession", "rick_pilgrim_tax", "rick_lorenzo_index_of_errors", "rick_lorenzo_great_synod", "rick_beatrice_orphan_hospice", "rick_beatrice_plague_relief", "rick_beatrice_two_tables", "rick_clarissa_pilgrim_hostels", "rick_clarissa_border_sermon", "rick_trick_believer_petition", "rick_stunt_convert_trial", "rick_temple_knight_pursuit", "rick_holy_road_fort", "rick_azraq_relic_ransom", "rick_azraq_prisoner_exchange", "rick_late_holy_protectorate", "ruthenia_winter_grain_convoy", "ruthenia_frost_envoy_protocol", "ruthenia_orlov_border_survey", "ruthenia_zakharova_mirror_report", "ruthenia_anastasia_frontier_inspection", "ruthenia_exiles_petition", "ruthenia_river_customs", "ruthenia_frozen_ford_incident", "ruthenia_settler_village", "ruthenia_fort_blueprint", "ruthenia_spy_map_case", "ruthenia_orlov_supply_depot", "ruthenia_zakharova_prophecy_of_winter", "ruthenia_anastasia_officer_exchange", "ruthenia_border_peasant_oath", "ruthenia_river_fleet_rights", "ruthenia_azraq_southern_pass", "ruthenia_ultimatum_frozen_eagle", "solia_musket_trial", "solia_claudia_gunworks_loan", "solia_volfram_musketeer_drill", "solia_renato_impossible_contract", "solia_bankers_war_bonds", "solia_stunt_martyr_procession", "solia_mercenary_market_drain", "solia_mountain_pass_toll", "solia_road_fort_engineers", "solia_azraq_caravan_mediation", "solia_ruthenia_hired_guns", "solia_musket_monopoly_offer", "solia_mountain_militia_roll", "solia_powder_saltpeter_trade", "solia_musket_completion_parade", "solia_musket_peace_guarantee", "solia_lost_territory_reform_delay", "solia_final_musket_ultimatum", "celestine_perfume_petition", "celestine_false_love_letter", "celestine_black_invitation", "celestine_sleepless_maids", "celestine_charity_theatre", "zakharova_well_prophecy", "zakharova_missing_conscription_roll", "zakharova_black_icon_tears", "zakharova_north_wind_envoy", "zakharova_dead_king_seal", "ghost_empty_chairs", "ghost_weeping_wall", "ghost_bride_shadow", "deadking_throne_27", "witch_black_forest_midwife", "witch_stolen_harvest", "dragon_red_mountains_23", "fire_capital_inferno", "fire_execution_square", "phase38_support_altrantLoire", "phase38_support_altrantRick", "phase38_support_altrantRuthenia", "phase38_support_altrantSolia", "phase38_support_altrantTreuval", "mustafa_prisoner_exchange_proposal", "mustafa_pilgrim_safe_conduct", "mustafa_tariff_renegotiation", "mustafa_border_well_dispute", "mustafa_missing_envoys", "mustafa_truce_festival", "mustafa_secret_common_enemy_pact", "rowan_blood_price_duel", "rowan_fishing_village_law", "rowan_winter_livestock", "rowan_hero_funeral", "rowan_mist_raid_young_warriors", "rowan_stone_crown", "rowan_last_duel", "support_recovery_church", "phase164_azraq_caravanserai_pass", "phase164_azraq_desert_calendar", "phase164_azraq_well_engineers", "phase164_azraq_desert_physicians", "phase164_azraq_white_flag_exchange", "phase164_azraq_holy_caravan_road", "phase164_azraq_zahra_observatory", "phase169_treuval_cove_fire_foreshadow", "rick_ally_temple_knights", "rick_ally_hospice_fund", "solia_ally_renato_royal_contract", "solia_ally_mercenary_relief", "loire_ally_joint_festival", "loire_ally_white_lily_guard", "ruthenia_ally_artillery_advisors", "ruthenia_ally_fort_survey", "ruthenia_winter_market_embassy", "ruthenia_engineer_visit", "solia_alpine_wool_contract", "solia_mountain_guide_school"]);
+window.auditUnreviewedRecoveryCasesV591=function(){
+ return (Array.isArray(DATA?.cases)?DATA.cases:[]).filter(c=>!reviewed.has(c?.id)).map(c=>({id:c?.id||'',title:c?.title||'',reason:'V591以降の追加案件。本文・成功文に基づく回復効果の再監査が必要'}));
+};
+window.__V591_REVIEWED_CASE_COUNT__=reviewed.size;
+})();
+</script>
+
+<!-- V592: success-reward motivation rebalance; recovery effects curated from case intro/success prose -->
+<script id="v592-reward-motivation-balance">
+(function(){
+'use strict';
+if(window.__V592_REWARD_BALANCE__)return;
+window.__V592_REWARD_BALANCE__=true;
+const TREASURY_FLOOR={"elector_leopold_bad_coin":8,"local_cargo_soaked":5,"country_loire_gift":5,"country_ruthenia_irina_letter":6,"country_ruthenia_sergei_envoy":10,"country_ruthenia_old_deed":8,"country_solia_neutral_mediation":20,"country_seafeara_trade_sanction":6,"occult_witch_treasure":8,"wife1_household_accounts":8,"wife4_nurse":5,"wife5_stargazer":8,"wife5_caravan_inheritance":8,"flow_debt_repayment":5,"loire_captain_bridge_salute":6,"ruthenia_river_fleet_rights":20,"ruthenia_azraq_southern_pass":8,"mustafa_secret_common_enemy_pact":7};
+const TROOPS_FLOOR={"training_star_fort_inspection":80,"elector_gerhard_fort_repair":80,"elector_gerhard_ruthenia_scouts":60,"local_fort_dry_well":100,"local_treuval_signal_fire":80,"country_ruthenia_grigory_drill":100,"country_solia_wolfram_duel":60,"country_treuval_great_council":80,"infra_star_fort":140,"late_elector_gerhard_command":120,"wife6_prince_shield_oath":80,"wife6_princess_bow":100,"foreshadow_azraq_horse_market":120,"brother_independent_sortie":100,"chain_border_supply":100,"flow_solia_instructors":140,"flow_ruthenia_siege_guns":140,"elector_gerhard_knight_pride":120,"treuval_loire_coast_plunder":80,"treuval_solia_hired_oars":100,"treuval_dagdan_whale_bone_throne":100,"rick_temple_knight_pursuit":60,"ruthenia_orlov_border_survey":100,"ruthenia_anastasia_frontier_inspection":100,"ruthenia_exiles_petition":100,"ruthenia_river_customs":80,"ruthenia_orlov_supply_depot":80,"ruthenia_anastasia_officer_exchange":140,"solia_musket_trial":160,"solia_volfram_musketeer_drill":100,"solia_renato_impossible_contract":60,"solia_mountain_pass_toll":120,"solia_road_fort_engineers":100,"solia_musket_monopoly_offer":160,"solia_musket_completion_parade":200,"ruthenia_engineer_visit":100,"solia_mountain_guide_school":100};
+const SUPPORT_FLOOR={"horse":"general","training_brother_spar":"general","ruthenia":"noble","brother_return_01":"broad","marriage_wife4_ruthenia":"noble","marriage_wife5_azraq":"noble","crisis_gerhard_ruthenia_occupation":"city","country_loire_musketeer_crossing":"general","country_loire_ultimatum":"broad","country_solia_alliance_breach":"broad","country_azraq_prisoner_exchange":"general","country_azraq_water_fort":"noble","country_treuval_guest_law":"city","country_treuval_war_princess_trial":"general","late_elector_rosen_diplomacy":"noble","late_war_holy_total":"church","late_war_loire_ruthenia_secret":"noble","late_war_solia_neutrality":"noble","late_war_treuval_campaign":"city","late_war_continental_peace":"broad","diplomacy_border_envoys":"city","diplomacy_truce_conference":"general","diplomacy_reparation_offer":"noble","wife1_children_room":"general","wife2_ladies_arrival":"noble","wife2_prince_first_dance":"noble","wife2_princess_portrait":"city","wife4_second_name":"noble","wife4_secret_tutor":"noble","wife4_princess_betrothal":"noble","wife4_dual_succession":"noble","wife6_clan_fosterage":"noble","foreshadow_loire_milepost":"city","foreshadow_treuval_cairn":"city","border_ruthenia_fort_chain":"noble","border_solia_mountain_pasture":"city","border_solia_road_fort":"noble","border_treuval_longhouse_burns":"city","phase16_war_altrantRick":"broad","phase16_greatwar_altrantRick":"broad","phase16_war_altrantRuthenia":"broad","phase16_greatwar_altrantRuthenia":"broad","phase16_war_altrantSolia":"broad","phase16_greatwar_altrantSolia":"broad","phase16_war_altrantTreuval":"broad","phase16_greatwar_altrantTreuval":"broad","phase16_peace_altrantLoire":"broad","phase16_peace_altrantRick":"broad","phase16_peace_altrantRuthenia":"broad","phase16_peace_altrantSolia":"broad","phase16_peace_altrantTreuval":"broad","brother_rival_victory":"noble","queen_dowager_house_envoy":"noble","flow_royal_archive":"general","flow_ruthenia_survey":"city","flow_border_dual_loyalty":"noble","flow_medical_mission":"church","elector_rosen_marriage_salon":"noble","elector_rosen_masked_pact":"noble","treuval_child_hostage_custom":"noble","loire_alman_white_lily_order":"noble","loire_eleonore_artisans":"noble","loire_eleonore_homecoming":"general","loire_late_dual_claim":"broad","ruthenia_frost_envoy_protocol":"noble","ruthenia_frozen_ford_incident":"city","ruthenia_ultimatum_frozen_eagle":"broad","solia_claudia_gunworks_loan":"noble","solia_bankers_war_bonds":"general","solia_ruthenia_hired_guns":"noble","solia_final_musket_ultimatum":"broad","rowan_hero_funeral":"city","rowan_last_duel":"general","phase164_azraq_holy_caravan_road":"general","solia_ally_mercenary_relief":"noble","plague_witch_herbs":"city","flow_inquisition_request":"church","flow_brother_first_plot":"noble","flow_loire_exiles":"city","flow_noble_petition":"general","elector_emil_university_autonomy":"city"};
+const BIG_TREASURY=new Set(["country_azraq_copper_caravan", "crisis_recovery_treasury", "early_tax_collector_embezzlement", "late_finance_empty_treasury", "seafeara", "solia_lost_territory_reform_delay", "country_solia_neutral_mediation", "ruthenia_river_fleet_rights"]);
+const BIG_TROOPS=new Set(["country_solia_claudia_contract", "crisis_gerhard_solia_enemy_contract", "crisis_recovery_troops", "flow_standing_army", "late_finance_mercenary_collapse", "phase38_support_altrantSolia", "phase38_support_altrantTreuval", "ruthenia_ally_fort_survey", "solia_ally_renato_royal_contract", "solia_musket_completion_parade"]);
+const BIG_SUPPORT=new Set(["brother_final_joint_rule", "brother_final_rebellion", "crisis_clarissa_false_prophet", "crisis_recovery_authority", "crisis_recovery_stability", "early_grain_price_spike", "early_well_contamination", "fire_execution_square", "health_red_fever", "late_elector_joint_council", "late_fate_eve_council", "late_fate_succession_law", "late_religion_religious_edict", "late_religion_spring_divide", "rick_beatrice_plague_relief", "support_recovery_church", "brother_return_01", "crisis_gerhard_ruthenia_occupation", "country_loire_ultimatum", "country_solia_alliance_breach", "late_war_holy_total", "late_war_continental_peace", "phase16_greatwar_altrantRick", "phase16_greatwar_altrantRuthenia", "phase16_greatwar_altrantSolia", "phase16_greatwar_altrantTreuval", "phase16_peace_altrantLoire", "phase16_peace_altrantRick", "phase16_peace_altrantRuthenia", "phase16_peace_altrantSolia", "phase16_peace_altrantTreuval", "loire_late_dual_claim", "ruthenia_ultimatum_frozen_eagle", "solia_final_musket_ultimatum"]);
+const MULT={completeWin:1.4,majorWin:1,minorWin:.55};
+const SUPPORT_KEYS=['stability','citySupport','nobleSupport','churchSupport'];
+const PROFILES={
+ general:[['stability',1]],
+ noble:[['nobleSupport',.75],['stability',.25]],
+ city:[['citySupport',.75],['stability',.25]],
+ church:[['churchSupport',.75],['stability',.25]],
+ broad:[['stability',.3],['citySupport',.25],['nobleSupport',.25],['churchSupport',.2]]
+};
+function C(id){return Array.isArray(DATA?.cases)?DATA.cases.find(c=>c?.id===id):null;}
+function P(c,rank){const e=c?.effects?.[rank];if(!e)return null;if(!e.params||typeof e.params!=='object')e.params={};return e.params;}
+function rnd(v){return v<0?-Math.round(-v):Math.round(v);}
+function addScaled(c,key,majorDelta){
+ if(!c||!majorDelta)return;
+ for(const [rank,m] of Object.entries(MULT)){const p=P(c,rank);if(!p)continue;p[key]=(Number(p[key])||0)+rnd(majorDelta*m);if(!p[key])delete p[key];}
+}
+function ensureBase(c,key,target){const p=P(c,'majorWin');if(!p)return;const cur=Number(p[key])||0;if(cur<target)addScaled(c,key,target-cur);}
+function supportSum(c){const p=P(c,'majorWin')||{};return SUPPORT_KEYS.reduce((a,k)=>a+(Number(p[k])||0),0);}
+function ensureSupport(c,target,profile){
+ const need=target*4-supportSum(c); if(need<=0)return;
+ const spec=PROFILES[profile]||PROFILES.general; let used=0;
+ spec.forEach((it,i)=>{let d=i===spec.length-1?need-used:rnd(need*it[1]);used+=d;addScaled(c,it[0],d);});
+}
+for(const [id,v] of Object.entries(TREASURY_FLOOR))ensureBase(C(id),'treasury',v);
+for(const [id,v] of Object.entries(TROOPS_FLOOR))ensureBase(C(id),'troops',v);
+for(const [id,profile] of Object.entries(SUPPORT_FLOOR))ensureSupport(C(id),1,profile);
+// 大回復は約10%の物語上の大成果に限定し、表示だけでなく実効果も大きくする。
+for(const id of BIG_TREASURY)ensureBase(C(id),'treasury',20);
+for(const id of BIG_TROOPS)ensureBase(C(id),'troops',180);
+for(const id of BIG_SUPPORT)ensureSupport(C(id),4,SUPPORT_FLOOR[id]||'broad');
+function majorParams(c){return c?.effects?.majorWin?.params||{};}
+function treasuryActual(v){v=Number(v)||0;if(v<=0)return 0;const unit=(typeof ECONOMY==='object'&&ECONOMY&&Number(ECONOMY.treasuryUnit))||100;return Math.round(Math.abs(v)<100?v*unit:v);}
+function supportNet(p){return Math.round(SUPPORT_KEYS.reduce((a,k)=>a+(Number(p[k])||0),0)/4);}
+function v592CaseRecoveryTags(c){
+ if(!c||c.id==='tutorial_butler')return[];
+ const p=majorParams(c),out=[];
+ const t=treasuryActual(p.treasury),n=Math.max(0,Math.round(Number(p.troops)||0)),s=supportNet(p);
+ if(t>=500)out.push({kind:'treasury',label:BIG_TREASURY.has(c.id)?'国庫大回復':'国庫回復',value:t});
+ if(n>0)out.push({kind:'troops',label:BIG_TROOPS.has(c.id)?'兵数大回復':'兵数回復',value:n});
+ if(s>0)out.push({kind:'support',label:BIG_SUPPORT.has(c.id)?'支持大回復':'支持回復',value:s});
+ return out.slice(0,3);
+}
+function v592RecoveryEffectParams(c){return Object.assign({},majorParams(c));}
+caseRecoveryEffectParams=v592RecoveryEffectParams;caseRecoveryTags=v592CaseRecoveryTags;
+try{window.caseRecoveryEffectParams=v592RecoveryEffectParams;window.caseRecoveryTags=v592CaseRecoveryTags;}catch(_){}
+window.__V592_RECOVERY_RULES__={
+ philosophy:'成功案件は原則として支持・国庫・兵数のいずれかへ還元。大回復は物語上の大成果約10%。',
+ treasuryFloorCount:Object.keys(TREASURY_FLOOR).length,troopsFloorCount:Object.keys(TROOPS_FLOOR).length,supportFloorCount:Object.keys(SUPPORT_FLOOR).length,
+ bigTreasury:[...BIG_TREASURY],bigTroops:[...BIG_TROOPS],bigSupport:[...BIG_SUPPORT]
+};
+window.auditRecoveryBalanceV592=function(){
+ const cases=Array.isArray(DATA?.cases)?DATA.cases:[];let by={treasury:0,troops:0,support:0},tagged=0,multi=0;const untagged=[];
+ for(const c of cases){const tags=v592CaseRecoveryTags(c);if(tags.length)tagged++;else untagged.push({id:c.id,title:c.title});if(tags.length>1)multi++;for(const x of tags)by[x.kind]=(by[x.kind]||0)+1;}
+ const big=[...BIG_TREASURY,...BIG_TROOPS,...BIG_SUPPORT];
+ const invalidBig=[];for(const id of big){const c=C(id),tags=v592CaseRecoveryTags(c);if(!tags.some(x=>x.label.includes('大回復')))invalidBig.push(id);}
+ return {total:cases.length,tagged,coverage:cases.length?tagged/cases.length:0,untagged,byKind:by,multi,bigCount:new Set(big).size,bigRatio:cases.length?new Set(big).size/cases.length:0,invalidBig};
+};
+window.__VERSION__='V592';
+})();
+</script>
+
+
+<!-- V597: safely reapplied V593-V596 fixes after the consolidated main script -->
+<style id="v597-trump-tutorial-seal-style">
+/* V593: 使用不可切り札の右上ロック／禁止アイコンを撤去 */
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.disabled::before,
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.disabled::after,
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.disabled .dispatchChoiceName::before,
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.phase119UsedElsewhere::before,
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.phase119UsedElsewhere::after,
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.phase119UsedElsewhere .dispatchChoiceName::before,
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.phase119MaxLocked:not(.phase119Selected)::after{
+  display:none!important;content:none!important;background:none!important;border:0!important;box-shadow:none!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.disabled .dispatchChoiceName{padding-right:0!important;}
+
+/* V594: 老執事チュートリアルを通常重要案件と同じ高さ＋小バッジ */
+#screenMain .caseCard[data-case-id="tutorial_butler"],
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"],
+#screenMain .caseCard[data-case-id="tutorial_butler"].importantCase{
+  min-height:140px!important;height:auto!important;padding:10px 14px!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"] .caseStory,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .caseStory{
+  height:56px!important;min-height:56px!important;max-height:56px!important;-webkit-line-clamp:3!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"]::before,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"]::before,
+#screenMain .caseCard[data-case-id="tutorial_butler"].importantCase::before{
+  content:"チュートリアル"!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  position:absolute!important;top:10px!important;right:12px!important;left:auto!important;bottom:auto!important;
+  width:auto!important;height:22px!important;min-width:0!important;max-width:none!important;padding:1px 8px!important;
+  border:1px solid #c99b38!important;border-radius:999px!important;background:#102a4c!important;color:#fff1bf!important;
+  box-shadow:0 2px 0 rgba(0,0,0,.16)!important;font-size:10px!important;line-height:1!important;font-weight:1000!important;
+  letter-spacing:.05em!important;opacity:1!important;filter:none!important;transform:none!important;animation:none!important;
+  z-index:28!important;pointer-events:none!important;
+}
+#screenMain .caseCard[data-case-id="tutorial_butler"] .caseTitle,
+#screenMain .caseCard.tutorial[data-case-id="tutorial_butler"] .caseTitle{padding-right:92px!important;}
+
+/* V595: 赤い封蝋の進行ボタンを全場面で同じ正円・同じ動きに統一 */
+.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext{
+  position:relative!important;display:block!important;
+  width:48px!important;min-width:48px!important;max-width:48px!important;
+  height:48px!important;min-height:48px!important;max-height:48px!important;
+  padding:0!important;border:2px solid #d6b45f!important;border-radius:50%!important;clip-path:none!important;outline:0!important;
+  color:transparent!important;font-size:0!important;line-height:0!important;
+  background:radial-gradient(circle at 33% 28%,rgba(255,255,255,.24) 0 9%,rgba(255,255,255,0) 25%),radial-gradient(circle at 50% 58%,#a63a3c 0 26%,#8a242b 45%,#65161d 72%,#4a0e14 100%)!important;
+  box-shadow:0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)!important;
+  filter:none!important;animation:v597SealIdle 1.15s ease-in-out infinite alternate!important;
+  transition:transform .12s ease,filter .12s ease,box-shadow .12s ease!important;overflow:visible!important;
+}
+.storyCue::before,.mapNewsCue::before,.mourningNoticeCue::before,.v568SealNext::before{
+  content:""!important;position:absolute!important;inset:8px!important;border:1px solid rgba(245,207,109,.72)!important;
+  border-radius:50%!important;background:transparent!important;box-shadow:inset 0 0 0 2px rgba(72,17,18,.34)!important;clip-path:none!important;
+}
+.storyCue::after,.mapNewsCue::after,.mourningNoticeCue::after,.v568SealNext::after{
+  content:""!important;position:absolute!important;left:50%!important;top:47%!important;width:11px!important;height:11px!important;
+  border:0!important;border-right:3px solid #f0d47a!important;border-bottom:3px solid #f0d47a!important;border-radius:0!important;
+  background:transparent!important;transform:translate(-50%,-62%) rotate(45deg)!important;filter:drop-shadow(0 1px 0 #3b1415)!important;clip-path:none!important;
+}
+.storyCue:hover,.mapNewsCue:hover,.mourningNoticeCue:hover,.v568SealNext:hover{filter:brightness(1.08)!important;}
+.storyCue:active,.mapNewsCue:active,.mourningNoticeCue:active,.v568SealNext:active{
+  transform:translateY(3px)!important;animation:none!important;
+  box-shadow:0 2px 0 #350d12,0 6px 14px rgba(0,0,0,.30),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -5px 8px rgba(32,4,6,.28)!important;
+}
+@keyframes v597SealIdle{
+  from{opacity:.84;filter:brightness(.95);transform:translateY(0) scale(1)}
+  to{opacity:1;filter:brightness(1.10);transform:translateY(4px) scale(1.01)}
+}
+.openingStoryBox .storyCue,.adviceLetter .storyCue,.firstCaseTutorialScreen .storyCue,.phase67BattleQuoteScreen .storyCue,
+.openingStoryScreen .storyCue,.letterNoticeShade .storyCue,.royalNoticeScreen .storyCue{
+  position:absolute!important;left:auto!important;right:22px!important;top:auto!important;bottom:22px!important;margin:0!important;z-index:280!important;
+}
+.mapNewsBox .mapNewsCue{position:absolute!important;right:22px!important;bottom:20px!important;left:auto!important;top:auto!important;margin:0!important;}
+.mourningNoticeCue{right:22px!important;bottom:20px!important;}
+.openingStoryBox,.adviceLetter,.letterNoticeBox,.royalNoticeBox{padding-bottom:84px!important;}
+#screenBattle #tutorialOverlay.adviceLetter,#screenBattle #tutorialBadOverlay.adviceLetter{padding-bottom:86px!important;}
+#screenResult .v568FinalScreen .v568Nav,.v568Aiueo20Screen .v568Nav,.v574AiueoNav{min-height:58px!important;height:58px!important;gap:0!important;}
+#screenResult .v568FinalScreen .v568SealNext,.v568Aiueo20Screen .v568SealNext,.v574AiueoNav .v568SealNext{flex:0 0 48px!important;}
+.storyCue,.mapNewsCue,.mourningNoticeCue{pointer-events:none!important;}
+.v568SealNext{cursor:pointer!important;pointer-events:auto!important;}
+@media(prefers-reduced-motion:reduce){.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext{animation:none!important;transform:none!important;}}
+</style>
+<script id="v597-reapplied-fixes-script">
+(function(){'use strict';window.__VERSION__='V597';})();
+</script>
+
+<!-- V598: deterministic case selection / replacement model -->
+<style id="v598-case-selection-style">
+/* 案件選択の意味を固定：選択中=水色、空きあり=通常、満枠の未選択=明確なグレー＋入替先表示 */
+#screenMain .caseCard{
+  transition:opacity .16s ease,filter .16s ease,box-shadow .16s ease,transform .12s ease!important;
+}
+#screenMain .caseCard.selected{
+  opacity:1!important;
+  filter:brightness(1.035)!important;
+}
+#screenMain .caseCard.replaceable:not(.selected){
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  opacity:.46!important;
+  filter:grayscale(.52) brightness(.88)!important;
+}
+#screenMain .caseCard.replaceable:not(.selected):hover{
+  opacity:.62!important;
+  filter:grayscale(.36) brightness(.94)!important;
+}
+#screenMain .caseCard.replaceable:not(.selected)::after{
+  content:attr(data-replace-label)!important;
+  display:block!important;
+  position:absolute!important;
+  right:10px!important;
+  bottom:9px!important;
+  left:auto!important;
+  top:auto!important;
+  width:auto!important;
+  height:auto!important;
+  padding:3px 8px!important;
+  border-radius:999px!important;
+  background:#102a4c!important;
+  color:#dff9ff!important;
+  border:1px solid #69def8!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.24)!important;
+  font-size:9px!important;
+  line-height:1.1!important;
+  font-weight:1000!important;
+  z-index:30!important;
+  animation:none!important;
+}
+#screenMain .caseCard.capacityBlocked:not(.selected){
+  pointer-events:auto!important;
+  cursor:not-allowed!important;
+  opacity:.34!important;
+  filter:grayscale(.72) brightness(.80)!important;
+}
+#screenMain .caseCard.capacityBlocked:not(.selected)::after{
+  content:"選択枠固定"!important;
+  display:block!important;
+  position:absolute!important;
+  right:10px!important;
+  bottom:9px!important;
+  left:auto!important;
+  top:auto!important;
+  width:auto!important;
+  height:auto!important;
+  padding:3px 8px!important;
+  border-radius:999px!important;
+  background:#342f2a!important;
+  color:#ded6c6!important;
+  border:1px solid #8f8370!important;
+  font-size:9px!important;
+  line-height:1.1!important;
+  font-weight:1000!important;
+  z-index:30!important;
+  animation:none!important;
+}
+/* 旧 locked 表現はV598同期後には使わない。瞬間的に残っても新モデルと同じ見え方にする。 */
+#screenMain .caseCard.locked:not(.selected){
+  opacity:.46!important;
+  filter:grayscale(.52) brightness(.88)!important;
+}
+#screenMain .caseCard.locked:not(.selected)::after{display:none!important;content:none!important;}
+
+/* 交換完了の短いフィードバック */
+#screenMain .selectionSwapToastV598{
+  position:absolute;
+  right:214px;
+  bottom:108px;
+  z-index:120;
+  padding:7px 14px;
+  border-radius:999px;
+  background:#102a4c;
+  color:#e7faff;
+  border:1px solid #69def8;
+  box-shadow:0 4px 12px rgba(0,0,0,.28),0 0 12px rgba(66,220,255,.18);
+  font-size:11px;
+  font-weight:1000;
+  pointer-events:none;
+  animation:v598SwapToast .9s ease-out both;
+}
+@keyframes v598SwapToast{
+  0%{opacity:0;transform:translateY(5px)}
+  16%{opacity:1;transform:none}
+  75%{opacity:1;transform:none}
+  100%{opacity:0;transform:translateY(-5px)}
+}
+</style>
+<script id="v598-case-selection-script">
+(function(){
+'use strict';
+if(window.__V598_CASE_SELECTION__)return;
+window.__V598_CASE_SELECTION__=true;
+
+function caseObjV598(id){try{return typeof getCase==='function'?getCase(id):null;}catch(_){return null;}}
+function maxV598(){try{return typeof maxSelectableCases==='function'?Math.max(1,Number(maxSelectableCases())||1):1;}catch(_){return 1;}}
+function replaceIndexV598(){
+  const selected=Array.isArray(State?.selected)?State.selected:[];
+  for(let i=selected.length-1;i>=0;i--){
+    const c=caseObjV598(selected[i]);
+    if(!(c&&c.mandatory))return i;
+  }
+  return -1;
+}
+function syncCaseSelectionV598(){
+  try{
+    if(typeof State==='undefined'||!State)return;
+    const selected=Array.isArray(State.selected)?State.selected:[];
+    const max=maxV598();
+    const full=selected.length>=max;
+    const replaceAt=full?replaceIndexV598():-1;
+    const replaceLabel=replaceAt>=0?`戦線${replaceAt+1}と入替`:'';
+    document.querySelectorAll('#screenMain .caseCard[data-case-id]').forEach(el=>{
+      const id=String(el.dataset.caseId||'');
+      const idx=selected.indexOf(id);
+      const isSelected=idx>=0;
+      el.classList.remove('locked','replaceable','capacityBlocked');
+      el.classList.toggle('selected',isSelected);
+      if(!isSelected&&full){
+        if(replaceAt>=0)el.classList.add('replaceable');
+        else el.classList.add('capacityBlocked');
+      }
+      el.dataset.order=isSelected?String(idx+1):'';
+      el.dataset.replaceLabel=!isSelected&&full&&replaceAt>=0?replaceLabel:'';
+      el.setAttribute('role','button');
+      el.setAttribute('aria-selected',isSelected?'true':'false');
+      el.setAttribute('aria-disabled',(!isSelected&&full&&replaceAt<0)?'true':'false');
+      if(!isSelected&&full&&replaceAt>=0)el.setAttribute('aria-label',`${el.querySelector('.caseTitle')?.textContent||'案件'}、${replaceLabel}`);
+      else el.removeAttribute('aria-label');
+    });
+  }catch(err){console.warn('V598 selection sync',err);}
+}
+window.syncCaseSelectionV598=syncCaseSelectionV598;
+
+function showSwapToastV598(slot){
+  try{
+    const host=document.getElementById('toastHost');
+    if(!host)return;
+    const token=String(Date.now());host.dataset.v598Toast=token;
+    host.innerHTML=`<div class="selectionSwapToastV598">戦線${slot}を入れ替えました</div>`;
+    setTimeout(()=>{if(host.dataset.v598Toast===token)host.innerHTML='';},950);
+  }catch(_){ }
+}
+
+/* 現在のupdateMainSelection全処理を尊重した後、選択クラスだけV598を正本として同期する。 */
+if(window.View&&typeof View.updateMainSelection==='function'&&!View.updateMainSelection.v598SelectionModel){
+  const prev=View.updateMainSelection;
+  const wrapped=function(){
+    const r=prev.apply(this,arguments);
+    syncCaseSelectionV598();
+    requestAnimationFrame(syncCaseSelectionV598);
+    return r;
+  };
+  wrapped.v598SelectionModel=true;
+  View.updateMainSelection=wrapped;
+}
+
+/* View.mainの既存ミドルウェア順序は崩さず、描画完了後だけ同期する。 */
+if(Array.isArray(window.__kingViewMainMiddlewareV115)){
+  window.__kingViewMainMiddlewareV115.push(function(next){return function(){
+    const r=next.apply(this,arguments);
+    syncCaseSelectionV598();
+    requestAnimationFrame(syncCaseSelectionV598);
+    setTimeout(syncCaseSelectionV598,80);
+    return r;
+  };});
+}
+
+/* 満枠時の自動入替は既存仕様を利用。ただし、どの戦線が入れ替わるかをUIとトーストで明示する。 */
+if(typeof window.__kingRegisterToggleCaseMiddlewareV120==='function'){
+  window.__kingRegisterToggleCaseMiddlewareV120(function(next){return function(id){
+    const before=Array.isArray(State?.selected)?State.selected.slice():[];
+    const max=maxV598();
+    const wasSelected=before.includes(id);
+    const replaceAt=(!wasSelected&&before.length>=max)?replaceIndexV598():-1;
+    const oldId=replaceAt>=0?before[replaceAt]:null;
+    const r=next.apply(this,arguments);
+    syncCaseSelectionV598();
+    requestAnimationFrame(syncCaseSelectionV598);
+    if(oldId&&Array.isArray(State?.selected)&&State.selected[replaceAt]===id&&!State.selected.includes(oldId)){
+      showSwapToastV598(replaceAt+1);
+    }
+    return r;
+  };});
+}
+
+/* 遅延装飾やチュートリアルDOM更新後にも古いlockedを残さない。 */
+const root=document.getElementById('screenMain');
+if(root){
+  let queued=false;
+  const mo=new MutationObserver(()=>{
+    if(queued)return;queued=true;
+    requestAnimationFrame(()=>{queued=false;syncCaseSelectionV598();});
+  });
+  mo.observe(root,{childList:true,subtree:true});
+}
+
+window.auditCaseSelectionV598=function(){
+  const selected=Array.isArray(State?.selected)?State.selected.slice():[];
+  const max=maxV598();
+  const replaceAt=selected.length>=max?replaceIndexV598():-1;
+  return{
+    version:'V598',max,selected,replaceSlot:replaceAt>=0?replaceAt+1:null,
+    cards:[...document.querySelectorAll('#screenMain .caseCard[data-case-id]')].map(el=>({id:el.dataset.caseId,selected:el.classList.contains('selected'),replaceable:el.classList.contains('replaceable'),blocked:el.classList.contains('capacityBlocked'),opacity:getComputedStyle(el).opacity,filter:getComputedStyle(el).filter,label:el.dataset.replaceLabel||''}))
+  };
+};
+window.__VERSION__='V598';
+})();
+</script>
+
+<!-- V599: instant visual sync for case selection on tablet/Safari -->
+<style id="v599-case-selection-instant-style">
+/* 選択／グレー化は状態表示なので補間しない。押下の物理感だけ残す。 */
+#screenMain .caseCard{
+  transition:transform .08s ease,box-shadow .08s ease!important;
+}
+#screenMain .caseCard.selected,
+#screenMain .caseCard.replaceable:not(.selected),
+#screenMain .caseCard.capacityBlocked:not(.selected),
+#screenMain .caseCard.locked:not(.selected){
+  transition:none!important;
+}
+/* タッチ端末のsticky hoverで旧カードが明るく残るのを防ぐ。 */
+@media (hover:none),(pointer:coarse){
+  #screenMain .caseCard:hover{transform:none!important;}
+  #screenMain .caseCard.replaceable:not(.selected):hover{
+    opacity:.46!important;
+    filter:grayscale(.52) brightness(.88)!important;
+  }
+  #screenMain .caseCard.capacityBlocked:not(.selected):hover{
+    opacity:.34!important;
+    filter:grayscale(.72) brightness(.80)!important;
+  }
+}
+</style>
+<script id="v599-version-script">
+(function(){'use strict';window.__VERSION__='V599';})();
+</script>
+
+
+<!-- V600: semantic operation sounds / cleaner battle finish -->
+<script id="v600-sound-language-audit">
+(function(){
+'use strict';
+window.auditSoundLanguageV600=function(){
+  return {
+    version:'V600',
+    operations:{select:'select',remove:'cancel',replace:'replace',advance:'next',page:'page',invalid:'warn',budgetUp:'budgetUp',budgetDown:'budgetDown',assign:'assign',trump:'card'},
+    battle:{collision:'clashPoko + timing judgement',laneEdge:'finishWin / finishLose (short stamp)',overall:['judgeGreat','judgeWin','judgeDraw','judgeStruggle','judgeLose'],allCompleteLoss:'turnCompleteLoss at central judgement',laneResult:['resultWin','resultDraw','resultLose'],summaryAfterBattle:'paper-only summary cue'},
+    state:{battleTailActive:!!(typeof State!=='undefined'&&State&&State.v600BattleTailActive),completeLossAlreadyPlayed:!!(typeof State!=='undefined'&&State&&State.v600CompleteLossJudgementPlayed)}
+  };
+};
+window.__VERSION__='V600';
+})();
+</script>
+
+<!-- V601: single source of truth for progress seals and continue hints -->
+<style id="v601-progress-ui-single-source-style">
+/* 補助文言は全廃。進行可能であることは封蝋ボタンそのものだけで示す。 */
+.touchWindowGuide,
+.pcWindowGuide,
+.letterNoticeContinue,
+.multiFrontTutorialCue,
+.battleTutorialContinueLabel,
+.v568NavLabel,
+.v573AiueoHint{
+  display:none!important;
+  visibility:hidden!important;
+  width:0!important;height:0!important;
+  min-width:0!important;min-height:0!important;
+  margin:0!important;padding:0!important;
+  overflow:hidden!important;
+}
+
+/* 進行封蝋の対象。すべて48x48の正円、同一描画、同一モーション。 */
+#game .storyCue,
+#game .mapNewsCue,
+#game .mourningNoticeCue,
+#game .v568SealNext,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn{
+  box-sizing:border-box!important;
+  display:block!important;
+  position:relative!important;
+  width:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  height:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  aspect-ratio:1 / 1!important;
+  flex:0 0 48px!important;
+  padding:0!important;
+  margin:0!important;
+  border:2px solid #d6b45f!important;
+  border-radius:50%!important;
+  clip-path:none!important;
+  outline:0!important;
+  color:transparent!important;
+  font-size:0!important;
+  line-height:0!important;
+  text-indent:-9999px!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  background:
+    radial-gradient(circle at 33% 27%,rgba(255,255,255,.24) 0 8%,rgba(255,255,255,0) 24%),
+    radial-gradient(circle at 50% 57%,#a63a3c 0 27%,#8a242b 46%,#65161d 72%,#4a0e14 100%)!important;
+  box-shadow:
+    0 5px 0 #350d12,
+    0 9px 18px rgba(0,0,0,.34),
+    inset 0 0 0 3px rgba(255,218,127,.14),
+    inset 0 -6px 10px rgba(32,4,6,.30)!important;
+  filter:none!important;
+  transform-origin:50% 50%!important;
+  animation:v601SealIdle 1.15s ease-in-out infinite alternate!important;
+  transition:filter .12s ease,box-shadow .12s ease!important;
+}
+
+/* 内輪 */
+#game .storyCue::before,
+#game .mapNewsCue::before,
+#game .mourningNoticeCue::before,
+#game .v568SealNext::before,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn::before,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  left:8px!important;right:8px!important;top:8px!important;bottom:8px!important;
+  width:auto!important;height:auto!important;
+  inset:8px!important;
+  border:1px solid rgba(245,207,109,.72)!important;
+  border-radius:50%!important;
+  clip-path:none!important;
+  background:transparent!important;
+  box-shadow:inset 0 0 0 2px rgba(72,17,18,.34)!important;
+  transform:none!important;
+  filter:none!important;
+  pointer-events:none!important;
+}
+
+/* 下向き矢印 */
+#game .storyCue::after,
+#game .mapNewsCue::after,
+#game .mourningNoticeCue::after,
+#game .v568SealNext::after,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn::after,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn::after{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  left:50%!important;top:46%!important;
+  right:auto!important;bottom:auto!important;inset:auto!important;
+  width:11px!important;height:11px!important;
+  border:0!important;
+  border-right:3px solid #f0d47a!important;
+  border-bottom:3px solid #f0d47a!important;
+  border-radius:0!important;
+  background:transparent!important;
+  clip-path:none!important;
+  transform:translate(-50%,-60%) rotate(45deg)!important;
+  filter:drop-shadow(0 1px 0 #3b1415)!important;
+  pointer-events:none!important;
+}
+
+@keyframes v601SealIdle{
+  from{opacity:.86;filter:brightness(.96);transform:translateY(0) scale(1)}
+  to{opacity:1;filter:brightness(1.10);transform:translateY(3px) scale(1.01)}
+}
+
+#game .v568SealNext:hover{filter:brightness(1.10)!important;}
+#game .v568SealNext:active,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn:active,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn:active{
+  animation:none!important;
+  transform:translateY(3px)!important;
+  box-shadow:
+    0 2px 0 #350d12,
+    0 6px 14px rgba(0,0,0,.30),
+    inset 0 0 0 3px rgba(255,218,127,.14),
+    inset 0 -5px 8px rgba(32,4,6,.28)!important;
+}
+
+/* 窓内配置も一つに固定。 */
+#game .openingStoryBox .storyCue,
+#game .adviceLetter .storyCue,
+#game .firstCaseTutorialScreen .storyCue,
+#game .phase67BattleQuoteScreen .storyCue,
+#game .openingStoryScreen .storyCue,
+#game .letterNoticeShade .storyCue,
+#game .royalNoticeScreen .storyCue{
+  position:absolute!important;
+  left:auto!important;right:22px!important;
+  top:auto!important;bottom:22px!important;
+  z-index:280!important;
+}
+#game .mapNewsBox .mapNewsCue{
+  position:absolute!important;
+  left:auto!important;right:22px!important;
+  top:auto!important;bottom:20px!important;
+}
+#game .mourningNoticeCue{right:22px!important;bottom:20px!important;}
+
+/* 戦闘チュートリアルの開始/続行も同じ封蝋にする。 */
+#game #screenBattle #tutorialOverlay .tutorialStartBtn,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn{
+  position:absolute!important;
+  left:auto!important;right:22px!important;
+  top:auto!important;bottom:20px!important;
+  z-index:280!important;
+  cursor:pointer!important;
+  pointer-events:auto!important;
+}
+
+/* 本文と封蝋が重ならない最低余白。 */
+#game .openingStoryBox,
+#game .adviceLetter,
+#game .letterNoticeBox,
+#game .royalNoticeBox{padding-bottom:86px!important;}
+#game #screenBattle #tutorialOverlay.adviceLetter,
+#game #screenBattle #tutorialBadOverlay.adviceLetter{padding-bottom:88px!important;}
+
+/* AIUEO / 最終リザルトも48正円前提のnav。 */
+#game .v568Aiueo20Screen .v568Nav,
+#game .v574AiueoNav,
+#game #screenResult .v568FinalScreen .v568Nav{
+  min-height:58px!important;
+  height:58px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
+}
+
+/* storyCue等は親クリック。実ボタンだけ自身をクリック。 */
+#game .storyCue,#game .mapNewsCue,#game .mourningNoticeCue{pointer-events:none!important;}
+#game .v568SealNext{pointer-events:auto!important;cursor:pointer!important;}
+
+@media(prefers-reduced-motion:reduce){
+  #game .storyCue,#game .mapNewsCue,#game .mourningNoticeCue,#game .v568SealNext,
+  #game #screenBattle #tutorialOverlay .tutorialStartBtn,
+  #game #screenBattle #tutorialBadOverlay .tutorialStartBtn{
+    animation:none!important;transform:none!important;
+  }
+}
+</style>
+<script id="v601-progress-ui-single-source-script">
+(function(){
+'use strict';
+const SEAL_SELECTOR='.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext,#screenBattle #tutorialOverlay .tutorialStartBtn,#screenBattle #tutorialBadOverlay .tutorialStartBtn';
+const HINT_SELECTOR='.touchWindowGuide,.pcWindowGuide,.letterNoticeContinue,.multiFrontTutorialCue,.battleTutorialContinueLabel,.v568NavLabel,.v573AiueoHint';
+function forceSeal(el){
+  if(!el||!el.style)return;
+  const imp=(k,v)=>el.style.setProperty(k,v,'important');
+  imp('width','48px');imp('min-width','48px');imp('max-width','48px');
+  imp('height','48px');imp('min-height','48px');imp('max-height','48px');
+  imp('aspect-ratio','1 / 1');imp('flex','0 0 48px');
+  imp('box-sizing','border-box');imp('border-radius','50%');imp('padding','0');
+  imp('clip-path','none');imp('transform-origin','50% 50%');
+  imp('animation','v601SealIdle 1.15s ease-in-out infinite alternate');
+  if(el.matches('.v568SealNext,.tutorialStartBtn')){
+    if(!el.getAttribute('aria-label'))el.setAttribute('aria-label','次へ');
+  }
+}
+function normalize(root=document){
+  try{
+    if(root.matches&&root.matches(SEAL_SELECTOR))forceSeal(root);
+    if(root.querySelectorAll)root.querySelectorAll(SEAL_SELECTOR).forEach(forceSeal);
+    if(root.matches&&root.matches(HINT_SELECTOR))root.style.setProperty('display','none','important');
+    if(root.querySelectorAll)root.querySelectorAll(HINT_SELECTOR).forEach(el=>el.style.setProperty('display','none','important'));
+  }catch(_){ }
+}
+normalize(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n&&n.nodeType===1)normalize(n);});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+}
+window.auditProgressUiV601=function(){
+  const seals=[...document.querySelectorAll(SEAL_SELECTOR)].map(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{cls:el.className,w:+r.width.toFixed(2),h:+r.height.toFixed(2),radius:cs.borderRadius,anim:cs.animationName};});
+  const hints=[...document.querySelectorAll(HINT_SELECTOR)].filter(el=>getComputedStyle(el).display!=='none').map(el=>({cls:el.className,text:el.textContent.trim()}));
+  return{version:'V601',seals,hintsVisible:hints,allRound:seals.every(x=>Math.abs(x.w-x.h)<.1&&x.radius.includes('50%'))};
+};
+window.__VERSION__='V601';
+})();
+</script>
+<script id="v601-legacy-continue-text-kill-switch">
+(function(){
+'use strict';
+const exact=new Set(['タップで続ける','クリックで続ける','クリック / Enterで続ける','クリック・タップ・Enterキーでも進む','Enter / Space / クリック・タップ']);
+function kill(root=document){
+  const list=[];
+  if(root.nodeType===1)list.push(root);
+  if(root.querySelectorAll)list.push(...root.querySelectorAll('*'));
+  for(const el of list){
+    if(el.children.length)continue;
+    const t=(el.textContent||'').trim();
+    if(exact.has(t))el.style.setProperty('display','none','important');
+  }
+}
+kill(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n&&n.nodeType===1)kill(n);});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+}
+})();
+</script>
+
+<!-- V602: one control language for primary / secondary / confirm / stepper / close -->
+<style id="v602-control-system-style">
+:root{
+  --ui-primary-w:220px;
+  --ui-primary-h:52px;
+  --ui-secondary-w:140px;
+  --ui-secondary-h:48px;
+  --ui-confirm-w:150px;
+  --ui-confirm-h:48px;
+  --ui-step:48px;
+  --ui-close:42px;
+}
+
+/* ===== primary: 現在の選択・設定を確定して次の大画面へ ===== */
+button.uiPrimaryV602,
+#screenMain .next.uiPrimaryV602,
+#screenAssign .dispatchStart.uiPrimaryV602,
+#screenResult button.uiPrimaryV602{
+  box-sizing:border-box!important;
+  width:var(--ui-primary-w)!important;
+  min-width:var(--ui-primary-w)!important;
+  max-width:var(--ui-primary-w)!important;
+  height:var(--ui-primary-h)!important;
+  min-height:var(--ui-primary-h)!important;
+  max-height:var(--ui-primary-h)!important;
+  padding:0 18px!important;
+  border:3px solid #bdf6ff!important;
+  border-radius:12px!important;
+  background:linear-gradient(180deg,#e8fbff 0%,#52e0ff 58%,#1599d1 100%)!important;
+  color:#06243b!important;
+  font-size:18px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  letter-spacing:.015em!important;
+  text-shadow:0 1px 0 rgba(255,255,255,.62)!important;
+  box-shadow:0 0 0 3px rgba(66,220,255,.20),0 0 17px rgba(66,220,255,.48),0 5px 0 #07527a!important;
+  appearance:none!important;-webkit-appearance:none!important;
+  transform:none!important;translate:0 0!important;scale:1!important;
+  transition:filter .12s ease,box-shadow .12s ease!important;
+  overflow:visible!important;
+}
+button.uiPrimaryV602:not(:disabled){
+  animation:v602PrimaryReady 1.05s ease-in-out infinite alternate!important;
+}
+button.uiPrimaryV602:disabled{
+  animation:none!important;
+  opacity:.48!important;
+  filter:grayscale(.62) brightness(.82)!important;
+  background:linear-gradient(180deg,#c7ced4,#8b969f)!important;
+  border-color:#d7dde1!important;
+  color:#233344!important;
+  box-shadow:0 4px 0 #56606a!important;
+}
+button.uiPrimaryV602:not(:disabled):hover{filter:brightness(1.07)!important;}
+button.uiPrimaryV602:not(:disabled):active{
+  animation:none!important;
+  transform:none!important;translate:0 3px!important;scale:1!important;
+  filter:brightness(1.02)!important;
+  box-shadow:0 2px 0 #07527a,0 0 12px rgba(66,220,255,.42)!important;
+}
+button.uiPrimaryV602::before,button.uiPrimaryV602::after{animation:none!important;}
+@keyframes v602PrimaryReady{
+  from{filter:brightness(.98);translate:0 0;scale:1;box-shadow:0 0 0 3px rgba(66,220,255,.18),0 0 14px rgba(66,220,255,.42),0 5px 0 #07527a}
+  to{filter:brightness(1.11);translate:0 -1px;scale:1.008;box-shadow:0 0 0 4px rgba(66,220,255,.26),0 0 23px rgba(66,220,255,.70),0 6px 0 #07527a}
+}
+
+/* ===== secondary: 戻る・取消・全解除 ===== */
+button.uiSecondaryV602{
+  box-sizing:border-box!important;
+  width:var(--ui-secondary-w)!important;
+  min-width:var(--ui-secondary-w)!important;
+  max-width:var(--ui-secondary-w)!important;
+  height:var(--ui-secondary-h)!important;
+  min-height:var(--ui-secondary-h)!important;
+  max-height:var(--ui-secondary-h)!important;
+  padding:0 14px!important;
+  border:2px solid #b98d36!important;
+  border-radius:12px!important;
+  background:linear-gradient(180deg,#173b5d,#0c263f)!important;
+  color:#ffe9b5!important;
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  box-shadow:0 3px 0 #061525,inset 0 0 0 1px rgba(255,233,181,.08)!important;
+  animation:none!important;
+  transform:none!important;translate:0 0!important;scale:1!important;
+}
+button.uiSecondaryV602:hover{filter:brightness(1.07)!important;}
+button.uiSecondaryV602:active{translate:0 2px!important;box-shadow:0 1px 0 #061525!important;}
+
+/* ===== confirm: モーダル内の局所確定 ===== */
+button.uiConfirmV602{
+  box-sizing:border-box!important;
+  width:var(--ui-confirm-w)!important;
+  min-width:var(--ui-confirm-w)!important;
+  max-width:var(--ui-confirm-w)!important;
+  height:var(--ui-confirm-h)!important;
+  min-height:var(--ui-confirm-h)!important;
+  max-height:var(--ui-confirm-h)!important;
+  padding:0 14px!important;
+  border:2px solid #b48732!important;
+  border-radius:12px!important;
+  background:linear-gradient(180deg,#fff7d8,#e7c977)!important;
+  color:#102a4c!important;
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  box-shadow:0 3px 0 #76521b,inset 0 0 0 1px rgba(255,255,255,.42)!important;
+  animation:none!important;
+  transform:none!important;translate:0 0!important;scale:1!important;
+}
+button.uiConfirmV602:hover{filter:brightness(1.05)!important;}
+button.uiConfirmV602:active{translate:0 2px!important;box-shadow:0 1px 0 #76521b!important;}
+
+/* ===== steppers: ＋／− ===== */
+button.uiStepperV602{
+  box-sizing:border-box!important;
+  width:var(--ui-step)!important;
+  min-width:var(--ui-step)!important;
+  max-width:var(--ui-step)!important;
+  height:var(--ui-step)!important;
+  min-height:var(--ui-step)!important;
+  max-height:var(--ui-step)!important;
+  padding:0!important;
+  border-radius:11px!important;
+  font-size:25px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  animation:none!important;
+  transform:none!important;translate:0 0!important;scale:1!important;
+}
+button.uiStepperV602.uiStepperPlusV602{
+  border:2px solid #bdf6ff!important;
+  background:linear-gradient(180deg,#e8fbff,#42dcff)!important;
+  color:#06243b!important;
+  box-shadow:0 0 10px rgba(66,220,255,.34),0 3px 0 #07527a!important;
+}
+button.uiStepperV602.uiStepperMinusV602{
+  border:2px solid #b48732!important;
+  background:linear-gradient(180deg,#fff8dc,#dfc184)!important;
+  color:#172337!important;
+  box-shadow:0 3px 0 rgba(75,52,18,.48)!important;
+}
+button.uiStepperV602:active{translate:0 2px!important;filter:brightness(1.04)!important;}
+
+/* ===== close: × only ===== */
+button.uiCloseV602{
+  box-sizing:border-box!important;
+  width:var(--ui-close)!important;
+  min-width:var(--ui-close)!important;
+  max-width:var(--ui-close)!important;
+  height:var(--ui-close)!important;
+  min-height:var(--ui-close)!important;
+  max-height:var(--ui-close)!important;
+  padding:0!important;
+  border-radius:50%!important;
+  border:2px solid #d6ad4b!important;
+  background:#102a4c!important;
+  color:#fff0b8!important;
+  font-size:20px!important;
+  line-height:1!important;
+  box-shadow:0 3px 0 #061525!important;
+  animation:none!important;
+}
+button.uiCloseV602:active{translate:0 2px!important;box-shadow:0 1px 0 #061525!important;}
+
+/* ===== layout: 案件選択 ===== */
+#screenMain .slots{
+  grid-template-columns:repeat(var(--slotCount,3),minmax(0,1fr)) var(--ui-primary-w)!important;
+  gap:10px!important;
+  align-items:center!important;
+  padding:8px 10px!important;
+}
+#screenMain .next.uiPrimaryV602{
+  justify-self:end!important;
+  align-self:center!important;
+  margin:0!important;
+}
+#screenMain .slot{min-height:58px!important;padding:8px 10px!important;}
+#screenMain .count{display:none!important;}
+
+/* ===== layout: 采配 ===== */
+#screenAssign .dispatchFooter{
+  grid-template-columns:var(--ui-secondary-w) 1fr var(--ui-primary-w)!important;
+  min-height:72px!important;
+  height:72px!important;
+  padding:10px 14px!important;
+  gap:14px!important;
+  align-items:center!important;
+}
+#screenAssign .dispatchBack.uiSecondaryV602{grid-column:1!important;justify-self:start!important;margin:0!important;}
+#screenAssign .dispatchStart.uiPrimaryV602{grid-column:3!important;justify-self:end!important;margin:0!important;}
+#screenAssign .dispatchBudgetControls{grid-template-columns:var(--ui-step) minmax(54px,1fr) var(--ui-step)!important;gap:7px!important;}
+#screenAssign .dispatchBudgetValue{min-height:var(--ui-step)!important;height:var(--ui-step)!important;}
+
+/* ===== layout: modal ===== */
+#screenAssign .dispatchModalFoot{
+  min-height:72px!important;
+  padding:10px 14px 14px!important;
+  gap:10px!important;
+  align-items:center!important;
+}
+
+/* ===== layout: 総括 ===== */
+#screenResult .v518SummaryAction{
+  min-height:74px!important;
+  margin:14px 14px 0!important;
+  padding:10px 0 6px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  border-top:1px solid rgba(87,61,24,.24)!important;
+  background:none!important;
+}
+#screenResult .v518SummaryAction button.uiPrimaryV602,
+#screenResult .resultCard button.uiPrimaryV602{margin:0!important;position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;}
+
+/* ===== smaller special cards ===== */
+.princessUnlockContinue.uiConfirmV602,
+.mourningNoticeBtn.uiConfirmV602,
+.pickTwoTutorialBtn.uiConfirmV602{margin-left:auto!important;margin-right:auto!important;}
+
+/* ===== final / ending buttons ===== */
+#screenResult .endingActionCueRow{gap:12px!important;align-items:center!important;justify-content:flex-end!important;}
+#screenResult .gameCueButton.uiPrimaryV602,#screenResult .gameCueButton.uiSecondaryV602{border-radius:12px!important;}
+
+@media (pointer:coarse){
+  button.uiPrimaryV602:hover,button.uiSecondaryV602:hover,button.uiConfirmV602:hover{filter:none!important;}
+}
+@media (prefers-reduced-motion:reduce){button.uiPrimaryV602:not(:disabled){animation:none!important;}}
+</style>
+<script id="v602-control-system-script">
+(function(){
+'use strict';
+if(window.__V602_CONTROL_SYSTEM__)return;
+window.__V602_CONTROL_SYSTEM__=true;
+
+const C=['uiPrimaryV602','uiSecondaryV602','uiConfirmV602','uiStepperV602','uiStepperPlusV602','uiStepperMinusV602','uiCloseV602'];
+function clean(b){for(const c of C)b.classList.remove(c);}
+function add(b,c){if(b&&!b.classList.contains(c))b.classList.add(c);}
+function txt(b){return String(b?.textContent||'').replace(/\s+/g,'').trim();}
+function classifyButton(b){
+  if(!(b instanceof HTMLButtonElement))return;
+  clean(b);
+  const t=txt(b),oc=String(b.getAttribute('onclick')||''),aria=String(b.getAttribute('aria-label')||'');
+  if(b.classList.contains('dispatchClose')||t==='×'||aria==='閉じる'){add(b,'uiCloseV602');return;}
+  if(b.classList.contains('dispatchBudgetBtn')){add(b,'uiStepperV602');add(b,b.classList.contains('plus')?'uiStepperPlusV602':'uiStepperMinusV602');return;}
+  if(b.matches('#screenMain .next,#screenAssign .dispatchStart,#screenResult button[onclick*="Flow.nextPeriod"]')){add(b,'uiPrimaryV602');return;}
+  if(b.classList.contains('gameCueButton')){add(b,b.classList.contains('secondaryCue')?'uiSecondaryV602':'uiPrimaryV602');return;}
+  if(b.matches('#screenAssign .dispatchBack')){add(b,'uiSecondaryV602');return;}
+  if(b.closest('.dispatchModalFoot')){
+    if(b.classList.contains('dispatchDone')||/完了|決定|了解/.test(t))add(b,'uiConfirmV602');
+    else add(b,'uiSecondaryV602');
+    return;
+  }
+  if(b.matches('.princessUnlockContinue,.mourningNoticeBtn,.pickTwoTutorialBtn')){add(b,'uiConfirmV602');return;}
+  if(/次の半期へ|物語の終わりへ|最終称号とリザルトへ|エンディングへ/.test(t)){add(b,'uiPrimaryV602');return;}
+  if(/戻る|取消|すべて外す|タイトルへ/.test(t)){add(b,'uiSecondaryV602');return;}
+  if(/完了|了解|受け止める|宮廷へ戻る/.test(t)){add(b,'uiConfirmV602');return;}
+  if(oc.includes('Flow.nextPeriod'))add(b,'uiPrimaryV602');
+}
+function normalize(root=document){
+  try{
+    if(root instanceof HTMLButtonElement)classifyButton(root);
+    if(root.querySelectorAll)root.querySelectorAll('button').forEach(classifyButton);
+  }catch(_){ }
+}
+normalize(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{
+    for(const m of ms){
+      if(m.type==='childList')for(const n of m.addedNodes)if(n&&n.nodeType===1)normalize(n);
+      if(m.type==='attributes'&&m.target instanceof HTMLButtonElement)classifyButton(m.target);
+    }
+  });
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+}
+
+window.auditControlsV602=function(){
+  const row=(sel)=>[...document.querySelectorAll(sel)].map(b=>{const r=b.getBoundingClientRect(),cs=getComputedStyle(b);return{text:txt(b),cls:b.className,w:+r.width.toFixed(1),h:+r.height.toFixed(1),radius:cs.borderRadius,anim:cs.animationName,disabled:b.disabled};});
+  return{
+    version:'V602',
+    primary:row('button.uiPrimaryV602'),secondary:row('button.uiSecondaryV602'),confirm:row('button.uiConfirmV602'),
+    stepper:row('button.uiStepperV602'),close:row('button.uiCloseV602'),
+    seals:typeof window.auditProgressUiV601==='function'?window.auditProgressUiV601().seals:[]
+  };
+};
+window.__VERSION__='V602';
+})();
+</script>
+<style id="v602-control-specificity-lock">
+/* Legacy per-screen rules carry IDs; lock the shared control tokens above them. */
+#game button.uiPrimaryV602{
+  width:var(--ui-primary-w)!important;min-width:var(--ui-primary-w)!important;max-width:var(--ui-primary-w)!important;
+  height:var(--ui-primary-h)!important;min-height:var(--ui-primary-h)!important;max-height:var(--ui-primary-h)!important;
+  border-radius:12px!important;transform:none!important;translate:0 0!important;scale:1!important;
+}
+#game button.uiPrimaryV602:not(:disabled){animation:v602PrimaryReady 1.05s ease-in-out infinite alternate!important;}
+#game button.uiPrimaryV602:disabled{animation:none!important;}
+#game button.uiPrimaryV602:not(:disabled):active{animation:none!important;transform:none!important;translate:0 3px!important;scale:1!important;}
+#game button.uiSecondaryV602{
+  width:var(--ui-secondary-w)!important;min-width:var(--ui-secondary-w)!important;max-width:var(--ui-secondary-w)!important;
+  height:var(--ui-secondary-h)!important;min-height:var(--ui-secondary-h)!important;max-height:var(--ui-secondary-h)!important;
+  border-radius:12px!important;animation:none!important;transform:none!important;translate:0 0!important;scale:1!important;
+}
+#game button.uiConfirmV602{
+  width:var(--ui-confirm-w)!important;min-width:var(--ui-confirm-w)!important;max-width:var(--ui-confirm-w)!important;
+  height:var(--ui-confirm-h)!important;min-height:var(--ui-confirm-h)!important;max-height:var(--ui-confirm-h)!important;
+  border-radius:12px!important;animation:none!important;transform:none!important;translate:0 0!important;scale:1!important;
+}
+#game button.uiStepperV602{
+  width:var(--ui-step)!important;min-width:var(--ui-step)!important;max-width:var(--ui-step)!important;
+  height:var(--ui-step)!important;min-height:var(--ui-step)!important;max-height:var(--ui-step)!important;
+  border-radius:11px!important;animation:none!important;
+}
+#game button.uiCloseV602{
+  width:var(--ui-close)!important;min-width:var(--ui-close)!important;max-width:var(--ui-close)!important;
+  height:var(--ui-close)!important;min-height:var(--ui-close)!important;max-height:var(--ui-close)!important;
+  border-radius:50%!important;animation:none!important;
+}
+</style>
+<style id="v602-ready-state-lock">
+#screenAssign .dispatchStart.uiPrimaryV602.isActorReady:not(:disabled),
+#screenAssign .dispatchStart.uiPrimaryV602.actorReady:not(:disabled),
+#screenAssign .dispatchStart.uiPrimaryV602.advanceReady:not(:disabled),
+#screenMain .next.uiPrimaryV602:not(:disabled),
+#screenResult button.uiPrimaryV602:not(:disabled){
+  animation:v602PrimaryReady 1.05s ease-in-out infinite alternate!important;
+  transform:none!important;
+  translate:0 0;
+  scale:1;
+}
+#screenAssign .dispatchStart.uiPrimaryV602.isActorReady:not(:disabled)::before,
+#screenAssign .dispatchStart.uiPrimaryV602.actorReady:not(:disabled)::before,
+#screenAssign .dispatchStart.uiPrimaryV602.advanceReady:not(:disabled)::before,
+#screenAssign .dispatchStart.uiPrimaryV602.isActorReady:not(:disabled)::after,
+#screenAssign .dispatchStart.uiPrimaryV602.actorReady:not(:disabled)::after,
+#screenAssign .dispatchStart.uiPrimaryV602.advanceReady:not(:disabled)::after{
+  content:none!important;display:none!important;animation:none!important;
+}
+#screenAssign .dispatchStart.uiPrimaryV602.isActorReady:not(:disabled):active,
+#screenAssign .dispatchStart.uiPrimaryV602.actorReady:not(:disabled):active,
+#screenAssign .dispatchStart.uiPrimaryV602.advanceReady:not(:disabled):active,
+#screenMain .next.uiPrimaryV602:not(:disabled):active,
+#screenResult button.uiPrimaryV602:not(:disabled):active{
+  animation:none!important;transform:none!important;translate:0 3px!important;scale:1!important;
+}
+</style>
+
+<!-- V603: trump scroll affordance + consonant battle-finish tuning -->
+<style id="v603-trump-scroll-style">
+/* 切り札一覧を「モーダル本体とは別のスクロール面」として見せる */
+#screenAssign .dispatchModal.phase119TrumpModal{
+  position:relative!important;
+  background:linear-gradient(180deg,#fff5d2 0%,#ecd39b 100%)!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchChoiceList{
+  position:relative!important;
+  padding:12px 20px 16px 14px!important;
+  background:#d7cfb9!important;
+  border-top:1px solid rgba(51,65,73,.28)!important;
+  border-bottom:1px solid rgba(51,65,73,.30)!important;
+  box-shadow:
+    inset 0 14px 18px -17px rgba(7,24,40,.78),
+    inset 0 -18px 22px -19px rgba(7,24,40,.88),
+    inset 8px 0 14px -16px rgba(7,24,40,.40),
+    inset -8px 0 14px -16px rgba(7,24,40,.40)!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:#87682c rgba(16,42,76,.13)!important;
+  scrollbar-gutter:stable!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchChoiceList::-webkit-scrollbar{width:10px!important;}
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchChoiceList::-webkit-scrollbar-track{
+  background:rgba(16,42,76,.12)!important;
+  border-left:1px solid rgba(16,42,76,.10)!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchChoiceList::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#b99342,#76591f)!important;
+  border:2px solid #d7cfb9!important;
+  border-radius:999px!important;
+}
+/* カード自体は一覧面より一段明るくして三層構造にする */
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice:not(.disabled){
+  background:linear-gradient(180deg,#fff9df 0%,#f1dfad 100%)!important;
+  border-color:#a98233!important;
+  box-shadow:0 3px 0 rgba(91,63,19,.34),inset 0 0 0 1px rgba(255,255,255,.62)!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchTrumpChoice.phase119Selected{
+  background:linear-gradient(180deg,#f2fdff 0%,#d8f5ff 60%,#ead493 100%)!important;
+  border-color:#42dcff!important;
+}
+/* フッターを固定操作帯として明確に分離 */
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchModalFoot{
+  position:relative!important;
+  z-index:4!important;
+  background:linear-gradient(180deg,#f4dfaa,#e8c985)!important;
+  border-top:2px solid #b48732!important;
+  box-shadow:0 -7px 16px rgba(52,42,23,.12)!important;
+}
+/* iPadでも常時わかる「まだ下に続く」視覚キュー。最下端では消す。 */
+#screenAssign .dispatchModal.phase119TrumpModal .v603TrumpScrollCue{
+  position:absolute!important;
+  right:10px!important;
+  bottom:82px!important;
+  width:28px!important;
+  height:28px!important;
+  border-radius:50%!important;
+  background:rgba(16,42,76,.92)!important;
+  border:1.5px solid #d6ad4b!important;
+  box-shadow:0 3px 8px rgba(0,0,0,.28),0 0 10px rgba(214,173,75,.18)!important;
+  opacity:0!important;
+  transform:translateY(-2px)!important;
+  transition:opacity .16s ease,transform .16s ease!important;
+  pointer-events:none!important;
+  z-index:8!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .v603TrumpScrollCue::before{
+  content:""!important;
+  position:absolute!important;
+  left:50%!important;
+  top:43%!important;
+  width:8px!important;
+  height:8px!important;
+  border-right:2px solid #f1d274!important;
+  border-bottom:2px solid #f1d274!important;
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .v603TrumpScrollCue.show{
+  opacity:.96!important;
+  transform:translateY(0)!important;
+  animation:v603ScrollCue 1.1s ease-in-out infinite alternate!important;
+}
+@keyframes v603ScrollCue{from{filter:brightness(.92);translate:0 0}to{filter:brightness(1.15);translate:0 2px}}
+</style>
+<script id="v603-trump-scroll-and-sound-script">
+(function(){
+'use strict';
+if(window.__V603_TRUMP_SCROLL_SOUND__)return;
+window.__V603_TRUMP_SCROLL_SOUND__=true;
+
+/* ---------- 切り札モーダルのスクロール可視化 ---------- */
+function enhanceTrumpModalV603(root=document){
+  try{
+    const modal=(root.matches&&root.matches('#screenAssign .dispatchModal.phase119TrumpModal'))?root:root.querySelector?.('#screenAssign .dispatchModal.phase119TrumpModal');
+    if(!modal||modal.dataset.v603Scroll==='1')return;
+    const list=modal.querySelector('.dispatchChoiceList');
+    if(!list)return;
+    modal.dataset.v603Scroll='1';
+    const cue=document.createElement('div');
+    cue.className='v603TrumpScrollCue';
+    cue.setAttribute('aria-hidden','true');
+    modal.appendChild(cue);
+    const update=()=>{
+      const max=Math.max(0,list.scrollHeight-list.clientHeight);
+      const can=max>6;
+      const atBottom=!can||list.scrollTop>=max-5;
+      cue.classList.toggle('show',can&&!atBottom);
+      modal.classList.toggle('v603CanScroll',can);
+      modal.classList.toggle('v603Scrolled',list.scrollTop>5);
+    };
+    list.addEventListener('scroll',update,{passive:true});
+    requestAnimationFrame(update);
+    setTimeout(update,80);
+  }catch(_){ }
+}
+enhanceTrumpModalV603(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{
+    for(const m of ms)for(const n of m.addedNodes){if(n&&n.nodeType===1)enhanceTrumpModalV603(n);}
+  });
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+}
+
+/* ---------- 衝突終了音：音程を純粋な和音構成音へ統一 ----------
+   成功 C major: C5-E5-G5
+   大成功 C major + octave: C5-E5-G5-C6
+   拮抗 open fifth: D4-A4-D5
+   苦戦 D minor descending: A4-F4-D4
+   敗北 A minor descending: E4-C4-A3
+   スライドをやめ、各音を平均律の正確な音高に固定する。 */
+const F={C5:523.25,E5:659.25,G5:783.99,C6:1046.50,D4:293.66,A4:440.00,D5:587.33,F4:349.23,E4:329.63,C4:261.63,A3:220.00,G4:392.00};
+function seqV603(freqs,{delay=.040,step=.070,dur=.145,gain=.025,wave='triangle'}={}){
+  try{freqs.forEach((f,i)=>tone(f,dur,wave,gain,delay+i*step,{cutoff:5000,master:.60,attack:.003,release:.095}));}catch(_){ }
+}
+function finishHarmonyV603(n){
+  if(n==='judgeGreat'){
+    try{lowHit(86,.120,.046,0);}catch(_){ }
+    seqV603([F.C5,F.E5,F.G5,F.C6],{delay:.035,step:.066,dur:.160,gain:.027});
+    try{bell(F.C6,.255,.013);}catch(_){ }
+    return true;
+  }
+  if(n==='judgeWin'){
+    try{lowHit(104,.090,.030,0);}catch(_){ }
+    seqV603([F.C5,F.E5,F.G5],{delay:.040,step:.078,dur:.150,gain:.027});
+    return true;
+  }
+  if(n==='judgeDraw'){
+    try{lowHit(102,.085,.025,0);}catch(_){ }
+    seqV603([F.D4,F.A4,F.D5],{delay:.040,step:.085,dur:.150,gain:.022});
+    return true;
+  }
+  if(n==='judgeStruggle'){
+    try{lowHit(78,.120,.038,0);}catch(_){ }
+    seqV603([F.A4,F.F4,F.D4],{delay:.045,step:.086,dur:.160,gain:.023});
+    return true;
+  }
+  if(n==='judgeLose'){
+    try{lowHit(60,.185,.058,0);}catch(_){ }
+    seqV603([F.E4,F.C4,F.A3],{delay:.045,step:.095,dur:.180,gain:.026});
+    try{noise(.105,.018,.075,{type:'lowpass',freq:650,q:.65,master:.34});}catch(_){ }
+    return true;
+  }
+  /* 一戦線押し切りの印も同じ調性感に寄せる。中央判定より軽く。 */
+  if(n==='finishWin'){
+    try{lowHit(104,.070,.023,0);}catch(_){ }
+    seqV603([F.C5,F.G5],{delay:.035,step:.075,dur:.085,gain:.016});
+    return true;
+  }
+  if(n==='finishLose'){
+    try{lowHit(72,.105,.036,0);}catch(_){ }
+    seqV603([F.E4,F.A3],{delay:.040,step:.090,dur:.110,gain:.017});
+    return true;
+  }
+  return false;
+}
+try{
+  if(typeof sfx==='function'&&!sfx.v603Harmony){
+    const prev=sfx;
+    const wrapped=function(n){if(finishHarmonyV603(String(n||'')))return;return prev.apply(this,arguments);};
+    wrapped.v603Harmony=true;wrapped.v603Prev=prev;
+    sfx=window.sfx=wrapped;
+  }
+}catch(_){ }
+
+window.auditV603=function(){
+  const modal=document.querySelector('#screenAssign .dispatchModal.phase119TrumpModal');
+  const list=modal&&modal.querySelector('.dispatchChoiceList');
+  const cue=modal&&modal.querySelector('.v603TrumpScrollCue');
+  return{
+    version:'V603',
+    trump:{present:!!modal,clientHeight:list?.clientHeight||0,scrollHeight:list?.scrollHeight||0,canScroll:!!(list&&list.scrollHeight>list.clientHeight+6),cueVisible:!!cue?.classList.contains('show')},
+    finishPitches:{great:['C5','E5','G5','C6'],win:['C5','E5','G5'],draw:['D4','A4','D5'],struggle:['A4','F4','D4'],lose:['E4','C4','A3']}
+  };
+};
+window.__VERSION__='V603';
+})();
+</script>
+
+<!-- V604: strong, unmistakable breathing for forward-progress controls -->
+<style id="v604-progress-breathing-style">
+/* 大進行ボタン：100% → 107%。レイアウト寸法は220×52のまま、transformだけで呼吸する。 */
+#game button.uiPrimaryV602:not(:disabled){
+  transform-origin:center center!important;
+  translate:0 0!important;
+  scale:1!important;
+  animation:v604PrimaryBreath 1.35s cubic-bezier(.45,0,.55,1) infinite!important;
+  will-change:transform,filter,box-shadow!important;
+}
+@keyframes v604PrimaryBreath{
+  0%,100%{
+    transform:scale(1)!important;
+    filter:brightness(.97)!important;
+    box-shadow:0 0 0 3px rgba(66,220,255,.18),0 0 14px rgba(66,220,255,.42),0 5px 0 #07527a!important;
+  }
+  50%{
+    transform:scale(1.07)!important;
+    filter:brightness(1.14)!important;
+    box-shadow:0 0 0 5px rgba(132,238,255,.34),0 0 34px rgba(66,220,255,.88),0 6px 0 #07527a!important;
+  }
+}
+/* 初出時だけ一度、さらに強く着地してから通常呼吸へ移る。 */
+#game button.uiPrimaryV602.v604EntryPulse:not(:disabled){
+  animation:v604PrimaryEntry .72s cubic-bezier(.2,.92,.24,1) 1!important;
+}
+@keyframes v604PrimaryEntry{
+  0%{transform:scale(.94)!important;filter:brightness(.92)!important;box-shadow:0 0 0 1px rgba(66,220,255,.10),0 0 6px rgba(66,220,255,.22),0 4px 0 #07527a!important;}
+  48%{transform:scale(1.12)!important;filter:brightness(1.20)!important;box-shadow:0 0 0 7px rgba(160,244,255,.34),0 0 44px rgba(66,220,255,.96),0 7px 0 #07527a!important;}
+  72%{transform:scale(.985)!important;filter:brightness(1.04)!important;}
+  100%{transform:scale(1)!important;filter:brightness(1)!important;}
+}
+#game button.uiPrimaryV602:not(:disabled):active{
+  animation:none!important;
+  transform:translateY(3px) scale(.98)!important;
+  translate:0 0!important;
+  filter:brightness(1.04)!important;
+  box-shadow:0 2px 0 #07527a,0 0 16px rgba(66,220,255,.56)!important;
+}
+
+/* 赤い封蝋：100% → 113%。矢印も同期して強く脈打つ。 */
+.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext{
+  transform-origin:center center!important;
+  animation:v604SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite!important;
+  will-change:transform,filter,box-shadow!important;
+}
+@keyframes v604SealBreath{
+  0%,100%{
+    transform:scale(1)!important;
+    filter:brightness(.94)!important;
+    box-shadow:0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)!important;
+  }
+  50%{
+    transform:scale(1.13)!important;
+    filter:brightness(1.15)!important;
+    box-shadow:0 6px 0 #350d12,0 11px 22px rgba(0,0,0,.38),0 0 20px rgba(224,167,62,.52),inset 0 0 0 3px rgba(255,228,144,.22),inset 0 -6px 10px rgba(32,4,6,.28)!important;
+  }
+}
+.storyCue::after,.mapNewsCue::after,.mourningNoticeCue::after,.v568SealNext::after{
+  animation:v604SealArrow 1.08s cubic-bezier(.42,0,.58,1) infinite!important;
+  transform-origin:center center!important;
+}
+@keyframes v604SealArrow{
+  0%,100%{transform:translate(-50%,-62%) rotate(45deg) scale(1)!important;filter:drop-shadow(0 1px 0 #3b1415) brightness(.98)!important;}
+  50%{transform:translate(-50%,-62%) rotate(45deg) scale(1.20)!important;filter:drop-shadow(0 1px 0 #3b1415) drop-shadow(0 0 4px rgba(255,225,120,.70)) brightness(1.20)!important;}
+}
+.storyCue.v604EntryPulse,.mapNewsCue.v604EntryPulse,.mourningNoticeCue.v604EntryPulse,.v568SealNext.v604EntryPulse{
+  animation:v604SealEntry .68s cubic-bezier(.18,.92,.22,1) 1!important;
+}
+@keyframes v604SealEntry{
+  0%{transform:scale(.88)!important;filter:brightness(.88)!important;}
+  46%{transform:scale(1.22)!important;filter:brightness(1.24)!important;box-shadow:0 6px 0 #350d12,0 12px 24px rgba(0,0,0,.38),0 0 26px rgba(242,190,70,.68),inset 0 0 0 3px rgba(255,228,144,.24)!important;}
+  72%{transform:scale(.97)!important;filter:brightness(1.02)!important;}
+  100%{transform:scale(1)!important;filter:brightness(1)!important;}
+}
+.v568SealNext:active{
+  animation:none!important;
+  transform:translateY(3px) scale(.96)!important;
+}
+
+/* 大きな呼吸で外周が切れないよう、主要な操作帯は描画領域を開ける。 */
+#screenMain .slots,
+#screenAssign .dispatchFooter,
+#screenResult .v518SummaryAction,
+#screenResult .endingActionCueRow,
+.v568Nav,
+.openingStoryBox,
+.adviceLetter,
+.mapNewsBox{overflow:visible!important;}
+
+/* 戻る・取消・完了・増減・閉じるは動かさない。動くもの＝進むもの、を徹底する。 */
+#game button.uiSecondaryV602,
+#game button.uiConfirmV602,
+#game button.uiStepperV602,
+#game button.uiCloseV602{animation:none!important;}
+
+@media(prefers-reduced-motion:reduce){
+  #game button.uiPrimaryV602:not(:disabled),
+  .storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext,
+  .storyCue::after,.mapNewsCue::after,.mourningNoticeCue::after,.v568SealNext::after{
+    animation:none!important;transform:none!important;filter:none!important;
+  }
+}
+</style>
+<script id="v604-progress-breathing-script">
+(function(){
+'use strict';
+if(window.__V604_PROGRESS_BREATHING__)return;
+window.__V604_PROGRESS_BREATHING__=true;
+const seen=new WeakSet();
+const sealReadyAt=new WeakMap();
+function isProgress(el){
+  return !!(el&&el.nodeType===1&&(el.matches?.('button.uiPrimaryV602,.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext')));
+}
+function pulse(el){
+  if(!isProgress(el)||seen.has(el))return;
+  if(el.matches('button.uiPrimaryV602')&&el.disabled)return;
+  seen.add(el);
+  el.classList.add('v604EntryPulse');
+  setTimeout(()=>{try{el.classList.remove('v604EntryPulse');}catch(_){}},760);
+}
+function scan(root=document){
+  try{
+    if(isProgress(root))pulse(root);
+    root.querySelectorAll?.('button.uiPrimaryV602,.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext').forEach(pulse);
+  }catch(_){ }
+}
+scan(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{
+    for(const m of ms){
+      if(m.type==='childList')for(const n of m.addedNodes)if(n&&n.nodeType===1)scan(n);
+      if(m.type==='attributes'&&m.target?.matches?.('button.uiPrimaryV602')){
+        if(!m.target.disabled&&m.oldValue!==null){
+          /* disabled→enabled は「今押せる」瞬間なので、再度着地させる。 */
+          seen.delete(m.target); pulse(m.target);
+        }
+      }
+    }
+  });
+  mo.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled'],attributeOldValue:true});
+}
+window.auditV604=function(){
+  const row=(sel)=>[...document.querySelectorAll(sel)].map(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{cls:el.className,w:+r.width.toFixed(1),h:+r.height.toFixed(1),anim:cs.animationName,transform:cs.transform,overflow:cs.overflow};});
+  return{version:'V604',primary:row('button.uiPrimaryV602:not(:disabled)'),seals:row('.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext')};
+};
+window.__VERSION__='V604';
+})();
+</script>
+<style id="v604-primary-specificity-lock">
+/* V602の画面別ready指定より必ず後勝ちさせる */
+#game #screenMain button.next.uiPrimaryV602:not(:disabled),
+#game #screenAssign button.dispatchStart.uiPrimaryV602:not(:disabled),
+#game #screenResult button.uiPrimaryV602:not(:disabled),
+#game button.gameCueButton.uiPrimaryV602:not(:disabled){
+  animation:v604PrimaryBreath 1.35s cubic-bezier(.45,0,.55,1) infinite!important;
+  transform-origin:center center!important;
+}
+#game #screenMain button.next.uiPrimaryV602.v604EntryPulse:not(:disabled),
+#game #screenAssign button.dispatchStart.uiPrimaryV602.v604EntryPulse:not(:disabled),
+#game #screenResult button.uiPrimaryV602.v604EntryPulse:not(:disabled),
+#game button.gameCueButton.uiPrimaryV602.v604EntryPulse:not(:disabled){
+  animation:v604PrimaryEntry .72s cubic-bezier(.2,.92,.24,1) 1!important;
+}
+#game #screenMain button.next.uiPrimaryV602:not(:disabled):active,
+#game #screenAssign button.dispatchStart.uiPrimaryV602:not(:disabled):active,
+#game #screenResult button.uiPrimaryV602:not(:disabled):active,
+#game button.gameCueButton.uiPrimaryV602:not(:disabled):active{
+  animation:none!important;
+  transform:translateY(3px) scale(.98)!important;
+  translate:0 0!important;
+}
+</style>
+<style id="v604-seal-specificity-lock">
+#game .storyCue,#game .mapNewsCue,#game .mourningNoticeCue,#game .v568SealNext,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn{
+  transform-origin:center center!important;
+}
+#game .storyCue::after,#game .mapNewsCue::after,#game .mourningNoticeCue::after,#game .v568SealNext::after,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn::after,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn::after{
+  animation:v604SealArrow 1.08s cubic-bezier(.42,0,.58,1) infinite!important;
+  transform-origin:center center!important;
+}
+</style>
+<script id="v604-seal-inline-override-script">
+(function(){
+'use strict';
+const SEL='.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext,#screenBattle #tutorialOverlay .tutorialStartBtn,#screenBattle #tutorialBadOverlay .tutorialStartBtn';
+const seen=new WeakSet();
+function rest(el){
+  try{
+    el.style.setProperty('animation','v604SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite','important');
+    el.style.removeProperty('transform');
+  }catch(_){ }
+}
+function bindPress(el){
+  if(el.dataset.v604PressBound)return;
+  el.dataset.v604PressBound='1';
+  const down=()=>{try{el.style.setProperty('animation','none','important');el.style.setProperty('transform','translateY(3px) scale(.96)','important');}catch(_){}};
+  const up=()=>rest(el);
+  el.addEventListener('pointerdown',down,{passive:true});
+  el.addEventListener('pointerup',up,{passive:true});
+  el.addEventListener('pointercancel',up,{passive:true});
+  el.addEventListener('pointerleave',up,{passive:true});
+}
+function apply(el){
+  if(!el||!el.style)return;
+  bindPress(el);
+  if(seen.has(el)){rest(el);return;}
+  seen.add(el);
+  el.style.setProperty('animation','v604SealEntry .68s cubic-bezier(.18,.92,.22,1) 1','important');
+  setTimeout(()=>rest(el),700);
+}
+function scan(root=document){
+  try{
+    if(root.matches?.(SEL))apply(root);
+    root.querySelectorAll?.(SEL).forEach(apply);
+  }catch(_){ }
+}
+scan(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n&&n.nodeType===1)scan(n);});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+}
+})();
+</script>
+
+<!-- V605: progress animation fix. Registered custom properties bypass legacy !important transform locks. -->
+<style id="v605-progress-animation-fix-style">
+@property --v605-scale{syntax:"<number>";inherits:false;initial-value:1;}
+@property --v605-bright{syntax:"<number>";inherits:false;initial-value:1;}
+@property --v605-glow{syntax:"<length>";inherits:false;initial-value:14px;}
+@property --v605-arrow-scale{syntax:"<number>";inherits:true;initial-value:1;}
+@property --v605-seal-glow{syntax:"<length>";inherits:false;initial-value:0px;}
+
+@keyframes v605PrimaryBreath{
+  0%,100%{--v605-scale:1;--v605-bright:.97;--v605-glow:14px;}
+  50%{--v605-scale:1.07;--v605-bright:1.14;--v605-glow:34px;}
+}
+@keyframes v605PrimaryEntry{
+  0%{--v605-scale:.94;--v605-bright:.92;--v605-glow:7px;}
+  48%{--v605-scale:1.12;--v605-bright:1.20;--v605-glow:44px;}
+  72%{--v605-scale:.985;--v605-bright:1.04;--v605-glow:22px;}
+  100%{--v605-scale:1;--v605-bright:1;--v605-glow:17px;}
+}
+@keyframes v605SealBreath{
+  0%,100%{--v605-scale:1;--v605-bright:.94;--v605-arrow-scale:1;--v605-seal-glow:0px;}
+  50%{--v605-scale:1.13;--v605-bright:1.15;--v605-arrow-scale:1.20;--v605-seal-glow:20px;}
+}
+@keyframes v605SealEntry{
+  0%{--v605-scale:.88;--v605-bright:.88;--v605-arrow-scale:.94;--v605-seal-glow:0px;}
+  46%{--v605-scale:1.22;--v605-bright:1.24;--v605-arrow-scale:1.25;--v605-seal-glow:27px;}
+  72%{--v605-scale:.97;--v605-bright:1.02;--v605-arrow-scale:1.04;--v605-seal-glow:10px;}
+  100%{--v605-scale:1;--v605-bright:1;--v605-arrow-scale:1;--v605-seal-glow:0px;}
+}
+
+/* 重要指定を残したまま、アニメーション値だけCSS変数で流し込む。 */
+#game button.uiPrimaryV602:not(:disabled){
+  transform:scale(var(--v605-scale))!important;
+  filter:brightness(var(--v605-bright))!important;
+  box-shadow:0 0 0 3px rgba(66,220,255,.20),0 0 var(--v605-glow) rgba(66,220,255,.78),0 5px 0 #07527a!important;
+  transform-origin:center center!important;
+  overflow:visible!important;
+}
+#game .storyCue,#game .mapNewsCue,#game .mourningNoticeCue,#game .v568SealNext,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn{
+  transform:scale(var(--v605-scale))!important;
+  filter:brightness(var(--v605-bright))!important;
+  box-shadow:0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 var(--v605-seal-glow) rgba(232,177,64,.58),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)!important;
+  transform-origin:center center!important;
+  overflow:visible!important;
+}
+#game .storyCue::after,#game .mapNewsCue::after,#game .mourningNoticeCue::after,#game .v568SealNext::after,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn::after,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn::after{
+  transform:translate(-50%,-60%) rotate(45deg) scale(var(--v605-arrow-scale))!important;
+  filter:drop-shadow(0 1px 0 #3b1415) brightness(var(--v605-bright))!important;
+}
+
+/* この進行誘導だけは機能上必要なため、OSのreduce-motionでも停止させない。 */
+@media(prefers-reduced-motion:reduce){
+  #game button.uiPrimaryV602:not(:disabled),
+  #game .storyCue,#game .mapNewsCue,#game .mourningNoticeCue,#game .v568SealNext,
+  #game #screenBattle #tutorialOverlay .tutorialStartBtn,
+  #game #screenBattle #tutorialBadOverlay .tutorialStartBtn{
+    transform:scale(var(--v605-scale))!important;
+    filter:brightness(var(--v605-bright))!important;
+  }
+}
+</style>
+<script id="v605-progress-animation-fix-script">
+(function(){
+'use strict';
+if(window.__V605_PROGRESS_ANIMATION_FIXED__)return;
+window.__V605_PROGRESS_ANIMATION_FIXED__=true;
+const PSEL='button.uiPrimaryV602:not(:disabled)';
+const SSEL='.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext,#screenBattle #tutorialOverlay .tutorialStartBtn,#screenBattle #tutorialBadOverlay .tutorialStartBtn';
+const seen=new WeakSet();
+function imp(el,k,v){try{el.style.setProperty(k,v,'important');}catch(_){}}
+function setPrimaryBreath(el){
+  imp(el,'animation','v605PrimaryBreath 1.35s cubic-bezier(.45,0,.55,1) infinite');
+  imp(el,'transform','scale(var(--v605-scale))');
+  imp(el,'filter','brightness(var(--v605-bright))');
+  imp(el,'box-shadow','0 0 0 3px rgba(66,220,255,.20),0 0 var(--v605-glow) rgba(66,220,255,.78),0 5px 0 #07527a');
+}
+function setSealBreath(el){
+  imp(el,'animation','v605SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite');
+  imp(el,'transform','scale(var(--v605-scale))');
+  imp(el,'filter','brightness(var(--v605-bright))');
+  imp(el,'box-shadow','0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 var(--v605-seal-glow) rgba(232,177,64,.58),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)');
+}
+function bindPress(el,kind){
+  if(el.dataset.v605PressBound)return;
+  el.dataset.v605PressBound='1';
+  const down=()=>{
+    imp(el,'animation','none');
+    imp(el,'transform',kind==='primary'?'translateY(3px) scale(.98)':'translateY(3px) scale(.96)');
+  };
+  const up=()=>kind==='primary'?setPrimaryBreath(el):setSealBreath(el);
+  el.addEventListener('pointerdown',down,{passive:true});
+  el.addEventListener('pointerup',up,{passive:true});
+  el.addEventListener('pointercancel',up,{passive:true});
+  el.addEventListener('pointerleave',up,{passive:true});
+}
+function applyPrimary(el){
+  if(!el||el.disabled)return;
+  bindPress(el,'primary');
+  if(seen.has(el)){setPrimaryBreath(el);return;}
+  seen.add(el);
+  imp(el,'animation','v605PrimaryEntry .72s cubic-bezier(.2,.92,.24,1) 1');
+  imp(el,'transform','scale(var(--v605-scale))');
+  imp(el,'filter','brightness(var(--v605-bright))');
+  imp(el,'box-shadow','0 0 0 3px rgba(66,220,255,.20),0 0 var(--v605-glow) rgba(66,220,255,.78),0 5px 0 #07527a');
+  setTimeout(()=>setPrimaryBreath(el),760);
+}
+function applySeal(el){
+  if(!el)return;
+  bindPress(el,'seal');
+  const now=performance.now();
+  if(seen.has(el)){
+    const ready=sealReadyAt.get(el)||0;
+    if(now<ready){imp(el,'animation','none');return;}
+    setSealBreath(el);return;
+  }
+  seen.add(el);
+  const readyAt=now+700;
+  sealReadyAt.set(el,readyAt);
+  imp(el,'animation','none');
+  imp(el,'transform','scale(1)');
+  imp(el,'filter','brightness(.98)');
+  imp(el,'box-shadow','0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 0 rgba(232,177,64,0),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)');
+  setTimeout(()=>{
+    if(!el.isConnected)return;
+    imp(el,'animation','v605SealEntry .68s cubic-bezier(.18,.92,.22,1) 1');
+    imp(el,'transform','scale(var(--v605-scale))');
+    imp(el,'filter','brightness(var(--v605-bright))');
+    imp(el,'box-shadow','0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 var(--v605-seal-glow) rgba(232,177,64,.58),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)');
+    setTimeout(()=>{if(el.isConnected)setSealBreath(el);},720);
+  },700);
+}
+function scan(root=document){
+  try{
+    if(root.matches?.(PSEL))applyPrimary(root);
+    if(root.matches?.(SSEL))applySeal(root);
+    root.querySelectorAll?.(PSEL).forEach(applyPrimary);
+    root.querySelectorAll?.(SSEL).forEach(applySeal);
+  }catch(_){ }
+}
+scan(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{
+    for(const m of ms){
+      if(m.type==='childList')for(const n of m.addedNodes)if(n&&n.nodeType===1)scan(n);
+      if(m.type==='attributes'&&m.target?.nodeType===1)scan(m.target);
+    }
+  });
+  mo.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','disabled']});
+}
+window.auditV605=function(){
+  const read=(sel)=>[...document.querySelectorAll(sel)].map(el=>{const cs=getComputedStyle(el),r=el.getBoundingClientRect();return{text:(el.textContent||'').trim(),w:+r.width.toFixed(1),h:+r.height.toFixed(1),anim:cs.animationName,transform:cs.transform,scale:cs.getPropertyValue('--v605-scale').trim(),bright:cs.getPropertyValue('--v605-bright').trim()};});
+  return{version:'V605',reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,primary:read(PSEL),seals:read(SSEL)};
+};
+window.__VERSION__='V605';
+})();
+</script>
+
+
+<!-- V606: guidance handoff — only the next required action moves -->
+<style id="v606-guidance-handoff-style">
+@property --v606-input-scale{syntax:"<number>";inherits:false;initial-value:1;}
+@property --v606-confirm-scale{syntax:"<number>";inherits:false;initial-value:1;}
+
+/* 案件未選択：特定案件を推薦せず、案件領域そのものを「まずここ」と示す。 */
+#screenMain .casePanel.v606NeedsCaseChoice{
+  position:relative!important;
+  animation:v606CaseAreaGuide 1.35s ease-in-out infinite!important;
+}
+@keyframes v606CaseAreaGuide{
+  0%,100%{box-shadow:inset 0 0 0 1px rgba(66,220,255,.10),0 0 0 rgba(66,220,255,0);}
+  50%{box-shadow:inset 0 0 0 3px rgba(66,220,255,.52),0 0 26px rgba(66,220,255,.34);}
+}
+
+/* 采配：同時に光るのは「次に設定すべき最初の1枠」だけ。 */
+#screenAssign .dispatchCase.needsActor .dispatchActorSlot{
+  animation:none!important;
+  transform:none!important;
+}
+#screenAssign .dispatchCase.needsActor .dispatchActorSlot::after{
+  display:none!important;
+}
+#screenAssign .dispatchCase.needsActor .dispatchActorSlot.v606GuideActor{
+  --v606-input-scale:1;
+  position:relative!important;
+  z-index:7!important;
+  transform:scale(var(--v606-input-scale))!important;
+  transform-origin:center!important;
+  animation:v606ActorGuide 1.18s cubic-bezier(.42,0,.58,1) infinite!important;
+  border-color:#42dcff!important;
+  box-shadow:0 0 0 3px rgba(66,220,255,.22),0 0 24px rgba(66,220,255,.66),inset 0 0 0 1px rgba(255,255,255,.74)!important;
+}
+#screenAssign .dispatchCase.needsActor .dispatchActorSlot.v606GuideActor::after{
+  content:"次はここ"!important;
+  display:block!important;
+  position:absolute!important;
+  right:10px!important;
+  top:8px!important;
+  left:auto!important;
+  transform:none!important;
+  padding:3px 8px!important;
+  border-radius:999px!important;
+  background:#07527a!important;
+  color:#e8fbff!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:1000!important;
+  letter-spacing:.04em!important;
+  box-shadow:0 2px 0 rgba(0,0,0,.18),0 0 10px rgba(66,220,255,.30)!important;
+  pointer-events:none!important;
+}
+@keyframes v606ActorGuide{
+  0%,100%{--v606-input-scale:1;filter:brightness(.98);}
+  50%{--v606-input-scale:1.055;filter:brightness(1.13);}
+}
+
+/* 切り札：開いた最初だけ一覧へ視線を流す。 */
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchChoiceList.v606GuideTrumpList{
+  position:relative!important;
+  overflow:auto!important;
+}
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchChoiceList.v606GuideTrumpList::after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  pointer-events:none!important;
+  background:linear-gradient(108deg,transparent 0 34%,rgba(255,255,255,0) 40%,rgba(223,249,255,.72) 48%,rgba(255,255,255,0) 56%,transparent 100%)!important;
+  transform:translateX(-115%)!important;
+  animation:v606TrumpSweep .72s ease-out .18s 1!important;
+  z-index:20!important;
+}
+@keyframes v606TrumpSweep{to{transform:translateX(115%)}}
+
+/* 切り札を選んだ後だけ「完了」へ誘導を受け渡す。 */
+#screenAssign .dispatchModal.phase119TrumpModal .dispatchDone.v606GuideConfirm{
+  --v606-confirm-scale:1;
+  transform:scale(var(--v606-confirm-scale))!important;
+  transform-origin:center!important;
+  animation:v606ConfirmBreath 1.22s cubic-bezier(.42,0,.58,1) infinite!important;
+  filter:brightness(1)!important;
+  box-shadow:0 3px 0 #76521b,0 0 18px rgba(229,193,91,.42)!important;
+}
+@keyframes v606ConfirmBreath{
+  0%,100%{--v606-confirm-scale:1;filter:brightness(.98);box-shadow:0 3px 0 #76521b,0 0 12px rgba(229,193,91,.28)}
+  50%{--v606-confirm-scale:1.075;filter:brightness(1.12);box-shadow:0 3px 0 #76521b,0 0 28px rgba(229,193,91,.72)}
+}
+
+/* 支援予算変更後：「変更済み、次へ進める」を一度だけ返す。 */
+#screenAssign .dispatchStart.v606BudgetAck{
+  outline:0 solid rgba(191,246,255,.0)!important;
+  animation:v605PrimaryBreath 1.35s cubic-bezier(.45,0,.55,1) infinite, v606BudgetAck .72s ease-out 1!important;
+}
+@keyframes v606BudgetAck{
+  0%{outline-width:0;outline-offset:0;outline-color:rgba(191,246,255,0)}
+  42%{outline-width:7px;outline-offset:5px;outline-color:rgba(191,246,255,.72)}
+  100%{outline-width:0;outline-offset:14px;outline-color:rgba(191,246,255,0)}
+}
+
+/* 読ませる画面の封蝋はV605側で700ms静止してから入場→呼吸へ。 */
+</style>
+<script id="v606-guidance-handoff-script">
+(function(){
+'use strict';
+if(window.__V606_GUIDANCE_HANDOFF__)return;
+window.__V606_GUIDANCE_HANDOFF__=true;
+
+function refreshGuides(){
+  try{
+    const main=document.getElementById('screenMain');
+    const panel=main?.querySelector('.casePanel');
+    if(panel){
+      const picked=main.querySelectorAll('.caseCard.selected').length;
+      const next=main.querySelector('.next');
+      panel.classList.toggle('v606NeedsCaseChoice',picked===0 && !!next?.disabled);
+    }
+
+    const assign=document.getElementById('screenAssign');
+    if(assign){
+      const slots=[...assign.querySelectorAll('.dispatchCase.needsActor .dispatchActorSlot')];
+      assign.querySelectorAll('.dispatchActorSlot.v606GuideActor').forEach(el=>el.classList.remove('v606GuideActor'));
+      if(!assign.querySelector('.dispatchModalShade') && slots[0])slots[0].classList.add('v606GuideActor');
+
+      const modal=assign.querySelector('.dispatchModal.phase119TrumpModal');
+      if(modal){
+        const selected=modal.querySelectorAll('.dispatchTrumpChoice.phase119Selected,.dispatchTrumpChoice.selected').length;
+        const list=modal.querySelector('.dispatchChoiceList');
+        const done=modal.querySelector('.dispatchDone');
+        list?.classList.toggle('v606GuideTrumpList',selected===0);
+        done?.classList.toggle('v606GuideConfirm',selected>0);
+      }
+    }
+  }catch(_){ }
+}
+
+let raf=0;
+function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(refreshGuides);}
+schedule();
+if(window.MutationObserver){
+  const mo=new MutationObserver(schedule);
+  mo.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class','disabled']});
+}
+
+/* 予算の変更完了を、衝突開始へ一度だけ返す。 */
+document.addEventListener('click',e=>{
+  const b=e.target?.closest?.('#screenAssign .dispatchBudgetBtn');
+  if(!b)return;
+  setTimeout(()=>{
+    const start=document.querySelector('#screenAssign .dispatchStart:not(:disabled)');
+    if(!start)return;
+    try{
+      start.animate([
+        {outline:'0 solid rgba(191,246,255,0)',outlineOffset:'0px'},
+        {offset:.42,outline:'7px solid rgba(191,246,255,.72)',outlineOffset:'5px'},
+        {outline:'0 solid rgba(191,246,255,0)',outlineOffset:'14px'}
+      ],{duration:720,easing:'ease-out'});
+    }catch(_){ }
+  },0);
+},true);
+
+window.auditV606=function(){
+  const main=document.querySelector('#screenMain .casePanel');
+  const actor=document.querySelector('#screenAssign .dispatchActorSlot.v606GuideActor');
+  const modal=document.querySelector('#screenAssign .dispatchModal.phase119TrumpModal');
+  const done=modal?.querySelector('.dispatchDone');
+  const seal=document.querySelector('.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext');
+  return{
+    version:'V606',
+    caseAreaGuided:!!main?.classList.contains('v606NeedsCaseChoice'),
+    actorGuideCase:actor?.closest('.dispatchCase')?.dataset?.caseId||null,
+    trumpListGuided:!!modal?.querySelector('.dispatchChoiceList.v606GuideTrumpList'),
+    trumpConfirmGuided:!!done?.classList.contains('v606GuideConfirm'),
+    sealAnimation:seal?getComputedStyle(seal).animationName:null
+  };
+};
+window.__VERSION__='V607';
+})();
+</script>
+<style id="v606-seal-reading-delay-style">
+.storyCue.v606SealWaiting::after,.mapNewsCue.v606SealWaiting::after,.mourningNoticeCue.v606SealWaiting::after,.v568SealNext.v606SealWaiting::after,
+#screenBattle #tutorialOverlay .tutorialStartBtn.v606SealWaiting::after,#screenBattle #tutorialBadOverlay .tutorialStartBtn.v606SealWaiting::after{
+  animation:none!important;
+  transform:translate(-50%,-60%) rotate(45deg) scale(1)!important;
+  filter:drop-shadow(0 1px 0 #3b1415) brightness(.96)!important;
+}
+</style>
+<script id="v606-seal-reading-delay-script">
+(function(){
+'use strict';
+const SEL='.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext,#screenBattle #tutorialOverlay .tutorialStartBtn,#screenBattle #tutorialBadOverlay .tutorialStartBtn';
+const managed=new WeakSet();
+function imp(el,k,v){try{el.style.setProperty(k,v,'important')}catch(_){}}
+function manage(el){
+  if(!el||managed.has(el))return;
+  managed.add(el);el.classList.add('v606SealWaiting');
+  imp(el,'animation','none');imp(el,'transform','scale(1)');imp(el,'filter','brightness(.98)');
+  setTimeout(()=>{
+    if(!el.isConnected)return;
+    el.classList.remove('v606SealWaiting');
+    imp(el,'animation','v605SealEntry .68s cubic-bezier(.18,.92,.22,1) 1');
+    imp(el,'transform','scale(var(--v605-scale))');imp(el,'filter','brightness(var(--v605-bright))');
+    setTimeout(()=>{
+      if(!el.isConnected)return;
+      imp(el,'animation','v605SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite');
+      imp(el,'transform','scale(var(--v605-scale))');imp(el,'filter','brightness(var(--v605-bright))');
+    },720);
+  },760);
+}
+function scan(root=document){
+  if(root.matches?.(SEL))manage(root);
+  root.querySelectorAll?.(SEL).forEach(manage);
+}
+scan(document);
+if(window.MutationObserver){const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n?.nodeType===1)scan(n)});mo.observe(document.documentElement,{childList:true,subtree:true});}
 })();
 </script>
