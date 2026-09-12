@@ -5672,19 +5672,19 @@ return(worst.line||0)<=-35?worst:null;
 const DATA={
 actors:{albrecht:{id:'albrecht',name:'アルブレヒト',type:'万能成長型',speed:3,push:3,stability:3,defense:3,img:'albrecht',motionType:'late'},brother:{id:'brother',name:'ルートヴィヒ',type:'突撃博打型',speed:5,push:3,stability:2,defense:2,img:'brother',motionType:'gambler'},wife:{id:'wife',name:'王妃（旧共通枠）',type:'安定支援型',speed:2,push:2,stability:5,defense:4,img:'wife',motionType:'guard'},wife1:{id:'wife1',name:'ヘレーネ・ヴィンター',type:'内政安定型',speed:3,push:2,stability:5,defense:4,img:'wife1',motionType:'steady'},wife2:{id:'wife2',name:'エレオノール・ド・ヴァルロワ',type:'西方外交型',speed:3,push:2,stability:4,defense:4,img:'wife2',motionType:'chain'},wife3:{id:'wife3',name:'ベアトリーチェ・ディ・モンテリック',type:'信仰支援型',speed:2,push:2,stability:5,defense:5,img:'wife3',motionType:'endure'},wife4:{id:'wife4',name:'アナスタシア・ミロヴナ・ルテノーヴァ',type:'大国外交型',speed:3,push:4,stability:3,defense:3,img:'wife4',motionType:'heavy'},wife5:{id:'wife5',name:'サフィーラ・ビント・ナスリム',type:'短期決戦型',speed:4,push:4,stability:3,defense:3,img:'wife5',motionType:'short'},wife6:{id:'wife6',name:'ブリギッド・オ・ルーア',type:'猪突猛進型',speed:4,push:5,stability:2,defense:3,img:'wife6',motionType:'rush'}},
 supportActors:{
-support_butler:{id:'support_butler',name:'老執事',type:'臨時助力者',speed:3,push:2,stability:6,defense:6,img:'butler',motionType:'steady',support:true,earlyOnly:true},
-support_leopold:{id:'support_leopold',name:'レオポルト',type:'臨時助力者',speed:2,push:3,stability:6,defense:4,img:'elector1',motionType:'heavy',support:true},
-support_emil:{id:'support_emil',name:'エーミール',type:'臨時助力者',speed:3,push:2,stability:4,defense:6,img:'elector2',motionType:'technique',support:true},
-support_clarissa:{id:'support_clarissa',name:'クラリッサ',type:'臨時助力者',speed:2,push:2,stability:6,defense:6,img:'elector3',motionType:'guard',support:true},
-support_rosen:{id:'support_rosen',name:'コンラート両伯',type:'臨時助力者',speed:5,push:2,stability:3,defense:4,img:'elector4',motionType:'chain',support:true},
-support_gerhard:{id:'support_gerhard',name:'ゲルハルト',type:'臨時助力者',speed:3,push:6,stability:4,defense:2,img:'elector5',motionType:'heavyRush',support:true},
-support_loire:{id:'support_loire',name:'イザベラ',type:'臨時助力者',speed:4,push:2,stability:4,defense:5,img:'isabellaLoire',motionType:'chain',support:true},
-support_rick:{id:'support_rick',name:'ロレンツォ',type:'臨時助力者',speed:2,push:3,stability:6,defense:6,img:'rickKing',motionType:'endure',support:true},
-support_ruthenia:{id:'support_ruthenia',name:'オルロフ',type:'臨時助力者',speed:3,push:6,stability:5,defense:2,img:'grigoryOrlov',motionType:'heavy',support:true},
-support_solia:{id:'support_solia',name:'クラウディア',type:'臨時助力者',speed:3,push:3,stability:6,defense:5,img:'claudiaAltenburg',motionType:'steady',support:true},
-support_azraq:{id:'support_azraq',name:'ムスタファ',type:'臨時助力者',speed:5,push:4,stability:4,defense:3,img:'ibrahimPasha',motionType:'rush',support:true},
-support_seafeara:{id:'support_seafeara',name:'マルチェロ',type:'臨時助力者',speed:5,push:2,stability:3,defense:4,img:'marcoVerdera',motionType:'short',support:true},
-support_treuval:{id:'support_treuval',name:'ローワン',type:'臨時助力者',speed:5,push:5,stability:3,defense:2,img:'dagdanMacLochran',motionType:'rush',support:true}
+support_butler:{id:'support_butler',name:'老執事',type:'助力者',speed:3,push:2,stability:6,defense:6,img:'butler',motionType:'steady',support:true,earlyOnly:true},
+support_leopold:{id:'support_leopold',name:'レオポルト',type:'助力者',speed:2,push:3,stability:6,defense:4,img:'elector1',motionType:'heavy',support:true},
+support_emil:{id:'support_emil',name:'エーミール',type:'助力者',speed:3,push:2,stability:4,defense:6,img:'elector2',motionType:'technique',support:true},
+support_clarissa:{id:'support_clarissa',name:'クラリッサ',type:'助力者',speed:2,push:2,stability:6,defense:6,img:'elector3',motionType:'guard',support:true},
+support_rosen:{id:'support_rosen',name:'コンラート両伯',type:'助力者',speed:5,push:2,stability:3,defense:4,img:'elector4',motionType:'chain',support:true},
+support_gerhard:{id:'support_gerhard',name:'ゲルハルト',type:'助力者',speed:3,push:6,stability:4,defense:2,img:'elector5',motionType:'heavyRush',support:true},
+support_loire:{id:'support_loire',name:'イザベラ',type:'助力者',speed:4,push:2,stability:4,defense:5,img:'isabellaLoire',motionType:'chain',support:true},
+support_rick:{id:'support_rick',name:'ロレンツォ',type:'助力者',speed:2,push:3,stability:6,defense:6,img:'rickKing',motionType:'endure',support:true},
+support_ruthenia:{id:'support_ruthenia',name:'オルロフ',type:'助力者',speed:3,push:6,stability:5,defense:2,img:'grigoryOrlov',motionType:'heavy',support:true},
+support_solia:{id:'support_solia',name:'クラウディア',type:'助力者',speed:3,push:3,stability:6,defense:5,img:'claudiaAltenburg',motionType:'steady',support:true},
+support_azraq:{id:'support_azraq',name:'ムスタファ',type:'助力者',speed:5,push:4,stability:4,defense:3,img:'ibrahimPasha',motionType:'rush',support:true},
+support_seafeara:{id:'support_seafeara',name:'マルチェロ',type:'助力者',speed:5,push:2,stability:3,defense:4,img:'marcoVerdera',motionType:'short',support:true},
+support_treuval:{id:'support_treuval',name:'ローワン',type:'助力者',speed:5,push:5,stability:3,defense:2,img:'dagdanMacLochran',motionType:'rush',support:true}
 },
 cards:{step:{id:'step',name:'踏み込み',short:'踏込',desc:'効果：小。開始直後、押し込みが少し強くなる。'},assault:{id:'assault',name:'強攻令',short:'強攻',desc:'効果：中。最初の衝突のみノックバックが強くなる。'},guard:{id:'guard',name:'鉄壁の軍勢',short:'鉄壁',desc:'効果：中。最初に押し負けた時、後退を大きく抑える。'},royal:{id:'royal',name:'親征宣言',short:'親征',desc:'効果：大。一定時間、移動速度と押し込みが強くなる。'},wifeAdvice:{id:'wifeAdvice',name:'王妃の助言',short:'王妃',desc:'効果：中。押し負けた時の影響を軽減する。'},butler:{id:'butler',name:'老執事の助言',short:'執事',desc:'効果：小。最初に押し負けた時、後退を抑える。'},silverVault:{id:'silverVault',name:'金庫開放',short:'金庫',desc:'効果：大。押し込みが強くなる。国庫消費を半減する。'},legalEdict:{id:'legalEdict',name:'神の軍勢',short:'法典',desc:'効果：中。敵の押し込みを弱め、こちらの後退を抑える。'},springOath:{id:'springOath',name:'乱世の決意',short:'聖泉',desc:'効果：中。押し負けた時、次の衝突が強くなる。'},roseInvite:{id:'roseInvite',name:'薔薇の掟',short:'薔薇',desc:'効果：小。敵の移動速度を下げる。'},ironwoodMobilization:{id:'ironwoodMobilization',name:'武器を執れ',short:'鉄森',desc:'効果：大。ノックバックが大きく上がる。兵の消費を半減する。'},healingDecree:{id:'healingDecree',name:'癒しの手',short:'施療',desc:'効果：中。後退を抑え、次の押し込みを強める。'},tradePatent:{id:'tradePatent',name:'通商許可証',short:'通商',desc:'効果：小。押し込みが少し強くなる。国庫消費を半減する。'},envoySeal:{id:'envoySeal',name:'陰謀',short:'密使',desc:'効果：中。敵の押し込みを弱める。'},holyBanner:{id:'holyBanner',name:'勝利の軍旗',short:'聖旗',desc:'効果：中。衝突するたびに少しずつ強くなる。'},frontierCall:{id:'frontierCall',name:'辺境召集令',short:'辺境',desc:'効果：大。一定時間、ノックバックが強くなる。'},marketCharter:{id:'marketCharter',name:'義勇軍参戦',short:'市場',desc:'効果：小。移動速度が少し上がる。国庫消費を半減する。'},royalVow:{id:'royalVow',name:'直属親衛隊',short:'王家',desc:'中：押し負けた時の影響を軽減する。'},forestTalisman:{id:'forestTalisman',name:'古き森の護符',short:'護符',desc:'効果：中。敵の移動速度を下げる。'},masterBuilder:{id:'masterBuilder',name:'王命一統',short:'石工',desc:'効果：中。衝突するたびに押し込みが強くなる。'},lastReserve:{id:'lastReserve',name:'背水の陣',short:'備え',desc:'効果：大。劣勢時に速度と押し込みが強くなる。'},pilgrimPass:{id:'pilgrimPass',name:'騎士の疾駆',short:'巡礼',desc:'効果：小。敵のノックバックを大きくする。'},caravanRight:{id:'caravanRight',name:'通行許可証',short:'隊商',desc:'効果：小。移動速度が上がる。国庫消費を半減する。'},soliaDiscount:{id:'soliaDiscount',name:'傭兵契約',short:'傭兵',desc:'効果：中。敵のノックバックが大きくなる。兵の消費を半減する。'},cultureMission:{id:'cultureMission',name:'文化的応対',short:'文化',desc:'効果：小。敵の押し込みを弱める。'},creditLine:{id:'creditLine',name:'政策への投資',short:'融資',desc:'効果：中。押し込みが強くなる。国庫消費を半減する。'},
 ceasefireFlag:{id:'ceasefireFlag',name:'盤外戦術',short:'停戦',desc:'効果：中。敵の速度と押し込みを弱める。'},
@@ -6963,7 +6963,7 @@ function supportEnemyProfileFromImage(){return supportEnemyProfileFromImageBaseV
 
 function actorSuitabilityText(id,c){
 const p=actorSuitabilityProfile(id);
-if(!p)return '臨時固定';
+if(!p)return '※成長はしない';
 const fit=actorSuitabilityForCase(id,c);
 if(fit.match>=3)return `大得意：${p.label}`;
 if(fit.match>=1)return `得意：${p.label}`;
@@ -29331,7 +29331,7 @@ function caseActorCandidates(c){
  const seen=new Set();return [...base,...support].filter(a=>a&&!seen.has(a.id)&&(seen.add(a.id),true));
 }
 function actorFit(a,c){
- try{return a.support?'この案件のみ':actorSuitabilityText(a.id,c);}catch(e){return '';}
+ try{return a.support?'':actorSuitabilityText(a.id,c);}catch(e){return '';}
 }
 function caseCardHtml(id,i){
  const c=getCase(id);const aid=State.assignments?.[id];const a=actorFor(aid);const cards=cardsForCase(id);const steps=caseBudgetSteps(c);const max=caseBudgetStepMax(c);const step=caseBudgetStepAmount();const total=steps*step;const canPlus=steps<max&&(State.params.treasury||0)>=step;
@@ -29368,7 +29368,8 @@ window.DispatchV36={
   State.cursor=Math.max(0,(State.selected||[]).indexOf(id));
   const current=State.assignments?.[id];
   const body=caseActorCandidates(c).map(a=>{const elsewhere=Object.entries(State.assignments||{}).find(([cid,aid])=>cid!==id&&aid===a.id);const blockReason=actorSelectionBlockReason(a.id,id);const selectable=actorIsSelectableForCase(a.id,id);const disabled=!selectable;let eff='';try{const s=applyActorSuitabilityStats(applyDomainExperienceStats(actorEffectiveStats(a),c),c);eff=`速${s.speed} 押${s.push} 安${s.stability} 防${s.defense}`;}catch(e){}
-   return `<button type="button" class="dispatchActorChoice ${current===a.id?'selected':''} ${disabled?'disabled':''}" ${disabled?'disabled':''} onclick="DispatchV36.pickActor('${esc(id)}','${esc(a.id)}')"><span class="dispatchChoiceFace"><img src="${esc(assignActorImage(a))}" draggable="false"></span><span><div class="dispatchChoiceName">${esc(a.name)}${a.support?'　臨時':''}</div><div class="dispatchChoiceDesc">${esc(a.type||'')}<br>適性：${esc(actorFit(a,c))}　${esc(eff)}${elsewhere?`<br>現在：案件${(State.selected||[]).indexOf(elsewhere[0])+1}に配置`:''}${blockReason?`<br><strong class="dispatchBlockedReason">${esc(blockReason)}</strong>`:''}</div></span></button>`;
+   const fitLine=a.support?'※成長はしない':`適性：${esc(actorFit(a,c))}`;
+   return `<button type="button" class="dispatchActorChoice ${current===a.id?'selected':''} ${disabled?'disabled':''}" ${disabled?'disabled':''} onclick="DispatchV36.pickActor('${esc(id)}','${esc(a.id)}')"><span class="dispatchChoiceFace"><img src="${esc(assignActorImage(a))}" draggable="false"></span><span><div class="dispatchChoiceName">${esc(a.name)}</div><div class="dispatchChoiceDesc">${esc(a.type||'')}<br>${fitLine}　${esc(eff)}${elsewhere?`<br>現在：案件${(State.selected||[]).indexOf(elsewhere[0])+1}に配置`:''}${blockReason?`<br><strong class="dispatchBlockedReason">${esc(blockReason)}</strong>`:''}</div></span></button>`;
   }).join('');
   modalBase(c,'担当者を選択',body);
   requestAnimationFrame(()=>{try{if(typeof sfx==='function')sfx('page');}catch(e){}});
@@ -30851,7 +30852,7 @@ function ensureMustafaAsset(){
   IMG.mustafaAga=MUSTAFA_IMG_URL;
   try{
     if(DATA&&DATA.supportActors&&DATA.supportActors.support_azraq){
-      Object.assign(DATA.supportActors.support_azraq,{name:'ムスタファ',type:'臨時助力・実務外交',img:'ibrahimPasha'});
+      Object.assign(DATA.supportActors.support_azraq,{name:'ムスタファ',type:'助力者',img:'ibrahimPasha'});
     }
   }catch(_){}
 }
@@ -42016,7 +42017,7 @@ const rows={
     ]
   }
 };
-const newSupport={"wolfram":{"id":"wolfram","name":"ヴォルフラム","type":"臨時助力者","speed":4,"push":5,"stability":3,"defense":3,"img":"soliaKing","motionType":"heavyRush","support":true},"alvaro":{"id":"alvaro","name":"アルバロ","type":"臨時助力者","speed":5,"push":3,"stability":4,"defense":3,"img":"seafearaKing","motionType":"short","support":true},"armand":{"id":"armand","name":"アルマン","type":"臨時助力者","speed":4,"push":4,"stability":4,"defense":3,"img":"loireKing","motionType":"chain","support":true},"irina":{"id":"irina","name":"イリーナ","type":"臨時助力者","speed":3,"push":4,"stability":5,"defense":4,"img":"rutheniaKing","motionType":"technique","support":true},"dagdan":{"id":"dagdan","name":"ダグダン","type":"臨時助力者","speed":4,"push":5,"stability":4,"defense":3,"img":"treuvalKing","motionType":"rush","support":true},"safar":{"id":"safar","name":"サファル","type":"臨時助力者","speed":3,"push":4,"stability":5,"defense":4,"img":"azraqKing","motionType":"endure","support":true},"renato":{"id":"renato","name":"レナート","type":"臨時助力者","speed":5,"push":6,"stability":3,"defense":2,"img":"renatoBernacci","motionType":"heavyRush","support":true},"vera":{"id":"vera","name":"ヴェラ","type":"臨時助力者","speed":4,"push":2,"stability":5,"defense":5,"img":"veraZakharova","motionType":"technique","support":true},"fingal_review":{"id":"fingal_review","name":"フィンガル","type":"臨時助力者","speed":4,"push":5,"stability":4,"defense":3,"img":"fingalMacRowan","motionType":"rush","support":true}};
+const newSupport={"wolfram":{"id":"wolfram","name":"ヴォルフラム","type":"助力者","speed":4,"push":5,"stability":3,"defense":3,"img":"soliaKing","motionType":"heavyRush","support":true},"alvaro":{"id":"alvaro","name":"アルバロ","type":"助力者","speed":5,"push":3,"stability":4,"defense":3,"img":"seafearaKing","motionType":"short","support":true},"armand":{"id":"armand","name":"アルマン","type":"助力者","speed":4,"push":4,"stability":4,"defense":3,"img":"loireKing","motionType":"chain","support":true},"irina":{"id":"irina","name":"イリーナ","type":"助力者","speed":3,"push":4,"stability":5,"defense":4,"img":"rutheniaKing","motionType":"technique","support":true},"dagdan":{"id":"dagdan","name":"ダグダン","type":"助力者","speed":4,"push":5,"stability":4,"defense":3,"img":"treuvalKing","motionType":"rush","support":true},"safar":{"id":"safar","name":"サファル","type":"助力者","speed":3,"push":4,"stability":5,"defense":4,"img":"azraqKing","motionType":"endure","support":true},"renato":{"id":"renato","name":"レナート","type":"助力者","speed":5,"push":6,"stability":3,"defense":2,"img":"renatoBernacci","motionType":"heavyRush","support":true},"vera":{"id":"vera","name":"ヴェラ","type":"助力者","speed":4,"push":2,"stability":5,"defense":5,"img":"veraZakharova","motionType":"technique","support":true},"fingal_review":{"id":"fingal_review","name":"フィンガル","type":"助力者","speed":4,"push":5,"stability":4,"defense":3,"img":"fingalMacRowan","motionType":"rush","support":true}};
 const newRelations={"wolfram":"solia","alvaro":"seafeara","armand":"loire","irina":"ruthenia","dagdan":"treuval","safar":"azraq","renato":"solia","vera":"ruthenia","fingal_review":"treuval"};
 Object.assign(DATA.supportActors,newSupport);
 Object.assign(SUPPORT_RELATION_KEY,newRelations);
@@ -48371,5 +48372,81 @@ function scan(root=document){
 }
 scan(document);
 if(window.MutationObserver){const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n?.nodeType===1)scan(n)});mo.observe(document.documentElement,{childList:true,subtree:true});}
+})();
+</script>
+
+<!-- V608: support actor labels unified: 助力者 / no name suffix / ※成長はしない -->
+<script>window.__VERSION__='V608';</script>
+
+<!-- V609: remove one-shot entrance bounce; keep steady guidance breathing -->
+<style id="v609-no-entry-bounce-style">
+/* 古い入場用クラスが残っていても、跳ねる一回演出には使わない。 */
+#game button.uiPrimaryV602.v604EntryPulse:not(:disabled){
+  animation:v605PrimaryBreath 1.35s cubic-bezier(.45,0,.55,1) infinite!important;
+}
+.storyCue.v604EntryPulse,.mapNewsCue.v604EntryPulse,.mourningNoticeCue.v604EntryPulse,.v568SealNext.v604EntryPulse{
+  animation:v605SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite!important;
+}
+</style>
+<script id="v609-no-entry-bounce-script">
+(function(){
+'use strict';
+if(window.__V609_NO_ENTRY_BOUNCE__)return;
+window.__V609_NO_ENTRY_BOUNCE__=true;
+const PRIMARY='button.uiPrimaryV602:not(:disabled)';
+const SEAL='.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext,#screenBattle #tutorialOverlay .tutorialStartBtn,#screenBattle #tutorialBadOverlay .tutorialStartBtn';
+function imp(el,k,v){try{el.style.setProperty(k,v,'important')}catch(_){}}
+function primaryBreath(el){
+  if(!el||el.disabled)return;
+  el.classList.remove('v604EntryPulse');
+  imp(el,'animation','v605PrimaryBreath 1.35s cubic-bezier(.45,0,.55,1) infinite');
+  imp(el,'transform','scale(var(--v605-scale))');
+  imp(el,'filter','brightness(var(--v605-bright))');
+}
+function sealBreath(el){
+  if(!el)return;
+  el.classList.remove('v604EntryPulse');
+  imp(el,'animation','v605SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite');
+  imp(el,'transform','scale(var(--v605-scale))');
+  imp(el,'filter','brightness(var(--v605-bright))');
+}
+function repair(el){
+  if(!el||el.nodeType!==1)return;
+  try{
+    const anim=String(el.style.getPropertyValue('animation')||'');
+    if(el.matches(PRIMARY)){
+      if(/v604PrimaryEntry|v605PrimaryEntry/i.test(anim)||el.classList.contains('v604EntryPulse'))primaryBreath(el);
+    }else if(el.matches(SEAL)){
+      if(/v604SealEntry|v605SealEntry/i.test(anim)||el.classList.contains('v604EntryPulse'))sealBreath(el);
+    }
+  }catch(_){ }
+}
+function scan(root=document){
+  try{
+    if(root.matches?.(PRIMARY)||root.matches?.(SEAL))repair(root);
+    root.querySelectorAll?.(PRIMARY+','+SEAL).forEach(repair);
+  }catch(_){ }
+}
+scan(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{
+    for(const m of ms){
+      if(m.type==='childList')for(const n of m.addedNodes)if(n?.nodeType===1)scan(n);
+      else if(m.type==='attributes')repair(m.target);
+    }
+  });
+  mo.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class','disabled']});
+}
+/* 既存の遅延タイマーが後から Entry を書いても、次フレームで即呼吸へ戻す。 */
+let ticks=0;
+const guard=setInterval(()=>{
+  scan(document);
+  if(++ticks>40)clearInterval(guard);
+},100);
+window.__VERSION__='V609';
+window.auditV609=function(){
+  const read=sel=>[...document.querySelectorAll(sel)].map(el=>({text:(el.textContent||'').trim(),animation:getComputedStyle(el).animationName,inline:el.style.getPropertyValue('animation')}));
+  return{version:'V609',primary:read(PRIMARY),seals:read(SEAL)};
+};
 })();
 </script>
