@@ -10997,7 +10997,7 @@ const finalCase=buildFinalCaseCore(targetTurn);
 if(!finalCase)return false;
 if(now<30){State.turn=targetTurn;try{advanceActorStatuses();}catch(_){}}
 State.gameOver=false;State.ending=null;State.phase=FINAL_CASE_PHASE;State.endingMode=FINAL_CASE_PHASE;
-State.yearStoryRead=true;State.justRevealed=false;State.suppressMapNews=true;State.mapNews=[];State.queue=[];
+State.yearStoryRead=true;State.justRevealed=false;State.suppressMapNews=!(Array.isArray(State.mapNews)&&State.mapNews.length);State.queue=[];
 State.pendingPowerCrisisNotice=null;State.pendingDeathEnding=null;State.caseWarSlotKinds={};State.selected=[];State.assignments={};State.cardAssignments={};State.caseBudgets={};State.cardAssignment=null;
 State.caseCache={turn:State.turn,cases:[FINAL_CASE_ID],warSlotKinds:{},finalCore:true,reason:reason||''};
 View.main();return true;
@@ -26514,8 +26514,7 @@ function enterEndingPhase59(reason){
   State.endingMode=ENDING_PHASE;
   State.yearStoryRead=true;
   State.justRevealed=false;
-  State.suppressMapNews=true;
-  State.mapNews=[];
+  State.suppressMapNews=!(Array.isArray(State.mapNews)&&State.mapNews.length);
   State.queue=[];
   State.caseWarSlotKinds={};
   State.caseCache={turn:State.turn,cases:[FINAL_ID],warSlotKinds:{},phase59EndingPhase:true,reason:reason||''};
@@ -27208,8 +27207,7 @@ function enterFinal71(reason){
   State.endingMode=FINAL_CASE_PHASE;
   State.yearStoryRead=true;
   State.justRevealed=false;
-  State.suppressMapNews=true;
-  State.mapNews=[];
+  State.suppressMapNews=!(Array.isArray(State.mapNews)&&State.mapNews.length);
   State.queue=[];
   State.caseWarSlotKinds={};
   State.caseCache={turn:State.turn,cases:[FINAL_ID71],warSlotKinds:{},phase71EndingPhase:true,reason:reason||''};
@@ -28924,8 +28922,12 @@ function livingPrincess(){
  const unlock=princessDiplomacyState();
  if(!unlock.unlocked||!unlock.unlockedBy)return null;
  const list=Array.isArray(State&&State.children)?State.children:[];
- return list.find(ch=>ch&&ch.id===unlock.unlockedBy&&ch.gender==='female'&&ch.status!=='deceased'&&(Number(ch.ageHalfTurns)||0)>=8&&!["重病","critical","grave","dead"].includes(String(ch.healthStage||ch.health||'')))||null;
+ /* V649: 療養中でも王女活動の60%抽選自体は止めない。死亡時だけ対象外。 */
+ return list.find(ch=>ch&&ch.id===unlock.unlockedBy&&ch.gender==='female'&&ch.status!=='deceased'&&(Number(ch.ageHalfTurns)||0)>=8&&String(ch.healthStage||ch.health||'').toLowerCase()!=='dead')||null;
 }
+function princessHealthStage(ch){return String(ch&&((ch.healthStage)||(ch.health))||'healthy');}
+function princessNeedsBedside(ch){return ['重病','grave','critical'].includes(princessHealthStage(ch));}
+
 const COUNTRY=[
  {key:'altrantLoire',label:'ロアール'},
  {key:'altrantRick',label:'リック'},
@@ -29014,6 +29016,26 @@ const FAMILY_EPISODES=[
  {id:'family_gift',text:()=>`王女は何日も隠れて作っていた不格好な刺繍を、アルブレヒトへ得意げに差し出した。王はそれを宝石箱ではなく、毎日使う書類鞄の内側へ縫いつけさせた。`},
  {id:'family_sleeping_king',text:()=>`長い会議を終えたアルブレヒトは、王女の部屋を訪れたまま椅子で眠り込んでしまった。目を覚ますと肩には小さな毛布が掛けられ、机の上には娘の字で「おとうさまをおこさないこと」と書かれた紙が置かれていた。`}
 ];
+/* V649: 重病・危篤でも、外出ではなく病床から外交・公務・家族時間を続ける。 */
+const BEDSIDE_FOREIGN_EPISODES=[
+ {id:'bedside_foreign_letter',text:p=>`${p.name}王女は病床から${p.country}の使節へ短い手紙を書き、見舞いへの礼を自分の言葉で綴った。幼い筆跡の返書は使節団の手で本国へ運ばれ、王女が病の中でも相手を忘れなかったことが静かな好意を生んだ。`},
+ {id:'bedside_foreign_gift',text:p=>`${p.name}王女は${p.country}から届いた見舞いの品を枕元に置き、返礼に小さな刺繍を一つ選んだ。使節は「元気になったら続きを見せてほしい」という王女の言葉も持ち帰り、宮廷同士の距離は少しだけ縮まった。`},
+ {id:'bedside_foreign_picture',text:p=>`${p.name}王女は寝台の上で${p.country}の風景を描いた絵を眺め、自分も見てみたい場所を一つ選んで使節へ尋ねた。その素朴な問いへの返事が何度も往復し、正式な会談とは別の細い交流が続くようになった。`},
+ {id:'bedside_foreign_flower',text:p=>`${p.name}王女は${p.country}の使節から贈られた花を押し花にして、快復したら王宮の庭に同じ花を植えたいと返書した。使節たちはその約束を喜び、次の季節には種まで添えて送ってきた。`}
+];
+const BEDSIDE_DOMESTIC_EPISODES=[
+ {id:'bedside_domestic_soldier_letters',text:p=>`${p.name}王女は療養中の兵士たちから届いた見舞いの手紙を一通ずつ読ませ、短い返事を口述した。王女自身も病床にあると知った兵たちは、その返書を枕元に置いて互いの快復を願った。`},
+ {id:'bedside_domestic_orphan_drawings',text:p=>`王都の孤児院から${p.name}王女へ何枚もの絵が届けられた。王女は寝台の上で一枚ずつ眺め、気に入った絵を壁へ飾るよう頼むと、後日その話が孤児院へ伝わり子どもたちを大いに喜ばせた。`},
+ {id:'bedside_domestic_crafts',text:p=>`職人たちは療養中の${p.name}王女のため、木片や布で作れる小さな細工道具を届けた。王女が不格好ながら一つを完成させて礼状とともに返すと、それは職人組合の会館に大切に飾られた。`},
+ {id:'bedside_domestic_window',text:p=>`${p.name}王女は窓の下を通る市場の人々へ毎朝手を振るようになった。やがて同じ時刻になると子どもたちが通りに集まり、病床の王女と短い挨拶を交わすことが王都の小さな習慣になった。`}
+];
+const BEDSIDE_FAMILY_EPISODES=[
+ {id:'bedside_family_story',text:p=>`アルブレヒトは政務を終えると${p.name}王女の寝台脇に座り、娘が眠るまで昔の旅の話をした。王女は途中で眠ってしまったが、翌朝になると続きを忘れずに尋ねた。`},
+ {id:'bedside_family_map',text:p=>`${p.name}王女は父の地図を寝台へ持ってきてもらい、行ったことのない町や国を指さしては、そこには何があるのかと尋ねた。アルブレヒトはいつか元気になったら一緒に見に行こうと、一つずつ答えた。`},
+ {id:'bedside_family_crown',text:p=>`${p.name}王女は見舞いに来た父の王冠をじっと見つめ、「今日は重そうだね」と言った。アルブレヒトが王冠を外して寝台のそばへ置くと、二人はしばらく王と王女ではなく、ただの父と娘として話した。`},
+ {id:'bedside_family_doll',text:p=>`${p.name}王女は寝台の上で人形に父と同じ色の小さな外套を着せ、アルブレヒトへ見せた。王は笑いながらその人形へ正式な宮廷礼をし、王女は久しぶりに声を立てて笑った。`}
+];
+
 function episodeSeenSet(state){return new Set(Array.isArray(state.seenEpisodes)?state.seenEpisodes.map(String):[]);}
 function markEpisodeSeen(state,id){
  const arr=Array.isArray(state.seenEpisodes)?state.seenEpisodes:[];
@@ -29063,11 +29085,15 @@ function resolvePrincessWork(){
  const princess=livingPrincess();
  const currentTurn=Number(State.turn||0);
  state.lastAttemptTurn=currentTurn;
- if(!princess){state.lastSkipReason='王女未解禁・不在・療養中';return null;}
+ if(!princess){state.lastSkipReason='王女未解禁・不在';return null;}
+ const bedside=princessNeedsBedside(princess);
+ const healthStage=princessHealthStage(princess);
  const roll=Math.random();
  state.rollCount=(Number(state.rollCount)||0)+1;
  state.lastRoll=roll;
  state.lastSkipReason='';
+ state.lastBedside=bedside;
+ state.lastHealthStage=healthStage;
  if(roll>=.60){
   State.princessWorkByTurn[key]=null;
   state.lastOutcome='抽選外';
@@ -29085,31 +29111,33 @@ function resolvePrincessWork(){
   State.tension=State.tension||{};State.influence=State.influence||{};State.params=State.params||{};
   const beforeT=n(State.tension[target.key]);
   const beforeI=n(State.influence[target.key]);
-  State.tension[target.key]=Math.max(0,beforeT-2);
-  const influenceGain=20+Math.floor(Math.random()*11);
+  /* 病床外交は訪問外交より効果を抑えるが、交流自体は途切れさせない。 */
+  const tensionStep=bedside?1:2;
+  State.tension[target.key]=Math.max(0,beforeT-tensionStep);
+  const influenceGain=bedside?(8+Math.floor(Math.random()*7)):(20+Math.floor(Math.random()*11));
   State.influence[target.key]=Math.min(100,beforeI+influenceGain);
-  let diplomacyBonus=Math.random()<.25?2:0;
+  let diplomacyBonus=Math.random()<(bedside?.15:.25)?(bedside?1:2):0;
   const actualInfluence=State.influence[target.key]-beforeI;
   const actualTension=State.tension[target.key]-beforeT;
-  if(actualInfluence<5&&actualTension===0)diplomacyBonus=Math.max(diplomacyBonus,2);
+  if(actualInfluence<5&&actualTension===0)diplomacyBonus=Math.max(diplomacyBonus,bedside?1:2);
   if(diplomacyBonus)State.params.diplomacy=Math.min(100,n(State.params.diplomacy)+diplomacyBonus);
-  episode=pickForeignEpisode(target,state);
+  episode=bedside?pickUnseenEpisode(BEDSIDE_FOREIGN_EPISODES,state,true):pickForeignEpisode(target,state);
   text=episode?episode.text({name,country:target.label}):'';
-  result={turn:State.turn,category:'foreign',episodeId:episode&&episode.id||'',princess:name,country:target.label,key:target.key,tensionDelta:actualTension,influenceDelta:actualInfluence,diplomacyBonus,text};
+  result={turn:State.turn,category:'foreign',episodeId:episode&&episode.id||'',princess:name,country:target.label,key:target.key,tensionDelta:actualTension,influenceDelta:actualInfluence,diplomacyBonus,text,bedside,healthStage};
  }else if(category==='domestic'){
-  episode=pickUnseenEpisode(DOMESTIC_EPISODES,state,true);
+  episode=pickUnseenEpisode(bedside?BEDSIDE_DOMESTIC_EPISODES:DOMESTIC_EPISODES,state,true);
   text=episode?episode.text({name}):'';
-  result={turn:State.turn,category:'domestic',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,text};
+  result={turn:State.turn,category:'domestic',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,text,bedside,healthStage};
  }else{
-  episode=pickUnseenEpisode(FAMILY_EPISODES,state,true);
+  episode=pickUnseenEpisode(bedside?BEDSIDE_FAMILY_EPISODES:FAMILY_EPISODES,state,true);
   text=episode?episode.text({name}):'';
-  result={turn:State.turn,category:'family',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,text};
+  result={turn:State.turn,category:'family',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,text,bedside,healthStage};
  }
  State.princessWorkByTurn[key]=result;
  state.hitCount=(Number(state.hitCount)||0)+1;
  state.lastHitTurn=currentTurn;
  state.lastCategory=category;
- state.lastOutcome='発生';
+ state.lastOutcome=bedside?'療養中に発生':'発生';
  state.lastCountry=target?target.label:'';
  state.lastEpisodeId=episode&&episode.id||'';
  return result;
@@ -29121,20 +29149,21 @@ function princessWorkHtml(resultOverride){
  const category=r.category||'foreign';
  const foreign=category==='foreign';
  const domestic=category==='domestic';
- const kicker=foreign?'PRINCESS DIPLOMACY':domestic?'PRINCESS DUTY':'FAMILY TIME';
- const title=foreign?`${r.princess}王女の小さな外交`:domestic?`${r.princess}王女の小さな公務`:`${r.princess}王女との時間`;
- const destination=foreign?`使節先　${r.country}`:domestic?'国内':'王宮';
- const outcome=foreign?'両国の距離が近づきました':domestic?'王女の姿が人々の記憶に残りました':'静かな家族の時間が流れました';
+ const bedside=!!r.bedside;
+ const kicker=bedside?(foreign?'PRINCESS DIPLOMACY · SICKROOM':domestic?'PRINCESS DUTY · SICKROOM':'FAMILY TIME · SICKROOM'):(foreign?'PRINCESS DIPLOMACY':domestic?'PRINCESS DUTY':'FAMILY TIME');
+ const title=bedside?(foreign?`${r.princess}王女の病床外交`:domestic?`${r.princess}王女の病床からの公務`:`${r.princess}王女との病床の時間`):(foreign?`${r.princess}王女の小さな外交`:domestic?`${r.princess}王女の小さな公務`:`${r.princess}王女との時間`);
+ const destination=bedside?(foreign?`王宮から　${r.country}へ`:'王宮・病床'):(foreign?`使節先　${r.country}`:domestic?'国内':'王宮');
+ const outcome=bedside?(foreign?'病床からの言葉が両国を結びました':domestic?'王女の気遣いが王宮の外へ届きました':'静かな家族の時間が流れました'):(foreign?'両国の距離が近づきました':domestic?'王女の姿が人々の記憶に残りました':'静かな家族の時間が流れました');
  const effects=foreign?[`${r.country}への影響 +${r.influenceDelta}`,r.tensionDelta?`${r.country}との緊張 ${r.tensionDelta}`:'',r.diplomacyBonus?`外交 +${r.diplomacyBonus}`:''].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join(''):'';
  const monogram=esc(String(r.princess||'王').slice(0,1));
- const aria=foreign?'王女外交':domestic?'王女の小さな公務':'王女との時間';
- return `<section class="princessWorkBox" aria-label="${aria}"><div class="princessWorkHead"><div class="princessWorkMonogram" aria-hidden="true">${monogram}</div><div><div class="princessWorkKicker">${kicker}</div><div class="princessWorkTitle">${esc(title)}</div></div><div class="princessWorkDestination">${esc(destination)}</div></div><div class="princessWorkText">${esc(r.text)}</div><div class="princessWorkPortrait"><img src="https://lh3.googleusercontent.com/d/1uP9RpEuWp0zSGYz9QxHrusYtvMx4mv1f" alt="${esc(r.princess)}王女"></div><div class="princessWorkOutcome"><strong>${esc(outcome)}</strong><div class="princessWorkEffect">${effects}</div></div></section>`;
+ const aria=bedside?(foreign?'王女の病床外交':domestic?'王女の病床からの公務':'王女との病床の時間'):(foreign?'王女外交':domestic?'王女の小さな公務':'王女との時間');
+ return `<section class="princessWorkBox${bedside?' princessWorkBedside':''}" aria-label="${aria}"><div class="princessWorkHead"><div class="princessWorkMonogram" aria-hidden="true">${monogram}</div><div><div class="princessWorkKicker">${kicker}</div><div class="princessWorkTitle">${esc(title)}</div></div><div class="princessWorkDestination">${esc(destination)}</div></div><div class="princessWorkText">${esc(r.text)}</div><div class="princessWorkPortrait"><img src="https://lh3.googleusercontent.com/d/1uP9RpEuWp0zSGYz9QxHrusYtvMx4mv1f" alt="${esc(r.princess)}王女"></div><div class="princessWorkOutcome"><strong>${esc(outcome)}</strong><div class="princessWorkEffect">${effects}</div></div></section>`;
 }
 
 window.auditPrincessDiplomacyV544=function(){
  const state=princessDiplomacyState();
  const princess=livingPrincess();
- return {unlocked:!!state.unlocked,announced:!!state.announced,unlockedBy:state.unlockedBy||null,eligiblePrincess:princess?{id:princess.id,name:princess.name||'王女',age:childAgeYears(princess),ageHalfTurns:Number(princess.ageHalfTurns||0)}:null,candidateCountries:candidates().map(x=>x.label),currentTurnResolved:Object.prototype.hasOwnProperty.call(State.princessWorkByTurn||{},String(State.turn||0)),rollCount:Number(state.rollCount)||0,hitCount:Number(state.hitCount)||0,lastRoll:Number.isFinite(Number(state.lastRoll))?Number(state.lastRoll):null,lastOutcome:state.lastOutcome||null,lastSkipReason:state.lastSkipReason||null,lastCountry:state.lastCountry||null,lastCategory:state.lastCategory||null,lastEpisodeId:state.lastEpisodeId||null,lastHitTurn:Number.isFinite(Number(state.lastHitTurn))?Number(state.lastHitTurn):null,seenEpisodes:Array.isArray(state.seenEpisodes)?state.seenEpisodes.slice():[]};
+ return {unlocked:!!state.unlocked,announced:!!state.announced,unlockedBy:state.unlockedBy||null,eligiblePrincess:princess?{id:princess.id,name:princess.name||'王女',age:childAgeYears(princess),ageHalfTurns:Number(princess.ageHalfTurns||0),healthStage:princessHealthStage(princess),bedside:princessNeedsBedside(princess)}:null,candidateCountries:candidates().map(x=>x.label),currentTurnResolved:Object.prototype.hasOwnProperty.call(State.princessWorkByTurn||{},String(State.turn||0)),rollCount:Number(state.rollCount)||0,hitCount:Number(state.hitCount)||0,lastRoll:Number.isFinite(Number(state.lastRoll))?Number(state.lastRoll):null,lastOutcome:state.lastOutcome||null,lastSkipReason:state.lastSkipReason||null,lastCountry:state.lastCountry||null,lastCategory:state.lastCategory||null,lastEpisodeId:state.lastEpisodeId||null,lastHitTurn:Number.isFinite(Number(state.lastHitTurn))?Number(state.lastHitTurn):null,lastBedside:!!state.lastBedside,lastHealthStage:state.lastHealthStage||null,seenEpisodes:Array.isArray(state.seenEpisodes)?state.seenEpisodes.slice():[]};
 };
 
 // 総括画面の生成直前に一度だけ効果を確定し、画面内へ挿入する。
@@ -32880,14 +32909,16 @@ function getRebelCase(){try{return typeof getCase==='function'?getCase(ID):null;
 function renderChoice(k,d){
   const lack=d.cost&&treasury()<d.cost;
   const cost=d.cost?`国庫 −${d.cost.toLocaleString()}`:'費用なし';
-  return `<button class="coreStrategyChoice phase181StrategyChoice ${lack?'phase181Disabled':''}" ${lack?'disabled':''} onclick="phase181ChooseRebellionStrategy('${k}')">
-    <span class="phase181ChoiceMain">
-      <b>${esc(d.name)}</b>
-      <span class="phase181ChoiceDesc">${esc(d.desc)}</span>
-      <em>敵：${esc(d.enemy)} / 戦場：${esc(d.place)}</em>
-      <i>${esc(d.detail)}</i>
-    </span>
-    <small>${esc(cost)}${lack?' / 国庫不足':''}</small>
+  return `<button type="button" class="phase181Card652${lack?' isDisabled':''}" ${lack?'disabled':''} onclick="phase181ChooseRebellionStrategy('${k}')">
+    <div class="phase181CardMain652">
+      <div class="phase181CardTitleRow652">
+        <strong>${esc(d.name)}</strong>
+        <span class="phase181Cost652">${esc(cost)}${lack?' / 国庫不足':''}</span>
+      </div>
+      <p class="phase181Desc652">${esc(d.desc)}</p>
+      <div class="phase181Meta652"><span>敵：${esc(d.enemy)}</span><span>戦場：${esc(d.place)}</span></div>
+      <div class="phase181Detail652">${esc(d.detail)}</div>
+    </div>
   </button>`;
 }
 function showStrategy(){
@@ -32896,8 +32927,13 @@ function showStrategy(){
   if(s.phase105RebellionStrategy)return false;
   if(document.getElementById('phase181RebellionStrategyShade'))return true;
   const host=document.getElementById('screenMain');if(!host)return false;
-  const shade=document.createElement('div');shade.id='phase181RebellionStrategyShade';shade.className='coreMandatoryShade phase181StrategyShade';
-  shade.innerHTML=`<div class="coreMandatoryBox phase181StrategyBox"><div class="coreMandatoryKicker">大貴族同盟の反乱</div><h2>反乱軍をどこで迎え撃つか</h2><p>同じ反乱でも、選ぶ戦場によって相手にする旗頭も、敵の動きも、必要な国庫も変わります。</p><div class="coreStrategyChoices phase181StrategyChoices">${Object.entries(DATA181).map(([k,d])=>renderChoice(k,d)).join('')}</div></div>`;
+  const shade=document.createElement('div');shade.id='phase181RebellionStrategyShade';shade.className='phase181Shade652';
+  shade.innerHTML=`<section class="phase181Modal652" role="dialog" aria-modal="true" aria-labelledby="phase181Title652">
+    <div class="phase181Kicker652">大貴族同盟の反乱</div>
+    <h2 id="phase181Title652">反乱軍をどこで迎え撃つか</h2>
+    <p class="phase181Lead652">同じ反乱でも、選ぶ戦場によって相手にする旗頭も、敵の動きも、必要な国庫も変わります。</p>
+    <div class="phase181Choices652">${Object.entries(DATA181).map(([k,d])=>renderChoice(k,d)).join('')}</div>
+  </section>`;
   host.appendChild(shade);try{sfx&&sfx('page');}catch(_){ }
   return true;
 }
@@ -32987,7 +33023,11 @@ function princesses182(){return liveChildren182().filter(c=>c.gender==='female')
 function notifiedSet182(){State.phase182PrincessSixNotified=Array.isArray(State.phase182PrincessSixNotified)?State.phase182PrincessSixNotified:[];return State.phase182PrincessSixNotified;}
 function princessSixText182(ch){
  const name=(ch&&ch.name)||'王女';
- return `${name}王女は祝宴や使節謁見の席に姿を見せ、宮廷の輪の中で自分の意思を示し始めた。\nその挨拶や贈り物は、剣や条約とは違う形で、外国使節の心を少しずつ動かしていくだろう。`;
+ const hs=String(ch&&((ch.healthStage)||(ch.health))||'');
+ const bedside=['重病','grave','critical'].includes(hs);
+ if(bedside)return `${name}王女は五歳を迎え、外交や公務に関わる年齢となった。まだ病床を離れることはできないが、手紙や贈り物、王宮を訪れる人々との交流を通じて、自分の意思を示し始めている。`;
+ return `${name}王女は祝宴や使節謁見の席に姿を見せ、宮廷の輪の中で自分の意思を示し始めた。
+その挨拶や贈り物は、剣や条約とは違う形で、外国使節の心を少しずつ動かしていくだろう。`;
 }
 function unlockPrincessDiplomacy182(ch,reason){
  State.princessDiplomacy=State.princessDiplomacy&&typeof State.princessDiplomacy==='object'?State.princessDiplomacy:{};
@@ -49442,5 +49482,670 @@ window.auditReleaseV625=function(){
 })();
 </script>
 
+
+<!-- V648: same-term uniqueness / family illness cap / final map-news handoff / final-map fit / rebellion strategy layout -->
+<style id="v648-release-fixes-style">
+/* 最終リザルト地図は1000x600のゲーム枠内で下端まで必ず見せる。 */
+#screenResult .v568FinalMap{
+  width:330px!important;
+  height:330px!important;
+  max-width:100%!important;
+  max-height:330px!important;
+  aspect-ratio:1/1!important;
+  flex:0 0 auto!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568Paper{
+  padding-top:10px!important;
+  padding-bottom:9px!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568Heading{margin-bottom:7px!important;}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568MapCaption{margin-top:5px!important;}
+
+/* 大貴族同盟の三択は旧grid指定に依存させず、三行すべて同じ全幅flexとして固定する。 */
+#phase181RebellionStrategyShade .phase181StrategyBox{overflow:visible!important;}
+#phase181RebellionStrategyShade .phase181StrategyChoices{width:100%!important;overflow:visible!important;}
+#phase181RebellionStrategyShade .phase181StrategyChoice{
+  display:flex!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+  padding:11px 15px!important;
+}
+#phase181RebellionStrategyShade .phase181ChoiceMain{
+  display:block!important;
+  flex:1 1 0!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  overflow:visible!important;
+  white-space:normal!important;
+}
+#phase181RebellionStrategyShade .phase181ChoiceMain > b,
+#phase181RebellionStrategyShade .phase181ChoiceMain > span,
+#phase181RebellionStrategyShade .phase181ChoiceMain > em,
+#phase181RebellionStrategyShade .phase181ChoiceMain > i{
+  width:auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  white-space:normal!important;
+}
+#phase181RebellionStrategyShade .phase181StrategyChoice > small{
+  display:block!important;
+  flex:0 0 132px!important;
+  width:132px!important;
+  min-width:132px!important;
+  max-width:132px!important;
+  margin-left:auto!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  text-align:right!important;
+  white-space:normal!important;
+}
+</style>
+<script id="v648-release-fixes-script">
+(function(){
+'use strict';
+const V648='V648';
+const FAMILY_ILLNESS_IDS_V648=new Set([
+  'dynasty_prince_fever',
+  'queen_illness_vigil',
+  'royal_child_health_watch',
+  'family_spouse_fever',
+  'family_child_fever',
+  'family_critical_spouse_vigil',
+  'family_critical_prince_vigil',
+  'family_critical_princess_vigil'
+]);
+function isFamilyIllnessCaseV648(c){
+  if(!c)return false;
+  const id=String(c.id||'');
+  if(FAMILY_ILLNESS_IDS_V648.has(id))return true;
+  const cat=String(c.category||'');
+  const tags=(()=>{try{return (typeof caseMeta==='function'?caseMeta(c)?.tags:c?.meta?.tags)||[];}catch(_){return[];}})();
+  const family=!!c.requiresSpouse||/^family_|^royal_child_|^dynasty_/.test(id)||tags.includes('family')||tags.includes('dynasty');
+  const sick=/fever|illness|health|critical|vigil/i.test(id)||/病|発熱|危篤/.test(cat)||tags.includes('health');
+  return family&&sick;
+}
+function visibleIdentityV648(c){
+  const id=String(c?.id||'').trim();
+  if(id)return 'id:'+id;
+  return 'anon:'+String(c?.title||'')+'|'+String(c?.intro||'');
+}
+function sanitizeVisibleCasesV648(list){
+  const raw=Array.isArray(list)?list.filter(Boolean):[];
+  const out=[];
+  const seen=new Set();
+  let familyIllnessSeen=false;
+  for(const c of raw){
+    const key=visibleIdentityV648(c);
+    if(seen.has(key))continue;
+    if(isFamilyIllnessCaseV648(c)){
+      if(familyIllnessSeen)continue;
+      familyIllnessSeen=true;
+    }
+    seen.add(key);
+    out.push(c);
+  }
+  return out;
+}
+window.isFamilyIllnessCaseV648=isFamilyIllnessCaseV648;
+window.sanitizeVisibleCasesV648=sanitizeVisibleCasesV648;
+try{
+  if(typeof visibleCases==='function'&&!visibleCases.v648SameTermGuard){
+    const prevVisibleV648=visibleCases;
+    const wrappedV648=function(){return sanitizeVisibleCasesV648(prevVisibleV648.apply(this,arguments)||[]);};
+    try{Object.assign(wrappedV648,prevVisibleV648);}catch(_){ }
+    wrappedV648.v648SameTermGuard=true;
+    visibleCases=wrappedV648;
+    window.visibleCases=wrappedV648;
+  }
+}catch(e){try{console.warn('V648 visible-case guard skipped',e);}catch(_){ }}
+
+window.auditV648=function(){
+  let visible=[];try{visible=typeof visibleCases==='function'?visibleCases():[];}catch(_){ }
+  const ids=visible.map(c=>String(c?.id||''));
+  const duplicateIds=ids.filter((id,i)=>id&&ids.indexOf(id)!==i);
+  const illness=visible.filter(isFamilyIllnessCaseV648).map(c=>c.id);
+  const map=document.querySelector('#screenResult .v568FinalMap');
+  const choices=[...document.querySelectorAll('#phase181RebellionStrategyShade .phase181StrategyChoice')].map(el=>{
+    const r=el.getBoundingClientRect();return{w:Math.round(r.width),h:Math.round(r.height),text:String(el.textContent||'').trim().slice(0,60)};
+  });
+  return{version:V648,duplicateIds:[...new Set(duplicateIds)],familyIllness:illness,map:map?{w:Math.round(map.getBoundingClientRect().width),h:Math.round(map.getBoundingClientRect().height)}:null,strategyChoices:choices};
+};
+window.__VERSION__=V648;
+})();
+</script>
+
+
+<script id="v649-princess-work-fix">
+(function(){
+'use strict';
+window.auditPrincessWorkV649=function(){
+  const base=typeof window.auditPrincessDiplomacyV544==='function'?window.auditPrincessDiplomacyV544():{};
+  const key=String((window.State&&State.turn)||0);
+  const result=window.State&&State.princessWorkByTurn&&Object.prototype.hasOwnProperty.call(State.princessWorkByTurn,key)?State.princessWorkByTurn[key]:undefined;
+  return {version:'V649',...base,currentResult:result===undefined?'未確定':result};
+};
+window.__VERSION__='V649';
+})();
+</script>
+
+
+<!-- V650: important cases are distinguished only by grouped placement; remove per-card gold ornamentation -->
+<style id="v650-important-visual-cleanup">
+/* Important cases are already separated into their own group. Remove every card-level importance ornament. */
+#screenMain .caseCard.importantCase,
+#screenMain .caseCard.v519ImportantCase{
+  padding-top:10px!important;
+  box-shadow:0 4px 0 rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.45)!important;
+  animation:none!important;
+}
+#screenMain .caseCard.importantCase::before,
+#screenMain .caseCard.importantCase::after,
+#screenMain .caseCard.v519ImportantCase::before,
+#screenMain .caseCard.v519ImportantCase::after{
+  content:none!important;
+  display:none!important;
+  animation:none!important;
+  box-shadow:none!important;
+  background:none!important;
+}
+#screenMain .caseCard.importantCase .importantCaseRail,
+#screenMain .caseCard.v519ImportantCase .importantCaseRail,
+#screenMain .caseCard .v519ImportanceFrame,
+#screenMain .caseCard .v518SpecialBanner,
+#screenMain .caseCard .v518SpecialSeal,
+#screenMain .caseCard .v518SpecialCorners{
+  display:none!important;
+  opacity:0!important;
+  animation:none!important;
+}
+#screenMain .caseCard.importantCase .caseTitle,
+#screenMain .caseCard.importantCase.hasRequest .caseTitle,
+#screenMain .caseCard.v519ImportantCase .caseTitle,
+#screenMain .caseCard.v519ImportantCase.hasRequest .caseTitle{
+  padding-left:0!important;
+}
+/* Selection number is still useful, so restore the ordinary selected marker behavior only. */
+#screenMain .caseCard.selected:not([data-case-id="tutorial_butler"])::after{
+  content:attr(data-order)!important;
+  display:flex!important;
+  position:absolute!important;
+  right:10px!important;
+  bottom:10px!important;
+  left:auto!important;
+  top:auto!important;
+  width:28px!important;
+  height:28px!important;
+  border-radius:50%!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:#073052!important;
+  color:#e8fbff!important;
+  border:2px solid #42dcff!important;
+  box-shadow:0 0 10px rgba(66,220,255,.45)!important;
+  font-size:16px!important;
+  font-weight:1000!important;
+  animation:none!important;
+  z-index:25!important;
+}
+#screenMain .caseCard.tutorial.selected::after{content:none!important;display:none!important;}
+</style>
+<script id="v650-important-visual-cleanup-script">
+(function(){'use strict';
+  function stripImportantOrnamentsV650(root){
+    try{
+      const scope=root&&root.querySelectorAll?root:document;
+      scope.querySelectorAll('#screenMain .importantCaseRail,#screenMain .v519ImportanceFrame,#screenMain .v518SpecialBanner,#screenMain .v518SpecialSeal,#screenMain .v518SpecialCorners').forEach(el=>el.remove());
+      scope.querySelectorAll('#screenMain .caseCard').forEach(card=>{
+        card.classList.remove('v518SpecialCard','v518SpecialTutorial','v518SpecialBrother','v518SpecialMarriage','v518SpecialArrival');
+      });
+    }catch(_){ }
+  }
+  stripImportantOrnamentsV650(document);
+  if(window.MutationObserver){
+    const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n&&n.nodeType===1)stripImportantOrnamentsV650(n);});
+    try{mo.observe(document.documentElement,{childList:true,subtree:true});}catch(_){ }
+  }
+  window.auditV650ImportantVisual=function(){
+    const cards=[...document.querySelectorAll('#screenMain .caseCard')];
+    return {
+      version:'V650',
+      importantCards:cards.filter(c=>c.classList.contains('importantCase')).length,
+      rails:document.querySelectorAll('#screenMain .importantCaseRail').length,
+      legacyFrames:document.querySelectorAll('#screenMain .v519ImportanceFrame').length,
+      specialDecorations:document.querySelectorAll('#screenMain .v518SpecialBanner,#screenMain .v518SpecialSeal,#screenMain .v518SpecialCorners').length,
+      groupLabels:[...document.querySelectorAll('#screenMain .caseGroupLabel')].map(x=>x.textContent.trim())
+    };
+  };
+  window.__VERSION__='V650';
+})();
+</script>
+
+<style id="v652-phase181-rebuild-style">
+/* V652: the noble-rebellion three-choice modal is a standalone component. */
+#phase181RebellionStrategyShade.phase181Shade652{
+  position:absolute!important;inset:0!important;z-index:12000!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:18px!important;background:rgba(4,10,18,.72)!important;backdrop-filter:blur(1.5px);
+}
+#phase181RebellionStrategyShade .phase181Modal652{
+  width:min(760px,calc(100% - 20px))!important;max-height:calc(100% - 18px)!important;
+  overflow:auto!important;box-sizing:border-box!important;padding:24px 30px 26px!important;
+  border:3px solid #c79b3b!important;border-radius:19px!important;
+  background:linear-gradient(180deg,#fff0c8 0%,#efd69b 100%)!important;
+  color:#102a4c!important;box-shadow:0 14px 38px rgba(0,0,0,.38),inset 0 0 0 1px rgba(255,255,255,.66)!important;
+}
+#phase181RebellionStrategyShade .phase181Kicker652{
+  display:inline-flex!important;align-items:center!important;min-height:25px!important;padding:3px 13px!important;
+  border-radius:999px!important;background:#9d251f!important;border:1px solid #d46a51!important;color:#fff1d0!important;
+  font-size:11px!important;font-weight:1000!important;letter-spacing:.04em!important;box-shadow:0 2px 0 rgba(80,18,13,.35)!important;
+}
+#phase181RebellionStrategyShade .phase181Modal652 h2{
+  margin:13px 0 8px!important;color:#15345a!important;font-size:28px!important;line-height:1.15!important;font-weight:1000!important;
+}
+#phase181RebellionStrategyShade .phase181Lead652{
+  margin:0 0 17px!important;color:#1e2e43!important;font-size:14px!important;line-height:1.55!important;font-weight:850!important;
+}
+#phase181RebellionStrategyShade .phase181Choices652{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:11px!important;width:100%!important;
+}
+#phase181RebellionStrategyShade button.phase181Card652{
+  all:unset!important;box-sizing:border-box!important;display:block!important;width:100%!important;min-width:0!important;max-width:none!important;
+  cursor:pointer!important;padding:0!important;border:2px solid #bd8b32!important;border-radius:14px!important;
+  background:linear-gradient(180deg,#fff5d7,#f2d99f)!important;color:#102a4c!important;
+  box-shadow:0 4px 0 #8d651f,inset 0 0 0 1px rgba(255,255,255,.62)!important;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif!important;text-align:left!important;
+  transition:transform .08s ease,filter .08s ease,box-shadow .08s ease!important;
+}
+#phase181RebellionStrategyShade button.phase181Card652:hover{filter:brightness(1.035)!important;}
+#phase181RebellionStrategyShade button.phase181Card652:active{transform:translateY(2px)!important;box-shadow:0 2px 0 #8d651f,inset 0 0 0 1px rgba(255,255,255,.62)!important;}
+#phase181RebellionStrategyShade button.phase181Card652:focus-visible{outline:3px solid #28c8ef!important;outline-offset:3px!important;}
+#phase181RebellionStrategyShade button.phase181Card652.isDisabled,
+#phase181RebellionStrategyShade button.phase181Card652:disabled{opacity:.48!important;filter:grayscale(.28)!important;cursor:not-allowed!important;}
+#phase181RebellionStrategyShade .phase181CardMain652{display:block!important;min-width:0!important;padding:11px 16px 12px!important;}
+#phase181RebellionStrategyShade .phase181CardTitleRow652{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 150px!important;gap:14px!important;align-items:center!important;min-width:0!important;
+}
+#phase181RebellionStrategyShade .phase181CardTitleRow652 strong{
+  display:block!important;min-width:0!important;color:#12365e!important;font-size:17px!important;line-height:1.24!important;font-weight:1000!important;
+}
+#phase181RebellionStrategyShade .phase181Cost652{
+  display:block!important;min-width:0!important;text-align:right!important;color:#8e251f!important;font-size:12px!important;line-height:1.25!important;font-weight:1000!important;white-space:normal!important;
+}
+#phase181RebellionStrategyShade .phase181Desc652{
+  margin:4px 0 4px!important;color:#493c28!important;font-size:12px!important;line-height:1.42!important;font-weight:800!important;white-space:normal!important;
+}
+#phase181RebellionStrategyShade .phase181Meta652{
+  display:flex!important;flex-wrap:wrap!important;gap:5px 13px!important;margin-top:3px!important;color:#31586a!important;font-size:11px!important;line-height:1.35!important;font-weight:900!important;
+}
+#phase181RebellionStrategyShade .phase181Detail652{
+  margin-top:2px!important;color:#6a440d!important;font-size:11px!important;line-height:1.35!important;font-weight:950!important;white-space:normal!important;
+}
+@media(max-width:760px){
+  #phase181RebellionStrategyShade .phase181Modal652{padding:20px 22px 22px!important;}
+  #phase181RebellionStrategyShade .phase181CardTitleRow652{grid-template-columns:minmax(0,1fr) 132px!important;}
+}
+</style>
+<script id="v652-phase181-audit-script">
+(function(){
+'use strict';
+window.auditPhase181V652=function(){
+  const cards=[...document.querySelectorAll('#phase181RebellionStrategyShade .phase181Card652')];
+  return {version:'V652',count:cards.length,cards:cards.map((el,i)=>{const r=el.getBoundingClientRect();const title=el.querySelector('.phase181CardTitleRow652 strong');const tr=title&&title.getBoundingClientRect();return{index:i+1,width:Math.round(r.width),height:Math.round(r.height),titleWidth:tr?Math.round(tr.width):0,disabled:!!el.disabled,text:(title?.textContent||'').trim()};})};
+};
+window.__VERSION__='V652';
+})();
+</script>
+
 </body>
 </html>
+
+<!-- V651: final A.I.U.E.O. reveal always plays in full, independent of OS reduced-motion preference -->
+<style id="v651-force-aiueo-final-motion">
+/* The act-4 reveal is narrative content, not optional decorative motion. Start from the hidden states every time the screen is created. */
+#screenResult .v568FinalScreen.v568AiueoFinal .v612AiueoKicker{
+  opacity:0!important;
+  animation:v612SoftIn .46s .08s ease-out forwards!important;
+}
+#screenResult .v568FinalScreen.v568AiueoFinal .v568Witness{
+  opacity:0!important;
+  transform:translateY(6px)!important;
+  animation:v612WitnessIn .62s .18s ease-out both!important;
+}
+#screenResult .v568FinalScreen.v568AiueoFinal .v568Initial{
+  opacity:0!important;
+  transform:translateY(9px)!important;
+  animation:v612InitialIn .48s cubic-bezier(.2,.75,.25,1) forwards!important;
+  animation-delay:calc(.62s + (var(--v612-i) * .13s))!important;
+}
+#screenResult .v568FinalScreen.v568AiueoFinal .v612Tail{
+  opacity:0!important;
+  clip-path:inset(0 100% 0 0)!important;
+  transform:translateX(-5px)!important;
+  animation:v612TailOpen .48s cubic-bezier(.25,.7,.25,1) forwards!important;
+  animation-delay:calc(1.36s + (var(--v612-i) * .10s))!important;
+}
+#screenResult .v568FinalScreen.v568AiueoFinal .v612TruthRule{
+  width:0!important;
+  animation:v612RuleGrow .72s 2.10s ease-out forwards!important;
+}
+#screenResult .v568FinalScreen.v568AiueoFinal .v568TruthLatin{
+  opacity:0!important;
+  transform:translateY(6px)!important;
+  animation:v612TruthIn .62s 2.42s ease-out forwards!important;
+}
+#screenResult .v568FinalScreen.v568AiueoFinal .v568TruthJa{
+  opacity:0!important;
+  transform:translateY(7px)!important;
+  letter-spacing:.12em!important;
+  animation:v612JapaneseIn .72s 3.70s ease-out forwards!important;
+}
+#screenResult .v568FinalScreen.v568AiueoFinal .v568Nav{
+  opacity:0!important;
+  pointer-events:none!important;
+  animation:v612NavIn .46s 4.50s ease-out forwards!important;
+}
+/* iPadOS/Safari may report prefers-reduced-motion. For this story reveal, explicitly keep the complete sequence. */
+@media(prefers-reduced-motion:reduce){
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v612AiueoKicker{
+    opacity:0!important;animation:v612SoftIn .46s .08s ease-out forwards!important;
+  }
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568Witness{
+    opacity:0!important;transform:translateY(6px)!important;animation:v612WitnessIn .62s .18s ease-out both!important;
+  }
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568Initial{
+    opacity:0!important;transform:translateY(9px)!important;animation:v612InitialIn .48s cubic-bezier(.2,.75,.25,1) forwards!important;animation-delay:calc(.62s + (var(--v612-i) * .13s))!important;
+  }
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v612Tail{
+    opacity:0!important;clip-path:inset(0 100% 0 0)!important;transform:translateX(-5px)!important;animation:v612TailOpen .48s cubic-bezier(.25,.7,.25,1) forwards!important;animation-delay:calc(1.36s + (var(--v612-i) * .10s))!important;
+  }
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v612TruthRule{
+    width:0!important;animation:v612RuleGrow .72s 2.10s ease-out forwards!important;
+  }
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568TruthLatin{
+    opacity:0!important;transform:translateY(6px)!important;animation:v612TruthIn .62s 2.42s ease-out forwards!important;
+  }
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568TruthJa{
+    opacity:0!important;transform:translateY(7px)!important;letter-spacing:.12em!important;animation:v612JapaneseIn .72s 3.70s ease-out forwards!important;
+  }
+  #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568Nav{
+    opacity:0!important;pointer-events:none!important;animation:v612NavIn .46s 4.50s ease-out forwards!important;
+  }
+}
+</style>
+<script id="v651-final-motion-restart">
+(function(){
+'use strict';
+/* New act-4 DOM nodes normally restart CSS animations automatically. This hook makes that contract explicit
+   for Safari by forcing one style flush as soon as the final reveal is inserted. */
+function restartV651(root){
+  try{
+    const screen=root?.matches?.('.v568FinalScreen.v568AiueoFinal')?root:root?.querySelector?.('.v568FinalScreen.v568AiueoFinal');
+    if(!screen||screen.dataset.v651MotionStarted==='1')return;
+    screen.dataset.v651MotionStarted='1';
+    void screen.offsetWidth;
+  }catch(_){ }
+}
+try{
+  const host=document.getElementById('screenResult');
+  if(host){
+    restartV651(host);
+    const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes)if(n?.nodeType===1)restartV651(n);});
+    mo.observe(host,{childList:true,subtree:true});
+  }
+}catch(_){ }
+window.auditV651FinalMotion=function(){
+  const root=document.querySelector('#screenResult .v568FinalScreen.v568AiueoFinal');
+  const read=sel=>{const el=root?.querySelector(sel);if(!el)return null;const cs=getComputedStyle(el);return{opacity:cs.opacity,animationName:cs.animationName,animationDelay:cs.animationDelay,animationDuration:cs.animationDuration,transform:cs.transform,clipPath:cs.clipPath};};
+  return{version:'V651',reducedMotion:!!window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches,act:Number(root?.dataset?.v585Act||0),started:root?.dataset?.v651MotionStarted||null,kicker:read('.v612AiueoKicker'),witness:read('.v568Witness'),initial:read('.v568Initial'),tail:read('.v612Tail'),latin:read('.v568TruthLatin'),japanese:read('.v568TruthJa'),nav:read('.v568Nav')};
+};
+window.__VERSION__='V651';
+})();
+</script>
+<script id="v652-final-version-marker">window.__VERSION__='V652';</script>
+<!-- V654: one canonical wax-seal progress control; no arrow / chevron / glyph anywhere -->
+<style id="v654-canonical-wax-seal-style">
+@keyframes v654SealBreath{
+  0%,100%{
+    transform:scale(1);
+    filter:brightness(.96);
+    box-shadow:0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 0 rgba(232,177,64,0),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30);
+  }
+  50%{
+    transform:scale(1.10);
+    filter:brightness(1.13);
+    box-shadow:0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 19px rgba(232,177,64,.58),inset 0 0 0 3px rgba(255,218,127,.16),inset 0 -6px 10px rgba(32,4,6,.30);
+  }
+}
+
+/* Every red round progress control shares one visual contract. */
+#game .storyCue,
+#game .mapNewsCue,
+#game .mourningNoticeCue,
+#game .v568SealNext,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn,
+#game #screenResult .v568FinalScreen .v568SealNext,
+#game .v568Aiueo20Screen .v568SealNext,
+#game .v574AiueoNav .v568SealNext{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:52px!important;
+  min-width:52px!important;
+  max-width:52px!important;
+  height:52px!important;
+  min-height:52px!important;
+  max-height:52px!important;
+  aspect-ratio:1/1!important;
+  flex:0 0 52px!important;
+  padding:0!important;
+  margin:0!important;
+  border:2px solid #d6b45f!important;
+  border-radius:50%!important;
+  clip-path:none!important;
+  outline:0!important;
+  color:transparent!important;
+  font-size:0!important;
+  line-height:0!important;
+  text-indent:-9999px!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  background:
+    radial-gradient(circle at 33% 27%,rgba(255,255,255,.24) 0 8%,rgba(255,255,255,0) 24%),
+    radial-gradient(circle at 50% 57%,#a63a3c 0 27%,#8a242b 46%,#65161d 72%,#4a0e14 100%)!important;
+  box-shadow:0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)!important;
+  transform-origin:50% 50%!important;
+  animation:v654SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite!important;
+  transition:filter .12s ease,box-shadow .12s ease,transform .12s ease!important;
+}
+
+/* The only internal ornament is the same thin gold inner ring. No symbol. */
+#game .storyCue::before,
+#game .mapNewsCue::before,
+#game .mourningNoticeCue::before,
+#game .v568SealNext::before,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn::before,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn::before,
+#game #screenResult .v568FinalScreen .v568SealNext::before,
+#game .v568Aiueo20Screen .v568SealNext::before,
+#game .v574AiueoNav .v568SealNext::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:8px!important;
+  left:8px!important;right:8px!important;top:8px!important;bottom:8px!important;
+  width:auto!important;height:auto!important;
+  border:1px solid rgba(245,207,109,.72)!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  clip-path:none!important;
+  box-shadow:inset 0 0 0 2px rgba(72,17,18,.34)!important;
+  transform:none!important;
+  filter:none!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:none!important;
+  text-indent:0!important;
+  font-size:0!important;
+}
+
+/* Kill every historical V, chevron, down-arrow, right-arrow or other glyph layer. */
+#game .storyCue::after,
+#game .mapNewsCue::after,
+#game .mourningNoticeCue::after,
+#game .v568SealNext::after,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn::after,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn::after,
+#game #screenResult .v568FinalScreen .v568SealNext::after,
+#game .v568Aiueo20Screen .v568SealNext::after,
+#game .v574AiueoNav .v568SealNext::after{
+  content:none!important;
+  display:none!important;
+  width:0!important;height:0!important;
+  border:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  filter:none!important;
+  transform:none!important;
+  animation:none!important;
+}
+
+/* Final-result navigation uses the same 52px seal, not a smaller special variant. */
+#game #screenResult .v568FinalScreen .v568Nav,
+#game .v568Aiueo20Screen .v568Nav,
+#game .v574AiueoNav{
+  min-height:64px!important;
+  height:64px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+/* Keep the same press feel on every clickable seal. */
+#game .v568SealNext:active,
+#game #screenBattle #tutorialOverlay .tutorialStartBtn:active,
+#game #screenBattle #tutorialBadOverlay .tutorialStartBtn:active{
+  animation:none!important;
+  transform:translateY(3px) scale(.96)!important;
+  filter:brightness(1.02)!important;
+  box-shadow:0 2px 0 #350d12,0 6px 14px rgba(0,0,0,.30),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -5px 8px rgba(32,4,6,.28)!important;
+}
+
+/* Progress cues must remain animated even when the OS asks to reduce motion. */
+@media(prefers-reduced-motion:reduce){
+  #game .storyCue,#game .mapNewsCue,#game .mourningNoticeCue,#game .v568SealNext,
+  #game #screenBattle #tutorialOverlay .tutorialStartBtn,#game #screenBattle #tutorialBadOverlay .tutorialStartBtn,
+  #game #screenResult .v568FinalScreen .v568SealNext,#game .v568Aiueo20Screen .v568SealNext,#game .v574AiueoNav .v568SealNext{
+    animation:v654SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite!important;
+  }
+}
+</style>
+<script id="v654-canonical-wax-seal-script">
+(function(){
+'use strict';
+const SEL='.storyCue,.mapNewsCue,.mourningNoticeCue,.v568SealNext,#screenBattle #tutorialOverlay .tutorialStartBtn,#screenBattle #tutorialBadOverlay .tutorialStartBtn';
+function canonical(el){
+  if(!el||el.nodeType!==1)return;
+  try{
+    el.style.setProperty('animation','v654SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite','important');
+    el.style.setProperty('width','52px','important');
+    el.style.setProperty('height','52px','important');
+    el.style.setProperty('min-width','52px','important');
+    el.style.setProperty('min-height','52px','important');
+    el.style.setProperty('max-width','52px','important');
+    el.style.setProperty('max-height','52px','important');
+  }catch(_){ }
+}
+function scan(root=document){
+  try{
+    if(root.matches?.(SEL))canonical(root);
+    root.querySelectorAll?.(SEL).forEach(canonical);
+  }catch(_){ }
+}
+scan(document);
+if(window.MutationObserver){
+  const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes||[])if(n?.nodeType===1)scan(n);});
+  mo.observe(document.documentElement,{childList:true,subtree:true});
+}
+window.auditWaxSealsV654=function(){
+  return [...document.querySelectorAll(SEL)].map(el=>{
+    const r=el.getBoundingClientRect(),cs=getComputedStyle(el),bef=getComputedStyle(el,'::before'),aft=getComputedStyle(el,'::after');
+    return{cls:el.className,w:Math.round(r.width),h:Math.round(r.height),radius:cs.borderRadius,animation:cs.animationName,beforeContent:bef.content,afterContent:aft.content,afterDisplay:aft.display};
+  });
+};
+window.__VERSION__='V654';
+})();
+</script>
+
+<!-- V655: final-result map page uses the full stage content area; remove double reservation for navigation -->
+<style id="v655-final-map-layout-fix">
+/*
+  V625 already reserves 76px at the bottom of .v568Stage for the absolute-positioned seal.
+  The older V585 paper max-height:calc(100% - 58px) subtracted navigation a second time,
+  shrinking the paper to ~398px and clipping the 446px map-page content.
+  Act 2 now fills the stage content box that remains after the single 76px reservation.
+*/
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568Stage{
+  padding-top:12px!important;
+  padding-bottom:76px!important;
+  overflow:visible!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568Paper{
+  flex:1 1 0!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:10px 26px 9px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568Kicker{
+  flex:0 0 auto!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568Heading{
+  flex:0 0 auto!important;
+  margin-bottom:7px!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568FinalMap{
+  flex:0 0 350px!important;
+  width:350px!important;
+  height:350px!important;
+  max-width:100%!important;
+  max-height:350px!important;
+  margin:0 auto!important;
+  aspect-ratio:1/1!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="2"] .v568MapCaption{
+  flex:0 0 auto!important;
+  margin-top:5px!important;
+  line-height:1.25!important;
+}
+</style>
+<script id="v655-final-map-layout-audit">
+(function(){
+'use strict';
+window.auditFinalMapV655=function(){
+  const root=document.querySelector('#screenResult .v568FinalScreen[data-v585-act="2"]');
+  const q=s=>root&&root.querySelector(s);
+  const rect=e=>{if(!e)return null;const r=e.getBoundingClientRect();return{x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),bottom:Math.round(r.bottom),scrollH:e.scrollHeight,clientH:e.clientHeight};};
+  const paper=q('.v568Paper'),map=q('.v568FinalMap'),caption=q('.v568MapCaption'),nav=q('.v568Nav');
+  const pr=paper?.getBoundingClientRect(),mr=map?.getBoundingClientRect(),cr=caption?.getBoundingClientRect();
+  return{version:'V655',paper:rect(paper),map:rect(map),caption:rect(caption),nav:rect(nav),mapInsidePaper:!!(pr&&mr&&mr.bottom<=pr.bottom+.5),captionInsidePaper:!!(pr&&cr&&cr.bottom<=pr.bottom+.5),paperClipped:!!(paper&&paper.scrollHeight>paper.clientHeight+1)};
+};
+window.__VERSION__='V655';
+})();
+</script>
