@@ -8,6 +8,7 @@
 <!-- FIX V551: restored country/person lore on every summary result after V518 moved the advance button into .v518SummaryAction; phase95 now inserts lore before the action container instead of assuming the button is a direct resultCard child. -->
 <!-- FIX V550: restore result lore for runtime-built age-30 final cases and make the summary advance button a normal bottom section instead of sticky overlay. -->
 <!-- FIX V543: use the supplied Googleusercontent image as the document favicon without changing game data or behavior. -->
+<!-- V611: symmetric Altrant territorial movement; land borders can advance or retreat using one shared rank table. -->
 <!-- V517: V516 balance plus first-use two-front and three-front butler tutorials. -->
 <!-- FIX V514: removed legacy active-war territory RNG/map moves, unified generic long-neglect loss to one path, and hid numeric pre-war pressure. -->
 <!DOCTYPE html>
@@ -194,7 +195,7 @@ IMPORTANT: phase numbers are NOT load order. Follow physical document order.
 
 
 /* ===== 統合元CSS 01: cleanup-pass3-fixed-bundled-css ===== */
-:root{--bg:#0d1828;--navy:#102a4c;--navy2:#173b64;--gold:#c99b38;--gold2:#f3cf62;--paper:#f2dfb8;--paper2:#fff1c9;--ink:#172033;--muted:#6f6046;--red:#9a2b23;--blue:#25649c;--green:#2f7b52;}*{box-sizing:border-box;}body{margin:0;background:#090f19;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);user-select:none;}#game{width:1000px;height:600px;overflow:hidden;background:linear-gradient(#172945,#0e1828);border:3px solid #050912;box-shadow:0 18px 45px rgba(0,0,0,.55);}.screen{position:absolute;inset:0;display:none;}.screen.active{display:block;}.topbar{height:54px;background:linear-gradient(90deg,#07172b,#12395f);border-bottom:3px solid var(--gold);color:#ffe9b5;display:flex;align-items:center;gap:10px;padding:7px 14px;font-weight:900;}.topbar b{font-size:18px;margin-right:6px;}.param{font-size:12px;border:1px solid rgba(255,232,178,.28);border-radius:999px;padding:4px 9px;background:rgba(255,236,188,.08);}button{font:inherit;font-weight:900;border:2px solid #75541e;border-radius:10px;background:#f7df9a;color:#102033;padding:8px 12px;cursor:pointer;box-shadow:0 3px 0 #604416;}button:hover{filter:brightness(1.05);}button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.5);}.pick{height:546px;display:grid;grid-template-columns:456px 1fr;grid-template-rows:456px 90px;background:#102033;}.map{margin:14px;background:#e5d1a5;border:3px solid #b58a35;border-radius:14px;position:relative;overflow:hidden;box-shadow:inset 0 0 26px rgba(82,52,12,.2);aspect-ratio:1/1;}.mapTitle{position:absolute;left:18px;top:14px;font-size:18px;font-weight:1000;color:#23321f;}.map.revealed{animation:mapReveal .55s ease-out;}.mapLayer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;}.mapLayer.baseBottom{z-index:1;}.mapLayer.dynamic{z-index:10;}.mapLayer.baseTop{z-index:100;}.mapStatus{position:absolute;left:10px;right:10px;bottom:10px;z-index:130;display:flex;gap:5px;flex-wrap:wrap;pointer-events:none;}.mapChip{font-size:10px;font-weight:1000;color:#102033;background:rgba(255,239,174,.86);border:1px solid rgba(80,50,12,.45);border-radius:999px;padding:2px 6px;box-shadow:0 1px 4px rgba(0,0,0,.25);}.mapChip.plus{background:rgba(168,238,255,.90);}.mapChip.minus{background:rgba(255,179,149,.90);}.casePanel{border:3px solid #b58a35;border-radius:14px;background:#0d1a2b;padding:12px;display:grid;grid-template-columns:1fr;overflow:auto;}.casePanel::-webkit-scrollbar{width:8px;}.casePanel::-webkit-scrollbar-thumb{background:#b78b32;border-radius:99px;}.yearStory{height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:28px;background:linear-gradient(180deg,#152944,#0b1728);border-radius:10px;color:#ffe8b0;cursor:pointer;box-shadow:inset 0 0 28px rgba(255,210,88,.10);}.yearStoryText{font-size:23px;line-height:1.65;font-weight:900;text-shadow:0 2px 0 rgba(0,0,0,.35);}.casePanel.revealList .caseCard{opacity:0;transform:translateY(16px) scale(.985);animation:caseAppear .42s ease-out forwards;}.casePanel.revealList .caseCard:nth-child(1){animation-delay:.04s;}.casePanel.revealList .caseCard:nth-child(2){animation-delay:.11s;}.casePanel.revealList .caseCard:nth-child(3){animation-delay:.18s;}.casePanel.revealList .caseCard:nth-child(4){animation-delay:.25s;}.casePanel.revealList .caseCard:nth-child(5){animation-delay:.32s;}.casePanel.revealList .caseCard:nth-child(6){animation-delay:.39s;}.casePanel.revealList .caseCard:nth-child(7){animation-delay:.46s;}@keyframes caseAppear{0%{opacity:0;transform:translateY(16px) scale(.985);filter:brightness(.85)}70%{opacity:1;transform:translateY(-2px) scale(1.01);filter:brightness(1.08)}100%{opacity:1;transform:translateY(0) scale(1);filter:none}}.caseCard{border:4px solid #d6aa3a;background:linear-gradient(#fff0c8,#e9cc8f);box-shadow:0 4px 0 rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.45);cursor:pointer;transition:transform .08s,filter .08s,box-shadow .08s,opacity .08s;}.caseCard:hover{transform:translateY(-2px);}.caseCard:active{transform:translateY(1px) scale(.992);}.caseCard.easy{border-color:#46a56f;}.caseCard.normal{border-color:#d6aa3a;}.caseCard.hard{border-color:#c04a2f;}.caseCard.desperate{border-color:#9f3430;}.caseCard.growth{border-color:#36a66f;}.caseCard.locked{opacity:.42;filter:grayscale(.45);}.caseTitle{font-weight:1000;color:#112748;}.caseStory{color:#30281a;}.caseMeta{font-size:12px;color:#624820;margin-top:8px;font-weight:800;}.slots{grid-column:1/3;margin:0 14px 12px;border:3px solid #b58a35;border-radius:14px;background:#0d1a2b;display:grid;gap:10px;padding:8px 10px;align-items:stretch;}.slot{border:2px dashed rgba(232,204,143,.55);border-radius:12px;background:#142238;min-height:60px;padding:10px;display:flex;align-items:center;gap:10px;color:#e8d6ad;}.slot.filled{border-style:solid;border-color:#f0c95a;background:linear-gradient(#1c3556,#132840);box-shadow:0 0 18px rgba(240,201,90,.22);cursor:pointer;}.slotNo{font-size:13px;font-weight:900;color:#f2cf69;border:1px solid rgba(242,207,105,.55);border-radius:999px;padding:3px 8px;white-space:nowrap;}.slotTitle{font-size:16px;font-weight:900;color:#fff1bf;}.slotEmpty{font-weight:800;color:#978d73;}.next{height:100%;font-size:20px;border-radius:12px;}.count{position:absolute;right:26px;bottom:96px;font-weight:1000;}.toast{position:absolute;right:215px;bottom:112px;background:#102a4c;color:#ffe7ad;border:2px solid #d5ad4e;border-radius:999px;padding:8px 18px;font-weight:900;animation:toast .7s ease-out both;}@keyframes toast{0%{opacity:0;transform:translateY(8px)}20%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}.primary{font-size:20px;background:#f3c84b;color:#102a4c;border-color:#ffe7a0;min-width:260px;}.pulse{animation:pulse 1s infinite alternate;}@keyframes pulse{from{transform:scale(1);filter:brightness(1)}to{transform:scale(1.025);filter:brightness(1.12)}}.timerNum{display:inline-block;}.danger .timerNum{animation:danger .34s infinite alternate;background:#2b0b0b;color:#fff0c0;border-color:#ff6142;box-shadow:0 0 22px rgba(255,62,41,.7);}@keyframes danger{from{transform:scale(1)}to{transform:scale(1.08)}}.timeBar{box-shadow:inset 0 0 10px rgba(0,0,0,.5);}.timeFill{width:100%;transform-origin:left center;}.battleArea{height:536px;background:#172337;}.lane{position:relative;overflow:hidden;border-bottom:2px solid rgba(255,230,180,.35);background:linear-gradient(90deg,#0d2d4d,#154d78 44%,#3c2e24 50%,#84241d 58%,#6b201b);cursor:pointer;}.laneHeader{position:absolute;display:flex;align-items:center;color:#f9eac8;font-weight:900;z-index:35;}.lineBar{height:16px;flex:1;background:#461d1d;border:1px solid #f1d998;border-radius:99px;position:relative;overflow:hidden;}.lineFill{position:absolute;top:0;bottom:0;left:50%;width:0;background:#e5c24c;}.lineCenter{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#fff;}.lineText{font-weight:1000;}.actor{position:absolute;width:150px;height:150px;bottom:var(--actorBottom,42px);overflow:visible;display:block;z-index:20;pointer-events:none;will-change:left,transform,filter;}.actor img{position:absolute;left:0;bottom:0;width:150px;height:150px;object-fit:contain;filter:drop-shadow(0 12px 9px rgba(0,0,0,.42));user-select:none;pointer-events:none;}.actor.right img{transform:scaleX(-1);}.actor.straining img{filter:drop-shadow(0 12px 9px rgba(0,0,0,.42)) saturate(1.16) brightness(1.08);}.tap{position:absolute;right:28px;bottom:50%;width:118px;height:118px;border-radius:50%;transform:translateY(50%) scale(var(--tapScale,.62));transform-origin:center;opacity:var(--tapOpacity,.7);background:radial-gradient(circle at 38% 30%,#fff9bb,#f0b43d 58%,#9b5e13);color:#102033;border:4px solid #fff1a8;box-shadow:0 0 calc(12px + 24px * var(--tapGlow,0)) rgba(255,220,80,.86), inset -10px -12px 24px rgba(116,62,12,.34), inset 8px 9px 16px rgba(255,255,255,.45);font-size:24px;font-weight:1000;display:flex;align-items:center;justify-content:center;pointer-events:auto;}.tap.wait{background:radial-gradient(circle,#bfe2ff,#4690cf 62%,#184a76);color:#06182a;}.tap.good{background:radial-gradient(circle,#e8ffd7,#69c66b 62%,#26733a);}.tap.perfect{background:radial-gradient(circle,#fff8b4,#ffcb2e 55%,#b15f0c);}.tap.late{background:radial-gradient(circle,#ffd5c8,#e24a35 62%,#7c1716);color:#fff;}.tap.locked{filter:grayscale(.25) brightness(.85);}.spark{position:absolute;top:58%;z-index:45;pointer-events:none;}.judge{position:absolute;left:50%;transform:translate(-50%,-50%);font-weight:1000;opacity:0;}@keyframes judge{0%{opacity:0;transform:translate(-50%,-20%) scale(.55)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-112%) scale(1)}}.tapFb{position:absolute;left:50%;bottom:96px;transform:none;font-size:20px;color:#ffe29a;background:#102a4c;border:2px solid #d6ad4b;border-radius:999px;padding:5px 13px;font-weight:1000;z-index:65;}.tapFb.show{animation:tapFb .42s ease-out;}@keyframes tapFb{0%{opacity:0;transform:translateX(-50%) translateY(10px) scale(.8)}25%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.15)}100%{opacity:0;transform:translateX(-50%) translateY(-36px) scale(1)}}.delta{position:absolute;left:50%;top:42%;transform:translateX(-50%);z-index:66;color:#fff4b8;font-size:36px;font-weight:1000;text-shadow:0 3px 0 #4b160f,0 0 12px #fff;opacity:0;}.delta.show{animation:delta .5s ease-out;}@keyframes delta{0%{opacity:0;transform:translateX(-50%) translateY(16px) scale(.7)}25%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.22)}100%{opacity:0;transform:translateX(-50%) translateY(-42px) scale(1)}}.queued{position:absolute;right:24px;bottom:16px;display:flex;gap:4px;max-width:260px;z-index:50;}.combo{position:absolute;left:132px;top:34px;color:#ffe46f;font-size:22px;font-weight:1000;text-shadow:0 2px 0 #7d1b1b,0 0 18px #ffdf4a;z-index:50;}.cardPop{position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);font-size:30px;font-weight:1000;color:#fff3a6;text-shadow:0 4px 0 #7d1b1b,0 0 18px #fff;opacity:0;z-index:74;}.cardPop.show{animation:cardPop .8s ease-out;}@keyframes cardPop{0%{opacity:0;transform:translate(-50%,-25%) scale(.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.14)}100%{opacity:0;transform:translate(-50%,-105%) scale(1)}}.doneText{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:30px;color:#fff1bd;text-shadow:0 2px 4px #000;font-weight:900;z-index:80;}.lane.done .doneText{display:flex;}.finishBanner{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);padding:10px 30px;border:3px solid #ffe38a;border-radius:18px;background:linear-gradient(180deg,#fff1a8,#d69025);color:#10233c;font-size:34px;font-weight:1000;letter-spacing:.12em;text-shadow:0 1px 0 #fff;box-shadow:0 0 28px rgba(255,210,72,.95),0 10px 24px rgba(0,0,0,.45);opacity:0;}.finishBanner.show{animation:finish .95s ease-out forwards;}@keyframes finish{0%{opacity:0;transform:translate(-50%,-50%) scale(.35) rotate(-6deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(2deg)}72%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-62%) scale(.9)}}.laneShake{animation:shake .16s linear;}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}.countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:90px;color:#ffe39a;font-weight:1000;text-shadow:0 4px 0 #4a1b12;z-index:100;background:rgba(0,0,0,.25);}.judgementOverlay{position:absolute;inset:0;z-index:108;display:none;align-items:center;justify-content:center;background:rgba(4,8,14,.18);pointer-events:none;}.judgementOverlay.show{display:flex;}.judgementWord{font-size:72px;font-weight:1000;letter-spacing:.18em;padding:12px 34px;border:3px solid rgba(255,236,180,.58);border-radius:18px;background:rgba(8,18,34,.58);text-shadow:0 3px 0 rgba(0,0,0,.55);box-shadow:none;animation:judgementWord .98s cubic-bezier(.2,.9,.2,1) forwards;}@keyframes judgementWord{0%{opacity:0;transform:scale(.72) translateY(12px)}18%{opacity:1;transform:scale(1.06) translateY(0)}72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.96) translateY(-10px)}}.modalShade{position:absolute;inset:0;background:rgba(4,8,14,.70);z-index:110;display:flex;align-items:center;justify-content:center;}.modalBox{width:720px;background:var(--paper);border:4px solid #b48732;border-radius:18px;padding:18px;box-shadow:0 16px 42px rgba(0,0,0,.55);}.modalBox h2{margin:0 0 10px;color:#102a4c;}.dialogSpeaker{font-weight:1000;color:#102a4c;}.dialogText{font-size:18px;line-height:1.75;background:#fff7e3;border:2px solid #8a6832;border-radius:12px;padding:14px;margin:12px 0;}.choices{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}.resultBody{height:546px;background:#23344d;padding:18px;}.resultCard{height:100%;background:var(--paper);border:4px solid #b48732;border-radius:16px;padding:18px;overflow:auto;}.resultCard h2{margin:0 0 8px;color:#102a4c;}.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}.resultBox{background:#fff7e3;border:2px solid #8a6832;border-radius:10px;padding:10px;}.storyLine{background:#172337;color:#f7e6bd;border-left:5px solid #b48732;padding:10px;border-radius:8px;margin-top:10px;}.resultMini{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}.resultMini span{background:#fff7e3;border:2px solid #8a6832;border-radius:999px;padding:6px 10px;font-weight:900;}.small{font-size:12px;color:var(--muted);}.economyBreakdown{margin-top:14px;background:#fff7e3;border:2px solid #8a6832;border-radius:12px;padding:10px;color:#172337;}.economyBreakdown h3{margin:0 0 8px;font-size:17px;color:#102a4c;}.econRow{display:grid;grid-template-columns:1fr 120px 120px;gap:8px;align-items:center;border-top:1px solid rgba(138,104,50,.28);padding:6px 0;font-size:13px;}.econRow:first-of-type{border-top:0;}.econRow b{text-align:right;color:#102a4c;}.econRow .neg{color:#9a2b23;}.econRow .pos{color:#2f7b52;}.rankHint{display:inline-flex;align-items:center;justify-content:center;margin:0;border:1px solid rgba(255,232,178,.28);border-radius:999px;padding:4px 9px;background:rgba(255,236,188,.08);font-size:12px;line-height:1;color:#ffe9b5;font-weight:900;vertical-align:middle;}.caseCard .caseMeta{display:none!important;}.lane.stun::after{content:"立て直し中";position:absolute;font-size:11px;font-weight:900;}.actor.bracing img{filter:drop-shadow(0 12px 9px rgba(0,0,0,.42)) saturate(.85) brightness(.9);}.cardSlot{position:absolute;right:22px;bottom:17px;z-index:58;display:flex;gap:6px;align-items:center;}.cardChip{background:#fff1a6;color:#14243b;border:2px solid #fff8ce;border-radius:10px;padding:5px 8px;box-shadow:0 0 12px rgba(255,220,80,.35);font-size:12px;font-weight:1000;}.cardChip.waiting::after{content:" 待機中";color:#8a4b00;}.cardChip.used{background:#5e6470;color:#eee;border-color:#bfc5cc;box-shadow:none;}.cardChip.used::after{content:" 使用済";color:#fff0a8;}.cardEffectText{font-size:12px;color:#fff0a8;background:rgba(16,42,76,.72);border:1px solid rgba(255,240,168,.5);border-radius:999px;padding:3px 7px;font-weight:900;}.lane.fxPerfect::before{content:"PERFECT BREAK!";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);z-index:73;color:#fff5a8;font-size:42px;font-weight:1000;text-shadow:0 4px 0 #8b250d,0 0 30px #fff;animation:judge .58s ease-out;pointer-events:none;}.lane.fxBad::before{content:"崩された！";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);z-index:73;color:#ffe0d7;font-size:46px;font-weight:1000;text-shadow:0 4px 0 #4b0606,0 0 26px #ff3b25;animation:judge .58s ease-out;pointer-events:none;}.lane.fxPerfect .lane.fxBad .tap.perfect{box-shadow:0 0 34px rgba(255,225,70,1), inset -10px -12px 24px rgba(116,62,12,.34), inset 8px 9px 16px rgba(255,255,255,.45);}.tap.late{box-shadow:0 0 26px rgba(255,45,35,.8), inset -10px -12px 24px rgba(116,10,10,.34);}.casePanel.revealList{animation:panelRevealSoundCue .48s ease-out;}@keyframes panelRevealSoundCue{0%{filter:brightness(.82)}100%{filter:none}}.tap{transition:opacity .16s ease-out,filter .16s ease-out;}.tap.consumed{animation:tapConsume .28s ease-in forwards!important;}.tap.reborn{animation:tapReborn .28s cubic-bezier(.2,1.5,.3,1) both;}.tap.consumed::after{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:17px;color:#fff4b8;text-shadow:0 2px 0 #4b160f;white-space:nowrap;}.tap.recoilOff{opacity:0;pointer-events:none;transform:translateY(50%) scale(.38);}@keyframes tapConsume{0%{opacity:1;transform:translateY(50%) scale(1);filter:brightness(1.2)}42%{opacity:.95;transform:translateY(50%) scale(1.25);filter:brightness(1.55)}100%{opacity:0;transform:translateY(50%) scale(.18);filter:brightness(.7)}}@keyframes tapReborn{0%{opacity:0;transform:translateY(50%) scale(.22);filter:brightness(1.8)}65%{opacity:1;transform:translateY(50%) scale(1.12);filter:brightness(1.2)}100%{opacity:var(--tapOpacity,.7);transform:translateY(50%) scale(var(--tapScale,.62));filter:none}}.lane.fxNormal{box-shadow:inset 0 0 30px rgba(230,235,245,.24);}.lane.fxPerfect::before,.lane.fxBad::before{display:none!important;content:none!important;}.timerNum{border-radius:10px!important;}.timeBar{border-width:3px!important;}.lane{background-color:#172337;background-size:cover!important;background-position:var(--bgPos, center 70%)!important;background-repeat:no-repeat!important;}.lane::after{content:"";position:absolute;inset:0;background:rgba(5,12,22,.16);z-index:1;pointer-events:none;}.laneHeader,.actor,.spark,.judge,.tapFb,.delta,.queued,.cardSlot,.combo,.cardPop,.tap,.finishBanner,.doneText{z-index:3;}.actor.left{z-index:4;}.tap{z-index:60;}.finishBanner{z-index:90;}.caseCard.selected::before{margin:0!important;}.laneTitleText{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 3px rgba(0,0,0,.75);}.powerBadge{display:inline-flex;align-items:center;justify-content:center;min-width:58px;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,241,184,.75);font-size:12px;font-weight:1000;color:#102033;background:#ffe178;box-shadow:0 1px 5px rgba(0,0,0,.35);}.powerBadge.adv{background:#80d7ff;}.powerBadge.sadv{background:#aeefff;}.powerBadge.even{background:#ffe178;}.powerBadge.sdis{background:#ffb25f;}.powerBadge.dis{background:#ff6b5d;color:#fff7e8;}.lane.stun::after{inset:auto!important;left:50%!important;top:42px!important;right:auto!important;bottom:auto!important;width:auto!important;height:auto!important;min-width:0!important;min-height:0!important;transform:translateX(-50%)!important;display:inline-block!important;background:rgba(0,0,0,.26)!important;border:1px solid rgba(255,231,160,.45)!important;border-radius:999px!important;padding:3px 10px!important;box-shadow:none!important;color:#ffe7a8!important;white-space:nowrap!important;z-index:30!important;pointer-events:none!important;}.caseCard.selected{border-color:#2ed3ff!important;background:linear-gradient(180deg,#fff7d8,#ead19a)!important;box-shadow:0 0 0 5px rgba(46,211,255,.38),0 8px 0 rgba(0,0,0,.24),inset 0 0 0 2px rgba(255,255,255,.62)!important;transform:translateY(-3px)!important;filter:brightness(1.04)!important;}.caseCard.selected::before{content:"選択中"!important;position:absolute!important;left:10px!important;top:10px!important;right:auto!important;bottom:auto!important;width:auto!important;height:auto!important;padding:3px 10px!important;border:2px solid #9beeff!important;border-radius:999px!important;background:#102a4c!important;color:#dff9ff!important;font-size:11px!important;font-weight:1000!important;letter-spacing:.04em!important;}.caseCard.selected::after{content:attr(data-order)!important;position:absolute!important;right:12px!important;top:10px!important;width:36px!important;height:36px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#073052!important;color:#e8fbff!important;border:3px solid #42dcff!important;font-size:21px!important;font-weight:1000!important;box-shadow:0 0 14px rgba(66,220,255,.65)!important;}.caseCard.selected .caseTitle{color:#061b33!important;}.caseCard.locked:not(.selected){opacity:.45;filter:grayscale(.35) brightness(.92);}.tap.consumed{display:none!important;opacity:0!important;pointer-events:none!important;}.tap.consumed::after{content:none!important;display:none!important;}.tap.pressed{animation:tapPress .24s ease-out both!important;}.tap.pressed::before{content:"";position:absolute;inset:8px;border-radius:50%;border:3px solid rgba(255,255,255,.78);animation:tapInnerRing .24s ease-out both;pointer-events:none;}.tap.pressed::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:24px 0 #fff,-24px 0 #fff,0 24px #fff,0 -24px #fff,17px 17px #fff,-17px -17px #fff,17px -17px #fff,-17px 17px #fff;animation:tapParticles .28s ease-out both;pointer-events:none;}.lane.landPulse{animation:landPulse .28s ease-out;}.lane.startPulse{animation:startPulse .24s ease-out;}.lane.hitReady .actor img{filter:drop-shadow(0 14px 10px rgba(0,0,0,.48)) saturate(1.14) brightness(1.05);}@keyframes tapPress{0%{transform:translateY(50%) scale(var(--tapScale,.72));filter:brightness(1.1)}35%{transform:translateY(50%) scale(calc(var(--tapScale,.72) * .82));filter:brightness(1.8)}100%{transform:translateY(50%) scale(calc(var(--tapScale,.72) * 1.04));filter:brightness(1.1)}}@keyframes tapInnerRing{0%{opacity:.95;transform:scale(1.18)}100%{opacity:0;transform:scale(.45)}}@keyframes tapParticles{0%{opacity:1;transform:translate(-50%,-50%) scale(.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.6)}}@keyframes landPulse{0%{filter:brightness(1.22);transform:translateX(0)}40%{filter:brightness(1.05);transform:translateX(-3px)}100%{filter:none;transform:translateX(0)}}@keyframes startPulse{0%{filter:brightness(.85)}50%{filter:brightness(1.22)}100%{filter:none}}.yearStory{position:relative!important;overflow:hidden!important;}.yearStory::after{content:"▼";position:absolute;right:28px;bottom:24px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#ffe8a8;background:rgba(16,42,76,.76);border:2px solid rgba(255,226,130,.85);box-shadow:0 0 12px rgba(255,210,80,.32);font-size:20px;font-weight:1000;animation:storyNextCue 1.25s ease-in-out infinite alternate;pointer-events:none;}.yearStory::before{content:"";position:absolute;inset:0;border-radius:10px;border:2px solid transparent;background:linear-gradient(90deg,transparent,rgba(255,226,130,.78),transparent) border-box;-webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;animation:storyEdgeSweep 4.2s ease-in-out infinite;pointer-events:none;}@keyframes storyNextCue{from{transform:translateY(0);filter:brightness(.96)}to{transform:translateY(5px);filter:brightness(1.18)}}@keyframes storyEdgeSweep{0%,68%,100%{opacity:0}76%{opacity:.72}86%{opacity:0}}.casePanel{margin:14px 14px 14px 0!important;}.openingTitle{position:absolute;inset:0;cursor:pointer;overflow:hidden;background:#050912;}.openingTitleImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;user-select:none;pointer-events:none;}.openingTitle::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.04) 55%,rgba(0,0,0,.34));pointer-events:none;}.startCue{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:3;color:#fff0b8;background:rgba(7,20,35,.76);border:2px solid rgba(255,226,130,.88);border-radius:999px;padding:10px 26px;font-size:18px;font-weight:1000;letter-spacing:.08em;box-shadow:0 0 18px rgba(255,210,80,.35),0 8px 18px rgba(0,0,0,.28);animation:startCuePulse 1.15s ease-in-out infinite alternate;}.startCuePc,.startCueTouch{display:none!important;}@media (hover:hover) and (pointer:fine){.startCuePc{display:inline!important}.startCueTouch{display:none!important}}@media (hover:none),(pointer:coarse){.startCuePc{display:none!important}.startCueTouch{display:inline!important}}.openingStoryScreen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(30,48,74,.92),rgba(4,8,14,.96));cursor:pointer;padding:42px;}.openingStoryBox{position:relative;background:linear-gradient(#fff1c9,#e6c98d);border:4px solid #b48732;border-radius:20px;color:#172033;box-shadow:0 18px 48px rgba(0,0,0,.58),inset 0 0 0 2px rgba(255,255,255,.42);}.openingStoryText .quote{margin-top:18px;}.storyCue{position:absolute;right:28px;bottom:22px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#ffe8a8;background:rgba(16,42,76,.80);border:2px solid rgba(255,226,130,.90);box-shadow:0 0 12px rgba(255,210,80,.32);font-size:20px;font-weight:1000;animation:startCuePulse 1.15s ease-in-out infinite alternate;}.openingFadeIn{animation:openingFadeIn .36s ease-out both;}@keyframes startCuePulse{from{opacity:.62;filter:brightness(.92);transform:translateX(-50%) translateY(0)}to{opacity:1;filter:brightness(1.18);transform:translateX(-50%) translateY(4px)}}@keyframes openingFadeOut{to{opacity:0;filter:brightness(.8)}}@keyframes openingFadeIn{from{opacity:0;filter:brightness(.8)}to{opacity:1;filter:none}}.openingStoryBox .storyCue{transform:none;animation:storyCuePulse 1.15s ease-in-out infinite alternate;}@keyframes storyCuePulse{from{opacity:.62;filter:brightness(.92);transform:translateY(0)}to{opacity:1;filter:brightness(1.18);transform:translateY(4px)}}.openingStoryBox{overflow:hidden!important;}.openingStoryBox .storyCue{z-index:3!important;}.openingStoryText,.openingStoryText p,.openingStoryText .quote,.openingStoryText .openingCite{font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;letter-spacing:inherit!important;}.openingStoryText .openingCite,.openingStoryText .source{text-align:right!important;display:block!important;opacity:1!important;}.openingStoryText{white-space:normal!important;font-size:20px!important;line-height:1.72!important;font-weight:800!important;letter-spacing:.02em!important;}.openingStoryText .openingPara{margin:0 0 28px 0!important;}.openingStoryText .openingPara:last-child{margin-bottom:0!important;}.openingStoryText .quote{display:block!important;margin:0!important;padding:0!important;font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;letter-spacing:inherit!important;text-align:left!important;}.openingStoryText .openingCite{display:block!important;margin:6px 0 0 0!important;padding:0!important;text-align:right!important;font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;letter-spacing:inherit!important;}.tapFb{display:none!important;opacity:0!important;pointer-events:none!important;}.judge{top:46%!important;font-size:64px!important;letter-spacing:.04em!important;color:#fff0a8!important;text-shadow:0 5px 0 #7d1b1b,
+:root{--bg:#0d1828;--navy:#102a4c;--navy2:#173b64;--gold:#c99b38;--gold2:#f3cf62;--paper:#f2dfb8;--paper2:#fff1c9;--ink:#172033;--muted:#6f6046;--red:#9a2b23;--blue:#25649c;--green:#2f7b52;}*{box-sizing:border-box;}body{margin:0;background:#090f19;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);user-select:none;}#game{width:1000px;height:600px;overflow:hidden;background:linear-gradient(#172945,#0e1828);border:3px solid #050912;box-shadow:0 18px 45px rgba(0,0,0,.55);}.screen{position:absolute;inset:0;display:none;}.screen.active{display:block;}.topbar{height:54px;background:linear-gradient(90deg,#07172b,#12395f);border-bottom:3px solid var(--gold);color:#ffe9b5;display:flex;align-items:center;gap:10px;padding:7px 14px;font-weight:900;}.topbar b{font-size:18px;margin-right:6px;}.param{font-size:12px;border:1px solid rgba(255,232,178,.28);border-radius:999px;padding:4px 9px;background:rgba(255,236,188,.08);}button{font:inherit;font-weight:900;border:2px solid #75541e;border-radius:10px;background:#f7df9a;color:#102033;padding:8px 12px;cursor:pointer;box-shadow:0 3px 0 #604416;}button:hover{filter:brightness(1.05);}button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.5);}.pick{height:546px;display:grid;grid-template-columns:456px 1fr;grid-template-rows:456px 90px;background:#102033;}.map{margin:14px;background:#e5d1a5;border:3px solid #b58a35;border-radius:14px;position:relative;overflow:hidden;box-shadow:inset 0 0 26px rgba(82,52,12,.2);aspect-ratio:1/1;}.mapTitle{position:absolute;left:18px;top:14px;font-size:18px;font-weight:1000;color:#23321f;}.map.revealed{animation:mapReveal .55s ease-out;}.mapLayer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;}.mapLayer.baseBottom{z-index:1;}.mapLayer.dynamic{z-index:10;}.mapLayer.baseTop{z-index:100;}.mapStatus{position:absolute;left:10px;right:10px;bottom:10px;z-index:130;display:flex;gap:5px;flex-wrap:wrap;pointer-events:none;}.mapChip{font-size:10px;font-weight:1000;color:#102033;background:rgba(255,239,174,.86);border:1px solid rgba(80,50,12,.45);border-radius:999px;padding:2px 6px;box-shadow:0 1px 4px rgba(0,0,0,.25);}.mapChip.plus{background:rgba(168,238,255,.90);}.mapChip.minus{background:rgba(255,179,149,.90);}.casePanel{border:3px solid #b58a35;border-radius:14px;background:#0d1a2b;padding:12px;display:grid;grid-template-columns:1fr;overflow:auto;}.casePanel::-webkit-scrollbar{width:8px;}.casePanel::-webkit-scrollbar-thumb{background:#b78b32;border-radius:99px;}.yearStory{height:100%;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:28px;background:linear-gradient(180deg,#152944,#0b1728);border-radius:10px;color:#ffe8b0;cursor:pointer;box-shadow:inset 0 0 28px rgba(255,210,88,.10);}.yearStoryText{font-size:23px;line-height:1.65;font-weight:900;text-shadow:0 2px 0 rgba(0,0,0,.35);}.casePanel.revealList .caseCard{opacity:0;transform:translateY(4px);animation:caseAppear .24s ease-out forwards;}.casePanel.revealList .caseCard:nth-child(1){animation-delay:.04s;}.casePanel.revealList .caseCard:nth-child(2){animation-delay:.11s;}.casePanel.revealList .caseCard:nth-child(3){animation-delay:.18s;}.casePanel.revealList .caseCard:nth-child(4){animation-delay:.25s;}.casePanel.revealList .caseCard:nth-child(5){animation-delay:.32s;}.casePanel.revealList .caseCard:nth-child(6){animation-delay:.39s;}.casePanel.revealList .caseCard:nth-child(7){animation-delay:.46s;}@keyframes caseAppear{0%{opacity:0;transform:translateY(4px);filter:brightness(.96)}100%{opacity:1;transform:translateY(0);filter:none}}.caseCard{border:4px solid #d6aa3a;background:linear-gradient(#fff0c8,#e9cc8f);box-shadow:0 4px 0 rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.45);cursor:pointer;transition:transform .08s,filter .08s,box-shadow .08s,opacity .08s;}.caseCard:hover{transform:translateY(-2px);}.caseCard:active{transform:translateY(1px) scale(.992);}.caseCard.easy{border-color:#46a56f;}.caseCard.normal{border-color:#d6aa3a;}.caseCard.hard{border-color:#c04a2f;}.caseCard.desperate{border-color:#9f3430;}.caseCard.growth{border-color:#36a66f;}.caseCard.locked{opacity:.42;filter:grayscale(.45);}.caseTitle{font-weight:1000;color:#112748;}.caseStory{color:#30281a;}.caseMeta{font-size:12px;color:#624820;margin-top:8px;font-weight:800;}.slots{grid-column:1/3;margin:0 14px 12px;border:3px solid #b58a35;border-radius:14px;background:#0d1a2b;display:grid;gap:10px;padding:8px 10px;align-items:stretch;}.slot{border:2px dashed rgba(232,204,143,.55);border-radius:12px;background:#142238;min-height:60px;padding:10px;display:flex;align-items:center;gap:10px;color:#e8d6ad;}.slot.filled{border-style:solid;border-color:#f0c95a;background:linear-gradient(#1c3556,#132840);box-shadow:0 0 18px rgba(240,201,90,.22);cursor:pointer;}.slotNo{font-size:13px;font-weight:900;color:#f2cf69;border:1px solid rgba(242,207,105,.55);border-radius:999px;padding:3px 8px;white-space:nowrap;}.slotTitle{font-size:16px;font-weight:900;color:#fff1bf;}.slotEmpty{font-weight:800;color:#978d73;}.next{height:100%;font-size:20px;border-radius:12px;}.count{position:absolute;right:26px;bottom:96px;font-weight:1000;}.toast{position:absolute;right:215px;bottom:112px;background:#102a4c;color:#ffe7ad;border:2px solid #d5ad4e;border-radius:999px;padding:8px 18px;font-weight:900;animation:toast .7s ease-out both;}@keyframes toast{0%{opacity:0;transform:translateY(8px)}20%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}.primary{font-size:20px;background:#f3c84b;color:#102a4c;border-color:#ffe7a0;min-width:260px;}.pulse{animation:pulse 1s infinite alternate;}@keyframes pulse{from{transform:scale(1);filter:brightness(1)}to{transform:scale(1.025);filter:brightness(1.12)}}.timerNum{display:inline-block;}.danger .timerNum{animation:danger .34s infinite alternate;background:#2b0b0b;color:#fff0c0;border-color:#ff6142;box-shadow:0 0 22px rgba(255,62,41,.7);}@keyframes danger{from{transform:scale(1)}to{transform:scale(1.08)}}.timeBar{box-shadow:inset 0 0 10px rgba(0,0,0,.5);}.timeFill{width:100%;transform-origin:left center;}.battleArea{height:536px;background:#172337;}.lane{position:relative;overflow:hidden;border-bottom:2px solid rgba(255,230,180,.35);background:linear-gradient(90deg,#0d2d4d,#154d78 44%,#3c2e24 50%,#84241d 58%,#6b201b);cursor:pointer;}.laneHeader{position:absolute;display:flex;align-items:center;color:#f9eac8;font-weight:900;z-index:35;}.lineBar{height:16px;flex:1;background:#461d1d;border:1px solid #f1d998;border-radius:99px;position:relative;overflow:hidden;}.lineFill{position:absolute;top:0;bottom:0;left:50%;width:0;background:#e5c24c;}.lineCenter{position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:#fff;}.lineText{font-weight:1000;}.actor{position:absolute;width:150px;height:150px;bottom:var(--actorBottom,42px);overflow:visible;display:block;z-index:20;pointer-events:none;will-change:left,transform,filter;}.actor img{position:absolute;left:0;bottom:0;width:150px;height:150px;object-fit:contain;filter:drop-shadow(0 12px 9px rgba(0,0,0,.42));user-select:none;pointer-events:none;}.actor.right img{transform:scaleX(-1);}.actor.straining img{filter:drop-shadow(0 12px 9px rgba(0,0,0,.42)) saturate(1.16) brightness(1.08);}.tap{position:absolute;right:28px;bottom:50%;width:118px;height:118px;border-radius:50%;transform:translateY(50%) scale(var(--tapScale,.62));transform-origin:center;opacity:var(--tapOpacity,.7);background:radial-gradient(circle at 38% 30%,#fff9bb,#f0b43d 58%,#9b5e13);color:#102033;border:4px solid #fff1a8;box-shadow:0 0 calc(12px + 24px * var(--tapGlow,0)) rgba(255,220,80,.86), inset -10px -12px 24px rgba(116,62,12,.34), inset 8px 9px 16px rgba(255,255,255,.45);font-size:24px;font-weight:1000;display:flex;align-items:center;justify-content:center;pointer-events:auto;}.tap.wait{background:radial-gradient(circle,#bfe2ff,#4690cf 62%,#184a76);color:#06182a;}.tap.good{background:radial-gradient(circle,#e8ffd7,#69c66b 62%,#26733a);}.tap.perfect{background:radial-gradient(circle,#fff8b4,#ffcb2e 55%,#b15f0c);}.tap.late{background:radial-gradient(circle,#ffd5c8,#e24a35 62%,#7c1716);color:#fff;}.tap.locked{filter:grayscale(.25) brightness(.85);}.spark{position:absolute;top:58%;z-index:45;pointer-events:none;}.judge{position:absolute;left:50%;transform:translate(-50%,-50%);font-weight:1000;opacity:0;}@keyframes judge{0%{opacity:0;transform:translate(-50%,-20%) scale(.55)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-112%) scale(1)}}.tapFb{position:absolute;left:50%;bottom:96px;transform:none;font-size:20px;color:#ffe29a;background:#102a4c;border:2px solid #d6ad4b;border-radius:999px;padding:5px 13px;font-weight:1000;z-index:65;}.tapFb.show{animation:tapFb .42s ease-out;}@keyframes tapFb{0%{opacity:0;transform:translateX(-50%) translateY(10px) scale(.8)}25%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.15)}100%{opacity:0;transform:translateX(-50%) translateY(-36px) scale(1)}}.delta{position:absolute;left:50%;top:42%;transform:translateX(-50%);z-index:66;color:#fff4b8;font-size:36px;font-weight:1000;text-shadow:0 3px 0 #4b160f,0 0 12px #fff;opacity:0;}.delta.show{animation:delta .5s ease-out;}@keyframes delta{0%{opacity:0;transform:translateX(-50%) translateY(16px) scale(.7)}25%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.22)}100%{opacity:0;transform:translateX(-50%) translateY(-42px) scale(1)}}.queued{position:absolute;right:24px;bottom:16px;display:flex;gap:4px;max-width:260px;z-index:50;}.combo{position:absolute;left:132px;top:34px;color:#ffe46f;font-size:22px;font-weight:1000;text-shadow:0 2px 0 #7d1b1b,0 0 18px #ffdf4a;z-index:50;}.cardPop{position:absolute;left:50%;top:28%;transform:translate(-50%,-50%);font-size:30px;font-weight:1000;color:#fff3a6;text-shadow:0 4px 0 #7d1b1b,0 0 18px #fff;opacity:0;z-index:74;}.cardPop.show{animation:cardPop .8s ease-out;}@keyframes cardPop{0%{opacity:0;transform:translate(-50%,-25%) scale(.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.14)}100%{opacity:0;transform:translate(-50%,-105%) scale(1)}}.doneText{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:30px;color:#fff1bd;text-shadow:0 2px 4px #000;font-weight:900;z-index:80;}.lane.done .doneText{display:flex;}.finishBanner{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);padding:10px 30px;border:3px solid #ffe38a;border-radius:18px;background:linear-gradient(180deg,#fff1a8,#d69025);color:#10233c;font-size:34px;font-weight:1000;letter-spacing:.12em;text-shadow:0 1px 0 #fff;box-shadow:0 0 28px rgba(255,210,72,.95),0 10px 24px rgba(0,0,0,.45);opacity:0;}.finishBanner.show{animation:finish .95s ease-out forwards;}@keyframes finish{0%{opacity:0;transform:translate(-50%,-50%) scale(.35) rotate(-6deg)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.18) rotate(2deg)}72%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-62%) scale(.9)}}.laneShake{animation:shake .16s linear;}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}.countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:90px;color:#ffe39a;font-weight:1000;text-shadow:0 4px 0 #4a1b12;z-index:100;background:rgba(0,0,0,.25);}.judgementOverlay{position:absolute;inset:0;z-index:108;display:none;align-items:center;justify-content:center;background:rgba(4,8,14,.18);pointer-events:none;}.judgementOverlay.show{display:flex;}.judgementWord{font-size:72px;font-weight:1000;letter-spacing:.18em;padding:12px 34px;border:3px solid rgba(255,236,180,.58);border-radius:18px;background:rgba(8,18,34,.58);text-shadow:0 3px 0 rgba(0,0,0,.55);box-shadow:none;animation:judgementWord .98s cubic-bezier(.2,.9,.2,1) forwards;}@keyframes judgementWord{0%{opacity:0;transform:scale(.72) translateY(12px)}18%{opacity:1;transform:scale(1.06) translateY(0)}72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.96) translateY(-10px)}}.modalShade{position:absolute;inset:0;background:rgba(4,8,14,.70);z-index:110;display:flex;align-items:center;justify-content:center;}.modalBox{width:720px;background:var(--paper);border:4px solid #b48732;border-radius:18px;padding:18px;box-shadow:0 16px 42px rgba(0,0,0,.55);}.modalBox h2{margin:0 0 10px;color:#102a4c;}.dialogSpeaker{font-weight:1000;color:#102a4c;}.dialogText{font-size:18px;line-height:1.75;background:#fff7e3;border:2px solid #8a6832;border-radius:12px;padding:14px;margin:12px 0;}.choices{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;}.resultBody{height:546px;background:#23344d;padding:18px;}.resultCard{height:100%;background:var(--paper);border:4px solid #b48732;border-radius:16px;padding:18px;overflow:auto;}.resultCard h2{margin:0 0 8px;color:#102a4c;}.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}.resultBox{background:#fff7e3;border:2px solid #8a6832;border-radius:10px;padding:10px;}.storyLine{background:#172337;color:#f7e6bd;border-left:5px solid #b48732;padding:10px;border-radius:8px;margin-top:10px;}.resultMini{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}.resultMini span{background:#fff7e3;border:2px solid #8a6832;border-radius:999px;padding:6px 10px;font-weight:900;}.small{font-size:12px;color:var(--muted);}.economyBreakdown{margin-top:14px;background:#fff7e3;border:2px solid #8a6832;border-radius:12px;padding:10px;color:#172337;}.economyBreakdown h3{margin:0 0 8px;font-size:17px;color:#102a4c;}.econRow{display:grid;grid-template-columns:1fr 120px 120px;gap:8px;align-items:center;border-top:1px solid rgba(138,104,50,.28);padding:6px 0;font-size:13px;}.econRow:first-of-type{border-top:0;}.econRow b{text-align:right;color:#102a4c;}.econRow .neg{color:#9a2b23;}.econRow .pos{color:#2f7b52;}.rankHint{display:inline-flex;align-items:center;justify-content:center;margin:0;border:1px solid rgba(255,232,178,.28);border-radius:999px;padding:4px 9px;background:rgba(255,236,188,.08);font-size:12px;line-height:1;color:#ffe9b5;font-weight:900;vertical-align:middle;}.caseCard .caseMeta{display:none!important;}.lane.stun::after{content:"立て直し中";position:absolute;font-size:11px;font-weight:900;}.actor.bracing img{filter:drop-shadow(0 12px 9px rgba(0,0,0,.42)) saturate(.85) brightness(.9);}.cardSlot{position:absolute;right:22px;bottom:17px;z-index:58;display:flex;gap:6px;align-items:center;}.cardChip{background:#fff1a6;color:#14243b;border:2px solid #fff8ce;border-radius:10px;padding:5px 8px;box-shadow:0 0 12px rgba(255,220,80,.35);font-size:12px;font-weight:1000;}.cardChip.waiting::after{content:" 待機中";color:#8a4b00;}.cardChip.used{background:#5e6470;color:#eee;border-color:#bfc5cc;box-shadow:none;}.cardChip.used::after{content:" 使用済";color:#fff0a8;}.cardEffectText{font-size:12px;color:#fff0a8;background:rgba(16,42,76,.72);border:1px solid rgba(255,240,168,.5);border-radius:999px;padding:3px 7px;font-weight:900;}.lane.fxPerfect::before{content:"PERFECT BREAK!";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);z-index:73;color:#fff5a8;font-size:42px;font-weight:1000;text-shadow:0 4px 0 #8b250d,0 0 30px #fff;animation:judge .58s ease-out;pointer-events:none;}.lane.fxBad::before{content:"崩された！";position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);z-index:73;color:#ffe0d7;font-size:46px;font-weight:1000;text-shadow:0 4px 0 #4b0606,0 0 26px #ff3b25;animation:judge .58s ease-out;pointer-events:none;}.lane.fxPerfect .lane.fxBad .tap.perfect{box-shadow:0 0 34px rgba(255,225,70,1), inset -10px -12px 24px rgba(116,62,12,.34), inset 8px 9px 16px rgba(255,255,255,.45);}.tap.late{box-shadow:0 0 26px rgba(255,45,35,.8), inset -10px -12px 24px rgba(116,10,10,.34);}.casePanel.revealList{animation:panelRevealSoundCue .48s ease-out;}@keyframes panelRevealSoundCue{0%{filter:brightness(.82)}100%{filter:none}}.tap{transition:opacity .16s ease-out,filter .16s ease-out;}.tap.consumed{animation:tapConsume .28s ease-in forwards!important;}.tap.reborn{animation:tapReborn .28s cubic-bezier(.2,1.5,.3,1) both;}.tap.consumed::after{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:17px;color:#fff4b8;text-shadow:0 2px 0 #4b160f;white-space:nowrap;}.tap.recoilOff{opacity:0;pointer-events:none;transform:translateY(50%) scale(.38);}@keyframes tapConsume{0%{opacity:1;transform:translateY(50%) scale(1);filter:brightness(1.2)}42%{opacity:.95;transform:translateY(50%) scale(1.25);filter:brightness(1.55)}100%{opacity:0;transform:translateY(50%) scale(.18);filter:brightness(.7)}}@keyframes tapReborn{0%{opacity:0;transform:translateY(50%) scale(.22);filter:brightness(1.8)}65%{opacity:1;transform:translateY(50%) scale(1.12);filter:brightness(1.2)}100%{opacity:var(--tapOpacity,.7);transform:translateY(50%) scale(var(--tapScale,.62));filter:none}}.lane.fxNormal{box-shadow:inset 0 0 30px rgba(230,235,245,.24);}.lane.fxPerfect::before,.lane.fxBad::before{display:none!important;content:none!important;}.timerNum{border-radius:10px!important;}.timeBar{border-width:3px!important;}.lane{background-color:#172337;background-size:cover!important;background-position:var(--bgPos, center 70%)!important;background-repeat:no-repeat!important;}.lane::after{content:"";position:absolute;inset:0;background:rgba(5,12,22,.16);z-index:1;pointer-events:none;}.laneHeader,.actor,.spark,.judge,.tapFb,.delta,.queued,.cardSlot,.combo,.cardPop,.tap,.finishBanner,.doneText{z-index:3;}.actor.left{z-index:4;}.tap{z-index:60;}.finishBanner{z-index:90;}.caseCard.selected::before{margin:0!important;}.laneTitleText{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 3px rgba(0,0,0,.75);}.powerBadge{display:inline-flex;align-items:center;justify-content:center;min-width:58px;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,241,184,.75);font-size:12px;font-weight:1000;color:#102033;background:#ffe178;box-shadow:0 1px 5px rgba(0,0,0,.35);}.powerBadge.adv{background:#80d7ff;}.powerBadge.sadv{background:#aeefff;}.powerBadge.even{background:#ffe178;}.powerBadge.sdis{background:#ffb25f;}.powerBadge.dis{background:#ff6b5d;color:#fff7e8;}.lane.stun::after{inset:auto!important;left:50%!important;top:42px!important;right:auto!important;bottom:auto!important;width:auto!important;height:auto!important;min-width:0!important;min-height:0!important;transform:translateX(-50%)!important;display:inline-block!important;background:rgba(0,0,0,.26)!important;border:1px solid rgba(255,231,160,.45)!important;border-radius:999px!important;padding:3px 10px!important;box-shadow:none!important;color:#ffe7a8!important;white-space:nowrap!important;z-index:30!important;pointer-events:none!important;}.caseCard.selected{border-color:#2ed3ff!important;background:linear-gradient(180deg,#fff7d8,#ead19a)!important;box-shadow:0 0 0 5px rgba(46,211,255,.38),0 8px 0 rgba(0,0,0,.24),inset 0 0 0 2px rgba(255,255,255,.62)!important;transform:translateY(-3px)!important;filter:brightness(1.04)!important;}.caseCard.selected::before{content:"選択中"!important;position:absolute!important;left:10px!important;top:10px!important;right:auto!important;bottom:auto!important;width:auto!important;height:auto!important;padding:3px 10px!important;border:2px solid #9beeff!important;border-radius:999px!important;background:#102a4c!important;color:#dff9ff!important;font-size:11px!important;font-weight:1000!important;letter-spacing:.04em!important;}.caseCard.selected::after{content:attr(data-order)!important;position:absolute!important;right:12px!important;top:10px!important;width:36px!important;height:36px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#073052!important;color:#e8fbff!important;border:3px solid #42dcff!important;font-size:21px!important;font-weight:1000!important;box-shadow:0 0 14px rgba(66,220,255,.65)!important;}.caseCard.selected .caseTitle{color:#061b33!important;}.caseCard.locked:not(.selected){opacity:.45;filter:grayscale(.35) brightness(.92);}.tap.consumed{display:none!important;opacity:0!important;pointer-events:none!important;}.tap.consumed::after{content:none!important;display:none!important;}.tap.pressed{animation:tapPress .24s ease-out both!important;}.tap.pressed::before{content:"";position:absolute;inset:8px;border-radius:50%;border:3px solid rgba(255,255,255,.78);animation:tapInnerRing .24s ease-out both;pointer-events:none;}.tap.pressed::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:24px 0 #fff,-24px 0 #fff,0 24px #fff,0 -24px #fff,17px 17px #fff,-17px -17px #fff,17px -17px #fff,-17px 17px #fff;animation:tapParticles .28s ease-out both;pointer-events:none;}.lane.landPulse{animation:landPulse .28s ease-out;}.lane.startPulse{animation:startPulse .24s ease-out;}.lane.hitReady .actor img{filter:drop-shadow(0 14px 10px rgba(0,0,0,.48)) saturate(1.14) brightness(1.05);}@keyframes tapPress{0%{transform:translateY(50%) scale(var(--tapScale,.72));filter:brightness(1.1)}35%{transform:translateY(50%) scale(calc(var(--tapScale,.72) * .82));filter:brightness(1.8)}100%{transform:translateY(50%) scale(calc(var(--tapScale,.72) * 1.04));filter:brightness(1.1)}}@keyframes tapInnerRing{0%{opacity:.95;transform:scale(1.18)}100%{opacity:0;transform:scale(.45)}}@keyframes tapParticles{0%{opacity:1;transform:translate(-50%,-50%) scale(.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.6)}}@keyframes landPulse{0%{filter:brightness(1.22);transform:translateX(0)}40%{filter:brightness(1.05);transform:translateX(-3px)}100%{filter:none;transform:translateX(0)}}@keyframes startPulse{0%{filter:brightness(.85)}50%{filter:brightness(1.22)}100%{filter:none}}.yearStory{position:relative!important;overflow:hidden!important;}.yearStory::after{content:"▼";position:absolute;right:28px;bottom:24px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#ffe8a8;background:rgba(16,42,76,.76);border:2px solid rgba(255,226,130,.85);box-shadow:0 0 12px rgba(255,210,80,.32);font-size:20px;font-weight:1000;animation:storyNextCue 1.25s ease-in-out infinite alternate;pointer-events:none;}.yearStory::before{content:"";position:absolute;inset:0;border-radius:10px;border:2px solid transparent;background:linear-gradient(90deg,transparent,rgba(255,226,130,.78),transparent) border-box;-webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;animation:storyEdgeSweep 4.2s ease-in-out infinite;pointer-events:none;}@keyframes storyNextCue{from{transform:translateY(0);filter:brightness(.96)}to{transform:translateY(5px);filter:brightness(1.18)}}@keyframes storyEdgeSweep{0%,68%,100%{opacity:0}76%{opacity:.72}86%{opacity:0}}.casePanel{margin:14px 14px 14px 0!important;}.openingTitle{position:absolute;inset:0;cursor:pointer;overflow:hidden;background:#050912;}.openingTitleImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;user-select:none;pointer-events:none;}.openingTitle::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.04) 55%,rgba(0,0,0,.34));pointer-events:none;}.startCue{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:3;color:#fff0b8;background:rgba(7,20,35,.76);border:2px solid rgba(255,226,130,.88);border-radius:999px;padding:10px 26px;font-size:18px;font-weight:1000;letter-spacing:.08em;box-shadow:0 0 18px rgba(255,210,80,.35),0 8px 18px rgba(0,0,0,.28);animation:startCuePulse 1.15s ease-in-out infinite alternate;}.startCuePc,.startCueTouch{display:none!important;}@media (hover:hover) and (pointer:fine){.startCuePc{display:inline!important}.startCueTouch{display:none!important}}@media (hover:none),(pointer:coarse){.startCuePc{display:none!important}.startCueTouch{display:inline!important}}.openingStoryScreen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,rgba(30,48,74,.92),rgba(4,8,14,.96));cursor:pointer;padding:42px;}.openingStoryBox{position:relative;background:linear-gradient(#fff1c9,#e6c98d);border:4px solid #b48732;border-radius:20px;color:#172033;box-shadow:0 18px 48px rgba(0,0,0,.58),inset 0 0 0 2px rgba(255,255,255,.42);}.openingStoryText .quote{margin-top:18px;}.storyCue{position:absolute;right:28px;bottom:22px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#ffe8a8;background:rgba(16,42,76,.80);border:2px solid rgba(255,226,130,.90);box-shadow:0 0 12px rgba(255,210,80,.32);font-size:20px;font-weight:1000;animation:startCuePulse 1.15s ease-in-out infinite alternate;}.openingFadeIn{animation:openingFadeIn .36s ease-out both;}@keyframes startCuePulse{from{opacity:.62;filter:brightness(.92);transform:translateX(-50%) translateY(0)}to{opacity:1;filter:brightness(1.18);transform:translateX(-50%) translateY(4px)}}@keyframes openingFadeOut{to{opacity:0;filter:brightness(.8)}}@keyframes openingFadeIn{from{opacity:0;filter:brightness(.8)}to{opacity:1;filter:none}}.openingStoryBox .storyCue{transform:none;animation:storyCuePulse 1.15s ease-in-out infinite alternate;}@keyframes storyCuePulse{from{opacity:.62;filter:brightness(.92);transform:translateY(0)}to{opacity:1;filter:brightness(1.18);transform:translateY(4px)}}.openingStoryBox{overflow:hidden!important;}.openingStoryBox .storyCue{z-index:3!important;}.openingStoryText,.openingStoryText p,.openingStoryText .quote,.openingStoryText .openingCite{font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;letter-spacing:inherit!important;}.openingStoryText .openingCite,.openingStoryText .source{text-align:right!important;display:block!important;opacity:1!important;}.openingStoryText{white-space:normal!important;font-size:20px!important;line-height:1.72!important;font-weight:800!important;letter-spacing:.02em!important;}.openingStoryText .openingPara{margin:0 0 28px 0!important;}.openingStoryText .openingPara:last-child{margin-bottom:0!important;}.openingStoryText .quote{display:block!important;margin:0!important;padding:0!important;font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;letter-spacing:inherit!important;text-align:left!important;}.openingStoryText .openingCite{display:block!important;margin:6px 0 0 0!important;padding:0!important;text-align:right!important;font-family:inherit!important;font-size:inherit!important;font-weight:inherit!important;color:inherit!important;letter-spacing:inherit!important;}.tapFb{display:none!important;opacity:0!important;pointer-events:none!important;}.judge{top:46%!important;font-size:64px!important;letter-spacing:.04em!important;color:#fff0a8!important;text-shadow:0 5px 0 #7d1b1b,
 0 0 18px #fff8c8,
 0 0 34px #ffd84a,
 0 0 58px rgba(255,122,42,.82)!important;z-index:92!important;pointer-events:none!important;}.judge.show{animation:judgeCenterBurst .72s cubic-bezier(.18,1.55,.26,1) both!important;}@keyframes judgeCenterBurst{
@@ -2083,6 +2084,14 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
   display:block!important;
 }
 .kingEndingEndButtonWrap .gameCueButton{
+  width:260px!important;
+  min-width:260px!important;
+  max-width:260px!important;
+  height:48px!important;
+  min-height:48px!important;
+  max-height:48px!important;
+  padding:0 22px!important;
+  white-space:nowrap!important;
   animation:none!important;
   transform:none!important;
 }
@@ -3386,7 +3395,7 @@ local_pilgrim_inn_beds:{scale:1,storyGate:2,tags:['pilgrimage','welfare','rick']
 local_small_monastery_bell:{scale:2,storyGate:3,tags:['religion','rick','village']},
 local_infirmary_herb_garden:{scale:1,storyGate:2,tags:['welfare','plague','village']},
 local_deserter_return:{scale:3,storyGate:4,tags:['military','village','justice']},
-local_border_dual_loyalty:{scale:3,storyGate:4,tags:['border','loire','diplomacy']},crisis_leopold_mine_riot:{scale:3,storyGate:2,tags:['finance','silver','people','crisis','elector_leopold'],requiresFlag:'crisis_leopold_mine_riot'},crisis_leopold_port_tax_pact:{scale:4,storyGate:5,tags:['finance','seafeara','noble','crisis','elector_leopold','greatPower'],requiresFlag:'crisis_leopold_port_tax_pact'},crisis_emil_loire_satire_play:{scale:3,storyGate:3,tags:['printing','culture','loire','crisis','elector_emil'],requiresFlag:'crisis_emil_loire_satire_play'},crisis_emil_holy_inquiry:{scale:4,storyGate:5,tags:['religion','university','rick','crisis','elector_emil','greatPower'],requiresFlag:'crisis_emil_holy_inquiry'},crisis_clarissa_refugee_quarter:{scale:3,storyGate:4,tags:['refugee','people','azraq','crisis','elector_clarissa'],requiresFlag:'crisis_clarissa_refugee_quarter'},crisis_clarissa_false_prophet:{scale:4,storyGate:5,tags:['religion','people','church','crisis','elector_clarissa','greatPower'],requiresFlag:'crisis_clarissa_false_prophet'},crisis_rosen_marriage_sabotage:{scale:3,storyGate:5,tags:['court','marriage','scandal','crisis','elector_rosen'],requiresFlag:'crisis_rosen_marriage_sabotage'},crisis_rosen_court_refusal:{scale:4,storyGate:5,tags:['court','noble','loire','crisis','elector_rosen','greatPower'],requiresFlag:'crisis_rosen_court_refusal'},crisis_gerhard_solia_enemy_contract:{scale:3,storyGate:4,tags:['military','mercenary','solia','crisis','elector_gerhard'],requiresFlag:'crisis_gerhard_solia_enemy_contract'},crisis_gerhard_ruthenia_occupation:{scale:4,storyGate:5,tags:['military','border','ruthenia','crisis','elector_gerhard','greatPower'],requiresFlag:'crisis_gerhard_ruthenia_occupation'},country_loire_gift:{scale:2,storyGate:6,tags:['country','loire','diplomacy']},country_loire_vineyard_border:{scale:2,storyGate:6,tags:['country','loire','border','trade']},country_loire_musketeer_crossing:{scale:3,storyGate:7,tags:['country','loire','military','border']},country_loire_isabel_charity:{scale:2,storyGate:7,tags:['country','loire','welfare','court']},country_loire_celestine_letter:{scale:3,storyGate:8,tags:['country','loire','court','diplomacy']},country_loire_ultimatum:{scale:4,storyGate:10,tags:['country','loire','crisis','diplomacy']},
+local_border_dual_loyalty:{scale:3,storyGate:4,tags:['border','loire','diplomacy']},crisis_leopold_mine_riot:{scale:3,storyGate:2,tags:['finance','silver','people','crisis','elector_leopold'],requiresFlag:'crisis_leopold_mine_riot'},crisis_leopold_port_tax_pact:{scale:4,storyGate:5,tags:['finance','seafeara','noble','crisis','elector_leopold','greatPower'],requiresFlag:'crisis_leopold_port_tax_pact'},crisis_emil_loire_satire_play:{scale:3,storyGate:3,tags:['printing','culture','loire','crisis','elector_emil'],requiresFlag:'crisis_emil_loire_satire_play'},crisis_emil_holy_inquiry:{scale:4,storyGate:5,tags:['religion','university','rick','crisis','elector_emil','greatPower'],requiresFlag:'crisis_emil_holy_inquiry'},crisis_clarissa_refugee_quarter:{scale:3,storyGate:4,tags:['refugee','people','azraq','crisis','elector_clarissa'],requiresFlag:'crisis_clarissa_refugee_quarter'},crisis_clarissa_false_prophet:{scale:4,storyGate:5,tags:['religion','people','church','crisis','elector_clarissa','greatPower'],requiresFlag:'crisis_clarissa_false_prophet'},crisis_rosen_marriage_sabotage:{scale:3,storyGate:5,tags:['court','marriage','scandal','crisis','elector_rosen'],requiresFlag:'crisis_rosen_marriage_sabotage'},crisis_rosen_court_refusal:{scale:4,storyGate:5,tags:['court','noble','loire','crisis','elector_rosen','greatPower'],requiresFlag:'crisis_rosen_court_refusal'},crisis_gerhard_solia_enemy_contract:{scale:3,storyGate:4,tags:['military','mercenary','solia','crisis','elector_gerhard'],requiresFlag:'crisis_gerhard_solia_enemy_contract'},crisis_gerhard_ruthenia_occupation:{scale:4,storyGate:5,tags:['military','border','ruthenia','crisis','elector_gerhard','greatPower'],requiresFlag:'crisis_gerhard_ruthenia_occupation'},country_loire_gift:{scale:2,storyGate:6,tags:['country','loire','diplomacy']},country_loire_vineyard_border:{scale:2,storyGate:6,tags:['country','loire','border','trade','territory','landDispute']},country_loire_musketeer_crossing:{scale:3,storyGate:7,tags:['country','loire','military','border']},country_loire_isabel_charity:{scale:2,storyGate:7,tags:['country','loire','welfare','court']},country_loire_celestine_letter:{scale:3,storyGate:8,tags:['country','loire','court','diplomacy']},country_loire_ultimatum:{scale:4,storyGate:10,tags:['country','loire','crisis','diplomacy']},
 country_rick_pilgrims:{scale:2,storyGate:6,tags:['country','rick','religion','pilgrimage']},country_rick_stunt_chapel:{scale:2,storyGate:6,tags:['country','rick','religion','stunt']},country_rick_cardinal_question:{scale:3,storyGate:7,tags:['country','rick','religion','court']},country_rick_stunt_brawl:{scale:3,storyGate:8,tags:['country','rick','religion','people']},country_rick_knight_guard:{scale:3,storyGate:8,tags:['country','rick','military','religion']},country_rick_lorenzo_decree:{scale:4,storyGate:10,tags:['country','rick','crisis','religion']},
 country_ruthenia_road_tax:{scale:2,storyGate:6,tags:['country','ruthenia','trade']},country_ruthenia_irina_letter:{scale:3,storyGate:7,tags:['country','ruthenia','diplomacy']},country_ruthenia_vera_prophecy:{scale:3,storyGate:8,tags:['country','ruthenia','fate']},country_ruthenia_sergei_envoy:{scale:3,storyGate:8,tags:['country','ruthenia','diplomacy']},country_ruthenia_grigory_drill:{scale:4,storyGate:9,tags:['country','ruthenia','military']},country_ruthenia_old_deed:{scale:4,storyGate:10,tags:['country','ruthenia','law','crisis']},
 country_solia_avalanche_road:{scale:2,storyGate:6,tags:['country','solia','road','trade']},country_solia_stunt_festival:{scale:2,storyGate:6,tags:['country','solia','religion','stunt']},country_solia_claudia_contract:{scale:3,storyGate:7,tags:['country','solia','mercenary']},country_solia_neutral_mediation:{scale:3,storyGate:8,tags:['country','solia','diplomacy']},country_solia_wolfram_duel:{scale:3,storyGate:9,tags:['country','solia','military']},country_solia_alliance_breach:{scale:4,storyGate:10,tags:['country','solia','crisis','diplomacy']},
@@ -5788,8 +5797,8 @@ cases:[
 {id:'crisis_gerhard_solia_enemy_contract',title:"ソリアの傭兵とルテニア",category:'軍事・傭兵危機',difficulty:'hard',ignoreType:'放置不可',requiresFlag:'crisis_gerhard_solia_enemy_contract',once:true,danger:2,enemy:"ソリアの傭兵隊長",lineName:'ソリアの傭兵とルテニア',enemyImg:'soliaSoldier',initialLine:-20,intro:"俸給に不満を持つソリアの傭兵たちが、ルテニア側から裏で契約を打診されている。万一彼らが蜂起するようなことがあれば、アルトラントは巨大な挟み撃ちにされてしまう。",effects:makeEffects({win:{troops:180,diplomacy:3,treasury:-4,influence:{altrantSolia:20}},loss:{troops:-220,diplomacy:-5,influence:{altrantSolia:-30},tension:{altrantRuthenia:1}},ignored:{troops:-180,tension:{altrantSolia:2}},stories:["王は傭兵たちを裏切り者と責めず、俸給の遅れを自らの落ち度と認め、全員の前で深く頭を下げた。その器の大きさに心を打たれた傭兵たちはルテニアの誘いを退け、以後は王の最も頼もしい味方となった。","王は王宮の銀器を鋳潰して俸給を支払い、傭兵たちをかろうじて味方につなぎ止めた。だが彼らは「次に一日でも遅れれば敵になる」と言い残し、忠誠ではなく金だけを信じるようになった。","夜明け、傭兵たちが一斉にアルトラントの旗を引き裂き、門を内側から開いた。雪煙の向こうからルテニア軍がなだれ込み、国境軍は逃げ道もなく崩れ去った。"]})},
 {id:'crisis_gerhard_ruthenia_occupation',title:"ルテニアに占領された村",category:'国境・大国危機',difficulty:'desperate',ignoreType:'放置不可',requiresFlag:'crisis_gerhard_ruthenia_occupation',once:true,danger:3,enemy:"オルロフ",lineName:'ルテニアに占領された村',enemyImg:'rutheniaSoldier',initialLine:-30,intro:"雪解けを待っていたオルロフの軍が国境を越え、要地の村を一夜で占領した。村人には手を出していないが、鐘楼にはルテニアの旗が翻り、橋と街道は武装兵が固めている。",effects:makeEffects({win:{prestige:12,troops:150,influence:{altrantRuthenia:55},tension:{altrantRuthenia:-2}},loss:{prestige:-10,troops:-250,map:{altrantRuthenia:-1},tension:{altrantRuthenia:2}},ignored:{map:{altrantRuthenia:-1},troops:-180,prestige:-6},stories:["王は橋と街道を封じてオルロフ軍を孤立させると、無用な流血を避けるため、将軍本人へ一騎打ちを申し出た。剣を落としたオルロフは、「若き鷲よ、ぬしがルテニアの人間でないことがまことに口惜しい」とさわやかに笑い、速やかに兵を引き上げた。","王国軍は激しい攻防の末に村を奪い返したが、飛び交う火矢と砲撃で家々が焼け、村人にも多くの死傷者が出た。","奪還軍はオルロフの誘いに乗って正面から村へ殺到し、橋上で挟撃されて壊滅した。敗走する王国兵の背後で、隣村にもルテニアの旗が上がり、東境の街道は完全に陥落した。"]})},
 {id:'country_loire_gift',title:"薔薇色の贈り物",category:'ロアール・贈答外交',difficulty:'easy',ignoreType:'悪化注意',enemy:"ロアール使節",lineName:'薔薇色の贈り物',enemyImg:'loireKing',initialLine:0,intro:"ロアール王妃イザベラから、絹織物、香水、時計が贈られてきた。表向きは友好の印だが、過剰な豪華さは「アルトラント宮廷は田舎者だ」と言外に語る挑発だ。",effects:makeEffects({win:{prestige:3,diplomacy:2},loss:{prestige:-3,nobleSupport:-2},ignored:{influence:{altrantLoire:-10}},stories:["王は時計を職人に分解させ、揺れる船上でも狂いにくい機構を加えた、大ぶりだが実用的な航海時計を作らせた。二年後、この時計を受け取ったイザベラ・ディ・サン＝ヴェリオはそれを自室に飾り、王を侮った自分への戒めにしたという。","王は贈り物を丁重に受け取り、同じ価値の銀細工を持ち帰らせた。面目は守ったが、国庫には重い出費が残り、急いで作らせた銀細工の作りの甘さをイザベラは笑い、決して身につけようとはしなかった。","王が贈り物を無思慮に身につけると、貴族たちは競ってロアールの衣装を買い求め、アルトラントが粗野だと笑われるようになった。やがて王の謁見の日にさえ廷臣の大半がロアール風の装いで現れるようになり、王は長らく苦い思いを感じ続けた。"]})},
-{id:'country_loire_vineyard_border',title:"葡萄畑とロアール",category:'ロアール・国境',difficulty:'normal',ignoreType:'悪化注意',enemy:"ロアール国境兵",lineName:'葡萄畑とロアール',enemyImg:'loireSoldier',initialLine:-5,intro:"ロアールとの境界にある村に、セレスティーヌが「両国親善の葡萄園」を造ろうと申し出てきた。だが要地にある村の共同統治を受け入れれば、ロアールの指が首にかかることになる。",effects:makeEffects({win:{stability:2,influence:{altrantLoire:20}},loss:{influence:{altrantLoire:-25},tension:{altrantLoire:1}},ignored:{influence:{altrantLoire:-15}},stories:["王は村の主権と警備をアルトラントに残し、ロアールには葡萄酒の買い付け権だけを認める条件をセレスティーヌに呑ませた。二人で最初の一杯を傾けたとき、彼女はワイン越しに微笑み、「あなたの首へ指をかけるつもりだったのに、こんなにおいしいワインをいただいちゃ文句も言えないわ」と手勢を引き揚げた。","王は共同統治をきっぱり拒み、村と要地を守った。セレスティーヌは「ダンスを断るなんて無粋な男ね」と笑い、以来、ロアール商人は村を訪れなくなった。","王が親善事業として共同統治を認めると、葡萄園の管理人に続いて護衛兵、徴税吏、測量官まで村へ入り込んできた。後年、ロアールとのいさかいが起きた際、この村は、申し分のない前線基地となってアルトラントに牙をむくことになる。"]})},
-{id:'country_loire_musketeer_crossing',title:"ロアールの逃亡犯",category:'ロアール・主権',difficulty:'normal',ignoreType:'悪化注意',enemy:"ダルモン",lineName:'ロアールの逃亡犯',enemyImg:'loireSoldier',initialLine:-5,intro:"ロアール近衛銃士隊が、逃亡犯を追って国境を越えた。隊長ダルモンは「罪人を追っただけだ」と言い張るが、武装兵による越境は明白な主権侵害だ。",effects:makeEffects({win:{prestige:4,troops:40,influence:{altrantLoire:20}},loss:{prestige:-4,tension:{altrantLoire:1},influence:{altrantLoire:-20}},ignored:{troops:-40,influence:{altrantLoire:-15}},stories:["王は銃士隊を包囲し、逃亡犯をアルトラント側へ引き渡させたうえで、ダルモンと直接交渉した。逃亡犯はアルトラントで裁いてから正式に送還し、今後の追跡には両国の許可を必要とする協定を結ぶと、銃士隊はアルブレヒトの公平な沙汰に敬礼して、ロアールへ帰っていった。","王国兵は銃士隊を武装解除し、逃亡犯ごと国境の外へ追い返した。主権は守られたが、ダルモンは「今日の恥を忘れるな」とロアールに伝え、両国の緊張は否応なく高まった。","王の命令が届く前に、国境兵と銃士隊が撃ち合いとなり双方に死者が出た。ダルモンは戦死者の棺を掲げて帰国し、ロアールは「アルトラントは罪人を守り、我々の子を殺した」と報復を宣言した。"]})},
+{id:'country_loire_vineyard_border',title:"葡萄畑とロアール",category:'土地争い・ロアール',difficulty:'normal',ignoreType:'悪化注意',enemy:"ロアール国境兵",lineName:'葡萄畑とロアール',enemyImg:'loireSoldier',initialLine:-5,intro:"ロアールとの境界にある村に、セレスティーヌが「両国親善の葡萄園」を造ろうと申し出てきた。だが要地にある村の共同統治を受け入れれば、ロアールの指が首にかかることになる。",effects:makeEffects({win:{stability:2,map:{altrantLoire:1},influence:{altrantLoire:20}},loss:{map:{altrantLoire:-1},influence:{altrantLoire:-25},tension:{altrantLoire:1}},ignored:{map:{altrantLoire:-1},influence:{altrantLoire:-15}},stories:["王は村の主権と警備をアルトラントに残し、ロアールには葡萄酒の買い付け権だけを認める条件をセレスティーヌに呑ませた。二人で最初の一杯を傾けたとき、彼女はワイン越しに微笑み、「あなたの首へ指をかけるつもりだったのに、こんなにおいしいワインをいただいちゃ文句も言えないわ」と手勢を引き揚げた。","王は共同統治をきっぱり拒み、村と要地を守った。セレスティーヌは「ダンスを断るなんて無粋な男ね」と笑い、以来、ロアール商人は村を訪れなくなった。","王が親善事業として共同統治を認めると、葡萄園の管理人に続いて護衛兵、徴税吏、測量官まで村へ入り込んできた。後年、ロアールとのいさかいが起きた際、この村は、申し分のない前線基地となってアルトラントに牙をむくことになる。"]})},
+{id:'country_loire_musketeer_crossing',title:"ロアールの逃亡犯",category:'ロアール・主権',difficulty:'hard',ignoreType:'悪化注意',enemy:"ダルモン",lineName:'ロアールの逃亡犯',enemyImg:'loireSoldier',initialLine:-15,intro:"ロアール近衛銃士隊が、逃亡犯を追って国境を越えた。隊長ダルモンは「罪人を追っただけだ」と言い張るが、武装兵による越境は明白な主権侵害だ。",effects:makeEffects({win:{prestige:4,troops:40,influence:{altrantLoire:20}},loss:{prestige:-4,tension:{altrantLoire:1},influence:{altrantLoire:-20}},ignored:{troops:-40,influence:{altrantLoire:-15}},stories:["王は銃士隊を包囲し、逃亡犯をアルトラント側へ引き渡させたうえで、ダルモンと直接交渉した。逃亡犯はアルトラントで裁いてから正式に送還し、今後の追跡には両国の許可を必要とする協定を結ぶと、銃士隊はアルブレヒトの公平な沙汰に敬礼して、ロアールへ帰っていった。","王国兵は銃士隊を武装解除し、逃亡犯ごと国境の外へ追い返した。主権は守られたが、ダルモンは「今日の恥を忘れるな」とロアールに伝え、両国の緊張は否応なく高まった。","王の命令が届く前に、国境兵と銃士隊が撃ち合いとなり双方に死者が出た。ダルモンは戦死者の棺を掲げて帰国し、ロアールは「アルトラントは罪人を守り、我々の子を殺した」と報復を宣言した。"]})},
 {id:'country_loire_isabel_charity',title:"ロアール王妃の慈善事業",category:'ロアール・慈善外交',difficulty:'hard',ignoreType:'悪化注意',enemy:"イザベラ",lineName:'ロアール王妃の慈善事業',enemyImg:'loireKing',initialLine:-15,intro:"ロアール王妃イザベラが、アルトラント僻地の村々を巡り食料を配るという。慈愛に満ちた行いだが、熱狂した民は「困窮した民を国は放置した」と非難している。",effects:makeEffects({win:{citySupport:4,diplomacy:3,influence:{altrantLoire:25}},loss:{prestige:-5,citySupport:-4,influence:{altrantLoire:-35}},ignored:{influence:{altrantLoire:-30},tension:{altrantLoire:1}},stories:["王はイザベラの善意を公に称え、その巡回に付き添った。そこで見た僻地の窮状を受け、村々の通行税を廃して市場への道を開かせた。数十年の後、その道は、荷車と商人が行き交う、アルトラント有数の穀倉地帯に変わったのだった。","王はイザベラの親善事業を打ち切らせ、遅れて村々に食料を送り込んだ。飢えは収まったが、村人たちは「助けは王妃の足跡を追ってようやく届いた」と冷ややかに受け取った。","役人が配給を妨げようとすると、怒った村人たちが荷車を奪い、暴動が起きた。イザベラの名を叫ぶ群衆によって代官の家は焼かれ、村人の中にはイザベラの似顔絵を飾り、口づけをするものも現れた。"]})},
 {id:'country_loire_celestine_letter',title:"セレスティーヌの手紙",category:'ロアール・宮廷工作',difficulty:'hard',ignoreType:'悪化注意',enemy:"セレスティーヌ",lineName:'セレスティーヌの手紙',enemyImg:'loireKing',initialLine:-15,intro:"ロアール王の愛人セレスティーヌが、アルトラントの若い貴族と密かに文通を続けていた。手紙には親しげな冗談や誘いの言葉とともに、有力貴族同士の対立を煽る言葉が潜んでいる。",effects:makeEffects({win:{prestige:5,diplomacy:4,nobleSupport:2},loss:{nobleSupport:-6,prestige:-4,influence:{altrantLoire:-25}},ignored:{nobleSupport:-4,diplomacy:-2},stories:["王は貴族を二人きりで呼び出し、セレスティーヌへの憧れも貴族社会への不満もすべて聞いたうえで、「それでも余は、お前を信じたい」と告げた。後日、若者はセレスティーヌから送られて来た手紙をそのまま突き返した。セレスティーヌは「あら、私、あの子には結構本気だったんだけど」と笑いながら、手紙を焼き捨てた。","王は文通していた若い貴族を公職から追放して騒ぎを収めた。だが彼と親しかった貴族たちは「次は自分が疑われる」と怯え、宮廷では冗談すら交わせない冷たい沈黙が広がった。","手紙に乗せられた若い貴族は、片方の家には「王が取り潰しを考えている」、もう片方には「先に兵を集めている」と吹き込んだ。若者は「正気を失っている」として親族に幽閉されたが、最後の瞬間までセレスティーヌへの愛を叫んでいた。"]})},
 {id:'country_loire_ultimatum',title:"アルマンの最後通牒",category:'ロアール・西方危機',difficulty:'desperate',ignoreType:'放置不可',enemy:"アルマン",lineName:'最後通牒',enemyImg:'loireKing',initialLine:-30,intro:"ロアール王アルマンが、長く争ってきた係争地の即時引き渡しを要求してきた。応じなければ「ロアールは自らの土地を、自らの誇りにかけて取り戻す」と宣言している。",effects:makeEffects({win:{prestige:12,diplomacy:5,influence:{altrantLoire:55},tension:{altrantLoire:-2}},loss:{prestige:-10,diplomacy:-6,influence:{altrantLoire:-60},tension:{altrantLoire:2}},ignored:{map:{altrantLoire:-1},prestige:-6,tension:{altrantLoire:2}},stories:["王はアルマンの「誇りにかけて取り戻す」という言葉を逆手に取り、「ならば兵ではなく、王同士の一騎打ちで決めよう」と係争地の城前へ呼び出した。激闘の末に剣を弾き飛ばされたアルマンは、「お前が小さかった頃、剣の握り方を教えてやったのは私だ。今になって後悔するよ」と潔く兵を引いた。","王は戦争を避けるため、係争地を二つに分けて国境線を引き直した。土地を分断された村では家族や畑が両国に引き裂かれ、この和平を苦しみの始まりとして長く忘れなかった。","王が最後通牒を無視すると、アルマンは宣言どおり大軍を送り込み、係争地の砦を包囲した。なすすべもなく村々は焼かれ、ロアールの旗が立った城塞の外周には、アルトラント兵の兜が並べられた。"]})},
@@ -6127,7 +6136,7 @@ border_treuval_longhouse_burns:'forest'
 });
 DATA.cases.push(
 {id:'foreshadow_loire_milepost',title:"ロアールの石標",category:'前触れ外交・西方国境',difficulty:'hard',ignoreType:'悪化注意',once:true,enemy:"ロアールの測量部隊",lineName:'ロアールの石標',enemyImg:'loireSoldier',initialLine:-18,intro:"西の畑道に、ロアールの石標が、いつの間にか立てられていた。ロアール側は旅人の便宜をはかる道標にすぎないと主張するが、その配置は古くから同国が唱える国境線と重なっている。",effects:makeEffects({win:{diplomacy:4,prestige:3,influence:{altrantLoire:55},tension:{altrantLoire:1}},loss:{diplomacy:-4,prestige:-3,influence:{altrantLoire:-65},tension:{altrantLoire:2}},ignored:{prestige:-1,influence:{altrantLoire:-35},tension:{altrantLoire:1}},stories:["王はロアールの主張どおり石標を「旅人のための道標」と認め、その一本一本にアルトラントの村名と王都までの距離を刻ませた。反発すれば国境を示す目的であったと認めることになるためロアールは沈黙し、村人たちは誇らしげに鷲を刻んだ。","王は石標を撤去させる一方で、ロアール人のために街道沿いへ正式な道標を立て、通行の便宜をはかって危機のエスカレーションを避けた。土地は守られたが、村人たちは「譲ったのは道か、それとも次の一歩か。」と不安を隠さなかった。","王は石標の意図を見抜いていたが、撤去すればロアールとの衝突を招くと恐れ、抗議だけにとどめた。やがて石標の内側へロアールの徴税吏と巡回兵が入り込み、父祖からの土地が、戦わぬまま奪われた。"]})},
-{id:'foreshadow_rick_boundary_chapel',title:"礼拝堂を巡る綱引き",category:'前触れ外交・宗教国境',difficulty:'hard',ignoreType:'悪化注意',once:true,enemy:"リック聖堂騎士",lineName:'礼拝堂を巡る綱引き',enemyImg:'rickSoldier',initialLine:-18,intro:"国境近くの礼拝堂では、巡礼者の泊まる権利をリックに慣例的に許していた。近ごろ巡礼者への襲撃が相次いだとして聖堂騎士が護衛に入り、さながら軍事拠点のようになっている。",effects:makeEffects({win:{churchSupport:3,prestige:3,influence:{altrantRick:50},tension:{altrantRick:1}},loss:{churchSupport:-4,prestige:-3,influence:{altrantRick:-60},tension:{altrantRick:2}},ignored:{churchSupport:-1,influence:{altrantRick:-30},tension:{altrantRick:1}},stories:["王は巡礼路に護衛所を設け、襲撃犯を捕らえて公開裁判にかけることで、巡礼者の安全をアルトラントの責任として引き受けた。駐留の口実を失ったリックが聖堂騎士を撤退させたため、国境の民は、祈りの場を一滴の血も流さず取り戻した王の名を語り継いだ。","王は聖堂騎士の人数を減らさせたうえで、礼拝堂の近くに詰所を置き、その動きを絶えず監視させた。リックによる拠点化は食い止めたが、祈りの場はずいぶん息苦しい場所となり、村人は声を潜めて前を通るようになった。","王が黙認を続けると、聖堂騎士は礼拝堂の周囲に柵と見張り台を築き、通行人から独自に税を取り始めた。"]})},
+{id:'foreshadow_rick_boundary_chapel',title:"礼拝堂を巡る綱引き",category:'前触れ外交・宗教国境',difficulty:'normal',ignoreType:'悪化注意',once:true,enemy:"リック聖堂騎士",lineName:'礼拝堂を巡る綱引き',enemyImg:'rickSoldier',initialLine:-7,intro:"国境近くの礼拝堂では、巡礼者の泊まる権利をリックに慣例的に許していた。近ごろ巡礼者への襲撃が相次いだとして聖堂騎士が護衛に入り、さながら軍事拠点のようになっている。",effects:makeEffects({win:{churchSupport:3,prestige:3,influence:{altrantRick:50},tension:{altrantRick:1}},loss:{churchSupport:-4,prestige:-3,influence:{altrantRick:-60},tension:{altrantRick:2}},ignored:{churchSupport:-1,influence:{altrantRick:-30},tension:{altrantRick:1}},stories:["王は巡礼路に護衛所を設け、襲撃犯を捕らえて公開裁判にかけることで、巡礼者の安全をアルトラントの責任として引き受けた。駐留の口実を失ったリックが聖堂騎士を撤退させたため、国境の民は、祈りの場を一滴の血も流さず取り戻した王の名を語り継いだ。","王は聖堂騎士の人数を減らさせたうえで、礼拝堂の近くに詰所を置き、その動きを絶えず監視させた。リックによる拠点化は食い止めたが、祈りの場はずいぶん息苦しい場所となり、村人は声を潜めて前を通るようになった。","王が黙認を続けると、聖堂騎士は礼拝堂の周囲に柵と見張り台を築き、通行人から独自に税を取り始めた。"]})},
 {id:'foreshadow_ruthenia_winter_map',title:"ザハロワの暗躍",category:'前触れ外交・大国圧力',difficulty:'desperate',ignoreType:'放置不可',once:true,enemy:"ルテニア参謀将校",lineName:'ザハロワの暗躍',enemyImg:'rutheniaSoldier',initialLine:-28,intro:"東の国境沿いの三つの村で、有力者たちが、ルテニアへの帰属を求める請願書を提出した。背後ではザハロワが、不満を拾い上げ、減税、自治、ルテニア軍による保護を約束している。",effects:makeEffects({win:{diplomacy:6,prestige:6,influence:{altrantRuthenia:65},tension:{altrantRuthenia:1}},loss:{diplomacy:-7,prestige:-6,influence:{altrantRuthenia:-85},tension:{altrantRuthenia:2}},ignored:{diplomacy:-3,influence:{altrantRuthenia:-45},tension:{altrantRuthenia:1}},stories:["王は、ザハロワが三村それぞれに同じ森の伐採権を約束していたことを、村人たちの前で明らかにした。ルテニアの欺きを責めるだけでなく、彼が村の不満へ一つずつ誠実に答えたことで、有力者たちは請願を撤回し、東の国境沿いの村々では王の名を讃える声が広がった。当ての外れたザハロワは忌々しげに腐った土をアルトラント側へ投げた。","王は減税と自治を認める一方、ルテニアと通じた有力者たちを追放し、三村の離反を食い止めた。国境は守られたが、追放者の親族は決してアルブレヒトへの憎しみを忘れなかった。","王が請願を反逆として退け、兵を送って有力者たちを捕らえると、住民は鐘を鳴らして抵抗し、多くの死傷者が出た。翌朝、ザハロワは流血から逃れた村人をルテニア領で出迎え、保護を宣言した。"]})},
 {id:'foreshadow_solia_pass_toll',title:"峠の通行許可",category:'前触れ外交・山岳交易',difficulty:'hard',ignoreType:'くすぶる',once:true,enemy:"ソリアの傭兵",lineName:'峠の通行許可',enemyImg:'soliaSoldier',initialLine:-16,intro:"南西の峠で、ソリアの傭兵隊が崩れた橋を架け直し、商隊の護送と荷継ぎを一手に引き受け始めた。彼らは費用として通行料を徴収しているが、許しを得なければ峠を越えられない。",effects:makeEffects({win:{treasury:3,diplomacy:3,influence:{altrantSolia:55},tension:{altrantSolia:1}},loss:{treasury:-3,diplomacy:-4,influence:{altrantSolia:-60},tension:{altrantSolia:2}},ignored:{treasury:-1,influence:{altrantSolia:-35},tension:{altrantSolia:1}},stories:["山道の徴税権は王国へ戻り、ソリア傭兵は正式な護衛契約に組み込まれた。峠は商隊の道であり、王の道でもあると示された。","商隊は二重に税を払うようになり、峠の帳簿にはソリアの印が増えた。","王が傭兵隊の徴収を黙認すると、通行料は年ごとに増え、ソリアの許可証なしでは人も荷も通れなくなった。やがて峠の宿場人と橋の番人までソリア人に替わり、国境線は変わらぬまま、南西の道はアルトラントの帰属を離れた。"]})},
 {id:'foreshadow_treuval_cairn',title:"トレウヴァルの古い櫂船",category:'前触れ外交・辺境',difficulty:'hard',ignoreType:'悪化注意',once:true,enemy:"トレウヴァルの斥侯",lineName:'トレウヴァルの古い櫂船',enemyImg:'treuvalSoldier',initialLine:-18,intro:"北西の入り江に、トレウヴァルの戦士たちが古い櫂船を引き上げ、船首を海へ向けたまま石と土で半ば埋めた。彼らは「祖先が渡った海へ船を返しただけ。」と言うが。",effects:makeEffects({win:{troops:60,prestige:4,influence:{altrantTreuval:45},tension:{altrantTreuval:1}},loss:{prestige:-4,troops:-80,influence:{altrantTreuval:-70},tension:{altrantTreuval:2}},ignored:{influence:{altrantTreuval:-40},tension:{altrantTreuval:1}},stories:["アルブレヒトは靴のまま海へ入り、裾を濡らしながら櫂船の前で異国の死者へ祈りを捧げた。その姿を見たトレウヴァルの戦士たちは葬儀を終えると浜の石を一つずつ持ち帰り、この入り江をアルトラントの地として二度と侵さぬと誓った。","アルブレヒトは船葬を認める代わりに、トレウヴァルの戦士たち自身の手で櫂船を入り江の外にある無人の岩洲へ移させ、漁師たちにも三日間だけ漁を休ませて葬送を静かに見届けさせた。","アルブレヒトが兵に船を掘り返させると、土中から遺骨と青銅の首輪が現れた。トレウヴァルの戦士たちは祖先を辱められたとして数名の兵を斬り殺した。"]})},
@@ -6135,8 +6144,8 @@ DATA.cases.push(
 {id:'foreshadow_azraq_horse_market',title:"馬の買い占め",category:'前触れ外交・南方軍事',difficulty:'hard',ignoreType:'くすぶる',once:true,enemy:"アズラクの商隊長",lineName:'馬の買い占め',enemyImg:'azraqKing',initialLine:-16,intro:"アズラク皇帝の馬買い役が大馬市へ現れ、軍用に耐える若馬に破格の高値をつけ始めた。牧場主も馬商人も競って売り渡し、このままではアルトラントの騎兵隊には老馬と荷馬しか残らなくなる。",effects:makeEffects({win:{troops:90,treasury:-1,diplomacy:3,tension:{azraqSolia:-1}},loss:{troops:-120,treasury:-2,diplomacy:-3,tension:{azraqSolia:1,azraqRick:1}},ignored:{troops:-60,tension:{azraqSolia:1}},stories:["アルブレヒトは若馬の輸出を許可制とし、アズラクの馬買い役へ、買い付けを認める代わりにアズラク産の馬と熟練の馬丁をアルトラントへ送るよう求めた。数年後、北方馬の持久力と砂漠馬の速さを兼ねた軍馬が育ち、アルトラントは諸国の軍が羨む機動力を手に入れることになった。","アルブレヒトは国庫を切り崩して若馬をいち早く買い押さえ、騎兵隊に必要な頭数だけは確保した。だが、相場はさらに跳ね上がり、農民や荷運び商人は馬を手に入れることができず、アルトラントの道には軍馬ばかりが行き来するようになった。","アルブレヒトが良馬の国外売却を禁じると、馬商人たちは王国の市場を避け、群れごとアズラク領へ移った。翌春、騎兵隊は失った馬を十分に補充できず、戦線への急行も敗走する敵の追撃も間に合わなくなり、アルトラント軍は戦う前から機動力を削がれてしまった。"]})},
 {id:'border_loire_mill_field',title:"ロアール兵と水車小屋",category:'土地争い・ロアール',difficulty:'hard',ignoreType:'放置不可',enemy:"ロアール槍兵隊長",lineName:'ロアール兵と水車小屋',enemyImg:'loireSoldier',initialLine:-20,intro:"ロアールの槍兵が国境を越えて水車小屋を占拠し、小麦粉をロアール軍へ納めるよう命じる徴発状を扉に貼った。",effects:makeEffects({win:{prestige:5,troops:-40,map:{altrantLoire:1},tension:{altrantLoire:2}},loss:{prestige:-5,troops:-110,map:{altrantLoire:-1},tension:{altrantLoire:2}},ignored:{stability:-2,map:{altrantLoire:-1},tension:{altrantLoire:1}},stories:["王は退路の橋を押さえてロアール兵を包囲し、小麦粉の返還と損害賠償に加え、徴発状の裏へ「この水車はアルトラント王領に属する」と指揮官自身の署名を入れさせた。ロアール兵が空の荷車を押して国境を戻ると、村人たちはその徴発状を水車の梁に掲げ、奪うために来た軍が我らの土地を保証して帰ったと語り継いだ。","王は水車の周囲を包囲してロアール兵を退かせたが、奪われた小麦粉については事を荒立てることを嫌い、軍用の買い上げとして代金を受け取ることで妥協した。","アルトラントの軍が近づくと、ロアール兵は水車を壊して水門を開き、徴発した小麦粉だけを荷車に積んで退いた。水路が崩れて畑まで浸水し、村は翌年の種麦まで失うことになった。"]})},
 {id:'border_loire_watchtower_line',title:"奪われた豚",category:'土地争い・ロアール',difficulty:'desperate',ignoreType:'放置不可',enemy:"ロアール銃兵中隊",lineName:'奪われた豚',enemyImg:'loireSoldier',initialLine:-30,intro:"ロアールの兵士が、国境を横切る森で木の実を食ませていたアルトラント農民の豚を「無断放牧」として差し押さえた。",effects:makeEffects({win:{prestige:7,troops:-90,map:{altrantLoire:1},tension:{altrantLoire:3}},loss:{prestige:-8,troops:-180,map:{altrantLoire:-1},tension:{altrantLoire:3}},ignored:{prestige:-3,map:{altrantLoire:-1},tension:{altrantLoire:2}},stories:["王は国境兵に農民たちを護衛させ、村じゅうの豚を例年どおり森へ放つとともに、ロアール兵による差し押さえを阻んだ。森を長年使ってきた事実と、最初に武力で慣習を破ったのがロアールであることを改めて宣言し、豚一頭から始まった争いは、曖昧だった国境を隣国に知らしめる勝利へ変わった。","食ってかかった農民がロアール兵に殺されると、王は森に兵を送るとともにロアール側に厳重に抗議をした。豚の返還と遺族への賠償は勝ち取ったが、犯人はロアール側へ連れ帰られ、村人たちには、人を殺しても国境の向こうへ逃げれば裁けないことへの怒りが残った。","王が大事にすることを嫌ったため、農民たちは豚を取り戻すことができず、冬支度のために蓄えていた家畜を失った。翌年からロアールは、放牧料だけでなく薪採りや狩猟にも許可を求めるようになった。"]})},
-{id:'border_rick_monastery_meadow',title:"牧草地の帰属",category:'土地争い・リック',difficulty:'hard',ignoreType:'放置不可',enemy:"リック聖堂騎士",lineName:'牧草地の帰属',enemyImg:'rickSoldier',initialLine:-20,intro:"国境の牧草地は、古くからアルトラントの農民が家畜を放ってきた一方、土地そのものはリックへの寄進地とされていた。リックは古い寄進状を持ち出し、農民の放牧を禁じた。",effects:makeEffects({win:{churchSupport:2,prestige:5,map:{altrantRick:1},tension:{altrantRick:2}},loss:{churchSupport:-5,prestige:-5,map:{altrantRick:-1},tension:{altrantRick:2}},ignored:{churchSupport:-2,map:{altrantRick:-1},tension:{altrantRick:1}},stories:["王は古い修道院から同じ寄進を記した控えを探し出し、リックの寄進状にはない「村人の放牧を妨げない」という一文を示した。リックは偽筆だと退けたが、当時の証人名と封蝋が別の記録とも一致することを突きつけられ、禁令を撤回して農民の放牧権を認めた。農民たちは、王が古い羊皮紙を底までさらって自分たちを助けてくれたと子々孫々まで語り継いだ。","王は寄進状を認める代わりに、農民が冬支度を終えるまでの放牧だけをリックに認めさせた。家畜は救われたが、春分の日になると牧草地は閉ざされ、農民たちは期限の日ごとに王が守れなかった土地を見つめた。","王はリックとのいさかいを避けるため寄進状を認め、農民に家畜を連れて牧草地から立ち退くよう命じた。国境の村々は冬を越す術を失って次々と捨てられ、民は王が国を守るために自分たちを差し出したことを忘れなかった。"]})},
-{id:'border_rick_relic_road',title:"リックと聖遺物",category:'土地争い・リック',difficulty:'desperate',ignoreType:'放置不可',enemy:"リック守備隊",lineName:'リックと聖遺物',enemyImg:'rickSoldier',initialLine:-28,intro:"国境の礼拝堂に奇跡を起こす聖人の遺骨があるという噂が広まり、リックから訪れる巡礼者が急増した。盗賊避けに儲けられた詰所が、いつしかアルトラントの旅人まで検めている。",effects:makeEffects({win:{prestige:6,churchSupport:3,troops:-60,map:{altrantRick:1},tension:{altrantRick:3}},loss:{prestige:-7,churchSupport:-6,troops:-130,map:{altrantRick:-1},tension:{altrantRick:3}},ignored:{prestige:-2,map:{altrantRick:-1},tension:{altrantRick:2}},stories:["王は自ら詰所へ入り、「この街道を行く者は、信徒である前にアルトラントの庇護下にある。」と宣言し、街道沿いに監視の兵を置いた。「だがリックの道は危ないと聞く。諸君らにはぜひリックでの安全を守っていただきたい。」と騎士たちの肩を叩くと、彼らは悔しげに去っていった。","王はアルトラントの役人を詰所へ常駐させ、自国民を検める際には必ず立ち会わせた。乱暴な検問は止んだが、旅人は通るたびにかえって時間を取られるようになった。","王が過度な衝突を恐れて黙認すると、リックの騎士は武器と書状を調べる名目で商人や役人まで拘束し始めた。やがて王の使者さえ馬から降ろされ、国境の民は、自国の街道で他国の許しを待つようになった。"]})},
+{id:'border_rick_monastery_meadow',title:"牧草地の帰属",category:'土地争い・リック',difficulty:'normal',ignoreType:'放置不可',enemy:"リック聖堂騎士",lineName:'牧草地の帰属',enemyImg:'rickSoldier',initialLine:-10,intro:"国境の牧草地は、古くからアルトラントの農民が家畜を放ってきた一方、土地そのものはリックへの寄進地とされていた。リックは古い寄進状を持ち出し、農民の放牧を禁じた。",effects:makeEffects({win:{churchSupport:2,prestige:5,map:{altrantRick:1},tension:{altrantRick:2}},loss:{churchSupport:-5,prestige:-5,map:{altrantRick:-1},tension:{altrantRick:2}},ignored:{churchSupport:-2,map:{altrantRick:-1},tension:{altrantRick:1}},stories:["王は古い修道院から同じ寄進を記した控えを探し出し、リックの寄進状にはない「村人の放牧を妨げない」という一文を示した。リックは偽筆だと退けたが、当時の証人名と封蝋が別の記録とも一致することを突きつけられ、禁令を撤回して農民の放牧権を認めた。農民たちは、王が古い羊皮紙を底までさらって自分たちを助けてくれたと子々孫々まで語り継いだ。","王は寄進状を認める代わりに、農民が冬支度を終えるまでの放牧だけをリックに認めさせた。家畜は救われたが、春分の日になると牧草地は閉ざされ、農民たちは期限の日ごとに王が守れなかった土地を見つめた。","王はリックとのいさかいを避けるため寄進状を認め、農民に家畜を連れて牧草地から立ち退くよう命じた。国境の村々は冬を越す術を失って次々と捨てられ、民は王が国を守るために自分たちを差し出したことを忘れなかった。"]})},
+{id:'border_rick_relic_road',title:"リックと聖遺物",category:'土地争い・リック',difficulty:'hard',ignoreType:'放置不可',enemy:"リック守備隊",lineName:'リックと聖遺物',enemyImg:'rickSoldier',initialLine:-18,intro:"国境の礼拝堂に奇跡を起こす聖人の遺骨があるという噂が広まり、リックから訪れる巡礼者が急増した。盗賊避けに儲けられた詰所が、いつしかアルトラントの旅人まで検めている。",effects:makeEffects({win:{prestige:6,churchSupport:3,troops:-60,map:{altrantRick:1},tension:{altrantRick:3}},loss:{prestige:-7,churchSupport:-6,troops:-130,map:{altrantRick:-1},tension:{altrantRick:3}},ignored:{prestige:-2,map:{altrantRick:-1},tension:{altrantRick:2}},stories:["王は自ら詰所へ入り、「この街道を行く者は、信徒である前にアルトラントの庇護下にある。」と宣言し、街道沿いに監視の兵を置いた。「だがリックの道は危ないと聞く。諸君らにはぜひリックでの安全を守っていただきたい。」と騎士たちの肩を叩くと、彼らは悔しげに去っていった。","王はアルトラントの役人を詰所へ常駐させ、自国民を検める際には必ず立ち会わせた。乱暴な検問は止んだが、旅人は通るたびにかえって時間を取られるようになった。","王が過度な衝突を恐れて黙認すると、リックの騎士は武器と書状を調べる名目で商人や役人まで拘束し始めた。やがて王の使者さえ馬から降ろされ、国境の民は、自国の街道で他国の許しを待つようになった。"]})},
 {id:'border_ruthenia_frozen_village',title:"凍土の村の背信",category:'土地争い・ルテニア',difficulty:'desperate',ignoreType:'放置不可',enemy:"ルテニア騎兵",lineName:'凍土の村の背信',enemyImg:'rutheniaSoldier',initialLine:-32,intro:"東境の村で、村長がルテニアへ「冬の盗賊から村を守ってほしい。」と保護願を出していた。ルテニアの騎兵はすでに村外れへ入り、住民へ女大公への忠誠を誓わせる準備を始めている。",effects:makeEffects({win:{prestige:8,diplomacy:3,troops:-100,map:{altrantRuthenia:1},tension:{altrantRuthenia:3}},loss:{prestige:-9,diplomacy:-6,troops:-220,map:{altrantRuthenia:-1},tension:{altrantRuthenia:3}},ignored:{prestige:-3,map:{altrantRuthenia:-1},tension:{altrantRuthenia:2}},stories:["王はルテニア騎兵が忠誠を誓わせるその日に自ら村へ駆けつけ、門前に盗賊の首領を転がした。村長は、泥と雪にまみれた王の足元へひざまずき、「我らの王だ。我らの王が来たぞ！」と歓喜に打ち震えた。","アルトラント軍はルテニア騎兵を村外れから退かせ、村長を罷免して村民に国への忠誠を改めて誓わせた。村は守られたが、盗賊を放置した王と隣国を頼った村長のどちらが悪いのかを巡り、住民の間には深い溝が残った。","王が到着した時には、住民はすでにルテニア騎兵の前で女大公への忠誠を誓い、村にはルテニアの役人が入っていた。アルトラント軍を迎えたのは閉ざされた門と、かつてアルトラント旗が掲げられていた鐘楼に翻る異国の旗だった。"]})},
 {id:'border_ruthenia_fort_chain',title:"ルテニアの工兵",category:'土地争い・ルテニア',difficulty:'desperate',ignoreType:'放置不可',enemy:"ルテニアの工兵",lineName:'ルテニアの工兵',enemyImg:'rutheniaSoldier',initialLine:-34,intro:"ルテニアの工兵が森を切り開き、沼地に丸太を敷いて、小砦群の背後へ抜ける道を造っている。完成すれば、ルテニア騎兵は砦を攻めずに迂回し、守りの薄い村々へ直接入り込める。",effects:makeEffects({win:{prestige:9,troops:-160,map:{altrantRuthenia:1},tension:{altrantRuthenia:3}},loss:{prestige:-10,troops:-300,map:{altrantRuthenia:-1},tension:{altrantRuthenia:4}},ignored:{troops:-120,map:{altrantRuthenia:-1},tension:{altrantRuthenia:2}},stories:["連絡線は回復し、孤立しかけた砦は再び王都の命令を受け取った。東境砦鎖は、まだ切れていない。","アルトラント軍は森へ火を放って工事を無理やり止め、ルテニアの工兵を退かせた。道は完成しなかったが、村々に恵みをもたらす森が残らず焼けたために、近隣の人々は寒さと困窮の中でその年の冬を越した。","王が砦の守備隊を動かせずにいる間に道は完成し、ルテニア騎兵は小砦群を迂回して背後の村々を占領した。補給を断たれた砦は次々と降伏し、這う這うの体で撤退するしかなかった。"]})},
 {id:'border_solia_mountain_pasture',title:"羊飼いと傭兵",category:'土地争い・ソリア',difficulty:'hard',ignoreType:'放置不可',enemy:"ソリアの傭兵",lineName:'羊飼いと傭兵',enemyImg:'soliaSoldier',initialLine:-22,intro:"ソリアの帰還傭兵たちが、古くから両国の村が使ってきた山岳牧場を占拠し、アルトラントの羊飼いに放牧料を要求し始めた。槍を持ち武装した彼らの姿は、到底放牧民には見えない。",effects:makeEffects({win:{treasury:2,prestige:5,troops:-70,map:{altrantSolia:1},tension:{altrantSolia:2}},loss:{treasury:-3,prestige:-5,troops:-140,map:{altrantSolia:-1},tension:{altrantSolia:2}},ignored:{treasury:-1,map:{altrantSolia:-1},tension:{altrantSolia:1}},stories:["王は帰還兵に奪った放牧料を返させる一方、その武勇を認め、両国の村長とともに牧場を守る正式な契約を結ばせた。追放も辱めも受けずに生きる道を得た帰還兵は槍を羊飼いへ向けるのをやめ、春には彼ら自身が、同じ牧場でパンと酒を分け合う両国の民を守っていた。","王は峠を封鎖してソリアの傭兵らへの食糧と塩の運び込みを封じ、飢え始めた彼らに武器を置いて牧場を去るよう申し入れた。土地は戻ったが、かつて柵越しにパンと酒を分け合った両国の羊飼いたちは口をきかなくなり、山には羊の鈴だけが響くようになった。","王が帰還兵を山賊と決めつけて討伐を命じると、彼らは羊飼いを人質に取り、牧草へ火を放って山奥へ消えていった。山火事は冬支度の飼料まで焼き尽くし、家畜を失った国境の村は翌春までに半ば無人となった。"]})},
@@ -8372,10 +8381,17 @@ const firstSentence=t=>{
 const outcome=r=>{const rank=String(r?.rank||'');if(rank==='completeWin'||rank==='majorWin')return{key:'victory',label:'勝利'};if(rank==='majorLoss'||rank==='completeLoss')return{key:'defeat',label:'敗北'};return{key:'struggle',label:'苦戦'};};
 const counts={victory:0,struggle:0,defeat:0};
 const items=lanes.map(r=>{
-const story=firstSentence(r.story||r.effect?.story||'');
+const isFinal=!!r?.case?.finalCase;
+let story='';
+if(isFinal){
+  const authored=String(State?.finalCaseResult?.text||r.story||r.effect?.story||'').trim();
+  story=(typeof escapeHtml==='function'?escapeHtml(authored):authored.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))).replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}else{
+  story=firstSentence(r.story||r.effect?.story||'');
+}
 if(!story)return'';
 const o=outcome(r);counts[o.key]++;
-return `<div class="turnResultStory ${o.key}"><div class="turnResultStoryHead"><span>${r.case.title}</span><b class="v562OutcomeBadge ${o.key}">${o.label}</b></div><div class="turnResultStoryText">${story}</div></div>`;
+return `<div class="turnResultStory ${o.key}${isFinal?' finalAuthoredStory':''}"><div class="turnResultStoryHead"><span>${r.case.title}</span><b class="v562OutcomeBadge ${o.key}">${o.label}</b></div><div class="turnResultStoryText">${story}</div></div>`;
 }).filter(Boolean).join('');
 return items?`<div class="turnResultStories compactTurnStoriesV123"><div class="v562StoriesHead"><h3>采配の結果</h3></div>${items}</div>`:'';
 }
@@ -8538,7 +8554,7 @@ function caseListAreaHtmlV562(list){
    ========================================================================== */
 const View={
 main(){if((State.mapNews||[]).length&&!(State.suppressMapNews)){showMapNews();return}setScreen('screenMain');const event=Flow.pendingEvent();if(event){View.event(event);return}const vis=sortVisibleCasesV562(visibleCases());while(State.selected.length>maxSelectableCases()){const removed=State.selected.pop();delete State.assignments[removed];refundCaseBudget(removed);if(State.cardAssignment?.caseId===removed)State.cardAssignment=null}const picked=State.selected.map(getCase).filter(Boolean);const area=caseListAreaHtmlV562(vis);$('screenMain').innerHTML=`<div class="topbar mainTopbar"><b>${periodLabel()}</b>${paramHud()}${borderMoodHud()}</div><div class="pick">${pickTwoTutorialHtml()}<div class="map revealed"><div class="mapTitle">アルトラント周辺</div>${renderMapHtml()}</div><div class="casePanel revealList">${factionRequestHud()}${area}</div><div class="slots" id="mainSlots" style="--slotCount:${maxSelectableCases()}">${View.slotsHtml(picked)}</div><div class="count" id="caseCount">${State.selected.length}/${maxSelectableCases()}</div><div id="toastHost">${State.warn?'<div class="toast">これ以上は選べません</div>':''}</div></div>`;if(!State.hudIntroDone){State.hudIntroDone=true;setTimeout(()=>{document.querySelectorAll('#screenMain .resourceParam').forEach(el=>el.classList.add('hudIntroPulse'));sfx('summary');},80);setTimeout(()=>{document.querySelectorAll('#screenMain .resourceParam').forEach(el=>el.classList.remove('hudIntroPulse'));},1700)}if(State.warn)setTimeout(()=>{State.warn=false;View.updateMainSelection&&View.updateMainSelection()},700)},
-caseCard(c){const selected=Array.isArray(State&&State.selected)?State.selected:[];const idx=selected.indexOf(c.id);const max=typeof maxSelectableCases==='function'?maxSelectableCases():3;const selection={sel:idx>=0?'selected':'',locked:idx<0&&selected.length>=max?'locked':''};const important=(typeof caseImportanceRankV562==='function'&&caseImportanceRankV562(c)<999);return '<div class="'+caseCardClassList(c,selection)+'" data-case-id="'+caseCardEsc(c.id)+'" data-order="'+(idx>=0?idx+1:'')+'" onclick="Flow.toggleCase(\''+String(c.id).replace(/'/g,"\\'")+'\')">'+(important?'<span class="importantCaseRail" aria-hidden="true"></span>':'')+caseCardBodyHtml(c)+'</div>'},
+caseCard(c){const selected=Array.isArray(State&&State.selected)?State.selected:[];const idx=selected.indexOf(c.id);const max=typeof maxSelectableCases==='function'?maxSelectableCases():3;const selection={sel:idx>=0?'selected':'',locked:idx<0&&selected.length>=max?'locked':''};return '<div class="'+caseCardClassList(c,selection)+'" data-case-id="'+caseCardEsc(c.id)+'" data-order="'+(idx>=0?idx+1:'')+'" onclick="Flow.toggleCase(\''+String(c.id).replace(/'/g,"\\'")+'\')">'+caseCardBodyHtml(c)+'</div>'},
 slotsHtml(picked){const max=maxSelectableCases();return `${Array.from({length:max},(_,i)=>View.slot(picked[i],i,true)).join('')}<button class="next ${State.selected.length?'pulse':''}" ${State.selected.length?'':'disabled'} onclick="Flow.toAssign()">次へ</button>`},
 updateMainSelection(){const picked=State.selected.map(getCase).filter(Boolean);for(const c of visibleCases()){const el=document.querySelector(`[data-case-id="${c.id}"]`);if(!el)continue;const idx=State.selected.indexOf(c.id);el.classList.toggle('selected',idx>=0);el.classList.toggle('locked',idx<0&&State.selected.length>=maxSelectableCases());el.dataset.order=idx>=0?String(idx+1):'';}const slots=document.getElementById('mainSlots');if(slots){slots.style.setProperty('--slotCount',maxSelectableCases());slots.innerHTML=View.slotsHtml(picked);}const count=document.getElementById('caseCount');if(count)count.textContent=`${State.selected.length}/${maxSelectableCases()}`;const toast=document.getElementById('toastHost');if(toast)toast.innerHTML=State.warn?'<div class="toast">これ以上は選べません</div>':'';},
 slot(c,i,enabled=true){const glow=!c&&enabled&&shouldShowPickTwoTutorial()&&i===1?' pickTwoGlow':'';return c?`<div class="slot filled" onclick="Flow.toggleCase('${c.id}')"><div class="slotNo">戦線${i+1}</div><div class="slotTitle">${c.title}</div></div>`:`<div class="slot ${enabled?'':'locked'}${glow}"><div class="slotNo">戦線${i+1}</div><div class="slotEmpty">${enabled?'空き':'未解禁'}</div></div>`},
@@ -11304,12 +11320,15 @@ appendBattleAftermathNotes(lanes,unselected,ignored,pressureNotes,latentNeglect)
 
 /* 6. 年末処理・遺産・カード報酬を確定し、総括用snapshotを作る。 */
 const yearEnd=State.turn%2===0?Flow.applyYearEnd():null;
+/* 王女外交はHTML描画時ではなく、半期の結果確定時に一度だけ60%抽選する。 */
+const princessWork=(typeof window.resolvePrincessWorkV618==='function'?window.resolvePrincessWorkV618():null);
 const after=Flow.publicSnapshot();
 const legacyLines=(typeof updateFinalLegacies==='function'?updateFinalLegacies(lanes,ignored):[]);
 State.lastSummary=makeBattleSummaryState({
 lanes,ignored,yearEnd,before,after,beforeMap,actorGrowthLines,actorConsequences,legacyLines,pressureNotes
 });
 State.lastSummary.latentNeglect=latentNeglect;
+State.lastSummary.princessWork=princessWork;
 
 /* 7. 一時的な采配Stateを片付け、総括画面へ送る。 */
 State.queue=[{type:'summary',data:State.lastSummary}];
@@ -12565,10 +12584,30 @@ if(gate==='greatPlagueActive')return!!State.greatPlague?.active;
 if(gate==='spouseSick')return State.marriage?.spouseId&&State.marriage?.state==='married'&&idx(State.familyHealth.spouse)>=idx('sick')&&State.familyHealth.spouse!=='dead';
 if(gate==='childSick')return(livingChildren?livingChildren():[]).some(x=>idx(x.healthStage)>=idx('sick'));
 if(gate==='familyCritical')return familyWorstPatient()&&idx(familyWorstPatient().stage)>=idx('critical');
+if(gate==='spouseCritical')return !!(State.marriage?.spouseId&&State.marriage?.state==='married'&&State.familyHealth?.spouse==='critical');
+if(gate==='princeCritical')return (livingChildren?livingChildren():[]).some(x=>x.gender==='male'&&x.healthStage==='critical');
+if(gate==='princessCritical')return (livingChildren?livingChildren():[]).some(x=>x.gender==='female'&&x.healthStage==='critical');
 if(gate==='familyGraveOrPlague')return!!State.greatPlague?.active||(familyWorstPatient()&&idx(familyWorstPatient().stage)>=idx('grave'));
 if(gate==='familyAnyIll')return familyWorstPatient()&&idx(familyWorstPatient().stage)>=idx('sick');
 return next.apply(this,arguments);
 };});
+function criticalPatientForCase619(c){
+ensureFamilyHealth();
+const id=c?.id||'';
+if(id==='family_critical_spouse_vigil'){
+  if(State.marriage?.spouseId&&State.marriage?.state==='married'&&State.familyHealth?.spouse==='critical')return{kind:'spouse',stage:'critical',label:spouseTitle(),id:State.marriage.spouseId};
+  return null;
+}
+if(id==='family_critical_prince_vigil'||id==='family_critical_princess_vigil'){
+  const gender=id==='family_critical_prince_vigil'?'male':'female';
+  const live=livingChildren?livingChildren():[];
+  let ch=null;
+  if(c?.v619TargetChildId)ch=live.find(x=>x.id===c.v619TargetChildId&&x.gender===gender&&x.healthStage==='critical')||null;
+  if(!ch)ch=live.find(x=>x.gender===gender&&x.healthStage==='critical')||null;
+  return ch?{kind:'child',child:ch,stage:'critical',label:childTitle(ch)}:null;
+}
+return null;
+}
 function familyCaseResult(r,ignored=false){
 if(!r||!r.case)return null;
 ensureFamilyHealth();
@@ -12584,9 +12623,23 @@ else{improvePatient(p,1);lines.push(`${spouseTitle()}は峠を越えたが、身
 }else if(id==='family_child_fever'){
 const ch=familyWorstChild();
 if(ch){const p={kind:'child',child:ch,stage:ch.healthStage,label:childTitle(ch)};if(success){improvePatient(p,2);changePublicHealth&&changePublicHealth(2,'王子王女の看護');lines.push(`${childTitle(ch)}の容体は持ち直した。王家の未来はひとまず守られた。`);}else if(hard){worsenPatient(p,1);lines.push(`${childTitle(ch)}の病は深まり、継承不安が宮廷を覆った。`);}else{improvePatient(p,1);lines.push(`${childTitle(ch)}の熱は下がったが、しばらく養生が必要になった。`);}}
-}else if(id==='family_critical_vigil'){
-const p=familyWorstPatient();
-if(p){if(success){improvePatient(p,3);changePublicHealth&&changePublicHealth(3,'危篤看護');lines.push(`${p.label}は死の淵から戻った。王宮は祈りと医術の双方に息をついた。`);}else{setPatientStage(p,'dead');lines.push(`${p.label}は病没した。王の家族の喪は、そのまま王国の影になった。`);}}
+}else if(['family_critical_spouse_vigil','family_critical_prince_vigil','family_critical_princess_vigil'].includes(id)){
+const p=criticalPatientForCase619(r.case);
+if(p){
+  const strongSuccess=!ignored&&MAJOR_SUCCESS_RANKS.includes(r.rank);
+  const struggle=!ignored&&STRUGGLE_STORY_RANKS.includes(r.rank);
+  const deathFailure=ignored||HARD_FAILURE_RANKS.includes(r.rank);
+  if(strongSuccess){
+    improvePatient(p,3);changePublicHealth&&changePublicHealth(3,'危篤看護');
+    lines.push(`${p.label}は死の淵から戻った。王宮は祈りと医術の双方に息をついた。`);
+  }else if(struggle){
+    improvePatient(p,3);
+    lines.push(`${p.label}は命を取り留めたが、なお長い療養が必要になった。`);
+  }else if(deathFailure){
+    setPatientStage(p,'dead');
+    lines.push(`${p.label}は病没した。王の家族の喪は、そのまま王国の影になった。`);
+  }
+}
 }else if(id==='plague_witch_herbs'){
 const p=familyWorstPatient();
 if(success){const n=recoverFamilyAll(2);changePublicHealth&&changePublicHealth(4,'森の薬草');State.params.churchSupport=clamp((State.params.churchSupport||50)-3,0,100);lines.push(n?`森の魔女の薬草は危うい噂を伴いながらも、病床の者を救った。`:'薬草の知識は施療院に伝えられ、流行への備えが増した。');}
@@ -12645,7 +12698,7 @@ for(const hook of neglectResultPipelineV483.outerAfter)result=hook.call(callThis
 return result;
 };
 window.__kingRegisterNeglectAfterHookV483('familyIllnessNeglect','family',function(c,base){
-if(!c||!['family_spouse_fever','family_child_fever','family_critical_vigil','plague_witch_herbs','great_plague_council'].includes(c.id))return base;
+if(!c||!['family_spouse_fever','family_child_fever','family_critical_spouse_vigil','family_critical_prince_vigil','family_critical_princess_vigil','plague_witch_herbs','great_plague_council'].includes(c.id))return base;
 const fake={case:c,rank:'completeLoss',specialLines:[]};
 const note=familyCaseResult(fake,true);
 return[base,note].filter(Boolean).join('、')||note||base;
@@ -12679,8 +12732,26 @@ addMeta('family_spouse_fever',3,10,['family','queen','plague','welfare','crisis'
 addCase({id:'family_spouse_fever',title:"王妃の発熱",category:'家族・病床',difficulty:'desperate',ignoreType:'放置不可',requiresSpouse:true,childGate:'spouseSick',danger:3,enemy:"王妃の熱",lineName:'王妃の発熱',enemyImg:'plague',initialLine:-30,publicHealth:{win:3,draw:1,loss:-3,ignored:-5},intro:"王妃が激しい熱に倒れ、夜になっても意識が戻らない。宮廷医たちはさらに血を抜かなければ朝を迎えられないと迫る。",effects:makeEffects({win:{stability:4,prestige:2},loss:{stability:-8,prestige:-5},ignored:{stability:-6,prestige:-4},stories:["アルブレヒトは瀉血の道具を下げさせ、王妃へ少しずつ水を含ませながら夜通し傍らに座って見守った。夜明け前、王妃は夫の手を握り返して名を呼び、死神は窓から去っていった。","アルブレヒトは瀉血を止めさせ、王妃の額を冷やしながら、夜通しその手を握り続けた。王妃は朝になってかすかに目を開いたが、熱は何日も引かず、臣下たちは王宮の廊下を声を潜めて歩いた。","アルブレヒトは宮廷医の言葉を退けきれず、王妃にもう一度だけ瀉血を施すことを許した。夜明けには熱こそ下がったものの、王妃は名を呼ばれても目を開かず、死神は寝台の傍らから離れなかった。"]})});
 addMeta('family_child_fever',3,9,['family','dynasty','plague','welfare','succession'],{requiresFlag:'dynasty_started'});addArch('family_child_fever','sticky','privateRoom');
 addCase({id:'family_child_fever',title:"幼い継承者の発熱",category:'家族・継承',difficulty:'desperate',ignoreType:'放置不可',requiresFlag:'dynasty_started',childGate:'childSick',danger:3,enemy:"幼子の熱",lineName:'幼い継承者の発熱',enemyImg:'plague',initialLine:-30,publicHealth:{win:3,draw:1,loss:-4,ignored:-6},intro:"幼い継承者が高い熱を出し、水も薬も拒んで父の名を呼び続けている。侍医たちは病が王へ移れば国そのものが危うくなるとして、アルブレヒトを寝室の外に留め置こうとしている。",effects:makeEffects({win:{stability:5,prestige:3},loss:{stability:-8,prestige:-5},ignored:{stability:-6,prestige:-4},stories:["アルブレヒトは王冠を扉の外へ置き、病床へ入ると、怯える王子を胸に抱いて自ら水と薬を飲ませた。夜明け前、幼い継承者は父の腕の中で静かな寝息を立て始め、死神は王家から何も奪うものを見いだせずに立ち去っていった。","アルブレヒトは寝室へ入ったものの、侍医たちに急かされ、子に水を飲ませるとすぐに退室した。熱はわずかに下がったが、幼い継承者は父の服を抱きしめながら数日を病床で過ごした。","アルブレヒトは侍医たちの制止に従い病床へ入らなかった。幼い継承者は、父を求めて泣き疲れ、水も飲めないまま痙攣を繰り返した。"]})});
-addMeta('family_critical_vigil',4,10,['family','dynasty','queen','plague','crisis'],{});addArch('family_critical_vigil','sticky','privateRoom');
-addCase({id:'family_critical_vigil',title:"家族の危篤",category:'家族・死別',difficulty:'desperate',ignoreType:'放置不可',childGate:'familyCritical',danger:4,enemy:"死の影",lineName:'家族の危篤',enemyImg:'plague',initialLine:-38,publicHealth:{win:4,draw:0,loss:-6,ignored:-8},intro:"病床の者は危篤に陥り、侍医は誰も今夜を越えられると言わなかった。家族は寝台を囲み、浅くなる息を数えながら、まだ届くかも分からない言葉を必死に語りかけた。",effects:makeEffects({win:{stability:6,prestige:3},loss:{stability:-12,prestige:-8},ignored:{stability:-10,prestige:-6},stories:["家族は身分も務めも忘れて寝台の傍らに残り、冷えた手を握りながら、夜が明けるまで何度でも名を呼び続けた。やがて病床の者はかすかに指を動かしてその声に応え、途切れかけた息をもう一度つなぎ直した。","家族は一晩中寝台を囲み、侍医の指示に従って身体を温め、水を含ませながら朝を待った。家族の呼びかけに応えるように、病床の者は夜明け前になってようやく目を開き、かすかな声で水を求めた。命は取り留めたものの、片手には痺れが残り、以前のようにペンを握れるかは分からなかった。","家族が必死に呼びかける中、病床の者の息は次第に弱まり、夜半には侍医が脈を探す時間ばかりが長くなった。家族が必死に呼びかける中、やがて侍医は目を伏せて静かに首を振った。アルブレヒトはその死を受け入れられず、家族は冷えていく手を握りしめたまま、周囲に止められるまで名を呼び続けた。"]})});
+const criticalStories619={
+spouse:[
+"家族は身分も務めも忘れて寝台の傍らに残り、冷えた手を握りながら、夜が明けるまで何度でも王妃の名を呼び続けた。やがて王妃はかすかに指を動かしてその声に応え、途切れかけた息をもう一度つなぎ直した。",
+"家族は一晩中王妃の寝台を囲み、侍医の指示に従って身体を温め、水を含ませながら朝を待った。家族の呼びかけに応えるように、王妃は夜明け前になってようやく目を開き、かすかな声で水を求めた。命は取り留めたものの、片手には痺れが残り、以前のようにペンを握れるかは分からなかった。",
+"家族が必死に呼びかける中、王妃の息は次第に弱まり、夜半には侍医が脈を探す時間ばかりが長くなった。家族が必死に呼びかける中、やがて侍医は目を伏せて静かに首を振った。アルブレヒトはその死を受け入れられず、家族は冷えていく手を握りしめたまま、周囲に止められるまで名を呼び続けた。"],
+prince:[
+"家族は身分も務めも忘れて寝台の傍らに残り、冷えた手を握りながら、夜が明けるまで何度でも王子の名を呼び続けた。やがて王子はかすかに指を動かしてその声に応え、途切れかけた息をもう一度つなぎ直した。",
+"家族は一晩中王子の寝台を囲み、侍医の指示に従って身体を温め、水を含ませながら朝を待った。家族の呼びかけに応えるように、王子は夜明け前になってようやく目を開き、かすかな声で水を求めた。命は取り留めたものの、片手には痺れが残り、以前のようにペンを握れるかは分からなかった。",
+"家族が必死に呼びかける中、王子の息は次第に弱まり、夜半には侍医が脈を探す時間ばかりが長くなった。家族が必死に呼びかける中、やがて侍医は目を伏せて静かに首を振った。アルブレヒトはその死を受け入れられず、家族は冷えていく手を握りしめたまま、周囲に止められるまで名を呼び続けた。"],
+princess:[
+"家族は身分も務めも忘れて寝台の傍らに残り、冷えた手を握りながら、夜が明けるまで何度でも王女の名を呼び続けた。やがて王女はかすかに指を動かしてその声に応え、途切れかけた息をもう一度つなぎ直した。",
+"家族は一晩中王女の寝台を囲み、侍医の指示に従って身体を温め、水を含ませながら朝を待った。家族の呼びかけに応えるように、王女は夜明け前になってようやく目を開き、かすかな声で水を求めた。命は取り留めたものの、片手には痺れが残り、以前のようにペンを握れるかは分からなかった。",
+"家族が必死に呼びかける中、王女の息は次第に弱まり、夜半には侍医が脈を探す時間ばかりが長くなった。家族が必死に呼びかける中、やがて侍医は目を伏せて静かに首を振った。アルブレヒトはその死を受け入れられず、家族は冷えていく手を握りしめたまま、周囲に止められるまで名を呼び続けた。"]
+};
+addMeta('family_critical_spouse_vigil',4,10,['family','queen','plague','crisis'],{requiresSpouse:true});addArch('family_critical_spouse_vigil','sticky','privateRoom');
+addCase({id:'family_critical_spouse_vigil',title:"王妃の危篤",category:'家族・死別',difficulty:'desperate',ignoreType:'放置不可',requiresSpouse:true,childGate:'spouseCritical',danger:4,enemy:"死の影",lineName:'王妃の危篤',enemyImg:'plague',initialLine:-38,publicHealth:{win:4,draw:0,loss:-6,ignored:-8},intro:"王妃は危篤に陥り、侍医は誰も今夜を越えられると言わなかった。家族は寝台を囲み、浅くなる息を数えながら、まだ届くかも分からない言葉を必死に語りかけた。",effects:makeEffects({win:{stability:6,prestige:3},loss:{stability:-12,prestige:-8},ignored:{stability:-10,prestige:-6},stories:criticalStories619.spouse})});
+addMeta('family_critical_prince_vigil',4,10,['family','dynasty','succession','plague','crisis'],{requiresFlag:'dynasty_started'});addArch('family_critical_prince_vigil','sticky','privateRoom');
+addCase({id:'family_critical_prince_vigil',title:"王子の危篤",category:'家族・死別',difficulty:'desperate',ignoreType:'放置不可',requiresFlag:'dynasty_started',childGate:'princeCritical',danger:4,enemy:"死の影",lineName:'王子の危篤',enemyImg:'plague',initialLine:-38,publicHealth:{win:4,draw:0,loss:-6,ignored:-8},intro:"王子は危篤に陥り、侍医は誰も今夜を越えられると言わなかった。家族は寝台を囲み、浅くなる息を数えながら、まだ届くかも分からない言葉を必死に語りかけた。",effects:makeEffects({win:{stability:6,prestige:3},loss:{stability:-12,prestige:-8},ignored:{stability:-10,prestige:-6},stories:criticalStories619.prince})});
+addMeta('family_critical_princess_vigil',4,10,['family','dynasty','diplomacy','plague','crisis'],{requiresFlag:'dynasty_started'});addArch('family_critical_princess_vigil','sticky','privateRoom');
+addCase({id:'family_critical_princess_vigil',title:"王女の危篤",category:'家族・死別',difficulty:'desperate',ignoreType:'放置不可',requiresFlag:'dynasty_started',childGate:'princessCritical',danger:4,enemy:"死の影",lineName:'王女の危篤',enemyImg:'plague',initialLine:-38,publicHealth:{win:4,draw:0,loss:-6,ignored:-8},intro:"王女は危篤に陥り、侍医は誰も今夜を越えられると言わなかった。家族は寝台を囲み、浅くなる息を数えながら、まだ届くかも分からない言葉を必死に語りかけた。",effects:makeEffects({win:{stability:6,prestige:3},loss:{stability:-12,prestige:-8},ignored:{stability:-10,prestige:-6},stories:criticalStories619.princess})});
 addMeta('plague_witch_herbs',3,10,['plague','welfare','occult','witch','family'],{});addArch('plague_witch_herbs','occult','occult');
 addCase({id:'plague_witch_herbs',title:"魔女の薬草",category:'怪異・医療',difficulty:'hard',ignoreType:'悪化注意',childGate:'familyGraveOrPlague',danger:2,enemy:"森の魔女",lineName:'魔女の薬草',enemyImg:'witch',initialLine:-20,publicHealth:{win:4,draw:1,loss:-2,ignored:-2},intro:"施療院の薬が尽き、病人の容体が悪化している。森に魔女がいるという噂を聞いたアルブレヒトは、幼い頃に森で迷い、三十代ほどに見える女から一夜の寝床を与えられたことを思い出す。",effects:makeEffects({win:{stability:2,churchSupport:-3},loss:{stability:-3,churchSupport:-5},ignored:{churchSupport:1},stories:["アルブレヒトの頼みを聞いた魔女は、「まったく、あんたと関わるとろくなことがないね。」と笑い、薬草を抱えて施療院へ赴き、夜更けまで一人ずつ病人の額に触れながら薬を煎じ続けた。初めは壁際から怯えて見ていた人々も、朝には彼女のために湯や薪を運び、救われた病人は誰も彼女を魔女とは呼ばなかった。","魔女は昔と変わらぬ顔で薬草を分け与え、「あの時と同じだね。あんたはいつまで経っても、一人ぼっちの子どもだ。」と静かに笑った。薬は重症者の熱を鎮めたが、司祭たちは異端の女の知識に頼った王に反発し、いくつかの行事を取り止めた。","アルブレヒトは幼い日の記憶だけを頼りに兵を森へ入れたが、魔女に会うことはできなかった。拙速に異端に手を伸ばそうとした王の姿は、国の人々に不安を与えた。"]})});
 })();
@@ -13338,8 +13409,10 @@ f.neglected=clamp((f.neglected||0)+amount,0,9);
 f.occupied=clamp((f.occupied||0)+amount,0,9);
 f.escalation=clamp((f.escalation||0)+Math.max(1,Math.floor(amount/2)),0,9);
 }else if(kind==='fightWin'){
-f.escalation=clamp((f.escalation||0)+amount,0,9);
+/* V615: a military success clears enemy footholds instead of making the same front self-escalate. */
 f.neglected=Math.max(0,(f.neglected||0)-1);
+f.occupied=Math.max(0,(f.occupied||0)-amount);
+f.escalation=Math.max(0,(f.escalation||0)-amount);
 }else if(kind==='fightLoss'){
 f.occupied=clamp((f.occupied||0)+amount,0,9);
 f.escalation=clamp((f.escalation||0)+amount,0,9);
@@ -13367,22 +13440,26 @@ if(factGain||ageGain)bp[k]=clamp((bp[k]||0)+factGain+ageGain,0,180);
 }
 };
  
-const NORMAL_TERRITORY_RESULT_ROLL_V516=Object.freeze({
-completeWin:{chance:.60,delta:1},
-majorWin:{chance:.35,delta:1},
-minorWin:{chance:.10,delta:1},
+/* V611: all territorial contests use the same symmetric rank table.
+   On the four land borders, victories can advance beyond the original border
+   and defeats can push Altrant back. changeMapParam() remains the single bounds
+   authority, so each frontier stops only at its authored map limit. */
+const BORDER_TERRITORY_RESULT_ROLL_V611=Object.freeze({
+completeWin:{chance:1,delta:1},
+majorWin:{chance:.60,delta:1},
+minorWin:{chance:.15,delta:1},
 draw:{chance:0,delta:0},
-minorLoss:{chance:.10,delta:-1},
-majorLoss:{chance:.35,delta:-1},
-completeLoss:{chance:.60,delta:-1}
+minorLoss:{chance:.15,delta:-1},
+majorLoss:{chance:.60,delta:-1},
+completeLoss:{chance:1,delta:-1}
 });
+window.BORDER_TERRITORY_RESULT_ROLL_V611=BORDER_TERRITORY_RESULT_ROLL_V611;
+const NORMAL_TERRITORY_RESULT_ROLL_V516=BORDER_TERRITORY_RESULT_ROLL_V611;
 window.NORMAL_TERRITORY_RESULT_ROLL_V516=NORMAL_TERRITORY_RESULT_ROLL_V516;
 function rollNormalTerritoryDeltaV516(rank,currentMap){
-const spec=NORMAL_TERRITORY_RESULT_ROLL_V516[String(rank||'')];
+const spec=BORDER_TERRITORY_RESULT_ROLL_V611[String(rank||'')];
 if(!spec||!spec.delta||spec.chance<=0)return 0;
-/* Ordinary disputes can recover lost Altrant land, but cannot expand beyond
-   the original border.  Expansion remains the role of formal wars. */
-if(spec.delta>0&&Number(currentMap||0)>=0)return 0;
+if(spec.chance>=1)return spec.delta;
 return Math.random()<spec.chance?spec.delta:0;
 }
 window.rollNormalTerritoryDeltaV516=rollNormalTerritoryDeltaV516;
@@ -13396,6 +13473,12 @@ const beforeP=Number(bp[key]||0);
 const beforeT=Number(State.tension?.[key]||0);
 const talk=isBorderDiplomacyCase(caseObj);
 const territory=isTerritoryCase(caseObj);
+const borderTags=(caseMeta(caseObj).tags||[]);
+const physicalBorder=territory||!!caseObj.borderEscalationCase||borderTags.includes('border')||borderTags.includes('frontier')||borderTags.includes('namedBorder')||borderTags.includes('escalation');
+/* V615: only an actual frontier/escalation case creates generic physical border pressure.
+   Ordinary foreign religion, court, marriage and diplomacy keep their authored tension/effects,
+   and successful diplomacy may still cool pressure later through applyDiplomaticCoolingFromCaseResult. */
+if(!physicalBorder)return;
 if(territory){
 State.normalTerritoryOutcomeTurns=State.normalTerritoryOutcomeTurns||{};
 State.normalTerritoryOutcomeTurns[String(caseObj.id||'')]=Number(State.turn||0);
@@ -13468,11 +13551,11 @@ else touchBorderFact(key,'talkLoss',1);
 return note;
 }
 if(isSuccessRank(r.rank)){
-if(Number(bp[key]||0)<beforeP)bp[key]=clamp(beforeP+8,0,180);
-if(Number(State.tension?.[key]||0)<beforeT)State.tension[key]=beforeT;
+/* V615: keep the large pressure/tension reduction calculated by applyActiveBorderWarOutcome.
+   The old middleware restored pressure to beforeP+8, creating an endless same-front war loop. */
 touchBorderFact(key,'fightWin',kind==='greatWar'?2:1);
 r.specialLines=r.specialLines||[];
-r.specialLines.push(`${borderPressureLabel(key)}方面では勝利によって前線は安定したが、条約が結ばれるまで緊張は消えない。敵国は次はより本気で対処してくるだろう。`);
+r.specialLines.push(`${borderPressureLabel(key)}方面では勝利によって敵の足場が崩れ、前線の圧力も後退した。講和に持ち込めれば、この戦争を終わらせられる。`);
 }else if(r.rank==='draw'){
 touchBorderFact(key,'fightLoss',1);
 }else{
@@ -13947,7 +14030,7 @@ return withSpouseDeathGuard(()=>next.apply(this,arguments),false);
 }
 if(typeof applyChildrenRouteResult==='function'&&typeof window.registerApplyChildrenRouteResultMiddlewareV176==='function'){
 window.__kingRegisterNamedChildrenRouteLayerV489('spouseDeathGuard','safety',function(next){return function(r){
-const allow=!!(r&&r.case&&r.case.id==='family_critical_vigil'&&(!window.isSuccessRank||!isSuccessRank(r.rank)));
+const allow=!!(r&&r.case&&r.case.id==='family_critical_spouse_vigil'&&HARD_FAILURE_RANKS.includes(r.rank));
 return withSpouseDeathGuard(()=>next.apply(this,arguments),allow);
 };});
 window.applyChildrenRouteResult=applyChildrenRouteResult;
@@ -13955,7 +14038,7 @@ window.applyChildrenRouteResult=applyChildrenRouteResult;
 if(typeof applyNeglectConsequence==='function'){
  
 window.__kingRegisterNeglectAroundHookV483('spouseDeathGuard','family',function(c,next){
-const allow=!!(c&&c.id==='family_critical_vigil');
+const allow=!!(c&&c.id==='family_critical_spouse_vigil');
 return withSpouseDeathGuard(()=>next(),allow);
 });
 }
@@ -24718,7 +24801,7 @@ const CASES37=[
 {id:'witch_black_forest_midwife',title:"魔女の印",category:'怪異・民衆',difficulty:'hard',ignoreType:'悪化注意',danger:2,once:true,enemy:"森の魔女",lineName:'魔女の印',enemyImg:'witch',initialLine:-15,intro:"辺境の村で、生まれた子に同じ黒い印が現れるという噂が広がった。印のある子を取り上げたのはいつも同じ産婆で、村人たちは彼女が赤子に魔女の印を刻んでいると訴えている。",effects:makeEffects({win:{stability:5,citySupport:2,churchSupport:3,prestige:3},loss:{stability:-6,churchSupport:-4,citySupport:-3},ignored:{stability:-5,churchSupport:-3},stories:["アルブレヒトは黒い印が産婆の使う薬草の染みだと突き止め、村人たちの前で同じ印を自分の腕につけて見せた。やがて出産を控えた女が産婆の家を訪れ、「この子も、あなたに取り上げてほしい。」と頭を下げ、閉ざされていた戸口に再び母親たちが並び始めた。","アルブレヒトは産婆への処罰を止め、黒い印が呪いではないと医師に確かめさせたが、村人たちの疑いまでは消せなかった。産婆は「もうここでは赤子に触れられないよ。」と道具を包んで村を去り、その後は遠く離れた土地で子を取り上げるようになった。","アルブレヒトが到着する前に村人たちは産婆の家へ押しかけ、彼女を引きずり出して、黒い印を消せと火をかけた。焼け跡から薬草と出産道具だけが見つかったあと、産婆を失った村では難産で母子を失う家が相次ぎ、人々は自分たちが何を焼いたのかを思い知らされた。"]})},
 {id:'witch_stolen_harvest',title:"収穫を盗む魔女",category:'怪異・農村',difficulty:'hard',ignoreType:'悪化注意',danger:2,once:true,enemy:"収穫を盗む魔女",lineName:'収穫を盗む魔女',enemyImg:'witch',initialLine:-15,intro:"豊作だったはずの畑が、一夜で枯れ野に変わった。畑の中央には黒い麦で編んだ冠が置かれ、「王が食べる分だけ残してやった。」という言葉が土に刻まれていた。",effects:makeEffects({win:{stability:5,treasury:4,prestige:3},loss:{stability:-7,treasury:-4,citySupport:-3},ignored:{stability:-5,treasury:-3},stories:["アルブレヒトが森の奥で魔女を見つけると、黒く枯れた麦の山の前に一束だけ黄金色の穂が残され、魔女は「これは王様の分だよ。持って帰ればいい。」とあざ笑った。アルブレヒトがその一束を魔女へ投げ返し、「王だけが腹を満たすことはしない。飢える時は一緒だ。」と言い切ると、黒かった麦は端からゆっくり黄金色を取り戻し、魔女はしばらく黙って王を見つめたあと、笑顔を消して森の奥へ消えた。","アルブレヒトは黒い冠を持って森へ踏み込み、落ちている金色の麦粒を追って、魔女の家へたどり着いた。彼女の周囲には村から消えた麦が山のように積まれ、黒く枯れ落ちていた。アルブレヒトが剣を向けると、魔女は「遅かったねえ王様。あんたの爺さんはもっと手ごわくていい男だったよ。」とあざ笑い、森の闇の中へかき消えた。\r\n","アルブレヒトは黒い冠を踏み砕いて魔女への挑戦を示したが、その夜、まだ無事だった周囲の畑まで黒く枯れ、井戸には麦粒がびっしりと浮かんだ。翌朝には魔女の姿も痕跡もなく、村人たちは王が怒らせたものから逃れるため、実りを残した土地そのものを捨て始めた。"]})},
 {id:'witch_queen_mirror',title:"鏡を覗く魔女",category:'怪異・宮廷',difficulty:'hard',ignoreType:'放置不可',danger:2,once:true,enemy:"鏡を覗く魔女",lineName:'鏡を覗く魔女',enemyImg:'witch',initialLine:-16,intro:"鏡の向こうで、魔女が王妃を覗いている。王妃の私室の鏡に夜ごと見知らぬ女が映り、侍女たちは気味悪がって暇乞いをする者まであらわれた。",effects:makeEffects({win:{prestige:5,stability:4,churchSupport:2},loss:{prestige:-6,stability:-5,nobleSupport:-3},ignored:{prestige:-4,stability:-4},stories:["アルブレヒトは王妃の白い外套を肩に掛けて夜の私室に潜み、鏡に見知らぬ女の顔が浮かんだその瞬間、鏡枠の裏で板がきしむ音を聞き取って鏡をたたき割り、奥の隠し部屋に忍び込んでいた女を取り押さえた。鏡の魔女は呪いではなく人の悪意だったと知れると、暇乞いを願い出ていた侍女たちも王妃のもとへ戻った。王妃は自分を守るため暗がりに立った王の姿をいつまでも忘れなかった。","アルブレヒトは鏡の細工を暴き、王妃の私室を覗いていた女を捕えたが、その手引きをしていたのが、借金で脅されていた古参の侍女だったことが明らかになった。怪異は止んだものの、王妃は長くそばに置いた侍女を自ら追い出さねばならず、鏡の前に座るたび、本当に恐ろしいのは魔女ではなく人なのだと思い出すことになった。","アルブレヒトはこれを呪いと決めつけて鏡を砕かせ、祈祷と清めに追われるうちに、本当に私室へ出入りしていた者を取り逃がしてしまった。やがて人々は王妃を「魔女に見込まれた人」として噂するようになった。"]})},
-{id:'dragon_red_mountains_23',title:"湖の赤き竜",category:'怪異・国家災厄',difficulty:'desperate',ignoreType:'放置不可',danger:5,once:true,mandatoryAge:23,enemy:"湖の赤き竜",lineName:'竜の災厄',enemyImg:'dragon',initialLine:-34,intro:"二十三歳の年、湖の赤き竜が目を覚ました。畑も村も焼かれ、アルトラント全土に恐怖が走る。",effects:makeEffects({win:{prestige:14,stability:8,troops:260,treasury:-6},loss:{prestige:-16,stability:-12,troops:-420,treasury:-8,citySupport:-6},ignored:{prestige:-14,stability:-10,troops:-360,treasury:-7},stories:["アルブレヒトは炎に包まれた湖畔をただ一騎で駆け抜け、鞍から飛び降りると、竜の爪をかわして喉元へ折れた槍を突き立てた。赤き竜が断末魔とともに湖へ沈み、煮え立つ水面の向こうで煤まみれの王が立ち上がった時、人々は誰からともなく膝をつき、歓呼の声はいつまでもやまなかった。","アルブレヒトは湖畔で竜を迎え撃ち、砲撃で翼を傷つけた隙に近衛を率いて懐へ踏み込み、何度も吹き飛ばされながらついに竜を湖へ追い落とした。だが湖畔の村々と兵の多くを失い、沈んだ竜が死んだのか眠っただけなのか分からないまま、湖の岸には長く誰も近づこうとしなかった。","アルブレヒトは湖畔に軍を並べて赤き竜を迎え撃ったが、竜は砲弾も槍も意に介さず戦列へ突っ込み、翼の一振りで兵を吹き飛ばし、炎で騎兵も砲もまとめて焼き払った。王は近衛に引きずられて辛うじて生還したが、翌朝の湖畔には溶けた鉄と黒焦げの馬だけが残った。"]})},
+{id:'dragon_red_mountains_23',title:"湖の蒼き竜",category:'怪異・国家災厄',difficulty:'desperate',ignoreType:'放置不可',danger:5,once:true,mandatoryAge:23,enemy:"湖の蒼き竜",lineName:'竜の災厄',enemyImg:'dragon',initialLine:-34,intro:"二十三歳の年、湖の蒼き竜が目を覚ました。畑も村も焼かれ、アルトラント全土に恐怖が走る。",effects:makeEffects({win:{prestige:14,stability:8,troops:260,treasury:-6},loss:{prestige:-16,stability:-12,troops:-420,treasury:-8,citySupport:-6},ignored:{prestige:-14,stability:-10,troops:-360,treasury:-7},stories:["アルブレヒトは炎に包まれた湖畔をただ一騎で駆け抜け、鞍から飛び降りると、竜の爪をかわして喉元へ折れた槍を突き立てた。蒼き竜が断末魔とともに湖へ沈み、煮え立つ水面の向こうで煤まみれの王が立ち上がった時、人々は誰からともなく膝をつき、歓呼の声はいつまでもやまなかった。","アルブレヒトは湖畔で竜を迎え撃ち、砲撃で翼を傷つけた隙に近衛を率いて懐へ踏み込み、何度も吹き飛ばされながらついに竜を湖へ追い落とした。だが湖畔の村々と兵の多くを失い、沈んだ竜が死んだのか眠っただけなのか分からないまま、湖の岸には長く誰も近づこうとしなかった。","アルブレヒトは湖畔に軍を並べて蒼き竜を迎え撃ったが、竜は砲弾も槍も意に介さず戦列へ突っ込み、翼の一振りで兵を吹き飛ばし、炎で騎兵も砲もまとめて焼き払った。王は近衛に引きずられて辛うじて生還したが、翌朝の湖畔には溶けた鉄と黒焦げの馬だけが残った。"]})},
 {id:'fire_capital_inferno',title:"職人街の火事",category:'災害・王都',difficulty:'hard',ignoreType:'放置不可',danger:3,once:true,enemy:"王都を焼く炎",lineName:'職人街の火事',enemyImg:'flame',initialLine:-20,intro:"職人街から火が上がり、乾いた風に煽られて市場と倉庫街へ燃え広がった。火消したちは延焼を止めるには、市場中央に立つ古い木造のギルド会館を倒すしかないと詰め寄る。",effects:makeEffects({win:{citySupport:7,stability:5,prestige:4,treasury:-5},loss:{citySupport:-8,stability:-7,treasury:-5,prestige:-4},ignored:{citySupport:-7,stability:-6,treasury:-4},stories:["アルブレヒトは市場を守るためギルド会館の取り壊しを即断すると、自ら火消したちの先頭へ入り、燃え移る屋根を叩き落としている最中に手の甲を焼きながら、会館が倒されるまで炎を食い止め続けた。やがて轟音とともに古い会館が崩れ、火がそこで途切れると、商人たちは焼け残った市場と王の赤く腫れた手を見比べ、誰からともなく帽子を取り、最後には広場中の者が黙って頭を下げた。","アルブレヒトは火消したちにギルド会館を倒させ、崩した柱と土壁を火除けに積ませて、炎が倉庫街へ渡る寸前で食い止めた。だが、先祖代々の会館を失った商人たちは再建の会議の場でも王と目を合わせず、新しい会館の正面に王家の紋章を掲げることを拒んだ。","アルブレヒトが反発を恐れて取り壊しをためらううち、火は屋根伝いに市場を越え、油を貯蔵する倉庫街へ一気に回った。夜明けにはギルド会館も市場も倉庫も焼け落ち、人々は「あの一棟を惜しんだために一区画を失った。」と王の決断の遅さを残念がった。"]})},
 {id:'fire_execution_square',title:"憎悪を吸う炎",category:'宗教・暴動',difficulty:'hard',ignoreType:'放置不可',danger:3,once:true,enemy:"憎悪を吸う炎",lineName:'憎悪を吸う炎',enemyImg:'flame',initialLine:-21,intro:"宗教対立が激化し、広場には異端者を焼く火刑台が組まれた。アルブレヒトが駆けつけたときには、異端とされた男はすでに柱へ縛られ、群衆の前で司祭が松明を掲げていた。",effects:makeEffects({win:{stability:6,churchSupport:4,citySupport:4,prestige:4},loss:{stability:-8,churchSupport:-6,citySupport:-5,prestige:-4},ignored:{stability:-7,churchSupport:-5,citySupport:-4},stories:["薪へ火が走った瞬間、アルブレヒトは外套を脱ぎ捨てて炎の中へ踏み込み、焼け落ちる縄を剣で断つと、男を抱えて火刑台から転がり落ちた。炎の向こうから生きたまま立ち上がった王と異端者を前に広場は静まり返り、司祭たちさえ言葉を失った。民衆は、「神が誰を焼くべきか答えを示した。」と受け取り、以後この国で火刑を求める声そのものが急速に勢いを失った。","アルブレヒトは火刑を中止させ、男を柱から降ろしたが、怒号を上げる群衆を退かせるため、結局は兵を広場へ入れざるを得なかった。命は救えたものの、司祭たちは「王は異端を保護した。」と憤り、しばらく王都では礼拝のたびに王への不満がくすぶり続けた。","アルブレヒトが広場へ踏み込んだ時にはすでに火が放たれ、群衆は祈りと罵声を上げながら燃え上がる火刑台を取り囲んでいた。男の死を境にスタント信徒は報復を誓い、トリック側も「異端を許すな。」と武装し始め、宗派間の争いは国を揺るがす火種となった。"]})}
 ];
@@ -28942,7 +29025,7 @@ function activeWarKeys(){
  const bs=State&&State.borderWarState;
  if(typeof bs==='string')add(bs);
  else if(Array.isArray(bs))bs.forEach(x=>add(x&&x.key||x));
- else if(bs&&typeof bs==='object')Object.entries(bs).forEach(([k,v])=>{if(v===true||v&&(['active','war','fighting'].includes(v.status)||v.active))add(k)});
+ else if(bs&&typeof bs==='object')Object.entries(bs).forEach(([k,v])=>{if(v===true||v==='war'||v==='greatWar'||v&&(['active','war','greatWar','fighting'].includes(v.status)||v.active))add(k)});
  const wt=State&&State.warTurns;if(wt&&typeof wt==='object')Object.entries(wt).forEach(([k,v])=>{if(Number(v)>0)add(k)});
  return set;
 }
@@ -28954,11 +29037,13 @@ function finalEnemyKey(){
 function n(v){v=Number(v);return Number.isFinite(v)?v:0;}
 function candidates(){
  const wars=activeWarKeys(),finalKey=finalEnemyKey();
- return COUNTRY.filter(x=>!wars.has(x.key)&&x.key!==finalKey).filter(x=>n(State.influence&&State.influence[x.key])<95||n(State.tension&&State.tension[x.key])>0);
+ /* 王女外交は解禁後「各半期60%」が正本。関係が良好というだけで抽選自体を止めない。 */
+ return COUNTRY.filter(x=>!wars.has(x.key)&&x.key!==finalKey);
 }
 function weightedPick(list){
  if(!list.length)return null;
- const weighted=list.map(x=>({x,w:Math.max(1,5+n(State.tension&&State.tension[x.key])*3+Math.max(0,-n(State.influence&&State.influence[x.key]))/10)}));
+ /* 緊張が高い・影響が低い相手を優先。ただし良好な国も親善先にはなり得る。 */
+ const weighted=list.map(x=>{const t=n(State.tension&&State.tension[x.key]),inf=n(State.influence&&State.influence[x.key]);return{x,w:Math.max(1,4+t*4+Math.max(0,80-inf)/12)};});
  const total=weighted.reduce((s,o)=>s+o.w,0);let r=Math.random()*total;
  for(const o of weighted){r-=o.w;if(r<=0)return o.x}return weighted[weighted.length-1].x;
 }
@@ -28973,27 +29058,45 @@ function resolvePrincessWork(){
  State.princessWorkByTurn=State.princessWorkByTurn||{};
  const key=String(State.turn||0);
  if(Object.prototype.hasOwnProperty.call(State.princessWorkByTurn,key))return State.princessWorkByTurn[key];
+ const state=princessDiplomacyState();
  const princess=livingPrincess();
- if(!princess)return null;
+ state.lastAttemptTurn=Number(State.turn||0);
+ if(!princess){state.lastSkipReason='王女未解禁・不在・療養中';return null;}
  const target=weightedPick(candidates());
- if(!target)return null;
- if(Math.random()>=.60){State.princessWorkByTurn[key]=null;return null;}
+ if(!target){state.lastSkipReason='使節先なし';return null;}
+ const roll=Math.random();
+ state.rollCount=(Number(state.rollCount)||0)+1;
+ state.lastRoll=roll;
+ state.lastSkipReason='';
+ if(roll>=.60){
+  State.princessWorkByTurn[key]=null;
+  state.lastOutcome='抽選外';
+  return null;
+ }
  State.tension=State.tension||{};State.influence=State.influence||{};State.params=State.params||{};
  const beforeT=n(State.tension[target.key]);
  const beforeI=n(State.influence[target.key]);
  State.tension[target.key]=Math.max(0,beforeT-2);
+ /* 元仕様の強い効果を維持：影響+20〜30、緊張-2。 */
  const influenceGain=20+Math.floor(Math.random()*11);
  State.influence[target.key]=Math.min(100,beforeI+influenceGain);
- const diplomacyBonus=Math.random()<.25?2:0;
- if(diplomacyBonus)State.params.diplomacy=Math.min(100,n(State.params.diplomacy)+2);
+ let diplomacyBonus=Math.random()<.25?2:0;
+ /* すでに非常に良好な相手でも、公務が数値上まったく無意味にならないようにする。 */
+ const actualInfluence=State.influence[target.key]-beforeI;
+ const actualTension=State.tension[target.key]-beforeT;
+ if(actualInfluence<5&&actualTension===0)diplomacyBonus=Math.max(diplomacyBonus,2);
+ if(diplomacyBonus)State.params.diplomacy=Math.min(100,n(State.params.diplomacy)+diplomacyBonus);
  const name=princess.name||'エリーゼ';
  const text=ACTS[Math.floor(Math.random()*ACTS.length)]({name,country:target.label});
- const result={turn:State.turn,princess:name,country:target.label,key:target.key,tensionDelta:State.tension[target.key]-beforeT,influenceDelta:State.influence[target.key]-beforeI,diplomacyBonus,text};
+ const result={turn:State.turn,princess:name,country:target.label,key:target.key,tensionDelta:actualTension,influenceDelta:actualInfluence,diplomacyBonus,text};
  State.princessWorkByTurn[key]=result;
+ state.hitCount=(Number(state.hitCount)||0)+1;
+ state.lastOutcome='発生';state.lastCountry=target.label;
  return result;
 }
-function princessWorkHtml(){
- const r=resolvePrincessWork();if(!r)return'';
+window.resolvePrincessWorkV618=resolvePrincessWork;
+function princessWorkHtml(resultOverride){
+ const r=arguments.length?resultOverride:resolvePrincessWork();if(!r)return'';
  const esc=v=>typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'');
  const effects=[`${r.country}への影響 +${r.influenceDelta}`,r.tensionDelta?`${r.country}との緊張 ${r.tensionDelta}`:'',r.diplomacyBonus?`外交 +${r.diplomacyBonus}`:''].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join('');
  const monogram=esc(String(r.princess||'王').slice(0,1));
@@ -29003,13 +29106,15 @@ function princessWorkHtml(){
 window.auditPrincessDiplomacyV544=function(){
  const state=princessDiplomacyState();
  const princess=livingPrincess();
- return {unlocked:!!state.unlocked,announced:!!state.announced,unlockedBy:state.unlockedBy||null,eligiblePrincess:princess?{id:princess.id,name:princess.name||'王女',age:childAgeYears(princess)}:null,candidateCountries:candidates().map(x=>x.label),currentTurnResolved:Object.prototype.hasOwnProperty.call(State.princessWorkByTurn||{},String(State.turn||0))};
+ return {unlocked:!!state.unlocked,announced:!!state.announced,unlockedBy:state.unlockedBy||null,eligiblePrincess:princess?{id:princess.id,name:princess.name||'王女',age:childAgeYears(princess),ageHalfTurns:Number(princess.ageHalfTurns||0)}:null,candidateCountries:candidates().map(x=>x.label),currentTurnResolved:Object.prototype.hasOwnProperty.call(State.princessWorkByTurn||{},String(State.turn||0)),rollCount:Number(state.rollCount)||0,hitCount:Number(state.hitCount)||0,lastRoll:Number.isFinite(Number(state.lastRoll))?Number(state.lastRoll):null,lastOutcome:state.lastOutcome||null,lastSkipReason:state.lastSkipReason||null,lastCountry:state.lastCountry||null};
 };
 
 // 総括画面の生成直前に一度だけ効果を確定し、画面内へ挿入する。
 if(typeof View==='object'&&View&&typeof View.summary==='function'){
  window.__kingViewSummaryMiddlewareV116.push(function(next){const oldSummary=next;return function(data){
-   const html=princessWorkHtml();
+   const hasSaved=!!(data&&Object.prototype.hasOwnProperty.call(data,'princessWork'));
+   const resolved=hasSaved?data.princessWork:resolvePrincessWork();
+   const html=princessWorkHtml(resolved);
    const ret=oldSummary.apply(this,arguments);
    if(html){
      const card=document.querySelector('#screenResult .resultCard');
@@ -29043,7 +29148,7 @@ function firstRequest17(c){
 window.__kingUnifiedCaseBadgeBaseV157=function(c){
  const req=firstRequest17(c);if(req)return req;
  const id=String(c?.id||'');
- if(c?.finalCase||id===FINAL_CASE_ID)return badge17('終局','最後の一件','req-rival');
+ if(c?.finalCase||id===FINAL_CASE_ID)return '';
  if(id.startsWith('crisis_recovery_'))return badge17('危機',id.includes('troops')?'臨時徴兵':'緊急公債','req-army');
  if(id==='tutorial_butler')return badge17('案内','チュートリアル','req-foreign');
  let wk='';try{wk=typeof warSlotKind==='function'?warSlotKind(c):'';}catch(e){}
@@ -31505,8 +31610,8 @@ const ESCALATION={
   {id:'loire_border',enemy:"ロアール国境代官",img:'loireSoldier',note:'国境騎士ダルモンが、村の小競り合いを「名誉」の問題へ引き上げようとしている。'},
   {id:'country_loire_vineyard_border',enemy:"ロアール国境兵",img:'isabellaLoire',note:'葡萄畑の訴えに、慈善使節イザベラの名が添えられた。善意の顔をした国境主張である。'},
   {id:'border_loire_mill_field',enemy:"ロアール槍兵隊長",img:'loireSoldier',note:'ダルモンは水車場を軍の通行権の問題として扱い始めた。'},
-  {id:'border_loire_watchtower_line',enemy:"ロアール銃兵中隊",img:'celestineLoire',note:'セレスティーヌの書簡が届き、見張り塔の争いは宮廷外交の舞台へ移った。'},
   {id:'country_loire_musketeer_crossing',enemy:"ダルモン",img:'loireSoldier',note:'銃士隊が越境し、現場の衝突はロアール宮廷の面子に結びついた。'},
+  {id:'border_loire_watchtower_line',enemy:"ロアール銃兵中隊",img:'celestineLoire',note:'セレスティーヌの書簡が届き、見張り塔の争いは宮廷外交の舞台へ移った。'},
   {id:'country_loire_ultimatum',enemy:"アルマン",img:'loireKing',note:'アルマン王の名で最後通牒が届いた。国境の杭は、王冠同士の争いになった。'}
  ],
  altrantRick:[
@@ -31623,7 +31728,7 @@ window.coreNamedBorderCandidateForKey=function(key,out){
 };
 function recordShown(c){
  const key=caseKey124(c);if(!key)return;ensureStageState();const turn=n(State.turn||1);
- State.borderLastShownTurn[key]=turn;State.borderKeyCooldown[key]=turn+2;State.borderCaseCooldown[c.id]=turn+4;
+ State.borderLastShownTurn[key]=turn;State.borderKeyCooldown[key]=turn+3;State.borderCaseCooldown[c.id]=turn+4;
  State.borderStage[key]=Math.max(n(State.borderStage[key]),n(c.borderEscalationStage||0));
 }
 window.coreRecordNamedBorderCandidateShown=function(c){recordShown(c);};
@@ -32744,10 +32849,12 @@ function renderChoice(k,d){
   const lack=d.cost&&treasury()<d.cost;
   const cost=d.cost?`国庫 −${d.cost.toLocaleString()}`:'費用なし';
   return `<button class="coreStrategyChoice phase181StrategyChoice ${lack?'phase181Disabled':''}" ${lack?'disabled':''} onclick="phase181ChooseRebellionStrategy('${k}')">
-    <b>${esc(d.name)}</b>
-    <span>${esc(d.desc)}</span>
-    <em>敵：${esc(d.enemy)} / 戦場：${esc(d.place)}</em>
-    <i>${esc(d.detail)}</i>
+    <span class="phase181ChoiceMain">
+      <b>${esc(d.name)}</b>
+      <span class="phase181ChoiceDesc">${esc(d.desc)}</span>
+      <em>敵：${esc(d.enemy)} / 戦場：${esc(d.place)}</em>
+      <i>${esc(d.detail)}</i>
+    </span>
     <small>${esc(cost)}${lack?' / 国庫不足':''}</small>
   </button>`;
 }
@@ -32819,11 +32926,14 @@ if(typeof Battle==='object'&&Battle&&typeof Battle.makeLane==='function'){
 const css=document.createElement('style');css.id='phase181-rebellion-strategy-css';css.textContent=`
 .phase181StrategyBox{width:760px!important;max-width:calc(100% - 44px)!important;}
 .phase181StrategyChoices{gap:10px!important;}
-.phase181StrategyChoice{grid-template-columns:1fr 132px!important;padding:12px 15px!important;border-width:3px!important;}
-.phase181StrategyChoice b{font-size:17px!important;}
-.phase181StrategyChoice em,.phase181StrategyChoice i{grid-column:1/2;display:block;font-style:normal;font-size:12px;line-height:1.36;font-weight:900;color:#3d5b68;}
-.phase181StrategyChoice i{color:#6b3b07;}
-.phase181StrategyChoice small{font-size:13px!important;text-align:right!important;}
+.phase181StrategyChoice{display:flex!important;grid-template-columns:none!important;align-items:flex-start!important;gap:14px!important;padding:11px 15px!important;border-width:3px!important;min-height:0!important;height:auto!important;white-space:normal!important;}
+.phase181ChoiceMain{display:block!important;flex:1 1 auto!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;}
+.phase181StrategyChoice b{display:block!important;font-size:17px!important;line-height:1.25!important;margin-bottom:3px!important;}
+.phase181StrategyChoice .phase181ChoiceDesc{display:block!important;font-size:12px!important;line-height:1.38!important;font-weight:800!important;color:#594626!important;white-space:normal!important;}
+.phase181StrategyChoice em,.phase181StrategyChoice i{display:block!important;font-style:normal!important;font-size:11.5px!important;line-height:1.34!important;font-weight:900!important;color:#3d5b68!important;white-space:normal!important;overflow-wrap:anywhere!important;}
+.phase181StrategyChoice em{margin-top:3px!important;}
+.phase181StrategyChoice i{color:#6b3b07!important;margin-top:1px!important;}
+.phase181StrategyChoice small{display:block!important;flex:0 0 132px!important;min-width:132px!important;max-width:132px!important;align-self:center!important;font-size:12px!important;line-height:1.3!important;text-align:right!important;white-space:normal!important;overflow-wrap:anywhere!important;}
 .phase181StrategyChoice.phase181Disabled{opacity:.48!important;filter:grayscale(.3)!important;}
 `;
 if(!document.getElementById(css.id))document.head.appendChild(css);
@@ -33168,7 +33278,7 @@ if(typeof evaluateCardRewards==='function'&&!evaluateCardRewards.phase187BossTru
       const lanes=(data&&data.lanes)||[];
       const wonMajor=id=>lanes.some(r=>r&&r.case&&r.case.id===id&&majorWin(r.rank));
       const wonAny=id=>lanes.some(r=>r&&r.case&&r.case.id===id&&success(r.rank));
-      if(wonMajor('dragon_red_mountains_23'))rewardCardOnce('phase187_dragon_red_mountains_23','dragonSlayerSpear','赤き山脈の竜を退けた証として、竜討ちの王槍が宝物庫に飾られた。',rewards);
+      if(wonMajor('dragon_red_mountains_23'))rewardCardOnce('phase187_dragon_red_mountains_23','dragonSlayerSpear','湖の蒼き竜を退けた証として、竜討ちの王槍が宝物庫に飾られた。',rewards);
       if(wonMajor('deadking_throne_27'))rewardCardOnce('phase187_deadking_throne_27','deadKingEdict','亡王の玉座を越えた証として、亡王の勅命が王の机に残された。',rewards);
       if(wonMajor('flow_great_noble_rebellion'))rewardCardOnce('phase187_great_noble_rebellion','amnestyConfiscation','大貴族同盟の反乱を鎮めたことで、王は彼らへの強い権限をふるえるようになった。',rewards);
       if(wonMajor('late_fate_succession_law'))rewardCardOnce('phase187_succession_law','successionGoldSeal','王位継承法案に金印が押され、王朝の未来を支える切り札となった。',rewards);
@@ -33509,7 +33619,7 @@ function buildDeathNotice188(kind,name){
   }
   return {
     kind:'prince',name,
-    title:'王冠の未来、失われる',
+    title:'未来、失われる',
     body:'幼い王子の寝台を、沈黙だけが囲んでいた。\n廷臣たちは目を伏せ、王冠の行方を誰も口にしなかった。',
     effects:['継承不安 +24','安定 -10','威信 -5']
   };
@@ -33544,7 +33654,7 @@ function installDeathNoticeCss188(){
 .mourningNoticeEffect{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,226,130,.62);border-radius:999px;background:rgba(255,241,191,.10);color:#ffe0d7;padding:4px 10px;font-size:12px;font-weight:1000;}
 .mourningNoticeActions{display:flex;justify-content:flex-end;margin-top:18px;}
 .mourningNoticeBtn{min-width:132px!important;border-color:#fff0a8!important;background:linear-gradient(180deg,#fff1bf,#c99b38)!important;color:#102033!important;border-radius:999px!important;box-shadow:0 4px 0 #5a3b08!important;}
-.mourningNoticeCue{position:absolute;right:28px;bottom:22px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:#ffe8a8;background:rgba(16,42,76,.80);border:2px solid rgba(255,226,130,.90);box-shadow:0 0 12px rgba(255,210,80,.32);font-size:20px;font-weight:1000;line-height:1;animation:storyCuePulse 1.15s ease-in-out infinite alternate;pointer-events:none;}
+.mourningNoticeCue{display:none!important;}
 `;
   document.head.appendChild(st);
 }
@@ -33565,7 +33675,6 @@ function showDeathNoticeIfNeeded188(){
       <div class="mourningNoticeBody">${esc188(notice.body)}</div>
       <div class="mourningNoticeEffects">${(notice.effects||[]).map(x=>`<span class="mourningNoticeEffect">${esc188(x)}</span>`).join('')}</div>
       <div class="mourningNoticeActions"><button class="mourningNoticeBtn" type="button">受け止める</button></div>
-      <div class="mourningNoticeCue">▼</div>
     </div>`;
     const btn=shade.querySelector('.mourningNoticeBtn');
     let closed188=false;
@@ -34964,15 +35073,13 @@ try{
       majorLoss   -1 60%
       completeLoss-1 100%
    Peace-conference outcomes are intentionally untouched. */
-const V513_BORDER_ROLL={
-  completeWin:{chance:1,delta:1},
-  majorWin:{chance:.60,delta:1},
-  minorWin:{chance:.15,delta:1},
-  draw:{chance:0,delta:0},
-  minorLoss:{chance:.15,delta:-1},
-  majorLoss:{chance:.60,delta:-1},
-  completeLoss:{chance:1,delta:-1}
-};
+/* V611: formal wars and ordinary land disputes share one territorial table. */
+const V513_BORDER_ROLL=(typeof BORDER_TERRITORY_RESULT_ROLL_V611!=='undefined')
+  ?BORDER_TERRITORY_RESULT_ROLL_V611
+  :{
+    completeWin:{chance:1,delta:1},majorWin:{chance:.60,delta:1},minorWin:{chance:.15,delta:1},draw:{chance:0,delta:0},
+    minorLoss:{chance:.15,delta:-1},majorLoss:{chance:.60,delta:-1},completeLoss:{chance:1,delta:-1}
+  };
 window.V513_BORDER_ROLL=V513_BORDER_ROLL;
 
 function v513RollBorderDelta(rank){
@@ -35449,7 +35556,10 @@ function decorateSummary(data){
  card.querySelectorAll('.summaryBlock').forEach(block=>{const cls=sectionClassFor(block.querySelector('h3'));if(cls)block.classList.add(cls);});
  const button=Array.from(card.querySelectorAll(':scope>button')).find(b=>/次の半期/.test(b.textContent||''))||card.querySelector(':scope>button:last-of-type');
  if(button&&!button.parentElement.classList.contains('v518SummaryAction')){const action=document.createElement('div');action.className='v518SummaryAction';button.before(action);action.appendChild(button);}
- const action=card.querySelector(':scope>.v518SummaryAction');if(action){const ordered=[card.querySelector(':scope>.v518GrowthPanel'),card.querySelector(':scope>.actorConsequence'),...Array.from(card.querySelectorAll(':scope>.economyBreakdown')).filter(el=>/采配者の状態/.test(el.textContent||'')),...Array.from(card.querySelectorAll(':scope>.summaryBlock')).filter(el=>/切り札/.test(el.querySelector('h3')?.textContent||'')),card.querySelector(':scope>.princessWorkBox'),card.querySelector(':scope>.countryExplanationBlock95')].filter(Boolean);ordered.forEach(el=>card.insertBefore(el,action));}
+ const action=card.querySelector(':scope>.v518SummaryAction');if(action){const ordered=[card.querySelector(':scope>.v518GrowthPanel'),card.querySelector(':scope>.actorConsequence'),...Array.from(card.querySelectorAll(':scope>.economyBreakdown')).filter(el=>/采配者の状態/.test(el.textContent||'')),...Array.from(card.querySelectorAll(':scope>.summaryBlock')).filter(el=>/切り札/.test(el.querySelector('h3')?.textContent||'')),card.querySelector(':scope>.countryExplanationBlock95')].filter(Boolean);ordered.forEach(el=>card.insertBefore(el,action));}
+ const princessBox=card.querySelector(':scope>.princessWorkBox');
+ const hero=card.querySelector(':scope>.v518SummaryHero');
+ if(princessBox&&hero)hero.insertAdjacentElement('afterend',princessBox);
 }
 if(Array.isArray(window.__kingViewSummaryMiddlewareV116))window.__kingViewSummaryMiddlewareV116.push(function(next){return function(data){const r=next.apply(this,arguments);decorateSummary(data);requestAnimationFrame(()=>decorateSummary(data));setTimeout(()=>decorateSummary(data),120);return r;};});
 else if(window.View&&typeof View.summary==='function'){const oldSummary=View.summary;View.summary=function(data){const r=oldSummary.apply(this,arguments);decorateSummary(data);return r;};}
@@ -35457,7 +35567,7 @@ else if(window.View&&typeof View.summary==='function'){const oldSummary=View.sum
 const IMPORTANT_CASE_IDS_V519=new Set([
  'tutorial_butler','dragon_red_mountains_23','flow_great_noble_rebellion','deadking_throne_27',FINAL_CASE_ID,
  'brother_return_01','brother_return_02','brother_persuasion','brother_rebellion','brother_rebellion_warning','chain_brother_petition',
- 'royal_child_health_watch','queen_illness_vigil','family_spouse_fever','family_child_fever','family_critical_vigil','remarriage_council',
+ 'royal_child_health_watch','queen_illness_vigil','family_spouse_fever','family_child_fever','family_critical_spouse_vigil','family_critical_prince_vigil','family_critical_princess_vigil','remarriage_council',
  'great_plague_council','chain_plague_capital_lockdown','chain_border_supply'
 ]);
 function importantCaseObjectV519(card){
@@ -42466,7 +42576,7 @@ try{
       const key=keyOf(r.case),e=canon[key]||canon.ruthenia;if(!e)return r;
       const tier=fr.tier==='complete'?'complete':fr.tier==='loss'?'loss':'wounded';
       const text=textFor(key,tier);
-      if(text)fr.text=text;
+      if(text){fr.text=text;r.story=text;}
       fr.title=`最後の事件：${e.title}`;
       if(Array.isArray(r.specialLines)){
         r.specialLines=r.specialLines.filter(x=>{const t=String(x);return !t.includes('<b>最後の一件</b>')&&!t.includes('<b>最後の事件</b>');});
@@ -43418,7 +43528,7 @@ const V558_ENEMY_GRADES={
   boss:{id:'boss',label:'大敵',threat:20,line:-8,speed:1.05,pressure:1.16,stability:1.18,weight:1.10}
 };
 const V558_NAMED=[
-  {re:/(森の魔女|黒麦冠|鏡の怪異|赤き竜|湖の赤き竜|亡き先王|死んだ先王)/,grade:'boss',mod:{pressure:1.04,stability:1.05}},
+  {re:/(森の魔女|黒麦冠|鏡の怪異|蒼き竜|湖の蒼き竜|亡き先王|死んだ先王)/,grade:'boss',mod:{pressure:1.04,stability:1.05}},
   {re:/(グリゴリー・オルロフ|オルロフ)/,grade:'nemesis',mod:{speed:1.04,pressure:1.05}},
   {re:/(ヴォルフラム・アイゼンハルト|ヴォルフラム)/,grade:'nemesis',mod:{weight:1.06,pressure:1.04}},
   {re:/(レナート・ベルナッチ|レナート)/,grade:'nemesis',mod:{speed:1.07,stability:.97}},
@@ -43504,7 +43614,7 @@ window.auditEnemyVariationV558=function(){
   const byDifficulty={};
   for(const c of DATA.cases||[]){const g=v558EnemyGrade(c).id;counts[g]=(counts[g]||0)+1;const d=c.difficulty||'none';(byDifficulty[d]||(byDifficulty[d]={}))[g]=((byDifficulty[d]||{})[g]||0)+1;}
   const find=(q)=>(DATA.cases||[]).find(c=>String(c.enemy||'').includes(q)||String(c.title||'').includes(q));
-  const sampleNames=['オルロフ','ヴォルフラム','レナート','イリーナ','ロレンツォ','アルバロ','ダグダン','魔女','赤き竜'];
+  const sampleNames=['オルロフ','ヴォルフラム','レナート','イリーナ','ロレンツォ','アルバロ','ダグダン','魔女','蒼き竜'];
   const samples={};
   for(const q of sampleNames){const c=find(q);if(c)samples[q]={id:c.id,title:c.title,enemy:c.enemy,grade:v558EnemyGrade(c).label,threat:caseThreat(c),initial:c.initialLine||0};}
   return{version:'V558',counts,byDifficulty,samples,wrapper:!!Battle.makeLane.v558EnemyVariation,ok:counts.soft>0&&counts.standard>0&&counts.tough>0&&counts.elite>0&&counts.nemesis>0&&counts.boss>0&&!!Battle.makeLane.v558EnemyVariation};
@@ -43652,6 +43762,30 @@ window.__VERSION__='V559';
 })();
 </script>
 
+
+
+<!-- V611: symmetric territorial movement on Altrant frontiers -->
+<script id="v611-territory-movement-audit">
+(function(){
+'use strict';
+window.__VERSION__='V611';
+window.auditV611TerritoryMovement=function(){
+  const keys=(typeof ALTRANT_BORDER_KEYS!=='undefined'&&Array.isArray(ALTRANT_BORDER_KEYS))?ALTRANT_BORDER_KEYS:[];
+  const defs={};
+  for(const key of keys){
+    try{const d=mapDef(key);defs[key]=d?{min:d.min,max:d.max,current:Number(State?.map?.[key]||0)}:null;}catch(_){defs[key]=null;}
+  }
+  return{
+    version:'V611',
+    sharedTable:JSON.parse(JSON.stringify(window.BORDER_TERRITORY_RESULT_ROLL_V611||{})),
+    normalTable:JSON.parse(JSON.stringify(window.NORMAL_TERRITORY_RESULT_ROLL_V516||{})),
+    formalWarTable:JSON.parse(JSON.stringify(window.V513_BORDER_ROLL||{})),
+    frontiers:defs,
+    note:'陸上4国は -4〜+4。トレウヴァル北岸は画像仕様上 -4〜0で、失地回復のみ。'
+  };
+};
+})();
+</script>
 </html>
 <script>
 (function(){
@@ -44264,8 +44398,8 @@ window.auditV567=function(){
 .v568KingName{font-size:24px;font-weight:950;color:#f9f5e8;margin-top:10px;letter-spacing:.06em;}
 .v568EpithetText{margin-top:24px;padding-top:20px;border-top:1px solid rgba(214,181,101,.25);font-size:15px;line-height:1.9;color:#d7dedf;max-width:650px;}
 /* final map */
-.v568FinalMap{position:relative;width:min(930px,100%);aspect-ratio:1000/600;margin:4px auto 0;border:2px solid #a8833c;border-radius:15px;overflow:hidden;background:#dac49b;box-shadow:0 18px 40px rgba(0,0,0,.38),inset 0 0 28px rgba(65,39,10,.16);}
-.v568FinalMap .mapLayer{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;}
+.v568FinalMap{position:relative;width:min(430px,100%);aspect-ratio:1/1;margin:4px auto 0;border:2px solid #a8833c;border-radius:15px;overflow:hidden;background:#dac49b;box-shadow:0 18px 40px rgba(0,0,0,.38),inset 0 0 28px rgba(65,39,10,.16);}
+.v568FinalMap .mapLayer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
 .v568FinalMap .mapStatus{position:absolute;left:12px;right:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:5px;z-index:90;pointer-events:none;}
 .v568FinalMap .mapChip{font-size:10px!important;padding:4px 7px!important;opacity:.88;}
 .v568MapCaption{margin-top:13px;text-align:center;color:#9aacb8;font-size:12px;}
@@ -44384,7 +44518,7 @@ function family568(){
  if(sid&&State.marriage?.state==='married')out.living.push({kind:'wife',id:sid,name:actorName568(sid,'王妃'),role:'王妃',img:actorImg568(sid)});
  const children=Array.isArray(State.children)?State.children:[];
  for(const c of children){const female=c.gender==='female';const item={kind:female?'princess':'prince',id:c.id||'',name:c.name||(female?'王女':'王子'),role:female?'王女':'王子',img:IMG[female?'princessElise':'princeLeopold']||'',age:childAge568(c),child:c};if(isDeadChild568(c))out.memory.push(item);else out.living.push(item);}
- for(const id of(State.marriage?.deadSpouses||[])){if(out.memory.some(x=>x.id===id))continue;out.memory.push({kind:'wife',id,name:actorName568(id,'亡き王妃'),role:'亡き王妃',img:actorImg568(id)});}
+ for(const id of(State.marriage?.deadSpouses||[])){if(out.memory.some(x=>x.id===id))continue;out.memory.push({kind:'wife',id,name:actorName568(id,'王妃'),role:'王妃',img:actorImg568(id)});}
  return out;
 }
 function witness568(){
@@ -44421,11 +44555,13 @@ function act2_568(){
 function act3_568(){
  const f=family568();const alive=f.living.length?`<div class="v568FamilyGrid">${f.living.map(familyCard568).join('')}</div>`:`<div class="v568NoFamily">王妃・王子・王女の姿は、この冬の王宮にはなかった。</div>`;
  const mem=f.memory.length?`<div class="v568Memory"><h4>家族の記憶</h4><div class="v568MemoryList">${f.memory.map(memory568).join('')}</div></div>`:'';
- return shell568(3,`<section class="v568Paper"><div class="v568Kicker">王冠のそばにいた者たち</div><h2 class="v568Heading">王家</h2><div class="v568FamilySection">${alive}${mem}</div></section>`);
+ return shell568(3,`<section class="v568Paper"><div class="v568Kicker">ともに生きた者たち</div><h2 class="v568Heading">王家</h2><div class="v568FamilySection">${alive}${mem}</div></section>`);
 }
 function act4_568(){
  const w=witness568();const lead=w?`<div class="v568Witness"><b>${esc(w.name)}　${esc(w.role||'')}</b><br>${w.text}</div>`:`<div class="v568Witness">アルブレヒトは公には最後まで意味を語らなかった。だが執務机の引き出しには、五文字をほどく一行だけが残されていた。</div>`;
- const inner=`<section class="v568Paper v568RevealPaper"><div class="v568Kicker">A.I.U.E.O.</div>${lead}<div class="v568Words"><div class="v568Word"><span class="v568Initial">A</span>dhuc</div><div class="v568Word"><span class="v568Initial">I</span>n</div><div class="v568Word"><span class="v568Initial">U</span>num,</div><div class="v568Word"><span class="v568Initial">E</span>tiam</div><div class="v568Word"><span class="v568Initial">O</span>ppositi.</div></div><div class="v568Truth"><div class="v568TruthLatin">Adhuc In Unum, Etiam Oppositi.</div><div class="v568TruthJa">「相争えど、なお我らは一つ。」</div></div></section>`;
+ const words=[['A','dhuc'],['I','n'],['U','num,'],['E','tiam'],['O','ppositi.']];
+ const motto=words.map((x,i)=>`<div class="v568Word v612MottoWord" style="--v612-i:${i}"><span class="v568Initial">${x[0]}</span><span class="v612Tail">${x[1]}</span></div>`).join('');
+ const inner=`<section class="v568Paper v568RevealPaper"><div class="v568Kicker v612AiueoKicker">A.I.U.E.O.</div>${lead}<div class="v568Words v612MottoGrid" aria-label="Adhuc In Unum, Etiam Oppositi.">${motto}</div><div class="v568Truth"><div class="v612TruthRule" aria-hidden="true"></div><div class="v568TruthLatin">Adhuc In Unum, Etiam Oppositi.</div><div class="v568TruthJa">「相争えど、なお我らは一つ。」</div></div></section>`;
  return `<div class="v568FinalScreen v568AiueoFinal"><div class="v568Topbar"><b>最終リザルト</b>${progress568(4)}</div><div class="v568Stage">${inner}<div class="v568Nav"><button class="v568SealNext" aria-label="エンディングへ" onclick="View.finishFinalResultV568()"></button></div></div></div>`;
 }
 function renderFinal568(){
@@ -44785,7 +44921,7 @@ if(window.View){
 #screenMain .caseCard.tutorial{
   padding-top:10px!important;
   animation-name:caseAppear!important;
-  animation-duration:.42s!important;
+  animation-duration:.24s!important;
   animation-timing-function:ease-out!important;
   animation-fill-mode:forwards!important;
   animation-iteration-count:1!important;
@@ -45082,7 +45218,11 @@ window.__VERSION__='V580';
 'use strict';
 if(window.__V581_ROYAL_FAMILY_DEATH_FLOW__)return;
 window.__V581_ROYAL_FAMILY_DEATH_FLOW__=true;
-const CRITICAL_ID='family_critical_vigil';
+const CRITICAL_SPOUSE_ID='family_critical_spouse_vigil';
+const CRITICAL_PRINCE_ID='family_critical_prince_vigil';
+const CRITICAL_PRINCESS_ID='family_critical_princess_vigil';
+const CRITICAL_IDS=new Set([CRITICAL_SPOUSE_ID,CRITICAL_PRINCE_ID,CRITICAL_PRINCESS_ID]);
+const CHILD_CRITICAL_IDS=new Set([CRITICAL_PRINCE_ID,CRITICAL_PRINCESS_ID]);
 const CHILD_FEVER_ID='family_child_fever';
 const OLD_QUEEN_VIGIL_ID='queen_illness_vigil';
 const FINAL_ID=(typeof FINAL_CASE_ID!=='undefined'?FINAL_CASE_ID:'finalcase_last_matter');
@@ -45189,7 +45329,7 @@ function deathNotice581(child){
   const key=`${kind}:${name}:${child.id||State.turn}:v581`;
   if(State.shownDeathNoticeKeys[key]||State.pendingDeathNotices.some(n=>n&&n.key===key))return;
   const notice=kind==='prince'?{
-    key,kind,name,turn:State.turn||0,title:'王冠の未来、失われる',
+    key,kind,name,turn:State.turn||0,title:'未来、失われる',
     body:'幼い王子の寝台を、沈黙だけが囲んでいた。\n廷臣たちは目を伏せ、王冠の行方を誰も口にしなかった。',
     effects:['継承不安 +24','安定 -10','威信 -5']
   }:{
@@ -45211,6 +45351,8 @@ function finalizeChildDeath581(child,reason='critical_vigil'){
       State.princessDiplomacy.disabledByDeath=true;
       State.princessDiplomacy.deceasedChildId=child.id||null;
     }
+    if(State.princessWorkByTurn&&typeof State.princessWorkByTurn==='object')delete State.princessWorkByTurn[String(State.turn||0)];
+    if(State.lastSummary&&State.lastSummary.princessWork&&State.lastSummary.princessWork.princess===child.name)State.lastSummary.princessWork=null;
     if(State.pendingRoyalBirthNotice&&State.pendingRoyalBirthNotice.childId===child.id)State.pendingRoyalBirthNotice=null;
   }
   if(!State.v581FinalizedChildDeaths[key]){
@@ -45250,7 +45392,7 @@ try{
       const snap=snapshotChildren581();
       const ret=next?next.apply(this,arguments):null;
       const id=r?.case?.id||'';
-      if(id===CRITICAL_ID)finalizeNewChildDeaths581(snap,'critical_vigil');
+      if(CHILD_CRITICAL_IDS.has(id))finalizeNewChildDeaths581(snap,id===CRITICAL_PRINCE_ID?'critical_prince_vigil':'critical_princess_vigil');
       else restoreUnintendedChildDeaths581(snap,'case_'+id);
       return ret;
     };});
@@ -45263,7 +45405,7 @@ try{
     window.__kingRegisterNeglectAroundHookV483('v581ChildDeathGate','familyDeath',function(c,next){
       const snap=snapshotChildren581();
       const ret=next();
-      if(c?.id===CRITICAL_ID)finalizeNewChildDeaths581(snap,'critical_vigil_ignored');
+      if(CHILD_CRITICAL_IDS.has(c?.id))finalizeNewChildDeaths581(snap,c?.id===CRITICAL_PRINCE_ID?'critical_prince_vigil_ignored':'critical_princess_vigil_ignored');
       else restoreUnintendedChildDeaths581(snap,'ignored_'+(c?.id||''));
       if(c?.id===OLD_QUEEN_VIGIL_ID&&State.marriage?.state==='married'&&State.marriage?.spouseId){
         ensureFamily581();State.familyHealth.spouse='critical';State.caseCache=null;
@@ -45282,11 +45424,17 @@ try{
       const out=prevVisible581.apply(this,arguments)||[];
       if(out.some(c=>c&&c.id===FINAL_ID)||State.phase===FINAL_CASE_PHASE)return out;
       if(!criticalPatient581())return out;
-      const critical=(DATA.cases||[]).find(c=>c&&c.id===CRITICAL_ID);
-      if(!critical)return out;
-      const rest=out.filter(c=>c&&c.id!==CRITICAL_ID);
+      const critical=[];
+      const spouseCritical=State.marriage?.spouseId&&State.marriage?.state==='married'&&State.familyHealth?.spouse==='critical';
+      const princeCritical=liveChildren581().some(c=>c.gender==='male'&&c.healthStage==='critical');
+      const princessCritical=liveChildren581().some(c=>c.gender==='female'&&c.healthStage==='critical');
+      if(spouseCritical){const c=(DATA.cases||[]).find(x=>x&&x.id===CRITICAL_SPOUSE_ID);if(c)critical.push(c);}
+      if(princeCritical){const c=(DATA.cases||[]).find(x=>x&&x.id===CRITICAL_PRINCE_ID);if(c)critical.push(c);}
+      if(princessCritical){const c=(DATA.cases||[]).find(x=>x&&x.id===CRITICAL_PRINCESS_ID);if(c)critical.push(c);}
+      if(!critical.length)return out;
+      const rest=out.filter(c=>c&&!CRITICAL_IDS.has(c.id));
       const limit=Math.max(1,out.length||Math.min(3,(typeof maxSelectableCases==='function'?maxSelectableCases():3)));
-      return [critical,...rest].slice(0,limit);
+      return [...critical,...rest].slice(0,limit);
     };
     try{Object.assign(wrapped581,prevVisible581);}catch(_){ }
     wrapped581.v581FamilyCriticalPriority=true;
@@ -45297,24 +45445,53 @@ try{
 /* 子供の病気案件の文面を、実際の患者が王子か王女かに合わせる。 */
 function updateFamilyCaseText581(){
   try{
-    const c=(DATA.cases||[]).find(x=>x&&x.id===CHILD_FEVER_ID);if(!c)return;
-    const ch=worstSickChild581();if(!ch)return;
-    const royal=ch.gender==='male'?'王子':'王女';
-    const named=childLabel581(ch);
-    c.title=`${royal}の発熱`;
-    c.enemy=`${royal}の熱`;c.lineName=`${royal}の発熱`;
-    c.intro=`${named}が高い熱を出し、水も薬も拒んで父の名を呼び続けている。侍医たちは病が王へ移れば国そのものが危うくなるとして、アルブレヒトを寝室の外に留め置こうとしている。`;
-    const stories={
-      completeWin:`アルブレヒトは王冠を扉の外へ置き、病床へ入ると、怯える${royal}を胸に抱いて自ら水と薬を飲ませた。夜明け前、${named}は父の腕の中で静かな寝息を立て始め、死神は王家から何も奪うものを見いだせずに立ち去っていった。`,
-      majorWin:`アルブレヒトは王冠を扉の外へ置き、病床へ入ると、怯える${royal}を胸に抱いて自ら水と薬を飲ませた。夜明け前、${named}は父の腕の中で静かな寝息を立て始め、死神は王家から何も奪うものを見いだせずに立ち去っていった。`,
-      minorWin:`アルブレヒトは寝室へ入り、${named}に水を飲ませてから侍医へ任せた。熱は下がり始めたが、幼い身体にはまだ長い養生が必要だった。`,
-      draw:`アルブレヒトは寝室へ入ったものの、侍医たちに急かされ、${named}に水を飲ませるとすぐに退室した。熱はわずかに下がったが、${royal}は父の服を抱きしめながら数日を病床で過ごした。`,
-      minorLoss:`アルブレヒトは寝室へ入ったものの、侍医たちに急かされ、${named}に水を飲ませるとすぐに退室した。熱はわずかに下がったが、${royal}は父の服を抱きしめながら数日を病床で過ごした。`,
-      majorLoss:`アルブレヒトは侍医たちの制止に従い病床へ入らなかった。${named}は父を求めて泣き疲れ、水も飲めないまま痙攣を繰り返した。`,
-      completeLoss:`アルブレヒトは侍医たちの制止に従い病床へ入らなかった。${named}は父を求めて泣き疲れ、水も飲めないまま痙攣を繰り返した。`,
-      ignored:`アルブレヒトが病床へ向かえないまま夜が更け、${named}の熱はさらに上がった。侍医たちは朝まで持ちこたえられるか分からないと告げた。`
+    const c=(DATA.cases||[]).find(x=>x&&x.id===CHILD_FEVER_ID);
+    const ch=worstSickChild581();
+    if(c&&ch){
+      const royal=ch.gender==='male'?'王子':'王女';
+      const named=childLabel581(ch);
+      c.title=`${royal}の発熱`;
+      c.enemy=`${royal}の熱`;c.lineName=`${royal}の発熱`;
+      c.intro=`${named}が高い熱を出し、水も薬も拒んで父の名を呼び続けている。侍医たちは病が王へ移れば国そのものが危うくなるとして、アルブレヒトを寝室の外に留め置こうとしている。`;
+      const stories={
+        completeWin:`アルブレヒトは王冠を扉の外へ置き、病床へ入ると、怯える${royal}を胸に抱いて自ら水と薬を飲ませた。夜明け前、${named}は父の腕の中で静かな寝息を立て始め、死神は王家から何も奪うものを見いだせずに立ち去っていった。`,
+        majorWin:`アルブレヒトは王冠を扉の外へ置き、病床へ入ると、怯える${royal}を胸に抱いて自ら水と薬を飲ませた。夜明け前、${named}は父の腕の中で静かな寝息を立て始め、死神は王家から何も奪うものを見いだせずに立ち去っていった。`,
+        minorWin:`アルブレヒトは寝室へ入り、${named}に水を飲ませてから侍医へ任せた。熱は下がり始めたが、幼い身体にはまだ長い養生が必要だった。`,
+        draw:`アルブレヒトは寝室へ入ったものの、侍医たちに急かされ、${named}に水を飲ませるとすぐに退室した。熱はわずかに下がったが、${royal}は父の服を抱きしめながら数日を病床で過ごした。`,
+        minorLoss:`アルブレヒトは寝室へ入ったものの、侍医たちに急かされ、${named}に水を飲ませるとすぐに退室した。熱はわずかに下がったが、${royal}は父の服を抱きしめながら数日を病床で過ごした。`,
+        majorLoss:`アルブレヒトは侍医たちの制止に従い病床へ入らなかった。${named}は父を求めて泣き疲れ、水も飲めないまま痙攣を繰り返した。`,
+        completeLoss:`アルブレヒトは侍医たちの制止に従い病床へ入らなかった。${named}は父を求めて泣き疲れ、水も飲めないまま痙攣を繰り返した。`,
+        ignored:`アルブレヒトが病床へ向かえないまま夜が更け、${named}の熱はさらに上がった。侍医たちは朝まで持ちこたえられるか分からないと告げた。`
+      };
+      for(const [rank,story] of Object.entries(stories))if(c.effects?.[rank])c.effects[rank].story=story;
+    }
+
+    const updateCritical=(id,named,royal)=>{
+      const cc=(DATA.cases||[]).find(x=>x&&x.id===id);if(!cc||!named)return;
+      cc.title=`${royal}の危篤`;cc.lineName=`${royal}の危篤`;
+      cc.intro=`${named}は危篤に陥り、侍医は誰も今夜を越えられると言わなかった。家族は寝台を囲み、浅くなる息を数えながら、まだ届くかも分からない言葉を必死に語りかけた。`;
+      const cs={
+        completeWin:`家族は身分も務めも忘れて寝台の傍らに残り、冷えた手を握りながら、夜が明けるまで何度でも${named}の名を呼び続けた。やがて${named}はかすかに指を動かしてその声に応え、途切れかけた息をもう一度つなぎ直した。`,
+        majorWin:`家族は身分も務めも忘れて寝台の傍らに残り、冷えた手を握りながら、夜が明けるまで何度でも${named}の名を呼び続けた。やがて${named}はかすかに指を動かしてその声に応え、途切れかけた息をもう一度つなぎ直した。`,
+        minorWin:`家族は一晩中${named}の寝台を囲み、侍医の指示に従って身体を温め、水を含ませながら朝を待った。家族の呼びかけに応えるように、${named}は夜明け前になってようやく目を開き、かすかな声で水を求めた。命は取り留めたものの、片手には痺れが残り、以前のようにペンを握れるかは分からなかった。`,
+        draw:`家族は一晩中${named}の寝台を囲み、侍医の指示に従って身体を温め、水を含ませながら朝を待った。家族の呼びかけに応えるように、${named}は夜明け前になってようやく目を開き、かすかな声で水を求めた。命は取り留めたものの、片手には痺れが残り、以前のようにペンを握れるかは分からなかった。`,
+        minorLoss:`家族は一晩中${named}の寝台を囲み、侍医の指示に従って身体を温め、水を含ませながら朝を待った。家族の呼びかけに応えるように、${named}は夜明け前になってようやく目を開き、かすかな声で水を求めた。命は取り留めたものの、片手には痺れが残り、以前のようにペンを握れるかは分からなかった。`,
+        majorLoss:`家族が必死に呼びかける中、${named}の息は次第に弱まり、夜半には侍医が脈を探す時間ばかりが長くなった。家族が必死に呼びかける中、やがて侍医は目を伏せて静かに首を振った。アルブレヒトはその死を受け入れられず、家族は冷えていく手を握りしめたまま、周囲に止められるまで名を呼び続けた。`,
+        completeLoss:`家族が必死に呼びかける中、${named}の息は次第に弱まり、夜半には侍医が脈を探す時間ばかりが長くなった。家族が必死に呼びかける中、やがて侍医は目を伏せて静かに首を振った。アルブレヒトはその死を受け入れられず、家族は冷えていく手を握りしめたまま、周囲に止められるまで名を呼び続けた。`,
+        ignored:`家族が必死に呼びかける中、${named}の息は次第に弱まり、夜半には侍医が脈を探す時間ばかりが長くなった。家族が必死に呼びかける中、やがて侍医は目を伏せて静かに首を振った。アルブレヒトはその死を受け入れられず、家族は冷えていく手を握りしめたまま、周囲に止められるまで名を呼び続けた。`
+      };
+      for(const [rank,story] of Object.entries(cs))if(cc.effects?.[rank])cc.effects[rank].story=story;
     };
-    for(const [rank,story] of Object.entries(stories))if(c.effects?.[rank])c.effects[rank].story=story;
+    if(State.marriage?.spouseId&&State.marriage?.state==='married'&&State.familyHealth?.spouse==='critical'){
+      const sid=State.marriage.spouseId;
+      const raw=DATA?.actors?.[sid]?.name||State.marriage?.spouseName||'王妃';
+      const named=String(raw).includes('王妃')?String(raw):`${raw}王妃`;
+      updateCritical(CRITICAL_SPOUSE_ID,named,'王妃');
+    }
+    const cp=liveChildren581().find(x=>x.gender==='male'&&x.healthStage==='critical');
+    const cg=liveChildren581().find(x=>x.gender==='female'&&x.healthStage==='critical');
+    if(cp){const cc=(DATA.cases||[]).find(x=>x&&x.id===CRITICAL_PRINCE_ID);if(cc)cc.v619TargetChildId=cp.id;updateCritical(CRITICAL_PRINCE_ID,childLabel581(cp),'王子');}
+    if(cg){const cc=(DATA.cases||[]).find(x=>x&&x.id===CRITICAL_PRINCESS_ID);if(cc)cc.v619TargetChildId=cg.id;updateCritical(CRITICAL_PRINCESS_ID,childLabel581(cg),'王女');}
   }catch(_){ }
 }
 window.updateFamilyCaseTextV581=updateFamilyCaseText581;
@@ -45341,14 +45518,15 @@ try{
 
 window.auditRoyalFamilyDeathV581=function(){
   ensureFamily581();
-  const critical=(DATA.cases||[]).find(c=>c&&c.id===CRITICAL_ID);
+  const critical=[CRITICAL_SPOUSE_ID,CRITICAL_PRINCE_ID,CRITICAL_PRINCESS_ID].map(id=>(DATA.cases||[]).find(c=>c&&c.id===id)).filter(Boolean);
   const childFever=(DATA.cases||[]).find(c=>c&&c.id===CHILD_FEVER_ID);
   const queenOld=(DATA.cases||[]).find(c=>c&&c.id===OLD_QUEEN_VIGIL_ID);
   const prince=liveChildren581().find(c=>c.gender==='male')||null;
   const princess=liveChildren581().find(c=>c.gender==='female')||null;
   return{
     version:'V581',
-    criticalCaseExists:!!critical,
+    criticalCaseExists:critical.length===3,
+    criticalCaseIds:critical.map(c=>c.id),
     criticalPriorityWrapped:!!visibleCases?.v581FamilyCriticalPriority,
     childFeverDynamic:!!childFever,
     queenOldDeathTextRemoved:!!queenOld&&!/息を引き取った/.test(String(queenOld.effects?.completeLoss?.story||'')),
@@ -45383,7 +45561,7 @@ try{window.brotherFinalCrisisV583=window.brotherFinalCrisisV582;window.chooseFin
 }
 #screenMain .caseCard.importantCase::before{content:none!important;display:none!important;animation:none!important;}
 #screenMain .caseCard.importantCase .importantCaseRail{
-  display:block!important;
+  display:none!important;
   position:absolute!important;
   inset:3px!important;
   left:3px!important;right:3px!important;top:3px!important;bottom:3px!important;
@@ -45740,9 +45918,11 @@ window.auditV584=function(){
   padding-bottom:12px!important;
 }
 #screenResult .v568FinalScreen[data-v585-act="2"] .v568FinalMap{
-  width:600px!important;
+  width:350px!important;
+  height:350px!important;
   max-width:100%!important;
-  aspect-ratio:1000/600!important;
+  max-height:350px!important;
+  aspect-ratio:1/1!important;
   margin:2px auto 0!important;
 }
 #screenResult .v568FinalScreen[data-v585-act="2"] .v568MapCaption{
@@ -45792,54 +45972,169 @@ window.auditV584=function(){
 #screenResult .v568FinalScreen[data-v585-act="3"] .v568MemoryChip img{width:22px!important;height:22px!important;}
 #screenResult .v568FinalScreen[data-v585-act="3"] .v568NoFamily{padding:34px 16px!important;}
 
-/* 4/4 A.I.U.E.O.：真意と日本語訳まで常時見える。 */
+/* 4/4 A.I.U.E.O.：五文字が語へほどけ、最後に真意へ着地する。 */
 #screenResult .v568FinalScreen[data-v585-act="4"] .v568RevealPaper{
-  max-width:790px!important;
-  padding:16px 30px 14px!important;
+  position:relative!important;
+  max-width:840px!important;
+  width:min(840px,100%)!important;
+  padding:20px 38px 18px!important;
   display:flex!important;
   flex-direction:column!important;
   justify-content:center!important;
+  overflow:hidden!important;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(208,165,67,.075),transparent 39%),
+    linear-gradient(180deg,rgba(9,18,28,.985),rgba(4,10,17,.99))!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v568RevealPaper::before{
+  content:"";
+  position:absolute;
+  left:9%;right:9%;top:48%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(218,184,91,.18),transparent);
+  pointer-events:none;
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v612AiueoKicker{
+  margin:0 auto 7px!important;
+  font-size:11px!important;
+  letter-spacing:.34em!important;
+  color:#c8a959!important;
+  opacity:0;
+  animation:v612SoftIn .46s .08s ease-out forwards!important;
 }
 #screenResult .v568FinalScreen[data-v585-act="4"] .v568Witness{
-  max-width:680px!important;
-  margin:0 auto 10px!important;
-  font-size:12px!important;
-  line-height:1.48!important;
-  animation:none!important;
+  position:relative;
+  z-index:2;
+  max-width:700px!important;
+  margin:0 auto 20px!important;
+  padding:0 18px 14px!important;
+  border-bottom:1px solid rgba(213,181,91,.16)!important;
+  color:#aebbc2!important;
+  font-size:12.5px!important;
+  line-height:1.58!important;
+  letter-spacing:.015em!important;
+  animation:v612WitnessIn .62s .18s ease-out both!important;
+  opacity:0;
+  transform:translateY(6px);
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v568Witness b{
+  display:inline-block;
+  margin-bottom:3px;
+  color:#e9ddba!important;
+  font-size:13px!important;
+  letter-spacing:.04em!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v568Words.v612MottoGrid{
+  position:relative;
+  z-index:2;
+  width:min(730px,100%)!important;
+  margin:0 auto 15px!important;
+  display:grid!important;
+  grid-template-columns:1.20fr .68fr 1.08fr 1.02fr 1.62fr!important;
+  gap:8px!important;
+  align-items:baseline!important;
+  font-size:29px!important;
+  line-height:1.05!important;
+  text-align:center!important;
+  letter-spacing:0!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v568Word.v612MottoWord{
+  min-width:0!important;
+  display:flex!important;
+  align-items:baseline!important;
+  justify-content:center!important;
+  white-space:nowrap!important;
   opacity:1!important;
   transform:none!important;
-}
-#screenResult .v568FinalScreen[data-v585-act="4"] .v568Words{
-  margin:0 auto 8px!important;
-  font-size:27px!important;
-  line-height:1.10!important;
-}
-#screenResult .v568FinalScreen[data-v585-act="4"] .v568Word{
-  opacity:1!important;
-  transform:none!important;
   animation:none!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v568Initial{
+  width:auto!important;
+  flex:0 0 auto!important;
+  color:#e7bd57!important;
+  font-size:1.18em!important;
+  font-weight:700!important;
+  text-shadow:0 0 20px rgba(225,184,79,.20)!important;
+  opacity:0;
+  transform:translateY(9px);
+  animation:v612InitialIn .48s cubic-bezier(.2,.75,.25,1) forwards!important;
+  animation-delay:calc(.62s + (var(--v612-i) * .13s))!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v612Tail{
+  display:inline-block;
+  min-width:0;
+  overflow:hidden;
+  color:#eee9dc;
+  opacity:0;
+  clip-path:inset(0 100% 0 0);
+  transform:translateX(-5px);
+  animation:v612TailOpen .48s cubic-bezier(.25,.7,.25,1) forwards;
+  animation-delay:calc(1.36s + (var(--v612-i) * .10s));
 }
 #screenResult .v568FinalScreen[data-v585-act="4"] .v568Truth{
-  margin:9px auto 0!important;
-  padding-top:9px!important;
+  position:relative;
+  width:min(700px,100%)!important;
+  margin:2px auto 0!important;
+  padding-top:15px!important;
+  border-top:0!important;
+  text-align:center!important;
   opacity:1!important;
   transform:none!important;
   animation:none!important;
-  width:min(650px,100%)!important;
+}
+#screenResult .v568FinalScreen[data-v585-act="4"] .v612TruthRule{
+  position:absolute;
+  left:50%;top:0;
+  width:0;height:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(90deg,transparent,#b99a4f 16%,#e7c66c 50%,#b99a4f 84%,transparent);
+  box-shadow:0 0 8px rgba(222,185,82,.18);
+  animation:v612RuleGrow .72s 2.10s ease-out forwards;
 }
 #screenResult .v568FinalScreen[data-v585-act="4"] .v568TruthLatin{
-  font-size:17px!important;
+  font-size:18px!important;
   line-height:1.25!important;
+  color:#e4d4a5!important;
+  letter-spacing:.045em!important;
+  opacity:0;
+  transform:translateY(6px);
+  animation:v612TruthIn .62s 2.42s ease-out forwards!important;
 }
 #screenResult .v568FinalScreen[data-v585-act="4"] .v568TruthJa{
-  font-size:21px!important;
-  line-height:1.25!important;
-  margin-top:5px!important;
+  margin-top:7px!important;
+  font-size:24px!important;
+  line-height:1.24!important;
+  color:#fff7df!important;
+  letter-spacing:.12em!important;
+  opacity:0;
+  transform:translateY(7px);
+  animation:v612JapaneseIn .72s 2.72s ease-out forwards!important;
 }
 #screenResult .v568AiueoFinal .v568Nav{
-  opacity:1!important;
-  pointer-events:auto!important;
-  animation:none!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  animation:v612NavIn .46s 3.38s ease-out forwards!important;
+}
+@keyframes v612SoftIn{to{opacity:1}}
+@keyframes v612WitnessIn{to{opacity:1;transform:translateY(0)}}
+@keyframes v612InitialIn{to{opacity:1;transform:translateY(0)}}
+@keyframes v612TailOpen{to{opacity:1;clip-path:inset(0 0 0 0);transform:translateX(0)}}
+@keyframes v612RuleGrow{to{width:100%}}
+@keyframes v612TruthIn{to{opacity:1;transform:translateY(0)}}
+@keyframes v612JapaneseIn{to{opacity:1;transform:translateY(0);letter-spacing:.055em}}
+@keyframes v612NavIn{to{opacity:1;pointer-events:auto}}
+@media(prefers-reduced-motion:reduce){
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v612AiueoKicker,
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v568Witness,
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v568Initial,
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v612Tail,
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v612TruthRule,
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v568TruthLatin,
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v568TruthJa,
+ #screenResult .v568AiueoFinal .v568Nav{
+   animation:none!important;opacity:1!important;transform:none!important;clip-path:none!important;
+ }
+ #screenResult .v568FinalScreen[data-v585-act="4"] .v612TruthRule{width:100%!important;}
+ #screenResult .v568AiueoFinal .v568Nav{pointer-events:auto!important;}
 }
 
 @media(max-width:760px){
@@ -45849,6 +46144,10 @@ window.auditV584=function(){
   #screenResult .v568FinalScreen[data-v585-act="1"] .v568EpithetName{font-size:36px!important;}
   #screenResult .v568FinalScreen[data-v585-act="3"] .v568FamilyCard{width:142px!important;}
   #screenResult .v568FinalScreen[data-v585-act="3"] .v568FamilyPortrait{height:145px!important;}
+  #screenResult .v568FinalScreen[data-v585-act="4"] .v568RevealPaper{padding:18px 22px 14px!important;}
+  #screenResult .v568FinalScreen[data-v585-act="4"] .v568Words.v612MottoGrid{font-size:25px!important;gap:5px!important;}
+  #screenResult .v568FinalScreen[data-v585-act="4"] .v568Witness{font-size:11.5px!important;margin-bottom:16px!important;}
+  #screenResult .v568FinalScreen[data-v585-act="4"] .v568TruthJa{font-size:21px!important;}
 }
 </style>
 <script id="v585-final-result-fit-script">
@@ -46033,13 +46332,9 @@ function v587IllPatientActor(caseId){
       return ch?.gender==='male'?'prince':null;
     }catch(_){return null;}
   }
-  if(caseId==='family_critical_vigil'){
-    try{
-      const p=typeof criticalPatient581==='function'?criticalPatient581():null;
-      if(p?.kind==='spouse')return p.id||spouse||null;
-      if(p?.kind==='child'&&p.child?.gender==='male')return'prince';
-    }catch(_){ }
-  }
+  if(caseId==='family_critical_spouse_vigil')return spouse||null;
+  if(caseId==='family_critical_prince_vigil')return'prince';
+  if(caseId==='family_critical_princess_vigil')return null;
   return null;
 }
 try{
@@ -46197,7 +46492,7 @@ const idOf=c=>String(c?.id||'');
 const IMPORTANT_IDS=new Set([
   'tutorial_butler','dragon_red_mountains_23','deadking_throne_27','flow_great_noble_rebellion',
   'great_plague_council','chain_plague_capital_lockdown','chain_border_supply',
-  'queen_illness_vigil','family_spouse_fever','family_child_fever','family_critical_vigil','remarriage_council',
+  'queen_illness_vigil','family_spouse_fever','family_child_fever','family_critical_spouse_vigil','family_critical_prince_vigil','family_critical_princess_vigil','remarriage_council',
   'royal_child_health_watch','brother_return_01','brother_return_02','brother_persuasion','brother_rebellion','brother_rebellion_warning',
   'chain_brother_petition','brother_final_oath','brother_final_duel','brother_final_acclamation','brother_final_rebellion','brother_final_joint_rule',
   'country_loire_ultimatum','country_rick_lorenzo_decree','ruthenia_ultimatum_frozen_eagle','solia_final_musket_ultimatum','country_seafeara_trade_sanction'
@@ -47468,6 +47763,7 @@ function classifyButton(b){
   if(b.classList.contains('dispatchClose')||t==='×'||aria==='閉じる'){add(b,'uiCloseV602');return;}
   if(b.classList.contains('dispatchBudgetBtn')){add(b,'uiStepperV602');add(b,b.classList.contains('plus')?'uiStepperPlusV602':'uiStepperMinusV602');return;}
   if(b.matches('#screenMain .next,#screenAssign .dispatchStart,#screenResult button[onclick*="Flow.nextPeriod"]')){add(b,'uiPrimaryV602');return;}
+  if(b.closest('.kingEndingEndButtonWrap'))return;
   if(b.classList.contains('gameCueButton')){add(b,b.classList.contains('secondaryCue')?'uiSecondaryV602':'uiPrimaryV602');return;}
   if(b.matches('#screenAssign .dispatchBack')){add(b,'uiSecondaryV602');return;}
   if(b.closest('.dispatchModalFoot')){
@@ -47886,8 +48182,6 @@ function pulse(el){
   if(!isProgress(el)||seen.has(el))return;
   if(el.matches('button.uiPrimaryV602')&&el.disabled)return;
   seen.add(el);
-  el.classList.add('v604EntryPulse');
-  setTimeout(()=>{try{el.classList.remove('v604EntryPulse');}catch(_){}},760);
 }
 function scan(root=document){
   try{
@@ -47978,10 +48272,8 @@ function bindPress(el){
 function apply(el){
   if(!el||!el.style)return;
   bindPress(el);
-  if(seen.has(el)){rest(el);return;}
-  seen.add(el);
-  el.style.setProperty('animation','v604SealEntry .68s cubic-bezier(.18,.92,.22,1) 1','important');
-  setTimeout(()=>rest(el),700);
+  if(!seen.has(el))seen.add(el);
+  rest(el);
 }
 function scan(root=document){
   try{
@@ -48098,38 +48390,14 @@ function bindPress(el,kind){
 function applyPrimary(el){
   if(!el||el.disabled)return;
   bindPress(el,'primary');
-  if(seen.has(el)){setPrimaryBreath(el);return;}
-  seen.add(el);
-  imp(el,'animation','v605PrimaryEntry .72s cubic-bezier(.2,.92,.24,1) 1');
-  imp(el,'transform','scale(var(--v605-scale))');
-  imp(el,'filter','brightness(var(--v605-bright))');
-  imp(el,'box-shadow','0 0 0 3px rgba(66,220,255,.20),0 0 var(--v605-glow) rgba(66,220,255,.78),0 5px 0 #07527a');
-  setTimeout(()=>setPrimaryBreath(el),760);
+  if(!seen.has(el))seen.add(el);
+  setPrimaryBreath(el);
 }
 function applySeal(el){
   if(!el)return;
   bindPress(el,'seal');
-  const now=performance.now();
-  if(seen.has(el)){
-    const ready=sealReadyAt.get(el)||0;
-    if(now<ready){imp(el,'animation','none');return;}
-    setSealBreath(el);return;
-  }
-  seen.add(el);
-  const readyAt=now+700;
-  sealReadyAt.set(el,readyAt);
-  imp(el,'animation','none');
-  imp(el,'transform','scale(1)');
-  imp(el,'filter','brightness(.98)');
-  imp(el,'box-shadow','0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 0 rgba(232,177,64,0),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)');
-  setTimeout(()=>{
-    if(!el.isConnected)return;
-    imp(el,'animation','v605SealEntry .68s cubic-bezier(.18,.92,.22,1) 1');
-    imp(el,'transform','scale(var(--v605-scale))');
-    imp(el,'filter','brightness(var(--v605-bright))');
-    imp(el,'box-shadow','0 5px 0 #350d12,0 9px 18px rgba(0,0,0,.34),0 0 var(--v605-seal-glow) rgba(232,177,64,.58),inset 0 0 0 3px rgba(255,218,127,.14),inset 0 -6px 10px rgba(32,4,6,.30)');
-    setTimeout(()=>{if(el.isConnected)setSealBreath(el);},720);
-  },700);
+  if(!seen.has(el))seen.add(el);
+  setSealBreath(el);
 }
 function scan(root=document){
   try{
@@ -48357,13 +48625,8 @@ function manage(el){
   setTimeout(()=>{
     if(!el.isConnected)return;
     el.classList.remove('v606SealWaiting');
-    imp(el,'animation','v605SealEntry .68s cubic-bezier(.18,.92,.22,1) 1');
+    imp(el,'animation','v605SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite');
     imp(el,'transform','scale(var(--v605-scale))');imp(el,'filter','brightness(var(--v605-bright))');
-    setTimeout(()=>{
-      if(!el.isConnected)return;
-      imp(el,'animation','v605SealBreath 1.08s cubic-bezier(.42,0,.58,1) infinite');
-      imp(el,'transform','scale(var(--v605-scale))');imp(el,'filter','brightness(var(--v605-bright))');
-    },720);
   },760);
 }
 function scan(root=document){
@@ -48378,7 +48641,7 @@ if(window.MutationObserver){const mo=new MutationObserver(ms=>{for(const m of ms
 <!-- V608: support actor labels unified: 助力者 / no name suffix / ※成長はしない -->
 <script>window.__VERSION__='V608';</script>
 
-<!-- V609: remove one-shot entrance bounce; keep steady guidance breathing -->
+<!-- V614: border balance pass; Loire territorial activity increased, Rick early escalation softened, border rotation cooldown extended. -->
 <style id="v609-no-entry-bounce-style">
 /* 古い入場用クラスが残っていても、跳ねる一回演出には使わない。 */
 #game button.uiPrimaryV602.v604EntryPulse:not(:disabled){
@@ -48431,8 +48694,11 @@ scan(document);
 if(window.MutationObserver){
   const mo=new MutationObserver(ms=>{
     for(const m of ms){
-      if(m.type==='childList')for(const n of m.addedNodes)if(n?.nodeType===1)scan(n);
-      else if(m.type==='attributes')repair(m.target);
+      if(m.type==='childList'){
+        for(const n of m.addedNodes)if(n?.nodeType===1)scan(n);
+      }else if(m.type==='attributes'){
+        repair(m.target);
+      }
     }
   });
   mo.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class','disabled']});
@@ -48443,10 +48709,82 @@ const guard=setInterval(()=>{
   scan(document);
   if(++ticks>40)clearInterval(guard);
 },100);
-window.__VERSION__='V609';
-window.auditV609=function(){
+window.__VERSION__='V615';
+window.auditV612=function(){
   const read=sel=>[...document.querySelectorAll(sel)].map(el=>({text:(el.textContent||'').trim(),animation:getComputedStyle(el).animationName,inline:el.style.getPropertyValue('animation')}));
-  return{version:'V609',primary:read(PRIMARY),seals:read(SEAL)};
+  return{version:'V612',primary:read(PRIMARY),seals:read(SEAL)};
 };
 })();
 </script>
+
+
+<!-- V613: final authored result presentation -->
+<style id="v613-final-authored-result-style">
+#screenResult .turnResultStory.finalAuthoredStory .turnResultStoryText{
+  white-space:normal!important;
+  overflow:visible!important;
+  max-height:none!important;
+  -webkit-line-clamp:unset!important;
+  display:block!important;
+  font-size:15px!important;
+  line-height:1.72!important;
+  padding-top:4px!important;
+}
+#screenResult .turnResultStory.finalAuthoredStory{
+  padding-top:12px!important;
+  padding-bottom:14px!important;
+}
+</style>
+<script id="v613-final-authored-result-script">
+(function(){
+'use strict';
+function authoredFinalTextV613(r){
+  if(!r?.case?.finalCase)return'';
+  const fr=State?.finalCaseResult;
+  if(fr?.text)return String(fr.text);
+  const key=r.case.finalEnemy||r.case.finalCaseTheme||'ruthenia';
+  const e=window.__FINAL30_AUTHORED_TEXT_V548?.[key]||window.__FINAL30_AUTHORED_TEXT_V548?.ruthenia;
+  if(!e)return'';
+  const rank=String(r.rank||'');
+  const tier=rank==='completeWin'?'complete':(['majorLoss','completeLoss'].includes(rank)?'loss':'wounded');
+  return String(tier==='complete'?e.complete:tier==='loss'?e.loss:e.wounded||'');
+}
+try{
+  if(typeof window.__kingRegisterNamedSpecialTailHookV482==='function'){
+    window.__kingRegisterNamedSpecialTailHookV482('v613FinalAuthoredStory','ending',function(r){
+      const text=authoredFinalTextV613(r);
+      if(text)r.story=text;
+      return r;
+    });
+  }
+}catch(_){ }
+window.auditFinalAuthoredResultV613=function(){
+  const keys=['ruthenia','loire','rick','solia','seafeara','brother'];
+  const canon=window.__FINAL30_AUTHORED_TEXT_V548||{};
+  return{version:'V614',authored:Object.fromEntries(keys.map(k=>[k,{complete:!!canon[k]?.complete,wounded:!!canon[k]?.wounded,loss:!!canon[k]?.loss}])),summaryUsesFullFinal:true};
+};
+window.__VERSION__='V615';
+})();
+</script>
+
+<!-- V615: border-pressure loop repair / physical-frontier separation -->
+<script>(function(){'use strict';window.__VERSION__='V615';})();</script>
+
+<!-- V618: princess diplomacy pipeline repair; preserves deliberate age-4-as-five notice and 60% cadence. -->
+<style id="v618-princess-summary-visibility">
+#screenResult .resultCard.v518Summary>.princessWorkBox{margin-top:14px!important;margin-bottom:10px!important;}
+</style>
+<script id="v618-version">(function(){'use strict';window.__VERSION__='V618';})();</script>
+
+
+<!-- V619: split royal critical-vigil cases / struggle-survival / death-state audit -->
+<script id="v619-family-critical-audit">(function(){'use strict';
+window.auditFamilyCriticalV619=function(){
+  const ids=['family_critical_spouse_vigil','family_critical_prince_vigil','family_critical_princess_vigil'];
+  const rows=ids.map(id=>{const c=(DATA.cases||[]).find(x=>x&&x.id===id);return{id,exists:!!c,title:c?.title||'',intro:c?.intro||'',gate:c?.childGate||'',important:(typeof caseImportanceTierV589==='function'?caseImportanceTierV589(c):null)};});
+  const prince=(State.children||[]).find(c=>c&&c.gender==='male'&&c.status!=='deceased')||null;
+  const princess=(State.children||[]).find(c=>c&&c.gender==='female'&&c.status!=='deceased')||null;
+  return{version:'V620',cases:rows,spouse:{id:State.marriage?.spouseId||null,state:State.marriage?.state||null,health:State.familyHealth?.spouse||null},prince:prince?{id:prince.id,name:prince.name,status:prince.status,healthStage:prince.healthStage,actorStatus:State.actorStatus?.prince?.status||null}:null,princess:princess?{id:princess.id,name:princess.name,status:princess.status,healthStage:princess.healthStage}:null,princessDiplomacy:State.princessDiplomacy||null,pendingDeathNotices:(State.pendingDeathNotices||[]).map(n=>({kind:n.kind,name:n.name,title:n.title}))};
+};
+window.__VERSION__='V620';
+})();</script>
