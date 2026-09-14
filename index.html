@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<!-- STRUCTURE V658: canonical document envelope; all source content is inside one html/head/body tree. No game logic or runtime patch order changed. -->
 <!-- V562: product-quality pass for assignment layout, three-outcome results, and pre-render important-case ordering; fixes invisible first important card. -->
 <!-- FIX V549: age-30 final-case prose remains locked to the authored text; final-phase visibility is now protected from later case-injection wrappers, and the V548 audit ReferenceError is fixed. Pre-30 escalation mechanics are unchanged. -->
 <!-- FIX V548: locked V1-authored age-30 final-case title/intro/result prose after all later wrappers without changing strength or pre-30 escalation mechanics. -->
@@ -11,7 +15,6 @@
 <!-- V611: symmetric Altrant territorial movement; land borders can advance or retreat using one shared rank table. -->
 <!-- V517: V516 balance plus first-use two-front and three-front butler tutorials. -->
 <!-- FIX V514: removed legacy active-war territory RNG/map moves, unified generic long-neglect loss to one path, and hid numeric pre-war pressure. -->
-<!DOCTYPE html>
 <!-- FIX V512: formal war conclusion now records lastPeaceTurn at concludeWar, so peace-history gates observe actual ended wars. -->
 <!-- FIX V511: fatigue-limit peace injection protects border-elector crises, crisis-recovery cases, all mandatory cases, and never drops protected cases when all seven visible slots are occupied. -->
 <!-- CLEAN V510: split fatigue-limit peace-case selection/injection/finalization into named stages without changing forced/optional thresholds, rebellion suppression, or seven-case cap. -->
@@ -165,8 +168,6 @@ V369-V399 removed confirmed legacy CSS/keyframes, no-op blocks, internally unrea
 <!-- CLEAN V368: behavior-preserving refactor history compacted.
 Current structure: most former middleware chains are flattened or direct-registered; View.main, View.summary, and Flow.toggleCase remain intentionally layered because equivalence tests detected timing/DOM differences when flattened. -->
 
-<html lang="ja">
-<head>
 <meta name="google" content="notranslate">
 <!--
 KING CLEAN V1 — behavior-preserving maintenance pass
@@ -49820,79 +49821,78 @@ window.auditV656ImportantVisibility=function(){
 window.__VERSION__='V656';
 })();
 </script>
-</body>
-</html>
+
 
 <!-- V651: final A.I.U.E.O. reveal always plays in full, independent of OS reduced-motion preference -->
 <style id="v651-force-aiueo-final-motion">
 /* The act-4 reveal is narrative content, not optional decorative motion. Start from the hidden states every time the screen is created. */
 #screenResult .v568FinalScreen.v568AiueoFinal .v612AiueoKicker{
-  opacity:0!important;
+  opacity:0;
   animation:v612SoftIn .46s .08s ease-out forwards!important;
 }
 #screenResult .v568FinalScreen.v568AiueoFinal .v568Witness{
-  opacity:0!important;
-  transform:translateY(6px)!important;
+  opacity:0;
+  transform:translateY(6px);
   animation:v612WitnessIn .62s .18s ease-out both!important;
 }
 #screenResult .v568FinalScreen.v568AiueoFinal .v568Initial{
-  opacity:0!important;
-  transform:translateY(9px)!important;
+  opacity:0;
+  transform:translateY(9px);
   animation:v612InitialIn .48s cubic-bezier(.2,.75,.25,1) forwards!important;
   animation-delay:calc(.62s + (var(--v612-i) * .13s))!important;
 }
 #screenResult .v568FinalScreen.v568AiueoFinal .v612Tail{
-  opacity:0!important;
-  clip-path:inset(0 100% 0 0)!important;
-  transform:translateX(-5px)!important;
+  opacity:0;
+  clip-path:inset(0 100% 0 0);
+  transform:translateX(-5px);
   animation:v612TailOpen .48s cubic-bezier(.25,.7,.25,1) forwards!important;
   animation-delay:calc(1.36s + (var(--v612-i) * .10s))!important;
 }
 #screenResult .v568FinalScreen.v568AiueoFinal .v612TruthRule{
-  width:0!important;
+  width:0;
   animation:v612RuleGrow .72s 2.10s ease-out forwards!important;
 }
 #screenResult .v568FinalScreen.v568AiueoFinal .v568TruthLatin{
-  opacity:0!important;
-  transform:translateY(6px)!important;
+  opacity:0;
+  transform:translateY(6px);
   animation:v612TruthIn .62s 2.42s ease-out forwards!important;
 }
 #screenResult .v568FinalScreen.v568AiueoFinal .v568TruthJa{
-  opacity:0!important;
-  transform:translateY(7px)!important;
-  letter-spacing:.12em!important;
+  opacity:0;
+  transform:translateY(7px);
+  letter-spacing:.12em;
   animation:v612JapaneseIn .72s 3.70s ease-out forwards!important;
 }
 #screenResult .v568FinalScreen.v568AiueoFinal .v568Nav{
-  opacity:0!important;
-  pointer-events:none!important;
+  opacity:0;
+  pointer-events:none;
   animation:v612NavIn .46s 4.50s ease-out forwards!important;
 }
 /* iPadOS/Safari may report prefers-reduced-motion. For this story reveal, explicitly keep the complete sequence. */
 @media(prefers-reduced-motion:reduce){
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v612AiueoKicker{
-    opacity:0!important;animation:v612SoftIn .46s .08s ease-out forwards!important;
+    opacity:0;animation:v612SoftIn .46s .08s ease-out forwards!important;
   }
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568Witness{
-    opacity:0!important;transform:translateY(6px)!important;animation:v612WitnessIn .62s .18s ease-out both!important;
+    opacity:0;transform:translateY(6px);animation:v612WitnessIn .62s .18s ease-out both!important;
   }
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568Initial{
-    opacity:0!important;transform:translateY(9px)!important;animation:v612InitialIn .48s cubic-bezier(.2,.75,.25,1) forwards!important;animation-delay:calc(.62s + (var(--v612-i) * .13s))!important;
+    opacity:0;transform:translateY(9px);animation:v612InitialIn .48s cubic-bezier(.2,.75,.25,1) forwards!important;animation-delay:calc(.62s + (var(--v612-i) * .13s))!important;
   }
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v612Tail{
-    opacity:0!important;clip-path:inset(0 100% 0 0)!important;transform:translateX(-5px)!important;animation:v612TailOpen .48s cubic-bezier(.25,.7,.25,1) forwards!important;animation-delay:calc(1.36s + (var(--v612-i) * .10s))!important;
+    opacity:0;clip-path:inset(0 100% 0 0);transform:translateX(-5px);animation:v612TailOpen .48s cubic-bezier(.25,.7,.25,1) forwards!important;animation-delay:calc(1.36s + (var(--v612-i) * .10s))!important;
   }
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v612TruthRule{
-    width:0!important;animation:v612RuleGrow .72s 2.10s ease-out forwards!important;
+    width:0;animation:v612RuleGrow .72s 2.10s ease-out forwards!important;
   }
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568TruthLatin{
-    opacity:0!important;transform:translateY(6px)!important;animation:v612TruthIn .62s 2.42s ease-out forwards!important;
+    opacity:0;transform:translateY(6px);animation:v612TruthIn .62s 2.42s ease-out forwards!important;
   }
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568TruthJa{
-    opacity:0!important;transform:translateY(7px)!important;letter-spacing:.12em!important;animation:v612JapaneseIn .72s 3.70s ease-out forwards!important;
+    opacity:0;transform:translateY(7px);letter-spacing:.12em;animation:v612JapaneseIn .72s 3.70s ease-out forwards!important;
   }
   #screenResult .v568FinalScreen.v568AiueoFinal[data-v585-act="4"] .v568Nav{
-    opacity:0!important;pointer-events:none!important;animation:v612NavIn .46s 4.50s ease-out forwards!important;
+    opacity:0;pointer-events:none;animation:v612NavIn .46s 4.50s ease-out forwards!important;
   }
 }
 </style>
@@ -50166,3 +50166,108 @@ window.__VERSION__='V655';
 
 <!-- V656 final marker -->
 <script id="v656-final-version-marker">window.__VERSION__='V656';</script>
+
+
+<!-- V657: authoritative A.I.U.E.O. act-4 timeline; Safari/reduced-motion safe and never blocks progression -->
+<style id="v657-aiueo-final-timeline-style">
+/* Act 4 is story content. Its reveal is controlled by the V657 JS timeline rather than CSS animation cascade. */
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v612AiueoKicker,
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568Witness,
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568Initial,
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v612Tail,
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v612TruthRule,
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568TruthLatin,
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568TruthJa,
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568Nav{
+  animation:none!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v612AiueoKicker{
+  opacity:0!important;transition:opacity .46s ease-out!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568Witness{
+  opacity:0!important;transform:translateY(6px)!important;transition:opacity .62s ease-out,transform .62s ease-out!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568Initial{
+  opacity:0!important;transform:translateY(9px)!important;transition:opacity .48s cubic-bezier(.2,.75,.25,1),transform .48s cubic-bezier(.2,.75,.25,1)!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v612Tail{
+  opacity:0!important;clip-path:inset(0 100% 0 0)!important;transform:translateX(-5px)!important;
+  transition:opacity .48s cubic-bezier(.25,.7,.25,1),clip-path .48s cubic-bezier(.25,.7,.25,1),transform .48s cubic-bezier(.25,.7,.25,1)!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v612TruthRule{
+  width:0!important;transition:width .72s ease-out!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568TruthLatin{
+  opacity:0!important;transform:translateY(6px)!important;transition:opacity .62s ease-out,transform .62s ease-out!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568TruthJa{
+  opacity:0!important;transform:translateY(7px)!important;letter-spacing:.12em!important;
+  transition:opacity .72s ease-out,transform .72s ease-out,letter-spacing .72s ease-out!important;
+}
+#game #screenResult .v568FinalScreen.v568AiueoFinal .v568Nav{
+  opacity:0!important;pointer-events:none!important;transition:opacity .46s ease-out!important;
+}
+</style>
+<script id="v657-aiueo-final-timeline-script">
+(function(){
+'use strict';
+const started=new WeakSet(), timers=new WeakMap();
+function imp(el,k,v){try{el&&el.style.setProperty(k,v,'important');}catch(_){ }}
+function showKicker(root){imp(root.querySelector('.v612AiueoKicker'),'opacity','1');}
+function showWitness(root){const e=root.querySelector('.v568Witness');imp(e,'opacity','1');imp(e,'transform','none');}
+function showInitial(e){imp(e,'opacity','1');imp(e,'transform','none');}
+function showTail(e){imp(e,'opacity','1');imp(e,'clip-path','inset(0 0 0 0)');imp(e,'transform','none');}
+function showRule(root){imp(root.querySelector('.v612TruthRule'),'width','100%');}
+function showLatin(root){const e=root.querySelector('.v568TruthLatin');imp(e,'opacity','1');imp(e,'transform','none');}
+function showJapanese(root){const e=root.querySelector('.v568TruthJa');imp(e,'opacity','1');imp(e,'transform','none');imp(e,'letter-spacing','.055em');}
+function showNav(root){const e=root.querySelector('.v568Nav');imp(e,'opacity','1');imp(e,'pointer-events','auto');}
+function finish(root){
+  try{
+    showKicker(root);showWitness(root);
+    root.querySelectorAll('.v568Initial').forEach(showInitial);
+    root.querySelectorAll('.v612Tail').forEach(showTail);
+    showRule(root);showLatin(root);showJapanese(root);showNav(root);
+    root.classList.add('v657RevealComplete');
+  }catch(_){ }
+}
+function later(list,root,ms,fn){
+  const t=setTimeout(()=>{try{if(root.isConnected)fn();}catch(_){ }},ms);list.push(t);
+}
+function start(root){
+  try{
+    if(!root||root.nodeType!==1||!root.matches('.v568FinalScreen.v568AiueoFinal')||started.has(root))return;
+    started.add(root);root.dataset.v657TimelineStarted='1';
+    const ts=[];timers.set(root,ts);
+    /* Force the browser to commit the hidden start state before the first reveal. */
+    void root.offsetWidth;
+    later(ts,root,80,()=>showKicker(root));
+    later(ts,root,180,()=>showWitness(root));
+    [...root.querySelectorAll('.v568Initial')].forEach((e,i)=>later(ts,root,620+i*130,()=>showInitial(e)));
+    [...root.querySelectorAll('.v612Tail')].forEach((e,i)=>later(ts,root,1360+i*100,()=>showTail(e)));
+    later(ts,root,2100,()=>showRule(root));
+    later(ts,root,2420,()=>showLatin(root));
+    later(ts,root,3700,()=>showJapanese(root));
+    later(ts,root,4500,()=>showNav(root));
+    /* Hard safety: even if any transition/timer edge-case occurs, the player can never be trapped here. */
+    later(ts,root,5300,()=>finish(root));
+  }catch(_){try{finish(root);}catch(__){ }}
+}
+function scan(root=document){
+  try{if(root.matches?.('.v568FinalScreen.v568AiueoFinal'))start(root);root.querySelectorAll?.('.v568FinalScreen.v568AiueoFinal').forEach(start);}catch(_){ }
+}
+scan(document);
+try{
+ const host=document.getElementById('screenResult');
+ if(host&&window.MutationObserver){const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes||[])if(n?.nodeType===1)scan(n)});mo.observe(host,{childList:true,subtree:true});}
+}catch(_){ }
+window.auditFinalAiueoV657=function(){
+ const root=document.querySelector('#screenResult .v568FinalScreen.v568AiueoFinal');
+ const read=s=>{const e=root?.querySelector(s);if(!e)return null;const c=getComputedStyle(e);return{opacity:c.opacity,transform:c.transform,clipPath:c.clipPath,pointer:c.pointerEvents};};
+ return{version:'V657',started:root?.dataset?.v657TimelineStarted||null,complete:root?.classList.contains('v657RevealComplete')||false,kicker:read('.v612AiueoKicker'),witness:read('.v568Witness'),initial:read('.v568Initial'),tail:read('.v612Tail'),latin:read('.v568TruthLatin'),japanese:read('.v568TruthJa'),nav:read('.v568Nav')};
+};
+window.__VERSION__='V657';
+})();
+</script>
+<script id="v658-structure-version">window.__VERSION__='V658';</script>
+</body>
+</html>
