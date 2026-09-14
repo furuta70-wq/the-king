@@ -49646,7 +49646,6 @@ window.__VERSION__='V649';
 #screenMain .caseCard.v519ImportantCase{
   padding-top:10px!important;
   box-shadow:0 4px 0 rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.45)!important;
-  animation:none!important;
 }
 #screenMain .caseCard.importantCase::before,
 #screenMain .caseCard.importantCase::after,
@@ -49806,6 +49805,21 @@ window.__VERSION__='V652';
 })();
 </script>
 
+
+<!-- V656: restore normal case reveal animation for important cases after V650 ornament cleanup -->
+<script id="v656-important-visibility-audit">
+(function(){
+'use strict';
+window.auditV656ImportantVisibility=function(){
+  const rows=[...document.querySelectorAll('#screenMain .caseCard.importantCase,#screenMain .caseCard.v519ImportantCase')].map(el=>{
+    const cs=getComputedStyle(el),r=el.getBoundingClientRect();
+    return {id:el.dataset.caseId||'',opacity:cs.opacity,animation:cs.animationName,display:cs.display,w:Math.round(r.width),h:Math.round(r.height)};
+  });
+  return {version:'V656',important:rows};
+};
+window.__VERSION__='V656';
+})();
+</script>
 </body>
 </html>
 
@@ -50149,3 +50163,6 @@ window.auditFinalMapV655=function(){
 window.__VERSION__='V655';
 })();
 </script>
+
+<!-- V656 final marker -->
+<script id="v656-final-version-marker">window.__VERSION__='V656';</script>
