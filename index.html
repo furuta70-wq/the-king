@@ -9277,7 +9277,8 @@ const wid=c.marriageCandidate;
 ensureMarriageState();
 ensureRejectedSpousesState();
 if(marriageResultSucceeds(r.rank)){
-if(unlockActor(wid)){
+/* 婚姻成立と采配者アンロックは別の状態。既に人物が解禁済みでも婚姻状態は必ず成立させる。 */
+unlockActor(wid);
 State.marriage.state='married';
 State.marriage.spouseId=wid;
 State.marriage.mourningUntil=0;
@@ -9286,6 +9287,11 @@ State.queenRelation=30;
 State.queenInfluence=10;
 State.queenDiscord=0;
 State.marriage.marriedTurn=State.turn;
+/* 新しい婚姻では、第一子抽選の基準と過去の出産クールダウンを正規化する。 */
+if((typeof livingChildren==='function'?livingChildren():[]).length===0){
+State.marriage.lastBirthTurn=0;
+State.marriage.birthCooldownUntil=0;
+}
 /* 再婚時、亡き前妻の病床状態を新王妃へ持ち越さない。 */
 if(State.familyHealth){
 State.familyHealth.spouse='healthy';
@@ -9294,7 +9300,6 @@ if(State.familyHealth.currentPatient&&State.familyHealth.currentPatient.kind==='
 if(State.caseFlags)State.caseFlags['spouse_'+wid]=true;
 if(!State.marriage.marriedHistory.includes(wid))State.marriage.marriedHistory.push(wid);
 lines.push(`${DATA.actors[wid]?.name||'王妃'}が王妃となり、采配者に加わりました。案件選択上限が${maxSelectableCases()}件になりました。`);
-}
 }else{
 if(!State.rejectedSpouses.includes(wid))State.rejectedSpouses.push(wid);
 lines.push(`${DATA.actors[wid]?.name||'候補者'}との婚姻は破談となりました。`);
@@ -14741,6 +14746,8 @@ function royalBirthAllowed21(){
 if(!spouseAlive21())return false;
 if(liveChildren21().length>=2)return false;
 if(State.marriage&&State.marriage.state==='widower')return false;
+const cooldown=Number(State.marriage&&State.marriage.birthCooldownUntil||0)||0;
+if(Number(State.turn||0)<cooldown)return false;
 return true;
 }
 try{
@@ -14892,8 +14899,14 @@ State.worldLog.push({turn:State.turn,label:unlock});
 }catch(e){}
 function maybeRoyalBirthAtTurnStart21(){
 if(!royalBirthAllowed21())return null;
-if(Math.random()>=0.20)return null;
 const before=liveChildren21().length;
+const marriedTurn=Number(State.marriage&&State.marriage.marriedTurn||State.turn)||Number(State.turn||1);
+const lastBirthTurn=Number(State.marriage&&State.marriage.lastBirthTurn||0)||0;
+const firstChildAnchor=Math.max(marriedTurn,lastBirthTurn);
+const eligibleHalfTurns=Math.max(0,Number(State.turn||1)-firstChildAnchor);
+/* 従来の20%抽選は維持。ただし第一子だけは婚姻後7半期目までに必ず誕生する。 */
+const forceFirstChild=(before===0&&eligibleHalfTurns>=7);
+if(!forceFirstChild&&Math.random()>=0.20)return null;
 const gender=before===0?(Math.random()<0.5?'male':'female'):(liveChildren21()[0].gender==='male'?'female':'male');
 const child=createRoyalChild(gender);
 if(!child)return null;
@@ -50322,7 +50335,7 @@ window.__VERSION__='V657';
 }
 /* ④ Point at the two controls the advice refers to without changing their layout. */
 #screenAssign .v660TrumpBudgetGlow{
-  position:relative!important;z-index:251!important;
+  position:relative!important;z-index:1!important;
   box-shadow:0 0 0 3px rgba(120,234,255,.30),0 0 22px rgba(66,220,255,.56)!important;
   filter:brightness(1.08);
 }
@@ -50780,6 +50793,453 @@ window.auditFinalAiueoV662=function(){
 window.__VERSION__='V662';
 })();
 </script>
+
+
+<!-- V663: repair turn-4 advice stacking and harden marriage/first-child progression. -->
+<style id="v663-family-tutorial-guard-style">
+#screenAssign .v660AdviceDim{z-index:250!important;}
+#screenAssign .v660AdviceBox{z-index:260!important;}
+#screenAssign .v660AdviceBox~.v660TrumpBudgetGlow,
+#screenAssign .v660AdviceBox .v660TrumpBudgetGlow{z-index:1!important;}
+#screenAssign .v663PostAdvicePulse{animation:v663PostAdvicePulse .82s ease-in-out 2 alternate!important;}
+@keyframes v663PostAdvicePulse{from{filter:brightness(1);box-shadow:0 0 0 2px rgba(120,234,255,.18),0 0 10px rgba(66,220,255,.24)}to{filter:brightness(1.12);box-shadow:0 0 0 4px rgba(120,234,255,.34),0 0 26px rgba(66,220,255,.62)}}
+</style>
+<script id="v663-family-tutorial-guard-script">
+(function(){
+'use strict';
+if(window.__V663_FAMILY_TUTORIAL_GUARD__)return;
+window.__V663_FAMILY_TUTORIAL_GUARD__=true;
+/* When the turn-4 letter disappears, briefly point at the controls instead of drawing them over the paper. */
+let hadTrumpAdvice=false;
+const obs=new MutationObserver(function(){
+  const box=document.querySelector('#screenAssign .v660AdviceBox[data-v660-kind="trumpBudget"]');
+  if(box){hadTrumpAdvice=true;return;}
+  if(!hadTrumpAdvice)return;
+  hadTrumpAdvice=false;
+  const targets=[...document.querySelectorAll('#screenAssign .dispatchOptionalSlot,#screenAssign .dispatchBudget')];
+  targets.forEach(x=>x.classList.add('v663PostAdvicePulse'));
+  setTimeout(()=>targets.forEach(x=>x.classList.remove('v663PostAdvicePulse')),1800);
+});
+if(document.body)obs.observe(document.body,{childList:true,subtree:true});
+window.auditV663Family=function(){
+ const live=typeof livingChildren==='function'?livingChildren():[];
+ return {version:'V663',turn:Number(State.turn||1),marriage:{...(State.marriage||{})},spouseAlive:(()=>{try{return !!(State.marriage?.state==='married'&&State.marriage?.spouseId)}catch(_){return false}})(),liveChildren:live.map(c=>({id:c.id,name:c.name,gender:c.gender,bornTurn:c.bornTurn,status:c.status})),pendingNotice:State.pendingRoyalBirthNotice||null};
+};
+window.__VERSION__='V663';
+})();
+</script>
+<script id="v663-final-version-marker">window.__VERSION__='V663';</script>
+
+
+
+<!-- V664: first-child guarantee moved to 7 half-turns; final A.I.U.E.O. rebuilt with the two canonical readings and bounded five-column reveal. -->
+<style id="v664-final-aiueo-style">
+#game #screenResult .v664AiueoFinal{
+  background:radial-gradient(circle at 50% 43%,rgba(48,57,68,.17),transparent 46%),linear-gradient(180deg,#08111b,#02060b 72%,#010305)!important;
+}
+#game #screenResult .v664AiueoFinal .v568Stage{width:calc(100% - 34px)!important;height:calc(100% - 54px)!important;padding:14px 0 70px!important;justify-content:center!important;overflow:hidden!important;}
+#game #screenResult .v664AiueoFinal .v664Paper{position:relative!important;width:min(900px,100%)!important;height:430px!important;min-height:430px!important;padding:0!important;overflow:hidden!important;border-radius:24px!important;border:1px solid rgba(224,191,99,.16)!important;background:radial-gradient(circle at 50% 44%,rgba(214,172,73,.05),transparent 38%),linear-gradient(180deg,rgba(7,14,22,.99),rgba(2,7,12,.995))!important;box-shadow:inset 0 0 66px rgba(0,0,0,.64),0 16px 34px rgba(0,0,0,.32)!important;}
+#game #screenResult .v664AiueoFinal .v664Paper::before{content:"";position:absolute;inset:18px;border:1px solid rgba(221,187,93,.07);border-radius:18px;pointer-events:none;}
+#game #screenResult .v664Canonical,#game #screenResult .v664RumorField,#game #screenResult .v664TruthStage{position:absolute;inset:0;}
+#game #screenResult .v664Canonical{z-index:2;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+#game #screenResult .v664CanonicalCard{position:absolute;width:76%;max-width:680px;text-align:center;opacity:0;filter:blur(4px);transform:translateY(7px) scale(.99);transition:opacity .38s ease,filter .45s ease,transform .48s ease;}
+#game #screenResult .v664CanonicalCard.is-on{opacity:1;filter:blur(0);transform:translateY(0) scale(1);}
+#game #screenResult .v664CanonicalCard.is-out{opacity:0!important;filter:blur(5px)!important;transform:translateY(-7px) scale(.99)!important;}
+#game #screenResult .v664CanonicalLatin{font:700 24px/1.35 Georgia,'Times New Roman',serif;color:#e8d89d;letter-spacing:.035em;text-shadow:0 0 20px rgba(232,216,157,.12);}
+#game #screenResult .v664CanonicalJa{margin-top:13px;font:800 21px/1.5 'Yu Mincho','Hiragino Mincho ProN',serif;color:#fff7df;letter-spacing:.04em;}
+#game #screenResult .v664CanonicalHint{margin-top:10px;font:700 11px/1.4 system-ui,sans-serif;color:#8e876f;letter-spacing:.12em;}
+
+#game #screenResult .v664RumorField{z-index:3;pointer-events:none;}
+#game #screenResult .v664Rumor{position:absolute;max-width:540px;color:#ece7da;font-family:Georgia,'Yu Mincho','Hiragino Mincho ProN',serif;font-weight:650;line-height:1.45;letter-spacing:.035em;text-shadow:0 0 18px rgba(255,244,215,.08);opacity:0;filter:blur(5px);transform:translateY(8px) scale(.987);transition:opacity .28s ease,filter .34s ease,transform .42s ease;}
+#game #screenResult .v664Rumor.is-on{opacity:var(--o,.62);filter:blur(0);transform:translateY(0) scale(1);}
+#game #screenResult .v664Rumor.is-dim{opacity:calc(var(--o,.62)*.48);}
+#game #screenResult .v664Rumor.is-out{opacity:0!important;filter:blur(5px)!important;transform:translate(var(--dx,0),var(--dy,-10px)) scale(.986)!important;}
+#game #screenResult .v664Rumor.r0{left:7%;top:8%;font-size:18px;--o:.60;--dx:-12px;--dy:-10px;}
+#game #screenResult .v664Rumor.r1{right:5%;top:18%;font-size:16px;text-align:right;--o:.55;--dx:8px;--dy:-12px;}
+#game #screenResult .v664Rumor.r2{left:9%;top:36%;font-size:17px;--o:.55;--dx:-10px;--dy:0;}
+#game #screenResult .v664Rumor.r3{left:50%;top:48%;width:82%;max-width:none;text-align:center;transform:translate(-50%,8px) scale(.987);font-size:22px;--o:.86;--dx:0;--dy:-2px;}
+#game #screenResult .v664Rumor.r3.is-on{transform:translate(-50%,0) scale(1);}
+#game #screenResult .v664Rumor.r3.is-out{transform:translate(-50%,var(--dy,-2px)) scale(.986)!important;}
+#game #screenResult .v664Rumor.r4{left:6%;bottom:20%;font-size:16px;--o:.57;--dx:-8px;--dy:10px;}
+#game #screenResult .v664Rumor.r5{right:6%;bottom:10%;font-size:17px;text-align:right;--o:.60;--dx:10px;--dy:11px;}
+#game #screenResult .v664Rumor.r6{left:50%;bottom:3.5%;transform:translate(-50%,8px) scale(.987);font-size:14px;color:#d9cdaa;--o:.50;--dx:0;--dy:8px;}
+#game #screenResult .v664Rumor.r6.is-on{transform:translate(-50%,0) scale(1);}
+#game #screenResult .v664Rumor.r6.is-out{transform:translate(-50%,var(--dy,8px)) scale(.986)!important;}
+
+#game #screenResult .v664TruthStage{z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;padding:0 42px;}
+#game #screenResult .v664WordGrid{width:100%;max-width:790px;display:grid;grid-template-columns:1.2fr .72fr 1.2fr 1.05fr 1.55fr;column-gap:8px;align-items:center;opacity:0;filter:blur(5px);transform:scale(.99);transition:opacity .55s ease,filter .55s ease,transform .65s ease;}
+#game #screenResult .v664WordGrid.is-on{opacity:1;filter:blur(0);transform:scale(1);}
+#game #screenResult .v664WordCell{min-width:0;display:flex;align-items:baseline;justify-content:center;overflow:hidden;font-family:Georgia,'Times New Roman',serif;font-size:39px;font-weight:700;white-space:nowrap;}
+#game #screenResult .v664Initial{flex:0 0 auto;color:#f0c65f;text-shadow:0 0 22px rgba(238,197,91,.24);}
+#game #screenResult .v664Tail{display:inline-block;opacity:0;color:#f1eee5;transform:translateX(-5px);filter:blur(3px);transition:opacity .46s ease,transform .50s ease,filter .50s ease;}
+#game #screenResult .v664WordCell.is-open .v664Tail{opacity:1;transform:translateX(0);filter:blur(0);}
+#game #screenResult .v664WordGrid.is-phrase{opacity:0;filter:blur(3px);transform:scale(.995);transition:opacity .55s ease,filter .55s ease,transform .55s ease;}
+#game #screenResult .v664TruthLatin{margin-top:0;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) translateY(4px);width:90%;text-align:center;font:700 32px/1.35 Georgia,'Times New Roman',serif;color:#f1eee5;letter-spacing:.035em;opacity:0;filter:blur(3px);transition:opacity .62s ease,filter .62s ease,transform .62s ease;}
+#game #screenResult .v664TruthLatin.is-on{opacity:1;filter:blur(0);transform:translate(-50%,-50%) translateY(0);}
+#game #screenResult .v664TruthRule{width:0;height:1px;margin:24px 0 0;background:linear-gradient(90deg,transparent,#cda84e 25%,#efd88a 50%,#cda84e 75%,transparent);opacity:.65;transition:width .78s ease;}
+#game #screenResult .v664TruthRule.is-on{width:min(650px,78%);}
+#game #screenResult .v664TruthJa{margin-top:16px;font-family:'Yu Mincho','Hiragino Mincho ProN',serif;font-size:29px;font-weight:800;letter-spacing:.14em;color:#fff8df;opacity:0;transform:translateY(8px);filter:blur(2px);text-shadow:0 0 24px rgba(255,242,198,.12);transition:opacity .8s ease,transform .8s ease,filter .8s ease,letter-spacing .8s ease;}
+#game #screenResult .v664TruthJa.is-on{opacity:1;transform:translateY(0);filter:blur(0);letter-spacing:.07em;}
+#game #screenResult .v664AiueoFinal .v568Nav{opacity:0!important;pointer-events:none!important;transition:opacity .55s ease!important;}
+#game #screenResult .v664AiueoFinal .v568Nav.v664NavOn{opacity:1!important;pointer-events:auto!important;}
+#game #screenResult .v664AiueoFinal.v664Blackout .v664Paper{box-shadow:inset 0 0 98px rgba(0,0,0,.92),0 16px 34px rgba(0,0,0,.32)!important;}
+@media(max-width:760px){
+ #game #screenResult .v664AiueoFinal .v664Paper{height:424px!important;min-height:424px!important;}
+ #game #screenResult .v664CanonicalLatin{font-size:20px;}#game #screenResult .v664CanonicalJa{font-size:18px;}
+ #game #screenResult .v664AiueoFinal .v664TruthStage{padding:0 30px;}
+ #game #screenResult .v664AiueoFinal .v664WordCell{font-size:32px;}
+ #game #screenResult .v664AiueoFinal .v664TruthJa{font-size:25px;}
+}
+</style>
+<script id="v664-final-aiueo-script">
+(function(){
+'use strict';
+if(window.__FINAL_AIUEO_V664__)return;window.__FINAL_AIUEO_V664__=true;
+function progress(){return `<div class="v568Progress">${[1,2,3,4].map(i=>`<i class="${i===4?'on':''}"></i>`).join('')}</div>`;}
+function html(){
+ const rumors=['「勝利ののち、すべては一つとなる。」','「神よ、重き務めに耐える力を与えたまえ。」','「我はただ、与えられた務めを果たす。」','「勝った者も、敗れた者も、同じ国へ帰る。」','「愛する者を失っても、なお歩み続ける。」','「愛する者よ、いつまでも我がそばに。」','「人生の喜びは、ただワインだけだ。」'];
+ const rumorHtml=rumors.map((t,i)=>`<div class="v664Rumor r${i}">${t}</div>`).join('');
+ const words=[['A','dhuc'],['I','n'],['U','num,'],['E','tiam'],['O','ppositi.']];
+ const wordHtml=words.map((x,i)=>`<span class="v664WordCell" data-v664-word="${i}"><span class="v664Initial">${x[0]}</span><span class="v664Tail">${x[1]}</span></span>`).join('');
+ return `<div class="v568FinalScreen v664AiueoFinal" data-v585-act="4"><div class="v568Topbar"><b>最終リザルト</b>${progress()}</div><div class="v568Stage"><section class="v568Paper v664Paper"><div class="v664Canonical"><div class="v664CanonicalCard c0"><div class="v664CanonicalLatin">Altranti Imperio Universa Erunt Obnoxia.</div><div class="v664CanonicalJa">「万物はアルトラントの支配に服する。」</div><div class="v664CanonicalHint">外国の宮廷で囁かれた解釈</div></div><div class="v664CanonicalCard c1"><div class="v664CanonicalLatin">Adiuva, Immortalis; Urget Enim Onus.</div><div class="v664CanonicalJa">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</div><div class="v664CanonicalHint">リックの聖職者が唱えた読み</div></div></div><div class="v664RumorField">${rumorHtml}</div><div class="v664TruthStage"><div class="v664WordGrid" aria-label="A.I.U.E.O.">${wordHtml}</div><div class="v664TruthLatin">Adhuc In Unum, Etiam Oppositi.</div><div class="v664TruthRule"></div><div class="v664TruthJa">「相争えど、なお我らは一つ。」</div></div></section><div class="v568Nav"><button class="v568SealNext" aria-label="エンディングへ" onclick="View.finishFinalResultV568()"></button></div></div></div>`;
+}
+const started=new WeakSet();
+function q(root,s){return root?.querySelector(s)}function qa(root,s){return root?[...root.querySelectorAll(s)]:[]}
+function later(root,ms,fn){setTimeout(()=>{try{if(root.isConnected)fn()}catch(e){console.error('V664 AIUEO step failed',e)}},ms)}
+function render(){const host=document.getElementById('screenResult');if(!host)return false;host.innerHTML=html();const root=host.querySelector('.v664AiueoFinal');if(root)start(root);return !!root;}
+function canonical(root,i,on=true){const el=q(root,`.v664CanonicalCard.c${i}`);if(!el)return;if(on)el.classList.add('is-on');else el.classList.add('is-out');}
+function rumor(root,i){const all=qa(root,'.v664Rumor');all.forEach((el,n)=>{if(n<i)el.classList.add('is-dim')});all[i]?.classList.add('is-on')}
+function clearRumors(root){qa(root,'.v664Rumor').forEach(el=>el.classList.add('is-out'))}
+function showLetters(root){root.classList.remove('v664Blackout');q(root,'.v664WordGrid')?.classList.add('is-on')}
+function openWord(root,i){q(root,`.v664WordCell[data-v664-word="${i}"]`)?.classList.add('is-open')}
+function settlePhrase(root){q(root,'.v664WordGrid')?.classList.add('is-phrase');q(root,'.v664TruthLatin')?.classList.add('is-on')}
+function showTruth(root){q(root,'.v664TruthRule')?.classList.add('is-on');q(root,'.v664TruthJa')?.classList.add('is-on')}
+function showNav(root){q(root,'.v568Nav')?.classList.add('v664NavOn')}
+function finish(root){qa(root,'.v664CanonicalCard').forEach(el=>el.classList.add('is-out'));clearRumors(root);showLetters(root);qa(root,'.v664WordCell').forEach(el=>el.classList.add('is-open'));settlePhrase(root);showTruth(root);showNav(root);root.classList.add('v664Complete')}
+function start(root){
+ if(!root||started.has(root))return;started.add(root);root.dataset.v664TimelineStarted='1';void root.offsetWidth;
+ canonical(root,0,true); later(root,1450,()=>canonical(root,0,false));
+ later(root,1650,()=>canonical(root,1,true)); later(root,3100,()=>canonical(root,1,false));
+ [3260,3560,3860,4160,4460,4760,5060].forEach((ms,i)=>later(root,ms,()=>rumor(root,i)));
+ later(root,5320,()=>qa(root,'.v664Rumor').forEach((el,i)=>el.classList.toggle('is-dim',i!==3)));
+ later(root,5550,()=>clearRumors(root));
+ later(root,5840,()=>{root.classList.add('v664Blackout');qa(root,'.v664Rumor,.v664CanonicalCard').forEach(el=>el.style.display='none')});
+ later(root,6130,()=>showLetters(root));
+ [6800,7040,7280,7520,7760].forEach((ms,i)=>later(root,ms,()=>openWord(root,i)));
+ later(root,8550,()=>settlePhrase(root));
+ later(root,9350,()=>showTruth(root));
+ later(root,10900,()=>showNav(root));
+ later(root,12000,()=>finish(root));
+}
+if(typeof View==='object'&&View&&typeof View.finalResultNextV568==='function'&&!View.finalResultNextV568.__v664Wrapped){const base=View.finalResultNextV568;View.finalResultNextV568=function(){const r=base.apply(this,arguments);if(Number(State?.finalResultActV568)===4)render();return r};View.finalResultNextV568.__v664Wrapped=true;}
+window.renderFinalAiueoV664=render;
+const host=document.getElementById('screenResult');if(host&&window.MutationObserver){const mo=new MutationObserver(()=>{if(Number(State?.finalResultActV568)===4&&!host.querySelector('.v664AiueoFinal')&&host.querySelector('.v662AiueoFinal'))render()});mo.observe(host,{childList:true,subtree:true});}
+window.auditFinalAiueoV664=function(){const root=document.querySelector('#screenResult .v664AiueoFinal');const grid=q(root,'.v664WordGrid');const rr=grid?.getBoundingClientRect();const paper=q(root,'.v664Paper')?.getBoundingClientRect();return{version:'V664',started:root?.dataset?.v664TimelineStarted||null,complete:root?.classList.contains('v664Complete')||false,canonical:qa(root,'.v664CanonicalCard').map(e=>({text:e.textContent.trim(),opacity:getComputedStyle(e).opacity})),grid:rr?{left:rr.left,right:rr.right,width:rr.width}:null,paper:paper?{left:paper.left,right:paper.right,width:paper.width}:null,overflow:!!(rr&&paper&&(rr.left<paper.left-1||rr.right>paper.right+1)),nav:q(root,'.v568Nav')?getComputedStyle(q(root,'.v568Nav')).pointerEvents:null};};
+window.__VERSION__='V664';
+})();
+</script>
+<script id="v664-final-version-marker">window.__VERSION__='V664';</script>
+
+
+<!-- V665: final A.I.U.E.O. orbit composition. Wrong readings circle the unmoving initials; initials gather, then open into the true words entirely inside the paper. -->
+<style id="v665-final-aiueo-style">
+#game #screenResult .v665AiueoFinal{
+  background:
+    radial-gradient(circle at 50% 45%,rgba(56,66,76,.18),transparent 43%),
+    linear-gradient(180deg,#08111b,#02060b 72%,#010305)!important;
+}
+#game #screenResult .v665AiueoFinal .v568Stage{
+  width:calc(100% - 34px)!important;height:calc(100% - 54px)!important;
+  padding:14px 0 70px!important;justify-content:center!important;overflow:hidden!important;
+}
+#game #screenResult .v665Paper{
+  position:relative!important;width:min(900px,100%)!important;height:430px!important;min-height:430px!important;
+  padding:0!important;overflow:hidden!important;border-radius:24px!important;
+  border:1px solid rgba(224,191,99,.16)!important;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(214,172,73,.065),transparent 35%),
+    linear-gradient(180deg,rgba(7,14,22,.99),rgba(2,7,12,.995))!important;
+  box-shadow:inset 0 0 66px rgba(0,0,0,.64),0 16px 34px rgba(0,0,0,.32)!important;
+}
+#game #screenResult .v665Paper::before{
+  content:"";position:absolute;inset:18px;border:1px solid rgba(221,187,93,.07);
+  border-radius:18px;pointer-events:none;
+}
+#game #screenResult .v665Orbit,
+#game #screenResult .v665CoreStage,
+#game #screenResult .v665TruthStage{position:absolute;inset:0;pointer-events:none}
+
+/* Central initials remain the visual anchor while every false reading comes and goes. */
+#game #screenResult .v665CoreStage{z-index:4;display:flex;align-items:center;justify-content:center}
+#game #screenResult .v665WordGrid{
+  width:min(700px,82%);display:grid;
+  grid-template-columns:1.1fr .62fr 1.08fr 1fr 1.46fr;
+  column-gap:10px;align-items:center;
+  transition:width .78s cubic-bezier(.2,.76,.24,1),filter .55s ease,opacity .55s ease,transform .7s ease;
+}
+#game #screenResult .v665WordGrid.is-gathered{width:min(560px,68%)}
+#game #screenResult .v665WordGrid.is-away{opacity:0;filter:blur(4px);transform:scale(.985)}
+#game #screenResult .v665WordCell{
+  min-width:0;display:flex;justify-content:center;align-items:baseline;overflow:hidden;
+  white-space:nowrap;font-family:Georgia,'Times New Roman',serif;font-size:34px;font-weight:700;
+}
+#game #screenResult .v665Initial{
+  flex:0 0 auto;color:#f0c65f;text-shadow:0 0 24px rgba(238,197,91,.28);
+  transition:color .5s ease,text-shadow .5s ease;
+}
+#game #screenResult .v665Tail{
+  display:inline-block;max-width:0;opacity:0;overflow:hidden;color:#f1eee5;
+  transform:translateX(-5px);filter:blur(4px);
+  transition:max-width .72s cubic-bezier(.2,.76,.24,1),opacity .46s ease,transform .60s ease,filter .60s ease;
+}
+#game #screenResult .v665WordCell.is-open .v665Tail{
+  max-width:150px;opacity:1;transform:translateX(0);filter:blur(0);
+}
+
+/* Readings orbit around, but never use the edge 6% safety zone or the central 190px-high core band. */
+#game #screenResult .v665Orbit{z-index:3}
+#game #screenResult .v665Reading{
+  position:absolute;max-width:330px;padding:2px 4px;
+  color:#e9e4d7;font-family:'Yu Mincho','Hiragino Mincho ProN',Georgia,serif;
+  font-weight:700;line-height:1.45;letter-spacing:.025em;
+  text-shadow:0 0 17px rgba(255,244,215,.09);
+  opacity:0;filter:blur(6px);transform:translate(var(--sx,0),var(--sy,8px)) scale(.985);
+  transition:opacity .34s ease,filter .42s ease,transform .52s ease;
+}
+#game #screenResult .v665Reading.is-on{
+  opacity:var(--o,.58);filter:blur(0);transform:translate(0,0) scale(1);
+}
+#game #screenResult .v665Reading.is-out{
+  opacity:0!important;filter:blur(6px)!important;
+  transform:translate(var(--ex,0),var(--ey,-10px)) scale(.984)!important;
+}
+#game #screenResult .v665Reading .latin{
+  display:block;margin-bottom:4px;font:700 15px/1.25 Georgia,'Times New Roman',serif;
+  color:#c9b979;letter-spacing:.025em;
+}
+#game #screenResult .v665Reading .jp{display:block}
+#game #screenResult .v665Reading.c0{left:7%;top:8%;width:360px;max-width:360px;font-size:17px;--o:.72;--sx:-8px;--sy:7px;--ex:-8px;--ey:-11px}
+#game #screenResult .v665Reading.c1{right:7%;top:10%;width:370px;max-width:370px;text-align:right;font-size:16px;--o:.70;--sx:8px;--sy:7px;--ex:9px;--ey:-12px}
+#game #screenResult .v665Reading.r0{left:8%;top:31%;font-size:15px;--o:.54;--sx:-8px;--sy:6px;--ex:-11px;--ey:-3px}
+#game #screenResult .v665Reading.r1{right:7%;top:32%;font-size:14px;text-align:right;--o:.50;--sx:8px;--sy:8px;--ex:9px;--ey:-7px}
+#game #screenResult .v665Reading.r2{left:6%;bottom:26%;font-size:15px;--o:.52;--sx:-7px;--sy:7px;--ex:-9px;--ey:8px}
+#game #screenResult .v665Reading.r3{right:6%;bottom:27%;font-size:15px;text-align:right;--o:.56;--sx:7px;--sy:7px;--ex:10px;--ey:7px}
+#game #screenResult .v665Reading.r4{left:12%;bottom:9%;font-size:14px;--o:.47;--sx:-4px;--sy:8px;--ex:-8px;--ey:10px}
+#game #screenResult .v665Reading.r5{right:10%;bottom:8%;font-size:14px;text-align:right;--o:.50;--sx:5px;--sy:8px;--ex:8px;--ey:10px}
+#game #screenResult .v665Reading.r6{
+  left:50%;bottom:2.5%;transform:translate(-50%,8px) scale(.985);text-align:center;
+  max-width:360px;font-size:13px;color:#d7ccb0;--o:.46;--ex:0;--ey:8px
+}
+#game #screenResult .v665Reading.r6.is-on{transform:translate(-50%,0) scale(1)}
+#game #screenResult .v665Reading.r6.is-out{transform:translate(-50%,var(--ey,8px)) scale(.984)!important}
+
+/* Final truth replaces the five opened words without moving outside the central safe area. */
+#game #screenResult .v665TruthStage{
+  z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 38px;
+}
+#game #screenResult .v665TruthLatin{
+  position:absolute;left:50%;top:46%;transform:translate(-50%,-50%) translateY(4px);
+  width:88%;text-align:center;font:700 31px/1.35 Georgia,'Times New Roman',serif;
+  color:#f1eee5;letter-spacing:.032em;opacity:0;filter:blur(4px);
+  transition:opacity .62s ease,filter .62s ease,transform .62s ease;
+}
+#game #screenResult .v665TruthLatin.is-on{opacity:1;filter:blur(0);transform:translate(-50%,-50%) translateY(0)}
+#game #screenResult .v665TruthRule{
+  position:absolute;top:56%;left:50%;transform:translateX(-50%);width:0;height:1px;
+  background:linear-gradient(90deg,transparent,#cda84e 25%,#efd88a 50%,#cda84e 75%,transparent);
+  opacity:.66;transition:width .78s ease;
+}
+#game #screenResult .v665TruthRule.is-on{width:min(630px,74%)}
+#game #screenResult .v665TruthJa{
+  position:absolute;top:61%;left:50%;transform:translate(-50%,9px);
+  width:88%;text-align:center;font-family:'Yu Mincho','Hiragino Mincho ProN',serif;
+  font-size:28px;font-weight:800;letter-spacing:.13em;color:#fff8df;
+  opacity:0;filter:blur(3px);text-shadow:0 0 24px rgba(255,242,198,.12);
+  transition:opacity .8s ease,transform .8s ease,filter .8s ease,letter-spacing .8s ease;
+}
+#game #screenResult .v665TruthJa.is-on{
+  opacity:1;transform:translate(-50%,0);filter:blur(0);letter-spacing:.065em;
+}
+#game #screenResult .v665AiueoFinal .v568Nav{
+  opacity:0!important;pointer-events:none!important;transition:opacity .55s ease!important;
+}
+#game #screenResult .v665AiueoFinal .v568Nav.v665NavOn{
+  opacity:1!important;pointer-events:auto!important;
+}
+
+@media(max-width:760px){
+  #game #screenResult .v665Paper{height:424px!important;min-height:424px!important}
+  #game #screenResult .v665WordGrid{width:min(650px,84%)}
+  #game #screenResult .v665WordGrid.is-gathered{width:min(520px,70%)}
+  #game #screenResult .v665WordCell{font-size:30px}
+  #game #screenResult .v665Reading.c0,#game #screenResult .v665Reading.c1{font-size:14px;max-width:310px}
+  #game #screenResult .v665Reading{font-size:13px;max-width:270px}
+  #game #screenResult .v665TruthLatin{font-size:27px}
+  #game #screenResult .v665TruthJa{font-size:24px}
+}
+</style>
+<script id="v665-final-aiueo-script">
+(function(){
+'use strict';
+if(window.__FINAL_AIUEO_V665__)return;
+window.__FINAL_AIUEO_V665__=true;
+
+function progress(){
+  return `<div class="v568Progress">${[1,2,3,4].map(i=>`<i class="${i===4?'on':''}"></i>`).join('')}</div>`;
+}
+function html(){
+  const misc=[
+    '「勝利ののち、すべては一つとなる。」',
+    '「神よ、重き務めに耐える力を与えたまえ。」',
+    '「我はただ、与えられた務めを果たす。」',
+    '「勝った者も、敗れた者も、同じ国へ帰る。」',
+    '「愛する者を失っても、なお歩み続ける。」',
+    '「愛する者よ、いつまでも我がそばに。」',
+    '「人生の喜びは、ただワインだけだ。」'
+  ];
+  const miscHtml=misc.map((t,i)=>`<div class="v665Reading r${i}"><span class="jp">${t}</span></div>`).join('');
+  const words=[['A','dhuc'],['I','n'],['U','num,'],['E','tiam'],['O','ppositi.']];
+  const wordHtml=words.map((x,i)=>`<span class="v665WordCell" data-v665-word="${i}"><span class="v665Initial">${x[0]}</span><span class="v665Tail">${x[1]}</span></span>`).join('');
+  return `<div class="v568FinalScreen v665AiueoFinal" data-v585-act="4">
+    <div class="v568Topbar"><b>最終リザルト</b>${progress()}</div>
+    <div class="v568Stage">
+      <section class="v568Paper v665Paper">
+        <div class="v665Orbit">
+          <div class="v665Reading c0"><span class="latin">Altranti Imperio Universa Erunt Obnoxia.</span><span class="jp">「万物はアルトラントの支配に服する。」</span></div>
+          <div class="v665Reading c1"><span class="latin">Adiuva, Immortalis; Urget Enim Onus.</span><span class="jp">「永遠なる御方よ、お助けください。この重荷が私を押しつぶします。」</span></div>
+          ${miscHtml}
+        </div>
+        <div class="v665CoreStage">
+          <div class="v665WordGrid" aria-label="A.I.U.E.O.">${wordHtml}</div>
+        </div>
+        <div class="v665TruthStage">
+          <div class="v665TruthLatin">Adhuc In Unum, Etiam Oppositi.</div>
+          <div class="v665TruthRule"></div>
+          <div class="v665TruthJa">「相争えど、なお我らは一つ。」</div>
+        </div>
+      </section>
+      <div class="v568Nav"><button class="v568SealNext" aria-label="エンディングへ" onclick="View.finishFinalResultV568()"></button></div>
+    </div>
+  </div>`;
+}
+const started=new WeakSet();
+function q(root,s){return root?.querySelector(s)}
+function qa(root,s){return root?[...root.querySelectorAll(s)]:[]}
+function later(root,ms,fn){
+  setTimeout(()=>{try{if(root&&root.isConnected)fn()}catch(e){console.error('V665 AIUEO step failed',e)}},ms);
+}
+function render(){
+  const host=document.getElementById('screenResult');
+  if(!host)return false;
+  host.innerHTML=html();
+  const root=host.querySelector('.v665AiueoFinal');
+  if(root)start(root);
+  return !!root;
+}
+function reading(root,sel){
+  const el=q(root,sel); if(!el)return;
+  el.classList.remove('is-out'); el.classList.add('is-on');
+}
+function fadeReading(root,sel){
+  const el=q(root,sel); if(!el)return;
+  el.classList.remove('is-on'); el.classList.add('is-out');
+}
+function allReadingsOut(root){qa(root,'.v665Reading').forEach(el=>{el.classList.remove('is-on');el.classList.add('is-out')})}
+function gather(root){q(root,'.v665WordGrid')?.classList.add('is-gathered')}
+function openWord(root,i){q(root,`.v665WordCell[data-v665-word="${i}"]`)?.classList.add('is-open')}
+function settle(root){
+  q(root,'.v665WordGrid')?.classList.add('is-away');
+  later(root,430,()=>q(root,'.v665TruthLatin')?.classList.add('is-on'));
+}
+function showTruth(root){
+  q(root,'.v665TruthRule')?.classList.add('is-on');
+  q(root,'.v665TruthJa')?.classList.add('is-on');
+}
+function showNav(root){q(root,'.v568Nav')?.classList.add('v665NavOn')}
+function finish(root){
+  allReadingsOut(root); gather(root);
+  qa(root,'.v665WordCell').forEach(el=>el.classList.add('is-open'));
+  q(root,'.v665WordGrid')?.classList.add('is-away');
+  q(root,'.v665TruthLatin')?.classList.add('is-on');
+  q(root,'.v665TruthRule')?.classList.add('is-on');
+  q(root,'.v665TruthJa')?.classList.add('is-on');
+  showNav(root); root.classList.add('v665Complete');
+}
+function start(root){
+  if(!root||started.has(root))return;
+  started.add(root); root.dataset.v665TimelineStarted='1'; void root.offsetWidth;
+
+  /* The initials are visible from the first frame. The interpretations alone come and go around them. */
+  later(root,280,()=>reading(root,'.c0'));
+  later(root,1450,()=>fadeReading(root,'.c0'));
+  later(root,1080,()=>reading(root,'.c1'));
+  later(root,2360,()=>fadeReading(root,'.c1'));
+
+  /* Seven accumulated translations, overlapping in a ring for roughly three seconds. */
+  const on=[2450,2780,3110,3440,3770,4100,4430];
+  on.forEach((ms,i)=>{
+    later(root,ms,()=>reading(root,`.r${i}`));
+    later(root,ms+1180,()=>fadeReading(root,`.r${i}`));
+  });
+
+  /* Silence: only A I U E O remains. Then the five letters draw closer. */
+  later(root,5750,()=>allReadingsOut(root));
+  later(root,6200,()=>gather(root));
+
+  /* B-plan: the gathered initials open into words, one after another, without changing the safe grid width. */
+  [6880,7160,7440,7720,8000].forEach((ms,i)=>later(root,ms,()=>openWord(root,i)));
+
+  /* Five words yield to the single sentence, then the Japanese truth. */
+  later(root,8850,()=>settle(root));
+  later(root,9700,()=>showTruth(root));
+  later(root,11300,()=>showNav(root));
+
+  /* Safety completion: never trap the player even if a transition is interrupted. */
+  later(root,12400,()=>finish(root));
+}
+
+if(typeof View==='object'&&View&&typeof View.finalResultNextV568==='function'&&!View.finalResultNextV568.__v665Wrapped){
+  const base=View.finalResultNextV568;
+  View.finalResultNextV568=function(){
+    const r=base.apply(this,arguments);
+    if(Number(State?.finalResultActV568)===4)setTimeout(render,0);
+    return r;
+  };
+  View.finalResultNextV568.__v665Wrapped=true;
+}
+window.renderFinalAiueoV665=render;
+
+const host=document.getElementById('screenResult');
+if(host&&window.MutationObserver){
+  const mo=new MutationObserver(()=>{
+    if(Number(State?.finalResultActV568)===4&&!host.querySelector('.v665AiueoFinal')&&host.querySelector('.v664AiueoFinal,.v662AiueoFinal')){
+      render();
+    }
+  });
+  mo.observe(host,{childList:true,subtree:true});
+}
+
+window.auditFinalAiueoV665=function(){
+  const root=document.querySelector('#screenResult .v665AiueoFinal');
+  const paper=q(root,'.v665Paper')?.getBoundingClientRect();
+  const grid=q(root,'.v665WordGrid')?.getBoundingClientRect();
+  const cells=qa(root,'.v665WordCell').map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,width:r.width,text:el.textContent}});
+  const readings=qa(root,'.v665Reading').map(el=>{const r=el.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom,text:el.textContent.trim()}});
+  const overflow=(r)=>!!(paper&&r&&(r.left<paper.left-1||r.right>paper.right+1||r.top<paper.top-1||r.bottom>paper.bottom+1));
+  return{
+    version:'V665',
+    complete:!!root?.classList.contains('v665Complete'),
+    paper:paper?{left:paper.left,right:paper.right,top:paper.top,bottom:paper.bottom,width:paper.width,height:paper.height}:null,
+    grid:grid?{left:grid.left,right:grid.right,width:grid.width,overflow:overflow(grid)}:null,
+    cells,
+    readingOverflow:readings.filter(overflow),
+    nav:q(root,'.v568Nav')?getComputedStyle(q(root,'.v568Nav')).pointerEvents:null
+  };
+};
+window.__VERSION__='V665';
+})();
+</script>
+<script id="v665-final-version-marker">window.__VERSION__='V665';</script>
 
 </body>
 </html>
