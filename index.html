@@ -2086,7 +2086,7 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
   box-shadow:0 0 12px rgba(255,210,80,.25),0 4px 12px rgba(0,0,0,.32)!important;
 }
 .gameCueButton.secondaryCue{
-  opacity:.92!important;
+  opacity:.92;
   animation-duration:1.45s!important;
 }
 @keyframes gameCueButtonPulse{
@@ -2121,8 +2121,6 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
   max-height:48px!important;
   padding:0 22px!important;
   white-space:nowrap!important;
-  animation:none!important;
-  transform:none!important;
 }
 .kingEndingEndButtonWrap .gameCueButton:active{
   transform:translateY(3px) scale(.985)!important;
@@ -2142,7 +2140,7 @@ button.primary:active,#screenMain .next:active,#screenResult button[onclick*="Fl
   }
 }
 @media (prefers-reduced-motion:reduce){
-  .gameCueButton,button.gameCueButton,#screenResult button.gameCueButton{
+  .gameCueButton:not(.v661ForceMotion),button.gameCueButton:not(.v661ForceMotion),#screenResult button.gameCueButton:not(.v661ForceMotion){
     animation:none!important;
     opacity:1!important;
     transform:none!important;
@@ -3355,7 +3353,7 @@ lorenzoBelcaro:'https://lh3.googleusercontent.com/d/1NOkUYQLo3BnfeWktZNdTMxDbB1R
 grigoryOrlov:'https://lh3.googleusercontent.com/d/1nUHEVjM-lwojV-VqBzferTbOOvZ2jXfk',
 veraZakharova:'https://lh3.googleusercontent.com/d/1FYPfBQvRw2yRDacw4cc-MvaSSL-Ro6UB',
 claudiaAltenburg:'https://lh3.googleusercontent.com/d/1NGhYr0yOac6WceI3TBe5mjSipFl-xet4',
-wolframEisenhardt:'https://lh3.googleusercontent.com/d/1nGz1jgGxuGUQYxeRnCZDpuYwiz1iEgLs',
+wolframEisenhardt:'https://lh3.googleusercontent.com/d/1TDG5LWc4hBoeg4sOZFV2UmQP7HksIOYF',
 ibrahimPasha:'https://lh3.googleusercontent.com/d/1BKOcnNUIivhwate_T7x3Pge6LNqZGUUl',
 dagdanMacLochran:'https://lh3.googleusercontent.com/d/1ef40baokLkV5l5alWz5I6r4MKJua2ZRv',
 marcoVerdera:'https://lh3.googleusercontent.com/d/1IvajPnU1SAOw4VJQUh4ogSyxr8qogIpi',
@@ -3387,7 +3385,7 @@ witch:'https://lh3.googleusercontent.com/d/1D2lX5BU5NqFdlblxxEC09VJgsHfShAm1',
 rock:'https://lh3.googleusercontent.com/d/1WW5apsZ3XpFKnmqCeaGLbpFGgY33q87_',
 soldier:'https://lh3.googleusercontent.com/d/1_WlnmhRqDAP0g8UrKPuIhogtUNbbyPol'
 };
-IMG.renatoBernacci=IMG.wolframEisenhardt;
+IMG.renatoBernacci='https://lh3.googleusercontent.com/d/1nGz1jgGxuGUQYxeRnCZDpuYwiz1iEgLs';
 const BG={grass:'https://lh3.googleusercontent.com/d/1aiVytIEyVwUKCx8Jb3_sKsN7OTh4BYeD',palace:'https://lh3.googleusercontent.com/d/1Yqiw0PqEoC4kSN5Iqezkig0unLVnIu01',village:'https://lh3.googleusercontent.com/d/1fWwutBWUn-f8CnY3v0xCT6gbZPolNSgu',forest:'https://lh3.googleusercontent.com/d/10scmrke8oOEwAqq-uhnSDQLBX5NnKE5E',port:'https://lh3.googleusercontent.com/d/15ZiXnvQQPP7Nb76-oy5CCZzNy9E7qlWv',occult:'https://lh3.googleusercontent.com/d/10scmrke8oOEwAqq-uhnSDQLBX5NnKE5E',rock:'https://lh3.googleusercontent.com/d/13PHZWSKb8cqi0iBkGsVgngO5jZzxGdZB',church:'https://lh3.googleusercontent.com/d/1eUyRkp_fBB9LNP7E7xcrwC-WjA0V_Lkn',council:'https://lh3.googleusercontent.com/d/1poIqRB4dMEZ5LmFDK2QZ-XliRoQrvpGx',market:'https://lh3.googleusercontent.com/d/1yaV3Ket_Z54p7-veovWZEDjEG4mddfov',infirmary:'https://lh3.googleusercontent.com/d/1GPeIauOgyw7v2axmRB_l53w-eiIUsiNo',fort:'https://lh3.googleusercontent.com/d/1u2cxhd5qWtBO9U2LPM6Gtw7kOlh_ZYBX',privateRoom:'https://lh3.googleusercontent.com/d/1cCEsRwxxQVbk0NwR5zZTu4_QlhsiI5c_',dance:'https://lh3.googleusercontent.com/d/1ANSiJmFZeS8RNe7JMTonWE0dYPQZQzsD',garden:'https://lh3.googleusercontent.com/d/1BuqUQ3l9AJr2GIiJVdX5vb7q4EpOc6fh',god:'https://lh3.googleusercontent.com/d/14l8VkosO-A6cTwQCm3l2I2s-3Sl_3NI5',road:'https://lh3.googleusercontent.com/d/1B_N0yWsyJUowzPS0vluLXbb1L08fJNH7',sand:'https://lh3.googleusercontent.com/d/1aWcUj_zEQl_Nlt7WfKrWbwql-OO0Hdnp',shop:'https://lh3.googleusercontent.com/d/1OCXNgmVQGlsHlHWZjYQWYOOO8P969cVA',snow:'https://lh3.googleusercontent.com/d/15InMoL9mKxaFyCAbf3VS2dkPG6EdMcZV',town:'https://lh3.googleusercontent.com/d/1jeLz3WV3ONWQ6nZnrlhVDjTKyakyUy9V',war:'https://lh3.googleusercontent.com/d/1f5SBSgHxLEwbRxiqxNt15pb5o_4x4els',bigwar:'https://lh3.googleusercontent.com/d/1czUr8PA446HwxujFe2ZxC8fJgmghvFL_',book:'https://lh3.googleusercontent.com/d/1ZphJaPYbJJKHROyOQk3HrwK70lMW4E3r',bridge:'https://lh3.googleusercontent.com/d/1lubn4LeC-QSGYtYWoWyn3Oqj3goMaY_J',ness:'https://lh3.googleusercontent.com/d/1Ud6a3isJU_BM6W6yzoGbowEGq3gkFPZQ',nighttown:'https://lh3.googleusercontent.com/d/1LMbFoiADWqE6iNMuzazPdmDbdTj6sfIw',nightwood:'https://lh3.googleusercontent.com/d/1VqPZu1DwR5N0sahIPplTDPIrEP54Z8u7',sea:'https://lh3.googleusercontent.com/d/1uM-6xL_dlDeorZB2eviPTPqwa8uZnhZZ',ship:'https://lh3.googleusercontent.com/d/1TGZManllVg9cFb8rm6SynLc6wGGhwarD'};
 const CASE_BG={tutorial_butler:'palace',peasant_revolt:'village',hospital:'village',loire_border:'grass',horse:'forest',training_sword_tournament:'palace',training_dawn_council:'palace',training_brother_spar:'palace',training_queen_first_command:'palace',training_star_fort_inspection:'forest',training_university_lecture:'palace',training_occult_inquiry:'forest',landlord:'village',elector:'palace',rick:'palace',ruthenia:'palace',seafeara:'port',brother_return_01:'palace',brother_return_02:'palace',brother_persuasion:'palace',brother_rebellion:'palace',marriage_wife1_childhood:'palace',marriage_wife2_loire:'palace',marriage_wife3_rick:'palace',marriage_wife4_ruthenia:'palace',marriage_wife5_azraq:'port',marriage_wife6_treuval:'forest',elector_leopold_mine_collapse:'rock',elector_leopold_bad_coin:'port',elector_leopold_war_tax:'palace',elector_emil_dormitory_fire_tax:'palace',elector_emil_satire_pamphlet:'palace',elector_emil_royal_law_commentary:'palace',elector_clarissa_orphan_food:'village',elector_clarissa_pilgrim_bandits:'forest',elector_clarissa_azraq_refugees:'village',elector_rosen_first_ball:'palace',elector_rosen_loire_etiquette:'palace',elector_rosen_bride_slander:'palace',elector_gerhard_fort_repair:'rock',elector_gerhard_conscription_list:'village',elector_gerhard_ruthenia_scouts:'forest',local_market_prices:'village',local_guild_dispute:'village',local_capital_fire:'village',local_sewer_plague:'village',local_seed_shortage:'village',local_bridge_collapse:'rock',local_road_bandits:'forest',local_port_smuggling:'port',local_fort_dry_well:'forest',local_treuval_signal_fire:'forest',
 elector_leopold_seafeara_loan:'port',elector_leopold_secret_pact:'palace',elector_leopold_silver_league_pressure:'palace',
@@ -7146,6 +7144,8 @@ if(actorId!==currentSpouse)return'現在の王妃ではありません';
 }
 const c=getCase(caseId);
 if(c&&caseOpponentActorIds(c).includes(actorId))return'この案件の衝突相手本人です';
+/* V661: the final enemy is assigned dynamically, so the static opponent table is not enough. */
+if(c&&actorId==='brother'&&(c.id===FINAL_CASE_ID||c.finalCase||c.finalEnemyCase||c.phase26Final)&&String(c.finalEnemy||c.finalCaseTheme||'')==='brother')return'この案件の衝突相手本人です';
 return'';
 }
 function actorIsSelectableForCase(actorId,caseId){
@@ -10684,7 +10684,7 @@ tickKingEnding();
 },wait);
 }
 function renderKingEndingStage(){
-$('screenResult').innerHTML=`<div class="kingEndingStage" id="kingEndingStage"><img id="kingEndingSlideA" class="kingEndingSlideLayer" draggable="false" alt=""><img id="kingEndingSlideB" class="kingEndingSlideLayer" draggable="false" alt=""><div class="kingEndingEndButtonWrap" id="kingEndingEndButtonWrap"><button class="gameCueButton secondaryCue" onclick="View.returnToTitle()"><span class="startCuePc">クリックでタイトルに</span><span class="startCueTouch">タップでタイトルに</span></button></div></div>`;
+$('screenResult').innerHTML=`<div class="kingEndingStage" id="kingEndingStage"><img id="kingEndingSlideA" class="kingEndingSlideLayer" draggable="false" alt=""><img id="kingEndingSlideB" class="kingEndingSlideLayer" draggable="false" alt=""><div class="kingEndingEndButtonWrap" id="kingEndingEndButtonWrap"><button class="gameCueButton secondaryCue v661ForceMotion" onclick="View.returnToTitle()"><span class="startCuePc">クリックでタイトルに</span><span class="startCueTouch">タップでタイトルに</span></button></div></div>`;
 }
 function getCurrentKingEndingSlideIndex(time){
 let nextIndex=0;
@@ -17472,7 +17472,7 @@ treuval:{key:'altrantTreuval',soldier:'treuvalSoldier',ruler:'treuvalKing',ruler
 const FORMAL={
 isabellaLoire:'イザベラ・ディ・サン＝ヴェリオ',celestineLoire:'セレスティーヌ・ド・ヴァロワ',rickKing:'ロレンツォ・アルベルティ',
 grigoryOrlov:'グリゴリー・オルロフ',veraZakharova:'ヴェラ・ザハロワ',claudiaAltenburg:'クラウディア・フォン・アルテンブルク',
-renatoBernacci:'レナート・ベルナッチ',wolframEisenhardt:'レナート・ベルナッチ',dagdanMacLochran:'ダグダン・マク・ロクラン'
+renatoBernacci:'レナート・ベルナッチ',wolframEisenhardt:'ヴォルフラム・アイゼンハルト',dagdanMacLochran:'ダグダン・マク・ロクラン'
 };
 const n=v=>Number(v||0)||0;
 const turn=()=>n(State&&State.turn)||1;
@@ -26908,39 +26908,61 @@ function phase67ShowBattleQuoteSequence(queue,after){
   phase67AddCss();
   try{audio&&audio();sfx&&sfx('opening');}catch(_){ }
   const host=document.getElementById('game')||document.body;
+  document.getElementById('phase67BattleQuoteScreen')?.remove();
   const root=document.createElement('div');
   root.id='phase67BattleQuoteScreen';
   root.className='phase67BattleQuoteScreen openingFadeIn';
-  root.innerHTML='<div class="openingStoryBox storyEnter"><div class="openingStoryText"><div class="phase67BattleQuoteSpeaker"></div><div class="phase67BattleQuoteLine"></div></div><div class="storyCue">▼</div></div>';
+  root.innerHTML='<div class="openingStoryBox storyEnter"><div class="openingStoryText"><div class="phase67BattleQuoteSpeaker"></div><div class="phase67BattleQuoteLine"></div></div><div class="storyCue"></div></div>';
   host.appendChild(root);
+  window.__phase67BattleQuoteOpen=true;
   const speaker=root.querySelector('.phase67BattleQuoteSpeaker');
   const line=root.querySelector('.phase67BattleQuoteLine');
+  const cue=root.querySelector('.storyCue');
   let index=0;
   let typing=null;
   let typingDone=false;
+  let finished=false;
+  let readyAt=0;
   function render(){
     const item=queue[index];
     if(!item){finish();return;}
     typingDone=false;
+    readyAt=performance.now()+260;
+    root.dataset.quoteIndex=String(index);
     speaker.textContent=item.speaker||'';
-    typing=phase67TypeText(line,item.text||'',()=>{typingDone=true;});
+    line.style.opacity='0';
+    if(cue){cue.style.opacity='.38';cue.style.pointerEvents='none';}
+    requestAnimationFrame(()=>{line.style.opacity='1';});
+    typing=phase67TypeText(line,item.text||'',()=>{
+      typingDone=true;
+      readyAt=Math.max(readyAt,performance.now()+120);
+      if(cue){cue.style.opacity='1';cue.style.pointerEvents='none';}
+    });
   }
   function finish(){
+    if(finished)return;
+    finished=true;
+    window.__phase67BattleQuoteOpen=false;
     root.classList.add('openingFadeOut');
     try{sfx&&sfx('next');}catch(_){ }
+    window.removeEventListener('keydown',keyHandler,true);
     setTimeout(()=>{try{root.remove();}catch(_){ } after&&after();},320);
   }
   function advance(ev){
-    if(ev){ev.preventDefault();ev.stopPropagation();}
+    if(finished)return false;
+    if(ev){ev.preventDefault();ev.stopImmediatePropagation?.();ev.stopPropagation();}
     try{audio&&audio();}catch(_){ }
     if(!typingDone&&typing){typing.skip();return false;}
+    if(performance.now()<readyAt)return false;
     try{sfx&&sfx('next');}catch(_){ }
     index++;
     if(index>=queue.length){finish();return false;}
     render();
     return false;
   }
-  root.addEventListener('click',advance,true);
+  /* pointerup avoids Safari's synthetic click from consuming two successive quotes. */
+  root.addEventListener('pointerup',advance,true);
+  root.addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();},true);
   const keyHandler=function(e){
     if(!document.getElementById('phase67BattleQuoteScreen')){window.removeEventListener('keydown',keyHandler,true);return;}
     if(e.key==='Enter'||e.key==='Escape'||e.code==='Space'||e.key===' '){advance(e);}
@@ -44397,10 +44419,8 @@ window.__VERSION__='V566';
 #screenResult .v640XpTrack.levelReset i{transition:none!important;}
 @keyframes v642XpLevelCross{0%{filter:brightness(1)}45%{filter:brightness(1.55)}100%{filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){
-  #screenResult .v640GrowthCard{opacity:1!important;transform:none!important;transition:none!important}
-  #screenResult .v640LevelBadge{opacity:1!important;transform:none!important;animation:none!important}
-  #screenResult .v640XpTrack i{transition:none!important;width:var(--xp-to,0%)!important}
-  #screenResult .v640GrowthCard::after,#screenResult .v640XpTarget,#screenResult .v640Stat{animation:none!important}
+  /* V661: these game-feedback animations are intentionally preserved on every device. */
+  #screenResult .v640GrowthCard{transition:opacity .28s ease var(--delay),transform .28s ease var(--delay),border-color .28s ease,box-shadow .28s ease!important}
 }
 
 /* ⑦ 人物解説：見出しの次の行を肖像＋本文にする。 */
@@ -44477,7 +44497,7 @@ function growthCard640(d,i,count){
 function playGrowthCard640(card,index){
   if(!card||card.dataset.v640Played==='1')return;
   card.dataset.v640Played='1';
-  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+  const reduced=false; /* V661: game presentation always plays growth animation. */
   const base=index*120;
   const xpEl=card.querySelector('.v640XpGain');
   const xpTarget=Math.max(0,Number(xpEl?.dataset?.xpTarget)||0);
@@ -44565,9 +44585,8 @@ function armGrowthPanel640(){
     if(done||!panel.isConnected)return;
     const rr=root?root.getBoundingClientRect():{top:0,bottom:window.innerHeight,height:window.innerHeight};
     const ar=anchor.getBoundingClientRect();
-    const triggerY=rr.top+rr.height*.45;
     const stillVisible=ar.bottom>rr.top+18&&ar.top<rr.bottom-18;
-    if(stillVisible&&ar.top<=triggerY){
+    if(stillVisible){
       done=true;
       cleanup();
       activateGrowthPanel640(panel);
@@ -49194,7 +49213,7 @@ window.__VERSION__='V620';
 
 /* noble-rebellion family: no extra gold rail */
 #screenMain .caseCard.hideImportantRailV625 .importantCaseRail{display:none!important;opacity:0!important;}
-#screenMain .caseCard.hideImportantRailV625.importantCase{padding-top:0!important;}
+#screenMain .caseCard.hideImportantRailV625.importantCase{padding-top:10px!important;}
 #screenMain .caseCard.hideImportantRailV625.importantCase::before{content:none!important;display:none!important;}
 #screenMain .caseCard.hideImportantRailV625 .caseTitle,#screenMain .caseCard.hideImportantRailV625.hasRequest .caseTitle{padding-left:0!important;}
 
@@ -49259,7 +49278,7 @@ window.__VERSION__='V620';
   border-radius:999px!important;
   background:rgba(7,20,35,.82)!important;
   color:#fff0b8!important;
-  box-shadow:0 0 18px rgba(255,210,80,.35),0 8px 18px rgba(0,0,0,.28)!important;
+  box-shadow:0 0 18px rgba(255,210,80,.35),0 8px 18px rgba(0,0,0,.28);
   font-size:18px!important;
   font-weight:1000!important;
   line-height:1!important;
@@ -49308,8 +49327,6 @@ window.__VERSION__='V620';
   position:relative!important;
   left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
   margin:0!important;
-  transform:none!important;
-  translate:none!important;
   width:292px!important;
   min-width:292px!important;
   max-width:292px!important;
@@ -50293,7 +50310,7 @@ window.__VERSION__='V657';
 #screenMain .v660AdviceBox,#screenAssign .v660AdviceBox{
   position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;
   z-index:250!important;width:620px!important;max-width:calc(100% - 44px)!important;
-  padding:56px 26px 82px!important;
+  padding:56px 26px 28px!important;
 }
 #screenMain .v660AdviceBox p,#screenAssign .v660AdviceBox p{font-size:17px;line-height:1.7;}
 #screenMain .v660AdviceBox .tutorialStartBtn,#screenAssign .v660AdviceBox .tutorialStartBtn{width:200px;margin-top:14px;}
@@ -50512,5 +50529,257 @@ window.__VERSION__='V660';
 })();
 </script>
 <script id="v660-final-version-marker">window.__VERSION__='V660';</script>
+
+<style id="v661-final-motion-and-layout-guard">
+@keyframes v661EndingReturnBreath{
+  0%{opacity:.72;filter:brightness(.94) drop-shadow(0 0 3px rgba(255,210,80,.24));transform:translateY(0) scale(1);box-shadow:0 0 14px rgba(255,210,80,.28),0 8px 18px rgba(0,0,0,.28)}
+  100%{opacity:1;filter:brightness(1.16) drop-shadow(0 0 12px rgba(255,220,96,.72));transform:translateY(-5px) scale(1.03);box-shadow:0 0 30px rgba(255,220,96,.64),0 10px 22px rgba(0,0,0,.34)}
+}
+#game .kingEndingEndButtonWrap .gameCueButton.v661ForceMotion{
+  animation:v661EndingReturnBreath 1.05s ease-in-out infinite alternate!important;
+  transform-origin:center center!important;
+}
+#game .kingEndingEndButtonWrap .gameCueButton.v661ForceMotion:active{
+  animation:none!important;transform:translateY(2px) scale(.985)!important;
+}
+@media(prefers-reduced-motion:reduce){
+  #game .kingEndingEndButtonWrap .gameCueButton.v661ForceMotion{
+    animation:v661EndingReturnBreath 1.05s ease-in-out infinite alternate!important;
+  }
+}
+</style>
+<script id="v661-audit-and-version">
+(function(){
+'use strict';
+window.auditV661=function(){
+  const finalCase=(()=>{try{return typeof getCase==='function'?getCase(FINAL_CASE_ID):null;}catch(_){return null;}})();
+  const broBtn=[...document.querySelectorAll('#screenAssign .dispatchActorChoice')].find(b=>/弟|ルートヴィヒ/.test(b.textContent||''));
+  const growth=document.querySelector('#screenResult .v640GrowthPanel');
+  const endBtn=document.querySelector('.kingEndingEndButtonWrap .v661ForceMotion');
+  const noble=document.querySelector('#screenMain [data-case-id="flow_great_noble_rebellion"]');
+  const advice=document.querySelector('.v660AdviceBox');
+  return{
+    version:'V661',
+    wolfram:typeof IMG!=='undefined'?IMG.wolframEisenhardt:null,
+    noblePadding:noble?getComputedStyle(noble).paddingTop:null,
+    advicePaddingBottom:advice?getComputedStyle(advice).paddingBottom:null,
+    brotherFinal:!!(finalCase&&String(finalCase.finalEnemy||finalCase.finalCaseTheme||'')==='brother'),
+    brotherActorDisabled:broBtn?broBtn.disabled:null,
+    quoteIndex:document.getElementById('phase67BattleQuoteScreen')?.dataset.quoteIndex??null,
+    growthPlaying:growth?.classList.contains('play')||false,
+    endAnimation:endBtn?getComputedStyle(endBtn).animationName:null
+  };
+};
+window.__VERSION__='V661';
+})();
+</script>
+
+
+<script id="v661-final-fixes-marker">
+(function(){
+  window.__VERSION__='V661';
+  window.__V661_FINAL_FIXES__={noblePadding:true,adviceSpacing:true,wolframPortrait:true,brotherFinalActorBlock:true,brotherQuoteSequence:true,endingButtonMotion:true,growthMotion:true};
+})();
+</script>
+
+
+<!-- V662: final A.I.U.E.O. rebuilt as a memory-field of false translations, silence, then the true phrase. -->
+<style id="v662-final-aiueo-cinematic-style">
+#game #screenResult .v568FinalScreen.v662AiueoFinal{
+  background:
+    radial-gradient(circle at 50% 45%,rgba(45,55,67,.18),transparent 44%),
+    linear-gradient(180deg,#08111b,#03070c 72%,#020406)!important;
+}
+#game #screenResult .v662AiueoFinal .v568Stage{
+  width:calc(100% - 34px)!important;height:calc(100% - 54px)!important;
+  padding:14px 0 70px!important;justify-content:center!important;overflow:hidden!important;
+}
+#game #screenResult .v662AiueoFinal .v662AiueoPaper{
+  position:relative!important;width:min(900px,100%)!important;height:430px!important;min-height:430px!important;
+  padding:0!important;overflow:hidden!important;border-radius:24px!important;
+  border:1px solid rgba(224,191,99,.16)!important;
+  background:
+    radial-gradient(circle at 50% 44%,rgba(214,172,73,.055),transparent 37%),
+    linear-gradient(180deg,rgba(7,14,22,.985),rgba(2,7,12,.995))!important;
+  box-shadow:inset 0 0 64px rgba(0,0,0,.62),0 16px 34px rgba(0,0,0,.32)!important;
+}
+#game #screenResult .v662AiueoFinal .v662AiueoPaper::before{
+  content:"";position:absolute;inset:18px;border:1px solid rgba(221,187,93,.075);border-radius:18px;pointer-events:none;
+}
+#game #screenResult .v662AiueoFinal .v662RumorField,
+#game #screenResult .v662AiueoFinal .v662TruthStage{
+  position:absolute;inset:0;
+}
+#game #screenResult .v662AiueoFinal .v662RumorField{z-index:2;}
+#game #screenResult .v662AiueoFinal .v662Rumor{
+  position:absolute;max-width:540px;margin:0;color:#ece7da;
+  font-family:Georgia,'Yu Mincho','Hiragino Mincho ProN',serif;font-weight:650;
+  line-height:1.45;letter-spacing:.035em;text-shadow:0 0 18px rgba(255,244,215,.08);
+  opacity:0;filter:blur(5px);transform:translateY(9px) scale(.985);
+  transition:opacity .30s ease,filter .36s ease,transform .46s ease;
+  will-change:opacity,transform,filter;
+}
+#game #screenResult .v662AiueoFinal .v662Rumor.is-on{opacity:var(--v662-o,.67);filter:blur(0);transform:translateY(0) scale(1);}
+#game #screenResult .v662AiueoFinal .v662Rumor.is-dim{opacity:calc(var(--v662-o,.67) * .46);}
+#game #screenResult .v662AiueoFinal .v662Rumor.is-ghost{opacity:.25!important;filter:blur(.3px)!important;}
+#game #screenResult .v662AiueoFinal .v662Rumor.is-out{opacity:0!important;filter:blur(5px)!important;transform:translate(var(--v662-dx,0),var(--v662-dy,-10px)) scale(.985)!important;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r0{left:7%;top:8%;font-size:19px;--v662-o:.62;--v662-dx:-12px;--v662-dy:-12px;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r1{right:5%;top:17%;font-size:17px;text-align:right;--v662-o:.56;--v662-dx:8px;--v662-dy:-13px;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r2{left:10%;top:35%;font-size:18px;--v662-o:.55;--v662-dx:-11px;--v662-dy:0px;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r3{left:50%;top:47%;width:82%;max-width:none;text-align:center;transform:translate(-50%,9px) scale(.985);font-size:24px;--v662-o:.90;--v662-dx:0px;--v662-dy:-3px;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r3.is-on{transform:translate(-50%,0) scale(1);}
+#game #screenResult .v662AiueoFinal .v662Rumor.r3.is-out{transform:translate(-50%,var(--v662-dy,-3px)) scale(.985)!important;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r4{left:6%;bottom:19%;font-size:17px;--v662-o:.58;--v662-dx:-8px;--v662-dy:10px;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r5{right:6%;bottom:10%;font-size:18px;text-align:right;--v662-o:.61;--v662-dx:10px;--v662-dy:12px;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r6{left:50%;bottom:3.5%;transform:translate(-50%,9px) scale(.985);font-size:14px;color:#d9cdaa;--v662-o:.50;--v662-dx:0px;--v662-dy:8px;}
+#game #screenResult .v662AiueoFinal .v662Rumor.r6.is-on{transform:translate(-50%,0) scale(1);}
+#game #screenResult .v662AiueoFinal .v662Rumor.r6.is-out{transform:translate(-50%,var(--v662-dy,8px)) scale(.985)!important;}
+
+#game #screenResult .v662AiueoFinal .v662TruthStage{z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+#game #screenResult .v662AiueoFinal .v662FiveLetters{
+  display:flex;align-items:baseline;justify-content:center;gap:72px;width:94%;
+  font-family:Georgia,'Times New Roman',serif;font-size:49px;font-weight:700;color:#ecc766;
+  opacity:0;transform:scale(.985);filter:blur(5px);
+  transition:opacity .58s ease,transform .70s cubic-bezier(.18,.78,.22,1),filter .58s ease,gap .88s cubic-bezier(.18,.78,.22,1),font-size .88s ease;
+}
+#game #screenResult .v662AiueoFinal .v662FiveLetters.is-on{opacity:1;transform:scale(1);filter:blur(0);}
+#game #screenResult .v662AiueoFinal .v662FiveLetters.is-gathered{gap:10px;font-size:35px;}
+#game #screenResult .v662AiueoFinal .v662Word{display:inline-flex;align-items:baseline;white-space:nowrap;min-width:0;}
+#game #screenResult .v662AiueoFinal .v662Initial{color:#f0c65f;text-shadow:0 0 24px rgba(238,197,91,.25);}
+#game #screenResult .v662AiueoFinal .v662Tail{
+  display:inline-block;max-width:0;overflow:hidden;opacity:0;color:#f1eee5;transform:translateX(-4px);
+  transition:max-width .62s cubic-bezier(.20,.75,.22,1),opacity .40s ease,transform .62s cubic-bezier(.20,.75,.22,1);
+}
+#game #screenResult .v662AiueoFinal .v662Word.is-open .v662Tail{max-width:150px;opacity:1;transform:translateX(0);}
+#game #screenResult .v662AiueoFinal .v662TruthRule{width:0;height:1px;margin:24px 0 0;background:linear-gradient(90deg,transparent,#cda84e 25%,#efd88a 50%,#cda84e 75%,transparent);opacity:.65;transition:width .78s ease;}
+#game #screenResult .v662AiueoFinal .v662TruthRule.is-on{width:min(650px,78%);}
+#game #screenResult .v662AiueoFinal .v662TruthJa{
+  margin-top:16px;font-family:'Yu Mincho','Hiragino Mincho ProN',serif;font-size:29px;font-weight:800;letter-spacing:.14em;color:#fff8df;
+  opacity:0;transform:translateY(8px);filter:blur(2px);text-shadow:0 0 24px rgba(255,242,198,.12);
+  transition:opacity .80s ease,transform .80s ease,filter .80s ease,letter-spacing .80s ease;
+}
+#game #screenResult .v662AiueoFinal .v662TruthJa.is-on{opacity:1;transform:translateY(0);filter:blur(0);letter-spacing:.07em;}
+#game #screenResult .v662AiueoFinal .v568Nav{opacity:0!important;pointer-events:none!important;transition:opacity .55s ease!important;}
+#game #screenResult .v662AiueoFinal .v568Nav.v662NavOn{opacity:1!important;pointer-events:auto!important;}
+#game #screenResult .v662AiueoFinal.v662Blackout .v662AiueoPaper{box-shadow:inset 0 0 90px rgba(0,0,0,.88),0 16px 34px rgba(0,0,0,.32)!important;}
+@media(max-width:760px){
+ #game #screenResult .v662AiueoFinal .v662AiueoPaper{height:424px!important;min-height:424px!important;}
+ #game #screenResult .v662AiueoFinal .v662Rumor.r3{font-size:21px;}
+ #game #screenResult .v662AiueoFinal .v662FiveLetters{font-size:42px;gap:48px;}
+ #game #screenResult .v662AiueoFinal .v662FiveLetters.is-gathered{font-size:30px;gap:7px;}
+ #game #screenResult .v662AiueoFinal .v662TruthJa{font-size:25px;}
+}
+</style>
+<script id="v662-final-aiueo-cinematic-script">
+(function(){
+'use strict';
+if(window.__FINAL_AIUEO_V662__)return;
+window.__FINAL_AIUEO_V662__=true;
+
+/* Replace only the fourth final-result screen. The original renderer lives in an older closure,
+   so intercept the public "next" method after it advances to act 4 and replace that DOM immediately. */
+function progressV662(){return `<div class="v568Progress">${[1,2,3,4].map(i=>`<i class="${i===4?'on':''}"></i>`).join('')}</div>`;}
+function act4HtmlV662(){
+  const rumors=[
+    '「勝利ののち、すべては一つとなる。」',
+    '「神よ、重き務めに耐える力を与えたまえ。」',
+    '「我はただ、与えられた務めを果たす。」',
+    '「勝った者も、敗れた者も、同じ国へ帰る。」',
+    '「愛する者を失っても、なお歩み続ける。」',
+    '「愛する者よ、いつまでも我がそばに。」',
+    '「人生の喜びは、ただワインだけだ。」'
+  ];
+  const rumorHtml=rumors.map((t,i)=>`<div class="v662Rumor r${i}">${t}</div>`).join('');
+  const words=[['A','dhuc'],['I','n'],['U','num,'],['E','tiam'],['O','ppositi.']];
+  const wordHtml=words.map((x,i)=>`<span class="v662Word" data-v662-word="${i}"><span class="v662Initial">${x[0]}</span><span class="v662Tail">${x[1]}</span></span>`).join('');
+  return `<div class="v568FinalScreen v662AiueoFinal" data-v585-act="4"><div class="v568Topbar"><b>最終リザルト</b>${progressV662()}</div><div class="v568Stage"><section class="v568Paper v662AiueoPaper"><div class="v662RumorField">${rumorHtml}</div><div class="v662TruthStage"><div class="v662FiveLetters" aria-label="A.I.U.E.O.">${wordHtml}</div><div class="v662TruthRule"></div><div class="v662TruthJa">「相争えど、なお我らは一つ。」</div></div></section><div class="v568Nav"><button class="v568SealNext" aria-label="エンディングへ" onclick="View.finishFinalResultV568()"></button></div></div></div>`;
+}
+function renderAct4V662(){
+  const host=document.getElementById('screenResult');
+  if(!host)return false;
+  host.innerHTML=act4HtmlV662();
+  const root=host.querySelector('.v662AiueoFinal');
+  if(root)start(root);
+  return !!root;
+}
+if(typeof View==='object'&&View&&typeof View.finalResultNextV568==='function'&&!View.finalResultNextV568.__v662Wrapped){
+  const baseNext=View.finalResultNextV568;
+  View.finalResultNextV568=function(){
+    const r=baseNext.apply(this,arguments);
+    if(Number(State?.finalResultActV568)===4)renderAct4V662();
+    return r;
+  };
+  View.finalResultNextV568.__v662Wrapped=true;
+}
+window.renderFinalAiueoV662=renderAct4V662;
+
+const started=new WeakSet();
+function qs(root,s){return root&&root.querySelector(s);}
+function qsa(root,s){return root?[...root.querySelectorAll(s)]:[];}
+function later(root,ms,fn){setTimeout(()=>{try{if(root.isConnected)fn();}catch(e){console.error('V662 timeline step failed',e);}},ms);}
+function revealRumor(root,i){
+  const all=qsa(root,'.v662Rumor');
+  all.forEach((el,n)=>{if(n<i)el.classList.add('is-dim');});
+  all[i]?.classList.add('is-on');
+}
+function finishRumors(root){
+  const all=qsa(root,'.v662Rumor');
+  all.forEach(el=>el.classList.add('is-on'));
+  all.forEach((el,i)=>{el.classList.toggle('is-dim',i!==3);});
+}
+function clearRumors(root){
+  const all=qsa(root,'.v662Rumor');
+  all.forEach((el,i)=>{if(i===3)el.classList.add('is-ghost'); else el.classList.add('is-out');});
+  later(root,180,()=>all[3]?.classList.add('is-out'));
+}
+function showFive(root){root.classList.remove('v662Blackout');qs(root,'.v662FiveLetters')?.classList.add('is-on');}
+function openWord(root,i){qs(root,`.v662Word[data-v662-word="${i}"]`)?.classList.add('is-open');}
+function gather(root){qs(root,'.v662FiveLetters')?.classList.add('is-gathered');}
+function showTruth(root){qs(root,'.v662TruthRule')?.classList.add('is-on');qs(root,'.v662TruthJa')?.classList.add('is-on');}
+function showNav(root){qs(root,'.v568Nav')?.classList.add('v662NavOn');}
+function finish(root){
+  try{
+    qsa(root,'.v662Rumor').forEach(el=>el.classList.add('is-out'));
+    showFive(root);qsa(root,'.v662Word').forEach(el=>el.classList.add('is-open'));gather(root);showTruth(root);showNav(root);
+    root.classList.add('v662Complete');
+  }catch(_){showNav(root);}
+}
+function start(root){
+  if(!root||started.has(root))return;
+  started.add(root);root.dataset.v662TimelineStarted='1';
+  void root.offsetWidth;
+  [0,280,580,880,1180,1480,1780].forEach((ms,i)=>later(root,ms,()=>revealRumor(root,i)));
+  later(root,2050,()=>finishRumors(root));
+  later(root,2280,()=>{qsa(root,'.v662Rumor').forEach((el,i)=>{if(i===6)el.classList.add('is-out');});});
+  later(root,2440,()=>clearRumors(root));
+  later(root,2720,()=>{root.classList.add('v662Blackout');qsa(root,'.v662Rumor').forEach(el=>{el.style.display='none';});});
+  later(root,3010,()=>showFive(root));
+  [3720,3920,4120,4320,4520].forEach((ms,i)=>later(root,ms,()=>openWord(root,i)));
+  later(root,5520,()=>gather(root));
+  later(root,6620,()=>showTruth(root));
+  later(root,8450,()=>showNav(root));
+  /* Hard safety: the ending can never be trapped here even if a transition is interrupted. */
+  later(root,9800,()=>finish(root));
+}
+function scan(node=document){
+  try{
+    if(node.matches?.('.v662AiueoFinal'))start(node);
+    node.querySelectorAll?.('.v662AiueoFinal').forEach(start);
+  }catch(_){ }
+}
+scan(document);
+try{
+ const host=document.getElementById('screenResult');
+ if(host&&window.MutationObserver){const mo=new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes||[])if(n?.nodeType===1)scan(n)});mo.observe(host,{childList:true,subtree:true});}
+}catch(_){ }
+window.auditFinalAiueoV662=function(){
+ const root=document.querySelector('#screenResult .v662AiueoFinal');
+ const styleOf=s=>{const e=root?.querySelector(s);if(!e)return null;const c=getComputedStyle(e);return{opacity:c.opacity,display:c.display,transform:c.transform,pointer:c.pointerEvents};};
+ return{version:'V662',started:root?.dataset?.v662TimelineStarted||null,complete:root?.classList.contains('v662Complete')||false,rumors:qsa(root,'.v662Rumor').map(e=>({text:e.textContent,opacity:getComputedStyle(e).opacity})),letters:styleOf('.v662FiveLetters'),truth:styleOf('.v662TruthJa'),nav:styleOf('.v568Nav')};
+};
+window.__VERSION__='V662';
+})();
+</script>
+
 </body>
 </html>
