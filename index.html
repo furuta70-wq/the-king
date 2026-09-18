@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- V699: horse case visibility unified to unresolved turns 6-8 and protected through V520 composition. -->
 <!-- STRUCTURE V658: canonical document envelope; all source content is inside one html/head/body tree. No game logic or runtime patch order changed. -->
 <!-- V562: product-quality pass for assignment layout, three-outcome results, and pre-render important-case ordering; fixes invisible first important card. -->
 <!-- FIX V549: age-30 final-case prose remains locked to the authored text; final-phase visibility is now protected from later case-injection wrappers, and the V548 audit ReferenceError is fixed. Pre-30 escalation mechanics are unchanged. -->
@@ -7561,7 +7562,7 @@ return false;
  
 function relationConflictGateOpen(c){return relationConflictGateOpenBaseV170.apply(this,arguments);}
 
-function caseAvailable(c,rank){if(isPhase16ReservedCase(c)&&!State.caseWarSlotKinds?.[c.id]&&!State._allowPhase16ReservedCase)return false;if(caseBlockedByProgress(c))return false;if(!relationConflictGateOpen(c))return false;if(c.brotherRouteGate&&brotherRouteKey&&brotherRouteKey()!==c.brotherRouteGate)return false;const m=caseMeta(c);const req=c.requiresFlag||m.requiresFlag;if(req&&!(State.caseFlags&&State.caseFlags[req]))return false;if((c.requiresSpouse||m.requiresSpouse)&&!State.marriage?.spouseId)return false;if(c.childGate&&childGateOpen&&!childGateOpen(c.childGate,c))return false;if(c.diseaseGate&&diseaseGateOpen&&!diseaseGateOpen(c.diseaseGate))return false;if(c.chainGate&&!chainGateForCase(c))return false;if(c.id==='horse'&&State.turn!==6)return false;if(State.turn<(m.storyGate||1))return false;if(m.minTreasury&&State.params.treasury<m.minTreasury)return false;if(m.minTroops&&State.params.troops<m.minTroops)return false;if(m.tensionGate){const t=m.tensionKey?(State.tension?.[m.tensionKey]||0):Math.max(...Object.values(State.tension||{}));if(t<m.tensionGate)return false;}if(c.marriageCandidate)return true;if(c.unlockActor)return true;if(m.scale<=rank+1)return true;if(m.rareEarly&&m.scale===rank+2)return Math.random()<.28;return false}
+function caseAvailable(c,rank){if(isPhase16ReservedCase(c)&&!State.caseWarSlotKinds?.[c.id]&&!State._allowPhase16ReservedCase)return false;if(caseBlockedByProgress(c))return false;if(!relationConflictGateOpen(c))return false;if(c.brotherRouteGate&&brotherRouteKey&&brotherRouteKey()!==c.brotherRouteGate)return false;const m=caseMeta(c);const req=c.requiresFlag||m.requiresFlag;if(req&&!(State.caseFlags&&State.caseFlags[req]))return false;if((c.requiresSpouse||m.requiresSpouse)&&!State.marriage?.spouseId)return false;if(c.childGate&&childGateOpen&&!childGateOpen(c.childGate,c))return false;if(c.diseaseGate&&diseaseGateOpen&&!diseaseGateOpen(c.diseaseGate))return false;if(c.chainGate&&!chainGateForCase(c))return false;if(c.id==='horse'&&(State.turn<6||State.turn>8))return false;if(State.turn<(m.storyGate||1))return false;if(m.minTreasury&&State.params.treasury<m.minTreasury)return false;if(m.minTroops&&State.params.troops<m.minTroops)return false;if(m.tensionGate){const t=m.tensionKey?(State.tension?.[m.tensionKey]||0):Math.max(...Object.values(State.tension||{}));if(t<m.tensionGate)return false;}if(c.marriageCandidate)return true;if(c.unlockActor)return true;if(m.scale<=rank+1)return true;if(m.rareEarly&&m.scale===rank+2)return Math.random()<.28;return false}
 function shuffleCasesForDisplay(list){
 const a=[...list];
 for(let i=a.length-1;i>0;i--){
@@ -11045,20 +11046,39 @@ const foreignAssetNote=applyForeignTheaterResult(r);if(foreignAssetNote)notes.pu
 }
 return notes;
 }
+function albrechtMasteryEfficiency(){
+const g=actorGrowthOf('albrecht');
+const tier=clamp((Number(g.level)||0)-12,0,10);
+return{tier,lossRate:tier*.02,gainRate:tier*.01};
+}
+function adjustTroopByAlbrechtMastery(value){
+const v=Number(value)||0;if(!v)return 0;
+const m=albrechtMasteryEfficiency();
+if(v<0)return-Math.max(1,Math.round(Math.abs(v)*(1-m.lossRate)));
+return Math.round(v*(1+m.gainRate));
+}
 function applyBattleLaneResourceEffects(lanes){
 lanes.forEach(r=>{
 startCaseCooldown(r.case);
-Flow.applyEffect(r.effect,r.case);
+/* Lv.13以降のアルブレヒト熟練は、選択案件で生じる兵数増減だけを効率化する。 */
+const baseEffect=r.effect||{};
+const rawCaseTroops=Number(baseEffect.params?.troops)||0;
+const adjustedCaseTroops=adjustTroopByAlbrechtMastery(rawCaseTroops);
+const appliedEffect=rawCaseTroops===adjustedCaseTroops?baseEffect:{...baseEffect,params:{...(baseEffect.params||{}),troops:adjustedCaseTroops}};
+if(appliedEffect!==baseEffect){r.baseEffect=baseEffect;r.effect=appliedEffect;r.masteryCaseTroopAdjustment=adjustedCaseTroops-rawCaseTroops;}
+Flow.applyEffect(appliedEffect,r.case);
 const loss=Flow.battleTroopLoss(r);
 const moneyLoss=battleTreasuryCostByRisk(r);
 const perfAdj=battlePerformanceResourceAdjustment(r,loss,moneyLoss);
 r.performanceAdjustment=perfAdj;
-const totalTroop=loss+(perfAdj.troops||0);
+const rawTotalTroop=loss+(perfAdj.troops||0);
+const totalTroop=adjustTroopByAlbrechtMastery(rawTotalTroop);
 const totalMoney=moneyLoss+(perfAdj.treasury||0);
 if(totalTroop){
 State.params.troops=clamp(State.params.troops+totalTroop,0,ECONOMY.troopsMax);
 r.extraTroopLoss=totalTroop;
 r.baseTroopLoss=loss;
+r.masteryBattleTroopAdjustment=totalTroop-rawTotalTroop;
 }
 if(totalMoney){
 State.params.treasury=clamp(State.params.treasury+totalMoney,0,ECONOMY.treasuryMax);
@@ -20929,7 +20949,7 @@ if(DATA.cards[id])Object.assign(DATA.cards[id],txt,{phase20EFRank:(txt.desc.matc
 }
 function horseWindowOpenEF(){
 const done=(State.completedCases||[]).includes('horse')||!!State.caseFlags?.horseMastered;
-return!done&&State.turn>=5&&State.turn<=10;
+return!done&&State.turn>=6&&State.turn<=8;
 }
 window.coreEEHorseVisiblePipeline=function(baseVisible,thisArg,args){
 const earlyBaseEF=function(){return (typeof window.coreEarlyMixVisiblePipeline==='function'?window.coreEarlyMixVisiblePipeline(baseVisible,this,arguments):(baseVisible.apply(this,arguments)||[]));};
@@ -34085,7 +34105,8 @@ try{
   }
   function horseWindow185(){
     const t=currentTurn185();
-    return t>=HORSE_START_TURN&&t<=HORSE_END_TURN;
+    const done=(State.completedCases||[]).includes(HORSE_ID)||!!State.caseFlags?.horseMastered;
+    return !done&&t>=HORSE_START_TURN&&t<=HORSE_END_TURN;
   }
   function horseCase185(){
     try{return DATA&&Array.isArray(DATA.cases)?DATA.cases.find(c=>c&&c.id===HORSE_ID):null;}catch(_){return null;}
@@ -35924,7 +35945,7 @@ function repeatable520(c){
  if(!c)return false;const id=idOf(c),k=formalKind(c);
  return!!k||/^phase16_(war|greatwar|peace)_/.test(id)||/^crisis_recovery_/.test(id)||!!c.repeatable||!!c.forcedBattle||!!c.noChoiceBattle;
 }
-function protectedBase520(c){return important520(c)||isFormal(c)||!!c.activeBorderMandatory;}
+function protectedBase520(c){return important520(c)||isFormal(c)||!!c.activeBorderMandatory||(idOf(c)==='horse'&&turn()>=6&&turn()<=8);}
 function borderKey520(c){
  const g=group(c);if(g&&BORDER_KEY[g])return BORDER_KEY[g];
  try{const ks=typeof caseTensionKeys==='function'?caseTensionKeys(c):[];return(ks||[]).find(k=>String(k).startsWith('altrant'))||'';}catch(_){return'';}
@@ -35943,7 +35964,7 @@ function baseLegal520(c,allowFormal){
  try{if(c.childGate&&typeof childGateOpen==='function'&&!childGateOpen(c.childGate,c))return false;}catch(_){return false;}
  try{if(c.diseaseGate&&typeof diseaseGateOpen==='function'&&!diseaseGateOpen(c.diseaseGate))return false;}catch(_){return false;}
  try{if(c.chainGate&&typeof chainGateForCase==='function'&&!chainGateForCase(c))return false;}catch(_){return false;}
- if(idOf(c)==='horse'&&turn()!==6)return false;
+ if(idOf(c)==='horse'&&(turn()<6||turn()>8))return false;
  if(turn()<(Number(m.storyGate)||1))return false;
  if(m.minTreasury&&Number(State.params?.treasury)<Number(m.minTreasury))return false;
  if(m.minTroops&&Number(State.params?.troops)<Number(m.minTroops))return false;
@@ -44625,7 +44646,9 @@ function growthCard640(d,i,count){
   }).join('');
   const reason=growthReason640(d);
   const nearGoal=!maxed&&remaining>0&&remaining<=2;
-  return `<article class="v640GrowthCard ${levelGain>0?'levelUp':''} ${nearGoal?'nearGoal':''}" style="--delay:${i*120}ms" data-xp="${xpGain}" data-level-gain="${levelGain}"><div class="v640GrowthPortrait"><img src="${esc(d.img||'')}" draggable="false" alt=""></div><div class="v640GrowthBody"><div class="v640GrowthTopline"><div class="v640GrowthName"><b>${esc(d.name||d.id)}</b><span>${esc(d.type||'采配者')}</span></div></div>${levelGain>0?'<span class="v640LevelBadge">LEVEL UP</span>':''}<div class="v640LevelRow"><span class="v640LevelMain" data-before="${beforeLevel}" data-after="${afterLevel}">Lv.${levelGain>0?beforeLevel:afterLevel}</span><span class="v640XpGain" data-xp-target="${xpGain}">経験 +0</span></div><div class="v640XpMeta"><span>経験</span><b>${maxed?'能力完成':`次の成長まで ${remaining}`}</b></div><div class="v640XpTrack" data-xp-from="${from}" data-xp-to="${to}" style="--xp-from:${from}%;--xp-to:${to}%"><i></i>${maxed?'':'<span class="v640XpTarget"></span>'}</div></div><span class="v640LaneTag">${esc(laneText)}</span><div class="v640StatRow">${statHtml}</div><div class="v640GrowthReason">${reason?`<b>今期</b>　${esc(reason)}`:'<b>今期</b>　—'}</div></article>`;
+  const masteryTier=d.id==='albrecht'?Math.max(0,Math.min(10,(Number(d.level)||0)-12)):0;
+  const masteryHtml=masteryTier>0?`<div class="v697MasteryEffect"><b>用兵効率</b><span>損耗 -${masteryTier*2}%</span><span>兵数獲得 +${masteryTier}%</span></div>`:'';
+  return `<article class="v640GrowthCard ${levelGain>0?'levelUp':''} ${nearGoal?'nearGoal':''}" style="--delay:${i*120}ms" data-xp="${xpGain}" data-level-gain="${levelGain}"><div class="v640GrowthPortrait"><img src="${esc(d.img||'')}" draggable="false" alt=""></div><div class="v640GrowthBody"><div class="v640GrowthTopline"><div class="v640GrowthName"><b>${esc(d.name||d.id)}</b><span>${esc(d.type||'采配者')}</span></div></div>${levelGain>0?'<span class="v640LevelBadge">LEVEL UP</span>':''}<div class="v640LevelRow"><span class="v640LevelMain" data-before="${beforeLevel}" data-after="${afterLevel}">Lv.${levelGain>0?beforeLevel:afterLevel}</span><span class="v640XpGain" data-xp-target="${xpGain}">経験 +0</span></div><div class="v640XpMeta"><span>経験</span><b>${maxed?'能力完成':`次の成長まで ${remaining}`}</b></div><div class="v640XpTrack" data-xp-from="${from}" data-xp-to="${to}" style="--xp-from:${from}%;--xp-to:${to}%"><i></i>${maxed?'':'<span class="v640XpTarget"></span>'}</div>${masteryHtml}</div><span class="v640LaneTag">${esc(laneText)}</span><div class="v640StatRow">${statHtml}</div><div class="v640GrowthReason">${reason?`<b>今期</b>　${esc(reason)}`:'<b>今期</b>　—'}</div></article>`;
 }
 function playGrowthCard640(card,index){
   if(!card||card.dataset.v640Played==='1')return;
@@ -49802,7 +49825,7 @@ window.__VERSION__='V649';
 </script>
 
 
-<!-- V650: important cases are distinguished only by grouped placement; remove per-card gold ornamentation -->
+<!-- V698 root fix: V650 cleanup now directly kills every legacy special-case pseudo ornament, including unresolvedFalloutCase width remnants. -->
 <style id="v650-important-visual-cleanup">
 /* Important cases are already separated into their own group. Remove every card-level importance ornament. */
 #screenMain .caseCard.importantCase,
@@ -49811,9 +49834,40 @@ window.__VERSION__='V649';
   box-shadow:0 4px 0 rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.45)!important;
 }
 #screenMain .caseCard.importantCase::before,
-#screenMain .caseCard.importantCase::after,
 #screenMain .caseCard.v519ImportantCase::before,
-#screenMain .caseCard.v519ImportantCase::after{
+#screenMain .caseCard.electorStoryCase::before,
+#screenMain .caseCard.storyKeyBrother::before,
+#screenMain .caseCard.storyKeyMarriage::before,
+#screenMain .caseCard.greatFlowCase::before,
+#screenMain .caseCard.finalCase::before,
+#screenMain .caseCard.activeBorderCase::before,
+#screenMain .caseCard.territoryStakeCase::before,
+#screenMain .caseCard.postwarBranchCase::before,
+#screenMain .caseCard.unresolvedFalloutCase::before,
+#screenMain .caseCard.tutorial::before{
+  content:none!important;
+  display:none!important;
+  width:0!important;
+  height:0!important;
+  padding:0!important;
+  border:0!important;
+  animation:none!important;
+  box-shadow:none!important;
+  background:none!important;
+}
+/* ::after は選択番号に使用するため、未選択時だけ旧装飾を殺す。 */
+#screenMain .caseCard.importantCase:not(.selected)::after,
+#screenMain .caseCard.v519ImportantCase:not(.selected)::after,
+#screenMain .caseCard.electorStoryCase:not(.selected)::after,
+#screenMain .caseCard.storyKeyBrother:not(.selected)::after,
+#screenMain .caseCard.storyKeyMarriage:not(.selected)::after,
+#screenMain .caseCard.greatFlowCase:not(.selected)::after,
+#screenMain .caseCard.finalCase:not(.selected)::after,
+#screenMain .caseCard.activeBorderCase:not(.selected)::after,
+#screenMain .caseCard.territoryStakeCase:not(.selected)::after,
+#screenMain .caseCard.postwarBranchCase:not(.selected)::after,
+#screenMain .caseCard.unresolvedFalloutCase:not(.selected)::after,
+#screenMain .caseCard.tutorial:not(.selected)::after{
   content:none!important;
   display:none!important;
   animation:none!important;
@@ -51639,6 +51693,7 @@ window.__VERSION__='V670';
   transition:width .82s cubic-bezier(.2,.75,.22,1),opacity .6s ease,filter .6s ease,transform .7s ease;
 }
 #game #screenResult .v671Words.is-gathered{width:min(430px,54%)}
+#game #screenResult .v671Words.is-gathered.is-decoding{width:min(720px,84%);grid-template-columns:1.28fr .56fr 1.16fr 1.12fr 1.72fr;column-gap:12px}
 #game #screenResult .v671Words.is-phrase{
   width:min(760px,86%);display:flex;justify-content:center;align-items:baseline;gap:.34em;
 }
@@ -51647,6 +51702,7 @@ window.__VERSION__='V670';
   min-width:0;display:flex;justify-content:center;align-items:baseline;white-space:nowrap;overflow:hidden;
   font:700 37px/1.18 Georgia,'Times New Roman',serif;
 }
+#game #screenResult .v671Words.is-gathered.is-decoding .v671Word{font-size:32px;overflow:visible}
 #game #screenResult .v671Words.is-phrase .v671Word{overflow:visible;flex:0 0 auto}
 #game #screenResult .v671Initial{
   flex:0 0 auto;color:#c9ab64;opacity:.66;text-shadow:0 0 11px rgba(221,185,86,.08);
@@ -51709,11 +51765,11 @@ window.__VERSION__='V670';
   letter-spacing:.075em!important;
 }
 #game #screenResult .v671Rumor.is-out::before{opacity:0!important;width:12px!important}
-#game #screenResult .v671Rumor.r0{left:4.5%;top:24%;width:238px;font-size:14px;--o:.58;--clipIn:inset(0 100% 0 0);--inX:-18px;--inY:2px;--inRot:-1.8deg;--rot:-.55deg;--outX:-24px;--outY:-10px;--outRot:-2.2deg;--origin:0 50%}
+#game #screenResult .v671Rumor.r0{left:4.5%;top:24%;width:310px;max-width:none;white-space:nowrap;font-size:14px;--o:.58;--clipIn:inset(0 100% 0 0);--inX:-18px;--inY:2px;--inRot:-1.8deg;--rot:-.55deg;--outX:-24px;--outY:-10px;--outRot:-2.2deg;--origin:0 50%}
 #game #screenResult .v671Rumor.r0::before{left:0}
-#game #screenResult .v671Rumor.r1{right:4.2%;top:20%;width:255px;text-align:right;font-size:13px;--o:.50;--clipIn:inset(0 0 0 100%);--inX:20px;--inY:4px;--inRot:1.5deg;--rot:.45deg;--outX:26px;--outY:-12px;--outRot:2deg;--origin:100% 50%}
+#game #screenResult .v671Rumor.r1{right:4.2%;top:20%;width:350px;max-width:none;white-space:nowrap;text-align:right;font-size:13px;--o:.50;--clipIn:inset(0 0 0 100%);--inX:20px;--inY:4px;--inRot:1.5deg;--rot:.45deg;--outX:26px;--outY:-12px;--outRot:2deg;--origin:100% 50%}
 #game #screenResult .v671Rumor.r1::before{right:0}
-#game #screenResult .v671Rumor.r2{left:8%;bottom:20%;width:275px;font-size:15px;--o:.63;--clipIn:inset(100% 0 0 0);--inX:-7px;--inY:18px;--inRot:-1deg;--rot:-.25deg;--outX:-15px;--outY:17px;--outRot:-1.6deg;--origin:15% 100%}
+#game #screenResult .v671Rumor.r2{left:8%;bottom:20%;width:330px;max-width:none;white-space:nowrap;font-size:15px;--o:.63;--clipIn:inset(100% 0 0 0);--inX:-7px;--inY:18px;--inRot:-1deg;--rot:-.25deg;--outX:-15px;--outY:17px;--outRot:-1.6deg;--origin:15% 100%}
 #game #screenResult .v671Rumor.r2::before{left:18px}
 #game #screenResult .v671Rumor.r3{right:7%;bottom:21%;width:286px;text-align:right;font-size:14px;--o:.60;--clipIn:inset(100% 0 0 0);--inX:9px;--inY:20px;--inRot:1.2deg;--rot:.32deg;--outX:18px;--outY:19px;--outRot:1.7deg;--origin:85% 100%}
 #game #screenResult .v671Rumor.r3::before{right:18px}
@@ -51721,7 +51777,7 @@ window.__VERSION__='V670';
 #game #screenResult .v671Rumor.r4::before{left:50%;transform:translateX(-50%)}
 #game #screenResult .v671Rumor.r5{right:17%;bottom:5.8%;width:294px;text-align:right;font-size:13px;--o:.48;--clipIn:inset(0 0 100% 0);--inX:5px;--inY:16px;--inRot:-.8deg;--rot:-.18deg;--outX:10px;--outY:23px;--outRot:1deg;--blurOn:.45px;--origin:70% 100%}
 #game #screenResult .v671Rumor.r5::before{right:35px}
-#game #screenResult .v671Rumor.r6{left:50%;bottom:2.4%;width:325px;max-width:325px;text-align:center;font-size:12px;color:#d4c7a4;--o:.44;--clipIn:inset(0 50% 0 50%);--inX:0;--inY:13px;--inRot:0deg;--rot:0deg;--outX:0;--outY:18px;--outRot:0deg;--blurOn:.55px;--blurOut:10px;--outScale:1.05;--origin:50% 100%;transform:translate(-50%,13px) scale(.975)}
+#game #screenResult .v671Rumor.r6{left:50%;bottom:3.2%;width:325px;max-width:325px;text-align:center;font-size:12px;color:#d4c7a4;--o:.44;--clipIn:inset(0 50% 0 50%);--inX:0;--inY:13px;--inRot:0deg;--rot:0deg;--outX:0;--outY:18px;--outRot:0deg;--blurOn:.55px;--blurOut:10px;--outScale:1.05;--origin:50% 100%;transform:translate(-50%,13px) scale(.975)}
 #game #screenResult .v671Rumor.r6::before{left:50%;transform:translateX(-50%)}
 #game #screenResult .v671Rumor.r6.is-on{transform:translate(-50%,0) scale(1)}
 #game #screenResult .v671Rumor.r6.is-out{transform:translate(-50%,var(--outY,18px)) scale(var(--outScale,1.05))!important}
@@ -51754,15 +51810,17 @@ window.__VERSION__='V670';
  #game #screenResult .v671Paper{height:424px!important;min-height:424px!important}
  #game #screenResult .v671Words{width:min(470px,66%)}
  #game #screenResult .v671Words.is-gathered{width:min(400px,58%)}
+ #game #screenResult .v671Words.is-gathered.is-decoding{width:min(690px,90%);grid-template-columns:1.28fr .56fr 1.16fr 1.12fr 1.72fr;column-gap:9px}
  #game #screenResult .v671Words.is-phrase{width:min(690px,90%)}
  #game #screenResult .v671Word{font-size:31px}
+ #game #screenResult .v671Words.is-gathered.is-decoding .v671Word{font-size:29px}
  #game #screenResult .v671Canonical{width:79%}
  #game #screenResult .v671CanonicalLatin{font-size:16px}
  #game #screenResult .v671CanonicalJa{font-size:15px}
  #game #screenResult .v671Rumor{max-width:232px;font-size:11.5px}
- #game #screenResult .v671Rumor.r0{left:3.2%;top:23%;width:202px}
- #game #screenResult .v671Rumor.r1{right:3.2%;top:19%;width:208px}
- #game #screenResult .v671Rumor.r2{left:5%;bottom:20%;width:220px}
+ #game #screenResult .v671Rumor.r0{left:3.2%;top:23%;width:300px;max-width:none;white-space:nowrap;font-size:12px}
+ #game #screenResult .v671Rumor.r1{right:3.2%;top:19%;width:340px;max-width:none;white-space:nowrap;font-size:11.5px}
+ #game #screenResult .v671Rumor.r2{left:5%;bottom:20%;width:320px;max-width:none;white-space:nowrap;font-size:12.5px}
  #game #screenResult .v671Rumor.r3{right:5%;bottom:21%;width:224px}
  #game #screenResult .v671Rumor.r4{left:25%;top:6%;width:224px}
  #game #screenResult .v671Rumor.r5{right:14%;bottom:6%;width:226px}
@@ -51827,7 +51885,7 @@ function hideAllText(root){qa(root,'.v671Canonical,.v671Rumor').forEach(el=>{el.
 function wake(root,i){qa(root,'.v671Initial')[i]?.classList.add('is-awake')}
 function wakeAll(root){qa(root,'.v671Initial').forEach(el=>el.classList.add('is-awake'))}
 function gather(root){wakeAll(root);q(root,'.v671Words')?.classList.add('is-gathered')}
-function openWord(root,i){q(root,`.v671Word[data-v671-word="${i}"]`)?.classList.add('is-open')}
+function openWord(root,i){const grid=q(root,'.v671Words');if(i===0)grid?.classList.add('is-decoding');q(root,`.v671Word[data-v671-word="${i}"]`)?.classList.add('is-open')}
 function morphPhrase(root){
  const grid=q(root,'.v671Words');const cells=qa(root,'.v671Word');if(!grid||!cells.length)return;
  const before=cells.map(el=>el.getBoundingClientRect());
@@ -51848,8 +51906,8 @@ function showTruth(root){q(root,'.v671TruthRule')?.classList.add('is-on');q(root
 function showWitness(root){q(root,'.v671Witness')?.classList.add('is-on')}
 function showNav(root){q(root,'.v568Nav')?.classList.add('v671NavOn')}
 function finish(root){
- hideAllText(root);wakeAll(root);gather(root);qa(root,'.v671Word').forEach(el=>el.classList.add('is-open'));
- q(root,'.v671Words')?.classList.add('is-phrase');showTruth(root);showWitness(root);showNav(root);root.classList.add('v671Complete');
+ hideAllText(root);wakeAll(root);gather(root);const finalGrid=q(root,'.v671Words');finalGrid?.classList.add('is-decoding');qa(root,'.v671Word').forEach(el=>el.classList.add('is-open'));
+ finalGrid?.classList.add('is-phrase');showTruth(root);showWitness(root);showNav(root);root.classList.add('v671Complete');
 }
 function start(root){
  if(!root||started.has(root))return;started.add(root);root.dataset.v671TimelineStarted='1';void root.offsetWidth;
@@ -51914,7 +51972,7 @@ window.auditFinalAiueoV671=function(){
  const readings=qa(root,'.v671Canonical,.v671Rumor').map(el=>({...rectOf(el),text:el.textContent.trim(),opacity:getComputedStyle(el).opacity}));
  const words=qa(root,'.v671Word').map(el=>({...rectOf(el),text:el.textContent.trim()}));
  const witness=q(root,'.v671Witness');
- return{version:'V672',started:root?.dataset?.v671TimelineStarted||null,complete:!!root?.classList.contains('v671Complete'),paper:paper?rectOf(q(root,'.v671Paper')):null,readingOverflow:readings.filter(overflow),wordOverflow:words.filter(overflow),phrase:root?.classList.contains('v671PhraseDone')||false,witness:witness?.textContent.trim()||'',witnessOpacity:witness?getComputedStyle(witness).opacity:null,nav:q(root,'.v568Nav')?getComputedStyle(q(root,'.v568Nav')).pointerEvents:null};
+ return{version:'V701',started:root?.dataset?.v671TimelineStarted||null,complete:!!root?.classList.contains('v671Complete'),paper:paper?rectOf(q(root,'.v671Paper')):null,readingOverflow:readings.filter(overflow),wordOverflow:words.filter(overflow),phrase:root?.classList.contains('v671PhraseDone')||false,witness:witness?.textContent.trim()||'',witnessOpacity:witness?getComputedStyle(witness).opacity:null,nav:q(root,'.v568Nav')?getComputedStyle(q(root,'.v568Nav')).pointerEvents:null};
 };
 window.__VERSION__='V671';
 })();
@@ -52028,6 +52086,7 @@ function legal(c){
 function protectedSlot(c){
   if(!c)return true;const id=String(c.id||''),m=meta(c),ts=tags(c);
   if(c.finalNoChoice||c.mandatory||c.activeBorderMandatory||c.marriageCandidate||c.unlockActor||c.requiresFlag||m.requiresFlag)return true;
+  if(id==='horse'&&turn()>=6&&turn()<=8)return true;
   if(id.startsWith('crisis_recovery_'))return true;
   try{if(typeof isTerritoryCase==='function'&&isTerritoryCase(c))return true;}catch(_){ }
   return ts.some(t=>['family','dynasty','brother','late','fate','greatFlow','war','crisis','border_dynamic'].includes(t));
@@ -52190,6 +52249,7 @@ function hasCountry(c,g){return tags(c).includes(g);}
 function highPriority(c){
   if(!c)return true;const id=String(c.id||''),m=meta(c),ts=tags(c);
   if(c.finalNoChoice||c.mandatory||c.activeBorderMandatory||c.marriageCandidate||c.unlockActor||c.requiresFlag||m.requiresFlag)return true;
+  if(id==='horse'&&turn()>=6&&turn()<=8)return true;
   if(id.startsWith('crisis_recovery_')||id.startsWith('finalprep_')||id.startsWith('phase16_')||id.startsWith('phase38_'))return true;
   return ts.some(t=>['family','dynasty','brother','late','fate','greatFlow','war','crisis','border_dynamic'].includes(t));
 }
@@ -52684,5 +52744,210 @@ window.__VERSION__='V690';
 #screenBattle .judge.perfectBurst::after{height:2px!important;box-shadow:0 0 8px rgba(255,226,92,.7)!important;}
 </style>
 <script id="v692-final-version-marker">window.__VERSION__='V692';</script>
+
+<style id="v693-aiueo-nowrap-first-three">
+/* V693: final result act 4 — keep the first three accumulated readings on one line. */
+#game #screenResult .v665AiueoFinal .v665Reading.r0,
+#game #screenResult .v665AiueoFinal .v665Reading.r1,
+#game #screenResult .v665AiueoFinal .v665Reading.r2{
+  white-space:nowrap!important;
+  width:auto!important;
+  max-width:none!important;
+}
+#game #screenResult .v665AiueoFinal .v665Reading.r0{font-size:15px!important;}
+#game #screenResult .v665AiueoFinal .v665Reading.r1{font-size:14px!important;}
+#game #screenResult .v665AiueoFinal .v665Reading.r2{font-size:14px!important;}
+</style>
+<script id="v693-version-marker">window.__VERSION__='V693';</script>
+
+<style id="v694-aiueo-word-open-layout">
+/* V694: reserve stable word cells while A.I.U.E.O. opens into the true Latin phrase. */
+#game #screenResult .v665AiueoFinal .v665WordGrid.is-gathered{
+  width:min(760px,88%)!important;
+  grid-template-columns:126px 54px 126px 116px 170px!important;
+  column-gap:18px!important;
+  justify-content:center!important;
+}
+#game #screenResult .v665AiueoFinal .v665WordGrid.is-gathered .v665WordCell{
+  font-size:31px!important;
+  overflow:visible!important;
+}
+#game #screenResult .v665AiueoFinal .v665WordGrid.is-gathered .v665Tail{
+  white-space:nowrap!important;
+}
+@media(max-width:760px){
+  #game #screenResult .v665AiueoFinal .v665WordGrid.is-gathered{
+    width:min(720px,90%)!important;
+    grid-template-columns:116px 48px 116px 106px 158px!important;
+    column-gap:14px!important;
+  }
+  #game #screenResult .v665AiueoFinal .v665WordGrid.is-gathered .v665WordCell{font-size:28px!important;}
+}
+</style>
+<script id="v694-version-marker">window.__VERSION__='V694';</script>
+
+<!-- V695: flow_solia_instructors opponent consistency -->
+<script id="v695-solia-instructors-renato-fix">
+(function(){
+'use strict';
+try{
+  const id='flow_solia_instructors';
+  const c=(typeof DATA==='object'&&DATA&&Array.isArray(DATA.cases))?DATA.cases.find(x=>x&&x.id===id):null;
+  if(c){
+    c.enemy='レナート';
+    c.enemyImg='renatoBernacci';
+    c.editorialEnemyImg='renatoBernacci';
+  }
+  if(typeof VISUAL_ENEMY_NAME_OVERRIDES==='object'&&VISUAL_ENEMY_NAME_OVERRIDES)VISUAL_ENEMY_NAME_OVERRIDES[id]='レナート';
+  if(typeof VISUAL_ENEMY_OVERRIDES==='object'&&VISUAL_ENEMY_OVERRIDES)VISUAL_ENEMY_OVERRIDES[id]='renatoBernacci';
+}catch(e){console.warn('V695 flow_solia_instructors fix',e);}
+window.__VERSION__='V695';
+})();
+</script>
+
+
+
+<!-- V696: Albrecht post-cap mastery levels; combat stats remain capped -->
+<script id="v696-albrecht-mastery-levels">
+(function(){
+'use strict';
+if(window.__V696_ALBRECHT_MASTERY__)return;
+window.__V696_ALBRECHT_MASTERY__=true;
+
+const ALBRECHT_XP_V696=[5,10,15,21,27,34,41,49,58,68,79,91,104,118,133,149,166,184,203,223,244,266,289,313];
+const baseNextGrowthXpV696=nextGrowthXp;
+const baseActorGrowthIsMaxedV696=actorGrowthIsMaxed;
+const baseGrowActorStatV696=growActorStat;
+
+nextGrowthXp=function(id,level){
+  if(typeof id!=='string'){level=id;id='albrecht';}
+  if(id==='albrecht')return ALBRECHT_XP_V696[Number(level)||0]||999;
+  return baseNextGrowthXpV696(id,level);
+};
+
+actorGrowthIsMaxed=function(id){
+  if(id==='albrecht'){
+    const g=actorGrowthOf('albrecht');
+    return (Number(g.level)||0)>=ALBRECHT_XP_V696.length;
+  }
+  return baseActorGrowthIsMaxedV696(id);
+};
+
+growActorStat=function(id,c=null){
+  const line=baseGrowActorStatV696(id,c);
+  if(line||id!=='albrecht')return line;
+  const g=actorGrowthOf('albrecht');
+  const lv=Number(g.level)||0;
+  if(lv>=ALBRECHT_XP_V696.length)return null;
+  /* Lv.13以降は能力値を上限5のまま保ち、レベルだけ熟練として進める。 */
+  const actor=DATA.actors?.albrecht;
+  const caps=actorGrowthCaps('albrecht');
+  const statsDone=actor&&['speed','push','stability','defense'].every(k=>(Number(actor[k])||0)+(Number(g.points?.[k])||0)>=Number(caps[k]||5));
+  if(!statsDone)return null;
+  g.level=lv+1;
+  return `LEVEL UP　アルブレヒト　熟練が深まりました`;
+};
+
+try{window.nextGrowthXp=nextGrowthXp;window.actorGrowthIsMaxed=actorGrowthIsMaxed;window.growActorStat=growActorStat;}catch(_){ }
+window.auditV696AlbrechtGrowth=function(){
+  const g=actorGrowthOf('albrecht');
+  const a=DATA.actors?.albrecht||{};
+  const caps=actorGrowthCaps('albrecht');
+  return {version:'V696',displayLevel:(Number(g.level)||0)+1,xp:Number(g.xp)||0,next:nextGrowthXp('albrecht',Number(g.level)||0),stats:['speed','push','stability','defense'].reduce((o,k)=>(o[k]=Math.min(Number(caps[k])||5,(Number(a[k])||0)+(Number(g.points?.[k])||0)),o),{}),masteryAfterLv13:(Number(g.level)||0)>=12};
+};
+window.__VERSION__='V696';
+})();
+</script>
+
+
+<style id="v697-albrecht-mastery-style">
+#screenResult .v697MasteryEffect{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px;font-size:10.5px;font-weight:900;color:#28435a}
+#screenResult .v697MasteryEffect b{color:#8a6417;letter-spacing:.05em}
+#screenResult .v697MasteryEffect span{display:inline-flex;align-items:center;min-height:20px;padding:2px 7px;border:1px solid rgba(138,100,23,.28);border-radius:999px;background:rgba(243,207,98,.12);white-space:nowrap}
+</style>
+<script id="v697-albrecht-mastery-audit">
+(function(){'use strict';
+window.auditV697AlbrechtMastery=function(){
+ const m=typeof albrechtMasteryEfficiency==='function'?albrechtMasteryEfficiency():{tier:0,lossRate:0,gainRate:0};
+ return{version:'V697',displayLevel:(Number(actorGrowthOf('albrecht').level)||0)+1,masteryTier:m.tier,lossReductionPct:Math.round(m.lossRate*100),troopGainPct:Math.round(m.gainRate*100),loss300:typeof adjustTroopByAlbrechtMastery==='function'?adjustTroopByAlbrechtMastery(-300):null,gain200:typeof adjustTroopByAlbrechtMastery==='function'?adjustTroopByAlbrechtMastery(200):null};
+};
+window.__VERSION__='V698';
+})();
+</script>
+<script id="v698-version-marker">window.__VERSION__='V698';</script>
+
+
+<!-- V700: royal critical illness is exclusive; one formal case, all other simultaneous critical states cancel to healthy -->
+<script id="v700-exclusive-royal-critical">
+(function(){'use strict';
+const V700_CRITICAL_IDS={spouse:'family_critical_spouse_vigil',prince:'family_critical_prince_vigil',princess:'family_critical_princess_vigil'};
+function livingRoyalChildrenV700(){
+  return Array.isArray(State?.children)?State.children.filter(c=>c&&c.status!=='deceased'&&c.healthStage!=='dead'):[];
+}
+function criticalPatientsV700(){
+  const out=[];
+  try{if(typeof window.ensureFamilyHealth==='function')window.ensureFamilyHealth();}catch(_){ }
+  if(State?.marriage?.spouseId&&State.marriage.state==='married'&&State.familyHealth?.spouse==='critical'){
+    out.push({key:'spouse',kind:'spouse',id:State.marriage.spouseId,caseId:V700_CRITICAL_IDS.spouse});
+  }
+  for(const c of livingRoyalChildrenV700()){
+    if(c.healthStage!=='critical')continue;
+    const key=c.gender==='male'?'prince':'princess';
+    out.push({key,kind:'child',id:c.id,child:c,caseId:V700_CRITICAL_IDS[key]});
+  }
+  return out;
+}
+function patientKeyV700(p){return p?`${p.kind}:${p.id}`:'';}
+function healCancelledCriticalV700(p){
+  if(!p)return;
+  if(p.kind==='spouse'){
+    if(State.familyHealth)State.familyHealth.spouse='healthy';
+  }else if(p.child){
+    p.child.healthStage='healthy';
+    p.child.health='健やか';
+    if(p.key==='prince'){
+      const st=State.actorStatus?.prince;
+      if(st&&['injured','tired'].includes(st.status)&&st.reason==='療養中')State.actorStatus.prince={status:'normal',until:0};
+    }
+  }
+  const cc=(DATA?.cases||[]).find(c=>c&&c.id===p.caseId);
+  if(cc&&cc.v619TargetChildId===p.id)delete cc.v619TargetChildId;
+}
+function normalizeRoyalCriticalV700(){
+  const patients=criticalPatientsV700();
+  if(!patients.length){State.royalCriticalFocusV700=null;return null;}
+  let keep=null;
+  const focus=State.royalCriticalFocusV700;
+  if(focus)keep=patients.find(p=>patientKeyV700(p)===focus)||null;
+  if(!keep)keep=patients[0];
+  State.royalCriticalFocusV700=patientKeyV700(keep);
+  if(patients.length>1){
+    for(const p of patients)if(p!==keep)healCancelledCriticalV700(p);
+    State.caseCache=null;
+    try{if(typeof updateSuccessionAnxiety==='function')updateSuccessionAnxiety('exclusive_royal_critical');}catch(_){ }
+  }
+  return keep;
+}
+window.normalizeRoyalCriticalV700=normalizeRoyalCriticalV700;
+
+/* Run before every final visible-case build, so simultaneous critical states never survive into the case list. */
+if(typeof visibleCases==='function'&&!visibleCases.v700ExclusiveRoyalCritical){
+  const baseVisibleV700=visibleCases;
+  const wrappedV700=function(){normalizeRoyalCriticalV700();return baseVisibleV700.apply(this,arguments)||[];};
+  try{Object.assign(wrappedV700,baseVisibleV700);}catch(_){ }
+  wrappedV700.v700ExclusiveRoyalCritical=true;
+  visibleCases=wrappedV700;window.visibleCases=wrappedV700;
+}
+window.auditRoyalCriticalV700=function(){
+  const before=criticalPatientsV700().map(p=>({key:p.key,id:p.id,caseId:p.caseId}));
+  const keep=normalizeRoyalCriticalV700();
+  const after=criticalPatientsV700().map(p=>({key:p.key,id:p.id,caseId:p.caseId}));
+  return{version:'V700',before,kept:keep?{key:keep.key,id:keep.id,caseId:keep.caseId}:null,after,exclusive:after.length<=1,focus:State.royalCriticalFocusV700||null};
+};
+window.__VERSION__='V700';
+})();
+</script>
+
+<script id="v701-final-version-marker">window.__VERSION__='V701';</script>
 </body>
 </html>
