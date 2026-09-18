@@ -10211,7 +10211,7 @@ return map[id]||`${name}の死は、王朝に深い喪の記憶を残した。`;
 }
 function brotherEndingPhrase(s){
 if(s.brotherDead)return '弟は、最後にはルートヴィヒという名で兄に刃を向け、倒れた。王は内乱を鎮めたが、血を分けた者を葬った事実は、勝利の記録に黒い線を引いた。';
-if(s.brotherRebel)return '弟はルートヴィヒとして名を掲げ、兄王に抗う血筋となった。決着がどう記されたとしても、王朝は二つの名を抱えたまま後世へ渡された。';
+if(s.brotherRebel)return '弟は自らの名を掲げ、兄王に抗う血筋となった。決着がどう記されたとしても、王朝は二つの名を抱えたまま後世へ渡された。';
 if(s.hasBrother){
 if(s.brotherRelation>=25)return '名を明かさぬままの弟は、最後まで兄の影を支える王家のもう一つの手であり続けた。';
 if(s.brotherRelation<=-20)return '帰還した弟は支えであると同時に火種でもあった。兄弟のあいだに残った距離は、後継の時代へ静かな不安を渡した。';
@@ -29047,18 +29047,18 @@ const FOREIGN_EPISODES={
  ]
 };
 const DOMESTIC_EPISODES=[
- {id:'domestic_market_bread',text:()=>`王女は王都の市場で焼きたてのパンを一つ買い、その場で半分に割って護衛の少年へ渡した。翌日には「王女様も同じパンを食べる」と噂になり、パン屋の前にはちょっとした人だかりができた。`},
- {id:'domestic_craft_cup',text:()=>`王女は職人組合を訪れ、陶工に教わりながら小さな杯を作ったものの、焼き上がったそれは大きく歪んでいた。王女がそれでも大切そうに持ち帰ると、職人たちは笑いながらも誇らしげに見送った。`},
- {id:'domestic_harvest_crown',text:()=>`地方の収穫祭を訪れた王女は、村の子どもたちに混じって野花の冠を編み、そのまま一日を過ごした。泥のついた靴で帰る王女の姿は、華やかな行列よりも長く村人たちの記憶に残った。`},
- {id:'domestic_wounded_reading',text:()=>`王女は療養中の兵士たちを訪ね、持ってきた物語を声に出して読んだ。途中で何度もつかえたものの、兵たちは誰一人急かさず、読み終わると大げさなほど大きな拍手を送った。`},
- {id:'domestic_lost_child',text:()=>`王女が王都の祭りを見物していると、人混みの中で泣いている幼い子を見つけた。王女は母親が見つかるまでその手を離さず、後になってその出来事は祭りそのものより人々の口に上った。`}
+ {id:'domestic_market_bread',effect:{citySupport:1},text:()=>`王女は王都の市場で焼きたてのパンを一つ買い、その場で半分に割って護衛の少年へ渡した。翌日には「王女様も同じパンを食べる」と噂になり、パン屋の前にはちょっとした人だかりができた。`},
+ {id:'domestic_craft_cup',effect:{citySupport:1},text:()=>`王女は職人組合を訪れ、陶工に教わりながら小さな杯を作ったものの、焼き上がったそれは大きく歪んでいた。王女がそれでも大切そうに持ち帰ると、職人たちは笑いながらも誇らしげに見送った。`},
+ {id:'domestic_harvest_crown',effect:{stability:1},text:()=>`地方の収穫祭を訪れた王女は、村の子どもたちに混じって野花の冠を編み、そのまま一日を過ごした。泥のついた靴で帰る王女の姿は、華やかな行列よりも長く村人たちの記憶に残った。`},
+ {id:'domestic_wounded_reading',effect:{prestige:1},text:()=>`王女は療養中の兵士たちを訪ね、持ってきた物語を声に出して読んだ。途中で何度もつかえたものの、兵たちは誰一人急かさず、読み終わると大げさなほど大きな拍手を送った。`},
+ {id:'domestic_lost_child',effect:{citySupport:1},text:()=>`王女が王都の祭りを見物していると、人混みの中で泣いている幼い子を見つけた。王女は母親が見つかるまでその手を離さず、後になってその出来事は祭りそのものより人々の口に上った。`}
 ];
 const FAMILY_EPISODES=[
- {id:'family_bedtime_story',text:()=>`夜、王女はアルブレヒトの寝室へ絵本を抱えて現れ、眠るまで読んでほしいとねだった。読み終える前に娘は父の腕にもたれて眠り、アルブレヒトはしばらく頁をめくらずその寝顔を見ていた。`},
- {id:'family_crown',text:()=>`王女は執務机に置かれた父の王冠を見つめ、「少しだけ」とかぶらせてもらった。大きすぎる王冠が目元までずり落ちると、アルブレヒトは久しぶりに声を上げて笑った。`},
- {id:'family_rain_window',text:()=>`雨で外へ出られなくなった午後、王女は窓硝子を流れる雫を指で追いながら父の隣に座った。二人はどの雫が一番早く下まで届くか競い、気づけば政務机の書類は長いあいだ開かれないままだった。`},
- {id:'family_gift',text:()=>`王女は何日も隠れて作っていた不格好な刺繍を、アルブレヒトへ得意げに差し出した。王はそれを宝石箱ではなく、毎日使う書類鞄の内側へ縫いつけさせた。`},
- {id:'family_sleeping_king',text:()=>`長い会議を終えたアルブレヒトは、王女の部屋を訪れたまま椅子で眠り込んでしまった。目を覚ますと肩には小さな毛布が掛けられ、机の上には娘の字で「おとうさまをおこさないこと」と書かれた紙が置かれていた。`}
+ {id:'family_bedtime_story',effect:{stability:1},text:()=>`夜、王女はアルブレヒトの寝室へ絵本を抱えて現れ、眠るまで読んでほしいとねだった。読み終える前に娘は父の腕にもたれて眠り、アルブレヒトはしばらく頁をめくらずその寝顔を見ていた。`},
+ {id:'family_crown',effect:{stability:1},text:()=>`王女は執務机に置かれた父の王冠を見つめ、「少しだけ」とかぶらせてもらった。大きすぎる王冠が目元までずり落ちると、アルブレヒトは久しぶりに声を上げて笑った。`},
+ {id:'family_rain_window',effect:{stability:1},text:()=>`雨で外へ出られなくなった午後、王女は窓硝子を流れる雫を指で追いながら父の隣に座った。二人はどの雫が一番早く下まで届くか競い、気づけば政務机の書類は長いあいだ開かれないままだった。`},
+ {id:'family_gift',effect:{stability:1},text:()=>`王女は何日も隠れて作っていた不格好な刺繍を、アルブレヒトへ得意げに差し出した。王はそれを宝石箱ではなく、毎日使う書類鞄の内側へ縫いつけさせた。`},
+ {id:'family_sleeping_king',effect:{stability:1},text:()=>`長い会議を終えたアルブレヒトは、王女の部屋を訪れたまま椅子で眠り込んでしまった。目を覚ますと肩には小さな毛布が掛けられ、机の上には娘の字で「おとうさまをおこさないこと」と書かれた紙が置かれていた。`}
 ];
 /* V649: 重病・危篤でも、外出ではなく病床から外交・公務・家族時間を続ける。 */
 const BEDSIDE_FOREIGN_EPISODES=[
@@ -29068,18 +29068,40 @@ const BEDSIDE_FOREIGN_EPISODES=[
  {id:'bedside_foreign_flower',text:p=>`${p.name}王女は${p.country}の使節から贈られた花を押し花にして、快復したら王宮の庭に同じ花を植えたいと返書した。使節たちはその約束を喜び、次の季節には種まで添えて送ってきた。`}
 ];
 const BEDSIDE_DOMESTIC_EPISODES=[
- {id:'bedside_domestic_soldier_letters',text:p=>`${p.name}王女は療養中の兵士たちから届いた見舞いの手紙を一通ずつ読ませ、短い返事を口述した。王女自身も病床にあると知った兵たちは、その返書を枕元に置いて互いの快復を願った。`},
- {id:'bedside_domestic_orphan_drawings',text:p=>`王都の孤児院から${p.name}王女へ何枚もの絵が届けられた。王女は寝台の上で一枚ずつ眺め、気に入った絵を壁へ飾るよう頼むと、後日その話が孤児院へ伝わり子どもたちを大いに喜ばせた。`},
- {id:'bedside_domestic_crafts',text:p=>`職人たちは療養中の${p.name}王女のため、木片や布で作れる小さな細工道具を届けた。王女が不格好ながら一つを完成させて礼状とともに返すと、それは職人組合の会館に大切に飾られた。`},
- {id:'bedside_domestic_window',text:p=>`${p.name}王女は窓の下を通る市場の人々へ毎朝手を振るようになった。やがて同じ時刻になると子どもたちが通りに集まり、病床の王女と短い挨拶を交わすことが王都の小さな習慣になった。`}
+ {id:'bedside_domestic_soldier_letters',effect:{citySupport:1},text:p=>`${p.name}王女は療養中の兵士たちから届いた見舞いの手紙を一通ずつ読ませ、短い返事を口述した。王女自身も病床にあると知った兵たちは、その返書を枕元に置いて互いの快復を願った。`},
+ {id:'bedside_domestic_orphan_drawings',effect:{citySupport:1},text:p=>`王都の孤児院から${p.name}王女へ何枚もの絵が届けられた。王女は寝台の上で一枚ずつ眺め、気に入った絵を壁へ飾るよう頼むと、後日その話が孤児院へ伝わり子どもたちを大いに喜ばせた。`},
+ {id:'bedside_domestic_crafts',effect:{citySupport:1},text:p=>`職人たちは療養中の${p.name}王女のため、木片や布で作れる小さな細工道具を届けた。王女が不格好ながら一つを完成させて礼状とともに返すと、それは職人組合の会館に大切に飾られた。`},
+ {id:'bedside_domestic_window',effect:{citySupport:1},text:p=>`${p.name}王女は窓の下を通る市場の人々へ毎朝手を振るようになった。やがて同じ時刻になると子どもたちが通りに集まり、病床の王女と短い挨拶を交わすことが王都の小さな習慣になった。`}
 ];
 const BEDSIDE_FAMILY_EPISODES=[
- {id:'bedside_family_story',text:p=>`アルブレヒトは政務を終えると${p.name}王女の寝台脇に座り、娘が眠るまで昔の旅の話をした。王女は途中で眠ってしまったが、翌朝になると続きを忘れずに尋ねた。`},
- {id:'bedside_family_map',text:p=>`${p.name}王女は父の地図を寝台へ持ってきてもらい、行ったことのない町や国を指さしては、そこには何があるのかと尋ねた。アルブレヒトはいつか元気になったら一緒に見に行こうと、一つずつ答えた。`},
- {id:'bedside_family_crown',text:p=>`${p.name}王女は見舞いに来た父の王冠をじっと見つめ、「今日は重そうだね」と言った。アルブレヒトが王冠を外して寝台のそばへ置くと、二人はしばらく王と王女ではなく、ただの父と娘として話した。`},
- {id:'bedside_family_doll',text:p=>`${p.name}王女は寝台の上で人形に父と同じ色の小さな外套を着せ、アルブレヒトへ見せた。王は笑いながらその人形へ正式な宮廷礼をし、王女は久しぶりに声を立てて笑った。`}
+ {id:'bedside_family_story',effect:{stability:1},text:p=>`アルブレヒトは政務を終えると${p.name}王女の寝台脇に座り、娘が眠るまで昔の旅の話をした。王女は途中で眠ってしまったが、翌朝になると続きを忘れずに尋ねた。`},
+ {id:'bedside_family_map',effect:{stability:1},text:p=>`${p.name}王女は父の地図を寝台へ持ってきてもらい、行ったことのない町や国を指さしては、そこには何があるのかと尋ねた。アルブレヒトはいつか元気になったら一緒に見に行こうと、一つずつ答えた。`},
+ {id:'bedside_family_crown',effect:{stability:1},text:p=>`${p.name}王女は見舞いに来た父の王冠をじっと見つめ、「今日は重そうだね」と言った。アルブレヒトが王冠を外して寝台のそばへ置くと、二人はしばらく王と王女ではなく、ただの父と娘として話した。`},
+ {id:'bedside_family_doll',effect:{stability:1},text:p=>`${p.name}王女は寝台の上で人形に父と同じ色の小さな外套を着せ、アルブレヒトへ見せた。王は笑いながらその人形へ正式な宮廷礼をし、王女は久しぶりに声を立てて笑った。`}
 ];
 
+window.__PRINCESS_MINOR_EFFECTS_V689__={
+ domestic:DOMESTIC_EPISODES.map(e=>({id:e.id,effect:e.effect||null})),
+ family:FAMILY_EPISODES.map(e=>({id:e.id,effect:e.effect||null})),
+ bedsideDomestic:BEDSIDE_DOMESTIC_EPISODES.map(e=>({id:e.id,effect:e.effect||null})),
+ bedsideFamily:BEDSIDE_FAMILY_EPISODES.map(e=>({id:e.id,effect:e.effect||null}))
+};
+const PRINCESS_MINOR_EFFECT_LABELS={citySupport:'都市支持',stability:'安定',prestige:'威信'};
+function applyPrincessMinorEffect(episode){
+ const eff=episode&&episode.effect&&typeof episode.effect==='object'?episode.effect:null;
+ if(!eff)return[];
+ State.params=State.params||{};
+ const deltas=[];
+ for(const key of Object.keys(eff)){
+  const requested=Number(eff[key]||0);if(!requested)continue;
+  const before=n(State.params[key]);
+  const after=Math.max(0,Math.min(100,before+requested));
+  State.params[key]=after;
+  const delta=after-before;
+  if(delta)deltas.push({key,label:PRINCESS_MINOR_EFFECT_LABELS[key]||key,delta});
+ }
+ return deltas;
+}
 function episodeSeenSet(state){return new Set(Array.isArray(state.seenEpisodes)?state.seenEpisodes.map(String):[]);}
 function markEpisodeSeen(state,id){
  const arr=Array.isArray(state.seenEpisodes)?state.seenEpisodes:[];
@@ -29171,11 +29193,13 @@ function resolvePrincessWork(){
  }else if(category==='domestic'){
   episode=pickUnseenEpisode(bedside?BEDSIDE_DOMESTIC_EPISODES:DOMESTIC_EPISODES,state,true);
   text=episode?episode.text({name}):'';
-  result={turn:State.turn,category:'domestic',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,text,bedside,healthStage};
+  const minorEffects=applyPrincessMinorEffect(episode);
+  result={turn:State.turn,category:'domestic',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,minorEffects,text,bedside,healthStage};
  }else{
   episode=pickUnseenEpisode(bedside?BEDSIDE_FAMILY_EPISODES:FAMILY_EPISODES,state,true);
   text=episode?episode.text({name}):'';
-  result={turn:State.turn,category:'family',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,text,bedside,healthStage};
+  const minorEffects=applyPrincessMinorEffect(episode);
+  result={turn:State.turn,category:'family',episodeId:episode&&episode.id||'',princess:name,country:'',key:'',tensionDelta:0,influenceDelta:0,diplomacyBonus:0,minorEffects,text,bedside,healthStage};
  }
  State.princessWorkByTurn[key]=result;
  state.hitCount=(Number(state.hitCount)||0)+1;
@@ -29198,7 +29222,10 @@ function princessWorkHtml(resultOverride){
  const title=bedside?(foreign?`${r.princess}王女の病床外交`:domestic?`${r.princess}王女の病床からの公務`:`${r.princess}王女との病床の時間`):(foreign?`${r.princess}王女の小さな外交`:domestic?`${r.princess}王女の小さな公務`:`${r.princess}王女との時間`);
  const destination=bedside?(foreign?`王宮から　${r.country}へ`:'王宮・病床'):(foreign?`使節先　${r.country}`:domestic?'国内':'王宮');
  const outcome=bedside?(foreign?'病床からの言葉が両国を結びました':domestic?'王女の気遣いが王宮の外へ届きました':'静かな家族の時間が流れました'):(foreign?'両国の距離が近づきました':domestic?'王女の姿が人々の記憶に残りました':'静かな家族の時間が流れました');
- const effects=foreign?[`${r.country}への影響 +${r.influenceDelta}`,r.tensionDelta?`${r.country}との緊張 ${r.tensionDelta}`:'',r.diplomacyBonus?`外交 +${r.diplomacyBonus}`:''].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join(''):'';
+ const effects=(foreign
+  ?[`${r.country}への影響 +${r.influenceDelta}`,r.tensionDelta?`${r.country}との緊張 ${r.tensionDelta}`:'',r.diplomacyBonus?`外交 +${r.diplomacyBonus}`:''].filter(Boolean)
+  :(Array.isArray(r.minorEffects)?r.minorEffects:[]).map(e=>`${e.label} ${Number(e.delta)>0?'+':''}${e.delta}`)
+ ).map(x=>`<span>${esc(x)}</span>`).join('');
  const monogram=esc(String(r.princess||'王').slice(0,1));
  const aria=bedside?(foreign?'王女の病床外交':domestic?'王女の病床からの公務':'王女との病床の時間'):(foreign?'王女外交':domestic?'王女の小さな公務':'王女との時間');
  return `<section class="princessWorkBox${bedside?' princessWorkBedside':''}" aria-label="${aria}"><div class="princessWorkHead"><div class="princessWorkMonogram" aria-hidden="true">${monogram}</div><div><div class="princessWorkKicker">${kicker}</div><div class="princessWorkTitle">${esc(title)}</div></div><div class="princessWorkDestination">${esc(destination)}</div></div><div class="princessWorkText">${esc(r.text)}</div><div class="princessWorkPortrait"><img src="https://lh3.googleusercontent.com/d/1uP9RpEuWp0zSGYz9QxHrusYtvMx4mv1f" alt="${esc(r.princess)}王女"></div><div class="princessWorkOutcome"><strong>${esc(outcome)}</strong><div class="princessWorkEffect">${effects}</div></div></section>`;
@@ -30369,6 +30396,9 @@ function scrubBrotherText(v){
   if(typeof v!=='string')return v;
   if(v.includes('我が名はルートヴィヒ'))return v;
   return v
+    .replace(/弟はルートヴィヒとして名を掲げ/g,'弟は自らの名を掲げ')
+    .replace(/弟とルートヴィヒ派/g,'弟派')
+    .replace(/弟[・]?ルートヴィヒ/g,'弟')
     .replace(/ルートヴィヒ派/g,'弟派')
     .replace(/弟派/g,'弟派')
     .replace(/弟/g,'弟')
@@ -30477,7 +30507,7 @@ window.__PHASE113_SUPPORT_SHORTNAMES_BADGE_RESTORE__=true;
 function scrubBrotherText(v){
   if(typeof v!=='string')return v;
   if(v.includes('我が名はルートヴィヒ'))return v;
-  return v.replace(/ルートヴィヒ派/g,'弟派').replace(/弟派/g,'弟派').replace(/弟/g,'弟').replace(/ルートヴィヒ/g,'弟');
+  return v.replace(/弟はルートヴィヒとして名を掲げ/g,'弟は自らの名を掲げ').replace(/弟とルートヴィヒ派/g,'弟派').replace(/弟[・]?ルートヴィヒ/g,'弟').replace(/ルートヴィヒ派/g,'弟派').replace(/弟派/g,'弟派').replace(/弟/g,'弟').replace(/ルートヴィヒ/g,'弟');
 }
 const SUPPORT_SHORT={
   support_butler:'老執事',
@@ -51929,5 +51959,678 @@ window.__VERSION__='V675';
 </script>
 <script id="v675-final-version-marker">window.__VERSION__='V675';</script>
 <!-- V676: Bad clash FX cleanup — remove red lane frame; anchor red flash to actual clash X. -->
+<!-- V677: exposure balance for Seafeara / Azraq / Witch. No new cases. Seafeara gains soft escalation; Azraq/Rick authored V531 arc is preserved; witch chain is made reachable without becoming constant. -->
+<script id="v677-exposure-balance">
+(function(){
+'use strict';
+const PHASE='V677 exposure balance';
+const SEA_STAGES={
+  1:['country_seafeara_trading_house','country_seafeara_exchange_rate','foreshadow_seafeara_harbor_lease'],
+  2:['country_seafeara_smuggling_fleet','country_seafeara_debt_ledger'],
+  3:['country_seafeara_insurance_refusal','country_seafeara_trade_sanction']
+};
+const SEA_CORE=new Set(Object.values(SEA_STAGES).flat());
+const WITCH_ENTRY=['occult_witch_trial','witch_black_forest_midwife','witch_stolen_harvest'];
+const WITCH_ALL=new Set([
+  ...WITCH_ENTRY,'occult_witch_hunt','occult_witch_pilgrimage','occult_witch_hunt_chain',
+  'occult_witch_treasure','occult_witch_public_trial','occult_black_gathering','occult_forest_witch_final'
+]);
+const AZRAQ_ARC_IDS=new Set([
+  'foreshadow_azraq_horse_market','country_azraq_copper_caravan','country_azraq_prayer_time',
+  'mustafa_tariff_renegotiation','mustafa_pilgrim_safe_conduct','country_azraq_prisoner_exchange',
+  'rick_azraq_relic_ransom','rick_azraq_prisoner_exchange','ruthenia_azraq_southern_pass',
+  'solia_azraq_caravan_mediation','country_azraq_water_fort','mustafa_secret_common_enemy_pact',
+  'flow_medical_mission','country_azraq_safar_truce','late_war_holy_total'
+]);
+function turn(){return Math.max(1,Number(State?.turn)||1);}
+function age(){try{return typeof currentAge==='function'?Number(currentAge()):16+Math.floor((turn()-1)/2);}catch(_){return 16;}}
+function st(){
+  State.v677ExposureBalance=State.v677ExposureBalance||{
+    shownCounts:{},shownTurn:0,lastSeen:{seafeara:1,witch:1,azraq:1},lastRescue:{seafeara:-99,witch:-99},
+    resolved:{},seafearaPressure:0,rescueCache:null
+  };
+  const s=State.v677ExposureBalance;
+  s.shownCounts=s.shownCounts||{};s.lastSeen=s.lastSeen||{seafeara:turn(),witch:turn(),azraq:turn()};
+  s.lastRescue=s.lastRescue||{seafeara:-99,witch:-99};s.resolved=s.resolved||{};
+  if(!Number.isFinite(Number(s.lastSeen.seafeara)))s.lastSeen.seafeara=turn();
+  if(!Number.isFinite(Number(s.lastSeen.witch)))s.lastSeen.witch=turn();
+  if(!Number.isFinite(Number(s.lastSeen.azraq)))s.lastSeen.azraq=turn();
+  return s;
+}
+function meta(c){try{return typeof caseMeta==='function'?(caseMeta(c)||{}):(c?.meta||{});}catch(_){return c?.meta||{};}}
+function tags(c){return Array.isArray(meta(c).tags)?meta(c).tags:[];}
+function isSea(c){const id=String(c?.id||'');return id==='seafeara'||SEA_CORE.has(id)||tags(c).includes('seafeara');}
+function isSeaCore(c){const id=String(c?.id||'');return id==='seafeara'||SEA_CORE.has(id);}
+function isWitch(c){const id=String(c?.id||'');return WITCH_ALL.has(id)||tags(c).includes('witch');}
+function isAzraq(c){const id=String(c?.id||'');return AZRAQ_ARC_IDS.has(id)||tags(c).includes('azraq');}
+function byId(id){return (DATA.cases||[]).find(c=>c&&c.id===id)||null;}
+function legal(c){
+  if(!c||c.id===window.FINAL_CASE_ID||c.finalNoChoice)return false;
+  try{if(typeof caseAvailable==='function'&&typeof nationalPowerRank==='function'&&!caseAvailable(c,nationalPowerRank()))return false;}catch(_){ }
+  try{if(typeof caseBlockedByProgress==='function'&&caseBlockedByProgress(c))return false;}catch(_){ }
+  try{if(typeof caseMapBlockedByBounds==='function'&&caseMapBlockedByBounds(c))return false;}catch(_){ }
+  try{if(typeof relationConflictGateOpen==='function'&&!relationConflictGateOpen(c))return false;}catch(_){ }
+  try{if(turn()<Math.max(1,Number(meta(c).storyGate)||1))return false;}catch(_){ }
+  return true;
+}
+function protectedSlot(c){
+  if(!c)return true;const id=String(c.id||''),m=meta(c),ts=tags(c);
+  if(c.finalNoChoice||c.mandatory||c.activeBorderMandatory||c.marriageCandidate||c.unlockActor||c.requiresFlag||m.requiresFlag)return true;
+  if(id.startsWith('crisis_recovery_'))return true;
+  try{if(typeof isTerritoryCase==='function'&&isTerritoryCase(c))return true;}catch(_){ }
+  return ts.some(t=>['family','dynasty','brother','late','fate','greatFlow','war','crisis','border_dynamic'].includes(t));
+}
+function stable(id){let x=2166136261>>>0;for(const ch of String(id)+'@'+turn()){x^=ch.charCodeAt(0);x=Math.imul(x,16777619)>>>0;}return x;}
+function shown(id){return Number(st().shownCounts[id])||0;}
+function pickLeast(ids){
+  return ids.map(byId).filter(legal).sort((a,b)=>shown(a.id)-shown(b.id)||stable(a.id)-stable(b.id))[0]||null;
+}
+function seaStage(){
+  const s=st();const resolved=Object.keys(s.resolved).filter(id=>SEA_CORE.has(id)).length;
+  let stage=resolved>=4?3:resolved>=2?2:1;
+  const p=Math.max(0,Number(s.seafearaPressure)||0);
+  if(p>=4)stage=Math.max(stage,3);else if(p>=2)stage=Math.max(stage,2);
+  return stage;
+}
+function seaCandidate(){
+  const stage=seaStage();
+  let c=pickLeast(SEA_STAGES[stage]||[]);
+  if(c)return c;
+  for(let d=1;d<=2&&!c;d++)for(const k of [stage-d,stage+d])if(SEA_STAGES[k]){c=pickLeast(SEA_STAGES[k]);if(c)break;}
+  return c;
+}
+function witchCandidate(){
+  const flags=State.caseFlags||{},s=st();
+  const unresolved=id=>!s.resolved[id];
+  const chain=[];
+  if(flags.occult_forest_witch_final_unlocked&&unresolved('occult_forest_witch_final'))chain.push('occult_forest_witch_final');
+  if(flags.occult_black_gathering_unlocked&&unresolved('occult_black_gathering'))chain.push('occult_black_gathering');
+  if(flags.occult_witch_survives&&unresolved('occult_witch_public_trial'))chain.push('occult_witch_public_trial');
+  if(flags.occult_witch_pilgrimage_unlocked&&unresolved('occult_witch_pilgrimage'))chain.push('occult_witch_pilgrimage');
+  if(flags.occult_witch_hunt_chain_unlocked&&unresolved('occult_witch_hunt_chain'))chain.push('occult_witch_hunt_chain');
+  if(flags.occult_witch_treasure_unlocked&&unresolved('occult_witch_treasure'))chain.push('occult_witch_treasure');
+  if(flags.occult_witch_hunt_unlocked&&unresolved('occult_witch_hunt'))chain.push('occult_witch_hunt');
+  const c=pickLeast(chain);if(c)return c;
+  return pickLeast(WITCH_ENTRY.filter(unresolved));
+}
+function replaceOrdinary(list,c,kind){
+  if(!c||list.some(x=>x&&x.id===c.id))return list;
+  const out=list.slice();
+  if(kind==='seafeara'&&out.filter(isSea).length>=2)return out;
+  const idx=[...out].map((x,i)=>({x,i})).reverse().find(({x})=>!protectedSlot(x)&&!isWitch(x)&&!isSea(x))?.i;
+  if(idx===undefined)return out;
+  out[idx]=c;return out;
+}
+function decideRescue(list){
+  const s=st(),t=turn();
+  if(s.rescueCache&&s.rescueCache.turn===t)return s.rescueCache;
+  let choice=null;
+  const witchDue=age()>=20&&(t-Number(s.lastSeen.witch||1)>=6)&&(t-Number(s.lastRescue.witch||-99)>=4)&&!list.some(isWitch);
+  const seaDue=t>=5&&(t-Number(s.lastSeen.seafeara||1)>=4)&&(t-Number(s.lastRescue.seafeara||-99)>=3)&&!list.some(isSeaCore);
+  if(witchDue){const c=witchCandidate();if(c)choice={turn:t,kind:'witch',id:c.id};}
+  if(!choice&&seaDue){const c=seaCandidate();if(c)choice={turn:t,kind:'seafeara',id:c.id};}
+  s.rescueCache=choice||{turn:t,kind:'',id:''};return s.rescueCache;
+}
+function recordShown(list){
+  const s=st(),t=turn();if(Number(s.shownTurn)===t)return;
+  s.shownTurn=t;
+  for(const c of list||[]){if(!c)continue;s.shownCounts[c.id]=(Number(s.shownCounts[c.id])||0)+1;}
+  if((list||[]).some(isSeaCore))s.lastSeen.seafeara=t;
+  if((list||[]).some(isWitch))s.lastSeen.witch=t;
+  if((list||[]).some(isAzraq))s.lastSeen.azraq=t;
+}
+function installVisible(){
+  if(typeof visibleCases!=='function'||visibleCases.v677ExposureBalance)return;
+  const base=visibleCases;let building=false;
+  const wrapped=function(){
+    if(building)return base.apply(this,arguments)||[];
+    building=true;
+    try{
+      let out=(base.apply(this,arguments)||[]).slice();
+      if(age()>=30||State?.finalPhaseActive){recordShown(out);return out;}
+      const r=decideRescue(out);
+      if(r&&r.id){const c=byId(r.id);const next=replaceOrdinary(out,c,r.kind);if(next.some(x=>x&&x.id===r.id)&&!out.some(x=>x&&x.id===r.id)){out=next;const s=st();s.lastRescue[r.kind]=turn();}}
+      recordShown(out);return out;
+    }finally{building=false;}
+  };
+  try{Object.assign(wrapped,base);}catch(_){ }
+  wrapped.v677ExposureBalance=true;visibleCases=wrapped;window.visibleCases=wrapped;
+}
+function rankKind(rank){if(['completeWin','majorWin','minorWin'].includes(rank))return'success';if(['minorLoss','majorLoss','completeLoss'].includes(rank))return'failure';return'draw';}
+function setFlag(flag){
+  if(!flag)return;State.caseFlags=State.caseFlags||{};
+  if(!State.caseFlags[flag])State.caseFlags[flag]=true;
+}
+function processResult(id,kind){
+  if(!id)return;const s=st();
+  if(SEA_CORE.has(id)){
+    s.resolved[id]=kind;
+    if(kind==='success')s.seafearaPressure=Math.max(0,(Number(s.seafearaPressure)||0)-1);
+    else if(kind==='failure'||kind==='ignored')s.seafearaPressure=Math.min(6,(Number(s.seafearaPressure)||0)+(kind==='ignored'?2:1));
+  }
+  if(WITCH_ALL.has(id))s.resolved[id]=kind;
+  /* The original witch chain only opened after a complete loss at the trial and could die on middle ranks.
+     V677 keeps the same authored cases/results, but makes contact with the real witch sufficient to continue the thread. */
+  if(id==='occult_witch_trial')setFlag('occult_witch_hunt_unlocked');
+  if(id==='occult_witch_hunt')setFlag('occult_witch_hunt_chain_unlocked');
+}
+function installFinish(){
+  if(typeof Flow!=='object'||!Flow||typeof Flow.finishBattle!=='function'||Flow.finishBattle.v677ExposureBalance)return;
+  const base=Flow.finishBattle;
+  Flow.finishBattle=function(){
+    const ret=base.apply(this,arguments);
+    try{
+      for(const row of State.lastSummary?.lanes||[])processResult(row?.case?.id,rankKind(row?.rank));
+      for(const row of State.lastSummary?.ignored||[])processResult(row?.case?.id,'ignored');
+      const s=st();s.rescueCache=null;
+    }catch(e){try{console.warn(PHASE+' result update skipped',e);}catch(_){ }}
+    return ret;
+  };
+  Flow.finishBattle.v677ExposureBalance=true;
+}
+installVisible();installFinish();
+window.__V677ExposureBalance={processResult,seaStage,seaCandidate,witchCandidate};
+window.auditV677ExposureBalance=function(){
+  const s=st();
+  return{
+    version:'V677',
+    seafeara:{stage:seaStage(),pressure:Number(s.seafearaPressure)||0,lastSeen:s.lastSeen.seafeara,lastRescue:s.lastRescue.seafeara,eligible:Object.values(SEA_STAGES).flat().filter(id=>legal(byId(id)))},
+    azraq:{authoredArcPreserved:!!State.azraqRickAuthoredArcV531||!!visibleCases.azraqRickAuthoredArcV531,stage:State.azraqRickAuthoredArcV531?.stage||1,pressure:State.azraqRickAuthoredArcV531?.pressure||0},
+    witch:{lastSeen:s.lastSeen.witch,lastRescue:s.lastRescue.witch,entryEligible:WITCH_ENTRY.filter(id=>legal(byId(id))),huntUnlocked:!!State.caseFlags?.occult_witch_hunt_unlocked,chainUnlocked:!!State.caseFlags?.occult_witch_hunt_chain_unlocked},
+    shownCounts:{...s.shownCounts},
+    ok:!!visibleCases.v677ExposureBalance&&!!Flow.finishBattle.v677ExposureBalance
+  };
+};
+window.__VERSION__='V677';
+})();
+</script>
+<script id="v677-final-version-marker">window.__VERSION__='V677';</script>
+
+<!-- V678: Loire / Solia exposure rebalance. No new cases. Keep Rick/Ruthenia as the two most present continental powers; lift Loire/Solia into the next tier through soft quotas and least-shown rotation. -->
+<script id="v678-loire-solia-exposure-balance">
+(function(){
+'use strict';
+const PHASE='V678 Loire/Solia exposure';
+const GROUPS=['loire','solia'];
+const RATE={loire:0.70,solia:0.56};
+const FOREIGN=new Set(['loire','solia','rick','ruthenia','treuval','azraq','seafeara']);
+const SOFT_RELATION_IDS=new Set([
+  'country_solia_avalanche_road','country_solia_wolfram_duel','solia_musket_trial',
+  'solia_claudia_gunworks_loan','solia_mercenary_market_drain','solia_powder_saltpeter_trade',
+  'solia_alpine_wool_contract','solia_mountain_guide_school',
+  'country_loire_vineyard_border','loire_frontier_mill_bridge','loire_soldier_deserters'
+]);
+if(typeof relationConflictGateOpen==='function'&&!relationConflictGateOpen.v678SoftCountry){
+  const baseRelationConflictGateOpenV678=relationConflictGateOpen;
+  const wrappedRelationConflictGateOpenV678=function(c){
+    if(c&&SOFT_RELATION_IDS.has(String(c.id||'')))return true;
+    return baseRelationConflictGateOpenV678.apply(this,arguments);
+  };
+  try{Object.assign(wrappedRelationConflictGateOpenV678,baseRelationConflictGateOpenV678);}catch(_){ }
+  wrappedRelationConflictGateOpenV678.v678SoftCountry=true;
+  relationConflictGateOpen=wrappedRelationConflictGateOpenV678;window.relationConflictGateOpen=wrappedRelationConflictGateOpenV678;
+}
+function turn(){return Math.max(1,Number(State?.turn)||1);}
+function age(){try{return typeof currentAge==='function'?Number(currentAge()):16+Math.floor((turn()-1)/2);}catch(_){return 16;}}
+function meta(c){try{return typeof caseMeta==='function'?(caseMeta(c)||{}):(c?.meta||{});}catch(_){return c?.meta||{};}}
+function tags(c){const t=meta(c).tags;return Array.isArray(t)?t:[];}
+function hasCountry(c,g){return tags(c).includes(g);}
+function highPriority(c){
+  if(!c)return true;const id=String(c.id||''),m=meta(c),ts=tags(c);
+  if(c.finalNoChoice||c.mandatory||c.activeBorderMandatory||c.marriageCandidate||c.unlockActor||c.requiresFlag||m.requiresFlag)return true;
+  if(id.startsWith('crisis_recovery_')||id.startsWith('finalprep_')||id.startsWith('phase16_')||id.startsWith('phase38_'))return true;
+  return ts.some(t=>['family','dynasty','brother','late','fate','greatFlow','war','crisis','border_dynamic'].includes(t));
+}
+function rescueCandidate(c,g){
+  if(!c||!hasCountry(c,g)||highPriority(c))return false;
+  const id=String(c.id||'');
+  if(id===window.FINAL_CASE_ID||id.startsWith('marriage_')||id.startsWith('wife'))return false;
+  return true;
+}
+function legal(c){
+  if(!c||c.id===window.FINAL_CASE_ID||c.finalNoChoice)return false;
+  try{if(typeof caseAvailable==='function'&&typeof nationalPowerRank==='function'&&!caseAvailable(c,nationalPowerRank()))return false;}catch(_){ }
+  try{if(typeof caseBlockedByProgress==='function'&&caseBlockedByProgress(c))return false;}catch(_){ }
+  try{if(typeof caseMapBlockedByBounds==='function'&&caseMapBlockedByBounds(c))return false;}catch(_){ }
+  try{if(typeof relationConflictGateOpen==='function'&&!relationConflictGateOpen(c))return false;}catch(_){ }
+  try{if(turn()<Math.max(1,Number(meta(c).storyGate)||1))return false;}catch(_){ }
+  return true;
+}
+function st(){
+  State.v678CountryExposure=State.v678CountryExposure||{shownTurn:0,shown:{loire:0,solia:0},lastSeen:{loire:1,solia:1},lastRescue:{loire:-99,solia:-99},rescueCache:null};
+  const s=State.v678CountryExposure;
+  s.shown=s.shown||{loire:0,solia:0};s.lastSeen=s.lastSeen||{loire:turn(),solia:turn()};s.lastRescue=s.lastRescue||{loire:-99,solia:-99};
+  return s;
+}
+function seenCount(id){return Number(State.v677ExposureBalance?.shownCounts?.[id])||0;}
+function stable(id){let x=2166136261>>>0;for(const ch of String(id)+'@V678@'+turn()){x^=ch.charCodeAt(0);x=Math.imul(x,16777619)>>>0;}return x;}
+function pick(g,list){
+  const inList=new Set((list||[]).map(c=>c&&c.id));
+  return (DATA.cases||[]).filter(c=>rescueCandidate(c,g)&&legal(c)&&!inList.has(c.id)).sort((a,b)=>seenCount(a.id)-seenCount(b.id)||stable(a.id)-stable(b.id))[0]||null;
+}
+function neutralReplaceIndex(list){
+  const rows=[...(list||[])].map((c,i)=>({c,i})).reverse();
+  let row=rows.find(({c})=>{
+    if(highPriority(c))return false;
+    const ts=tags(c);if(ts.includes('witch'))return false;
+    return !ts.some(t=>FOREIGN.has(t));
+  });
+  if(row)return row.i;
+  row=rows.find(({c})=>!highPriority(c)&&!hasCountry(c,'loire')&&!hasCountry(c,'solia')&&!tags(c).includes('witch'));
+  return row?row.i:-1;
+}
+function target(g,t){const active=Math.max(0,t-3);return Math.floor(active*RATE[g]);}
+function decide(list){
+  const s=st(),t=turn();
+  if(s.rescueCache&&s.rescueCache.turn===t)return s.rescueCache;
+  const v677=State.v677ExposureBalance;
+  if(v677&&Number(v677.lastRescue?.witch)===t)return s.rescueCache={turn:t,kind:'',id:''};
+  const choices=[];
+  for(const g of GROUPS){
+    const natural=(list||[]).filter(c=>hasCountry(c,g)).length;
+    const projected=(Number(s.shown[g])||0)+natural;
+    const need=target(g,t)-projected;
+    const gap=t-Number(s.lastSeen[g]||1);
+    if(need>0&&natural===0&&gap>=2&&t-Number(s.lastRescue[g]||-99)>=2){
+      const c=pick(g,list);if(c)choices.push({g,c,need,gap,score:need*10+gap+(g==='solia'?0.5:0)});
+    }
+  }
+  choices.sort((a,b)=>b.score-a.score||stable(a.c.id)-stable(b.c.id));
+  const best=choices[0];
+  s.rescueCache=best?{turn:t,kind:best.g,id:best.c.id}:{turn:t,kind:'',id:''};
+  return s.rescueCache;
+}
+function record(list){
+  const s=st(),t=turn();if(Number(s.shownTurn)===t)return;
+  s.shownTurn=t;
+  for(const g of GROUPS){const n=(list||[]).filter(c=>hasCountry(c,g)).length;s.shown[g]=(Number(s.shown[g])||0)+n;if(n>0)s.lastSeen[g]=t;}
+}
+function install(){
+  if(typeof visibleCases!=='function'||visibleCases.v678CountryExposure)return;
+  const base=visibleCases;let building=false;
+  const wrapped=function(){
+    if(building)return base.apply(this,arguments)||[];
+    building=true;
+    try{
+      let out=(base.apply(this,arguments)||[]).slice();
+      if(age()>=30||State?.finalPhaseActive){record(out);return out;}
+      const r=decide(out);
+      if(r&&r.id){const c=(DATA.cases||[]).find(x=>x&&x.id===r.id);const idx=neutralReplaceIndex(out);if(c&&idx>=0&&!out.some(x=>x&&x.id===c.id)){out[idx]=c;const s=st();s.lastRescue[r.kind]=turn();}}
+      record(out);return out;
+    }finally{building=false;}
+  };
+  try{Object.assign(wrapped,base);}catch(_){ }
+  wrapped.v678CountryExposure=true;visibleCases=wrapped;window.visibleCases=wrapped;
+}
+install();
+window.auditV678CountryExposure=function(){const s=st(),t=turn();return{version:'V678',turn:t,age:age(),shown:{...s.shown},lastSeen:{...s.lastSeen},lastRescue:{...s.lastRescue},targets:{loire:target('loire',t),solia:target('solia',t)},eligible:{loire:(DATA.cases||[]).filter(c=>rescueCandidate(c,'loire')&&legal(c)).map(c=>c.id),solia:(DATA.cases||[]).filter(c=>rescueCandidate(c,'solia')&&legal(c)).map(c=>c.id)},ok:!!visibleCases.v678CountryExposure};};
+window.__VERSION__='V678';
+})();
+</script>
+<script id="v678-final-version-marker">window.__VERSION__='V678';</script>
+
+
+<!-- V686: final-route balance refinement. Preserve brother/Rick/Loire tuning; tighten Seafeara's deep-route gate so only sustained direct involvement or compounded debt+sanction/blockade failures can elevate it to the final route. No new cases. -->
+<script id="v686-final-route-balance">
+(function(){
+'use strict';
+const V='V686';
+const FINAL_ID=(typeof FINAL_CASE_ID!=='undefined'?FINAL_CASE_ID:'finalcase_last_matter');
+const baseScores=(typeof window.finalEnemyScoresV583==='function'?window.finalEnemyScoresV583:(typeof window.finalEnemyScoresV582==='function'?window.finalEnemyScoresV582:null));
+const baseCrisis=(typeof window.brotherFinalCrisisV583==='function'?window.brotherFinalCrisisV583:(typeof window.brotherFinalCrisisV582==='function'?window.brotherFinalCrisisV582:null));
+const num=v=>Number(v)||0;
+function historyIds(){
+ const set=new Set(Array.isArray(State?.completedCases)?State.completedCases:[]);
+ try{for(const id of Object.keys(State?.reignLog?.caseResults||{}))set.add(id);}catch(_){ }
+ try{for(const h of (State?.reignLog?.history||[])){const id=h?.caseId||h?.id;if(id)set.add(String(id));}}catch(_){ }
+ try{for(const id of Object.keys(State?.caseResults||{}))set.add(id);}catch(_){ }
+ return set;
+}
+const done=id=>historyIds().has(String(id));
+function gf(){try{return typeof ensureGreatFlow==='function'?ensureGreatFlow():(State.greatFlow||{});}catch(_){return State.greatFlow||{};}}
+function crisis(){try{return typeof baseCrisis==='function'?baseCrisis():{score:0,candidate:false,force:false,details:{}};}catch(_){return{score:0,candidate:false,force:false,details:{}};}}
+function serviceGapForce(){try{return typeof brotherServiceGapFinal==='function'&&brotherServiceGapFinal();}catch(_){return false;}}
+function legacyBrotherForce(){try{return typeof finalBrotherRouteEligible==='function'&&finalBrotherRouteEligible();}catch(_){return false;}}
+function hardBrotherForce(){const c=crisis();return !!(legacyBrotherForce()||c.force);}
+function seaCompletedCount(){
+ const list=[...historyIds()];
+ const extra=new Set(['flow_seafeara_loan','flow_merchant_quarter','flow_debt_repayment','crisis_leopold_port_tax_pact','late_war_seafeara_blockade','late_finance_currency_collapse','foreshadow_seafeara_harbor_lease']);
+ return list.filter(id=>String(id).includes('seafeara')||extra.has(String(id))).length;
+}
+function seaBadWeight(){
+ const rows=State?.reignLog?.caseResults||{};let v=0;
+ const extra=['flow_seafeara_loan','flow_debt_repayment','crisis_leopold_port_tax_pact','late_finance_currency_collapse'];
+ for(const [id,raw] of Object.entries(rows)){
+  if(!(String(id).includes('seafeara')||extra.some(x=>String(id).includes(x))))continue;
+  const rank=typeof raw==='string'?raw:String(raw?.rank||'');
+  if(rank==='completeLoss')v+=3;else if(rank==='majorLoss')v+=2;else if(rank==='minorLoss'||rank==='ignored')v+=1;
+ }
+ return v;
+}
+function loireCompletedCount(){
+ const list=[...historyIds()];
+ return list.filter(id=>/loire|wife2|rosen/i.test(String(id))).length;
+}
+function loireBadWeight(){
+ const rows=State?.reignLog?.caseResults||{};let v=0;
+ for(const [id,raw] of Object.entries(rows)){
+  if(!/loire|wife2|rosen/i.test(String(id)))continue;
+  const rank=typeof raw==='string'?raw:String(raw?.rank||'');
+  if(rank==='completeLoss')v+=3;else if(rank==='majorLoss')v+=2;else if(rank==='minorLoss'||rank==='ignored')v+=1;
+ }
+ return v;
+}
+function loireBoost(){
+ const n=loireCompletedCount(),bad=loireBadWeight();let b=0;
+ if(n>=3)b+=2;if(n>=5)b+=3;
+ if(bad>=2)b+=3;
+ if(num(State?.map?.altrantLoire)<=-2)b+=3;
+ return Math.min(11,b);
+}
+function rickBoost(){
+ const q=State?.params||{};
+ const church=num(q.churchSupport);
+ const oldSupport=Math.max(0,55-church)/10;
+ const tunedSupport=Math.max(0,60-church)/8;
+ return Math.min(6,2+Math.max(0,tunedSupport-oldSupport));
+}
+function seafearaBoost(){
+ const g=gf(),n=seaCompletedCount(),bad=seaBadWeight();let b=0;
+ if(n>=3)b+=4;if(n>=5)b+=5;
+ const debt=num(g.foreignDebt);if(debt>=4)b+=5;if(debt>=7)b+=5;
+ if(done('country_seafeara_trade_sanction'))b+=6;
+ if(done('late_war_seafeara_blockade'))b+=7;
+ if(bad>=2)b+=5;
+ if(num(State?.params?.treasury)<6000)b+=4;
+ return Math.min(32,b);
+}
+function seaTagWeight(){
+ const t=State?.reignLog?.tags||{};
+ return ['finance','loan','seafeara','trade','port'].reduce((a,k)=>a+num(t[k]),0);
+}
+function seafearaClaim(){
+ const g=gf(),n=seaCompletedCount(),bad=seaBadWeight(),tags=seaTagWeight();let c=0;
+ if(n>=2)c++;if(n>=4)c++;
+ if(tags>=6)c++;if(tags>=10)c++;
+ const debt=num(g.foreignDebt);if(debt>=3)c++;if(debt>=6)c++;
+ if(done('country_seafeara_trade_sanction'))c++;
+ if(done('late_war_seafeara_blockade'))c++;
+ if(bad>=2)c++;
+ if(num(State?.params?.treasury)<6000)c++;
+ return c;
+}
+function loireDeepRoute(){
+ const n=loireCompletedCount(),bad=loireBadWeight(),border=num(State?.map?.altrantLoire);
+ return n>=6||(n>=4&&bad>=2)||(n>=3&&border<=-2);
+}
+function seafearaDeepRoute(){
+ const g=gf(),n=seaCompletedCount(),bad=seaBadWeight(),debt=num(g.foreignDebt);
+ const sanction=done('country_seafeara_trade_sanction'),blockade=done('late_war_seafeara_blockade');
+ return n>=8||(debt>=7&&sanction&&bad>=2)||(sanction&&blockade&&bad>=2);
+}
+function rivalTop(scores,exclude){
+ const keys=['ruthenia','rick','loire','solia','seafeara'].filter(k=>k!==exclude);
+ return Math.max(0,...keys.map(k=>num(scores[k])));
+}
+function loireFloor(scores){return loireDeepRoute()?rivalTop(scores,'loire')*1.02:0;}
+function seafearaFloor(scores){return seafearaDeepRoute()?rivalTop(scores,'seafeara')*1.02:0;}
+function brotherSoftScore(c){
+ if(!c||!Number.isFinite(num(c.score)))return -1000000;
+ try{if(typeof brotherPoliticalEligible==='function'&&!brotherPoliticalEligible())return -1000000;}catch(_){ }
+ const d=c.details||{};
+ const opportunities=(()=>{try{return typeof brotherServiceOpportunityCount==='function'?num(brotherServiceOpportunityCount()):0;}catch(_){return 0;}})();
+ const wins=(()=>{try{return typeof brotherServiceVictoryCount==='function'?num(brotherServiceVictoryCount()):0;}catch(_){return 0;}})();
+ let soft=num(c.score);
+ /* 3 opportunities / fewer than 3 wins remains a hard route elsewhere. Before that point, a weak service record can still make Ludwig a plausible contender. */
+ if(opportunities>=2&&wins<2)soft+=5;
+ /* 采配機会不足の強制条件は別系統で維持。ここは強制未満の政治的火種だけを通常候補へ広げる。 */
+ if(opportunities>=3&&wins>=3)soft-=4;
+ if(num(d.brotherRisk)>=7)soft+=3;
+ if(num(d.succession)>=28&&!d.hasPrince)soft+=3;
+ if(num(d.nobleSupport)<35)soft+=2;
+ if(soft<30)return -1000000;
+ return 7+soft*.46;
+}
+function enhancedScores(){
+ const s=Object.assign({},typeof baseScores==='function'?baseScores():{});
+ for(const k of ['ruthenia','rick','loire','solia','seafeara','brother'])if(!Number.isFinite(Number(s[k])))s[k]=-1000000;
+ s.rick=num(s.rick)+rickBoost();
+ s.loire=num(s.loire)+loireBoost();
+ s.seafeara=num(s.seafeara)+seafearaBoost();
+ const preFloor=Object.assign({},s);
+ s.loire=Math.max(num(s.loire),loireFloor(preFloor));
+ s.seafeara=Math.max(num(s.seafeara),seafearaFloor(preFloor));
+ const c=crisis();
+ if(hardBrotherForce())s.brother=Math.max(num(s.brother),96);
+ else s.brother=Math.max(num(s.brother),brotherSoftScore(c));
+ return s;
+}
+window.finalEnemyScoresV680=enhancedScores;
+/* V589 prelude ranking consults V583. Point that public score hook at the enhanced map without changing old local closures. */
+window.finalEnemyScoresV583=enhancedScores;
+function qual(key){try{return typeof window.finalPreludeQualificationV589==='function'?window.finalPreludeQualificationV589(key):{qualified:false,kind:'none',rank:''};}catch(_){return{qualified:false,kind:'none',rank:''};}}
+function chooseV680(currentKey){
+ const s=enhancedScores(),c=crisis();
+ if(hardBrotherForce())return{key:'brother',scores:s,forced:true,serviceGap:serviceGapForce(),crisis:c};
+ const keys=['ruthenia','rick','loire','solia','seafeara','brother'].filter(k=>num(s[k])>-99999);
+ const qualified=keys.filter(k=>qual(k).qualified);
+ const pool=qualified.length?qualified:keys;
+ if(!pool.length)return{key:currentKey||'ruthenia',scores:s,forced:false,crisis:c};
+ const key=pool.slice().sort((a,b)=>num(s[b])-num(s[a])||keys.indexOf(a)-keys.indexOf(b))[0]||currentKey||'ruthenia';
+ return{key,scores:s,forced:false,crisis:c};
+}
+window.chooseFinalEnemyV680=()=>chooseV680('ruthenia');
+window.chooseFinalEnemyV583=window.chooseFinalEnemyV680;
+const META={
+ ruthenia:{label:'ルテニア',enemy:'イリーナ',img:'rutheniaKing',line:'東境決戦',bg:'forest',difficulty:'desperate',initial:-38,danger:5,tags:['ruthenia','border','military','diplomacy'],win:{prestige:8,stability:4,diplomacy:3,troops:-150,map:{altrantRuthenia:1}},loss:{prestige:-10,stability:-6,diplomacy:-4,troops:-360,treasury:-3,map:{altrantRuthenia:-1}},ignored:{prestige:-8,stability:-5,diplomacy:-4,troops:-220,map:{altrantRuthenia:-1}}},
+ loire:{label:'ロアール',enemy:'アルマン',img:'loireKing',line:'西方決戦',bg:'palace',difficulty:'hard',initial:-30,danger:4,tags:['loire','diplomacy','court','border'],win:{prestige:7,diplomacy:5,citySupport:3,troops:-90,map:{altrantLoire:1}},loss:{prestige:-8,diplomacy:-6,citySupport:-4,treasury:-3,map:{altrantLoire:-1}},ignored:{prestige:-6,diplomacy:-5,citySupport:-4,treasury:-2,map:{altrantLoire:-1}}},
+ rick:{label:'リック',enemy:'ロレンツォ',img:'rickKing',line:'信仰決戦',bg:'god',difficulty:'desperate',initial:-34,danger:4,tags:['rick','religion','church','diplomacy'],win:{prestige:6,stability:5,churchSupport:5,troops:-100,map:{altrantRick:1}},loss:{prestige:-7,stability:-7,churchSupport:-8,diplomacy:-3,map:{altrantRick:-1}},ignored:{prestige:-6,stability:-6,churchSupport:-6,map:{altrantRick:-1}}},
+ solia:{label:'ソリア',enemy:'ヴォルフラム',img:'soliaKing',line:'峠道決戦',bg:'bigwar',difficulty:'hard',initial:-30,danger:4,tags:['solia','military','mercenary','road'],win:{prestige:7,diplomacy:4,troops:-80,map:{altrantSolia:1}},loss:{prestige:-8,diplomacy:-5,troops:-300,treasury:-4,map:{altrantSolia:-1}},ignored:{prestige:-6,diplomacy:-4,troops:-180,map:{altrantSolia:-1}}},
+ seafeara:{label:'セーフェアラ',enemy:'アルバロ',img:'seafearaKing',line:'港湾決戦',bg:'port',difficulty:'hard',initial:-28,danger:4,tags:['seafeara','finance','trade','port'],win:{prestige:6,citySupport:5,treasury:-2,diplomacy:3,map:{altrantSeafeara:1}},loss:{prestige:-7,citySupport:-6,treasury:-8,diplomacy:-4,map:{altrantSeafeara:-1}},ignored:{prestige:-5,citySupport:-5,treasury:-6,map:{altrantSeafeara:-1}}},
+ brother:{label:'弟ルートヴィヒ',enemy:'ルートヴィヒ',img:'brotherLate',line:'王冠決戦',bg:'palace',difficulty:'desperate',initial:-40,danger:5,tags:['brother','dynasty','noble','succession'],win:{prestige:8,stability:5,nobleSupport:4,troops:-120},loss:{prestige:-10,stability:-8,nobleSupport:-8,troops:-220},ignored:{prestige:-8,stability:-6,nobleSupport:-6,troops:-120}}
+};
+function apply(c,key,choice){
+ const m=META[key],txt=window.__FINAL30_AUTHORED_TEXT_V548?.[key];if(!c||!m||!txt)return c;
+ c.finalEnemy=key;c.finalCaseTheme=key;c.finalEnemyLabel=m.label;c.enemy=m.enemy;c.enemyImg=m.img;c.editorialEnemyName=m.enemy;c.editorialEnemyImg=m.img;
+ c.lineName=m.line;c.initialLine=m.initial;c.difficulty=m.difficulty;c.danger=m.danger;c.title=`最後の事件：${txt.title}`;c.intro=txt.intro;
+ const q=qual(key);let bridge='';
+ if(choice?.forced&&key==='brother'&&choice?.serviceGap)bridge='弟に采配を任せる機会は繰り返しあったが、十分な勝利を積ませられないまま、弟を担ぐ声が最後まで消えなかった。';
+ else if(q.qualified){const r=String(q.rank||'');bridge=q.kind==='activeWar'||r==='activeWar'?'すでに続いていた正式戦争が、そのまま最後の決戦となった。':['completeWin','majorWin','minorWin'].includes(r)?'一度は退いた危機だったが、その根は残り、30歳の冬に再燃した。':['draw','minorLoss'].includes(r)?'終局予兆で決着しなかった火種が、30歳の冬に持ち越された。':'終局予兆で決裂した火種が、30歳の冬に最終戦へ発展した。';}
+ c.finalCaseNote=`30歳の冬。${txt.note}${bridge?' '+bridge:''}`;c.finalPreludeQualified=!!q.qualified||!!choice?.forced;c.finalPreludeQualification=q;
+ try{c.effects=makeEffects({win:m.win,loss:m.loss,ignored:m.ignored,stories:[txt.complete,txt.wounded,txt.loss]});}catch(_){ }
+ try{CASE_BG[FINAL_ID]=m.bg;CASE_STAGE_META[FINAL_ID]={scale:5,storyGate:29,tags:['finalCase','ending','finalEnemy','age30',...m.tags]};CASE_ARCHETYPE[FINAL_ID]=key==='seafeara'||key==='loire'?'cunning':key==='rick'?'sticky':'heavy';}catch(_){ }
+ return c;
+}
+function enforce(c){
+ if(!c?.finalCase)return c;
+ const choice=chooseV680(c.finalEnemy||c.finalCaseTheme||'ruthenia');
+ return apply(c,choice.key,choice);
+}
+for(const name of ['phase26RefreshFinalCase','refreshFinalEnemyCase']){
+ try{
+  const prev=window[name];if(typeof prev!=='function'||prev.v679FinalRouteBalance)continue;
+  const wrapped=function(){return enforce(prev.apply(this,arguments));};
+  try{Object.assign(wrapped,prev);}catch(_){ }
+  wrapped.v679FinalRouteBalance=true;window[name]=wrapped;
+  try{if(name==='refreshFinalEnemyCase')refreshFinalEnemyCase=wrapped;}catch(_){ }
+ }catch(_){ }
+}
+window.auditV686FinalRoutes=function(){const c=crisis(),s=enhancedScores();return{version:V,scores:s,boosts:{rick:rickBoost(),loire:loireBoost(),seafeara:seafearaBoost()},deep:{loire:loireDeepRoute(),seafeara:seafearaDeepRoute()},floors:{loire:loireFloor(s),seafeara:seafearaFloor(s)},seafearaClaim:seafearaClaim(),seaTagWeight:seaTagWeight(),loireCases:loireCompletedCount(),loireBad:loireBadWeight(),seaCases:seaCompletedCount(),seaBad:seaBadWeight(),historyCount:historyIds().size,brother:{crisis:c,serviceGapForce:serviceGapForce(),hardForce:hardBrotherForce(),softScore:brotherSoftScore(c),opportunities:(typeof brotherServiceOpportunityCount==='function'?brotherServiceOpportunityCount():null),wins:(typeof brotherServiceVictoryCount==='function'?brotherServiceVictoryCount():null)},choice:chooseV680('ruthenia')};};
+window.__V686_FINAL_ROUTE_TUNING__={brotherSoftThreshold:30,brotherSoftRate:.46,successfulServiceCooling:-4,serviceGapForcePreserved:true,rickBaseBoost:2,loireHistoryBoostCap:11,seafearaHistoryBoostCap:32,loireDeepFloor:'deep involvement => 1.02x strongest foreign rival',seafearaDeepFloor:'8 direct cases OR debt>=7+sanction+losses OR sanction+blockade+losses => 1.02x strongest foreign rival',target:'リックは現状維持、ロアールは深い西方関与で主要候補、セーフェアラは深い金融・交易依存時のみ終局化',newCases:0};
+window.__VERSION__=V;
+})();
+</script>
+<script id="v688-fixed-event-neglect-penalties">
+(function(){
+'use strict';
+if(window.__V688_FIXED_EVENT_NEGLECT__)return;
+window.__V688_FIXED_EVENT_NEGLECT__=true;
+const V='V688';
+const DRAGON='dragon_red_mountains_23';
+const NOBLE='flow_great_noble_rebellion';
+const DEADKING='deadking_throne_27';
+const FIXED=new Set([DRAGON,NOBLE,DEADKING]);
+const ageNow=()=>{try{return typeof currentAge==='function'?Number(currentAge()):16+Math.floor(((Number(State?.turn)||1)-1)/2);}catch(_){return 0;}};
+const done=id=>{try{return Array.isArray(State?.completedCases)&&State.completedCases.includes(id);}catch(_){return false;}};
+function counters(){
+  if(!State.v688FixedEventNeglect||typeof State.v688FixedEventNeglect!=='object')State.v688FixedEventNeglect={};
+  return State.v688FixedEventNeglect;
+}
+function clampLocal(v,a,b){return Math.max(a,Math.min(b,v));}
+function paramDelta(key,delta){
+  State.params=State.params||{};
+  const before=Number(State.params[key])||0;
+  let hi=100;
+  try{if(key==='treasury')hi=Number(ECONOMY?.treasuryMax)||9999999;else if(key==='troops')hi=Number(ECONOMY?.troopsMax)||9999999;}catch(_){if(key==='treasury'||key==='troops')hi=9999999;}
+  State.params[key]=Math.round(clampLocal(before+Number(delta||0),0,hi));
+}
+function ensureFlags(){if(!State.caseFlags||typeof State.caseFlags!=='object')State.caseFlags={};return State.caseFlags;}
+function ensureGF(){try{return typeof ensureGreatFlow==='function'?ensureGreatFlow():(State.greatFlow=State.greatFlow||{});}catch(_){return State.greatFlow=State.greatFlow||{};}}
+function addGF(k,d,max=18){const g=ensureGF();g[k]=clampLocal((Number(g[k])||0)+d,0,max);return g[k];}
+function completeIgnored(id){
+  try{if(typeof completeCase==='function')completeCase(id);else{State.completedCases=State.completedCases||[];if(!State.completedCases.includes(id))State.completedCases.push(id);}}catch(_){ }
+  try{
+    State.caseResults=State.caseResults||{};State.caseResults[id]='ignored';
+    State.caseResultRanks=State.caseResultRanks||{};State.caseResultRanks[id]='ignored';
+    State.reignLog=State.reignLog||{};State.reignLog.caseResults=State.reignLog.caseResults||{};State.reignLog.caseResults[id]='ignored';
+  }catch(_){ }
+}
+function logNeglect(id,title,text,count){
+  try{
+    State.neglectLog=State.neglectLog||[];
+    State.neglectLog.push({turn:State.turn,caseId:id,title,text,v688FixedEvent:true,count});
+    State.neglectLog=State.neglectLog.slice(-16);
+  }catch(_){ }
+}
+function dragonPenalty(count,notes){
+  const second=count>=2;
+  if(second){
+    paramDelta('treasury',-6000);paramDelta('troops',-320);paramDelta('stability',-8);paramDelta('citySupport',-7);paramDelta('prestige',-8);
+    ensureFlags().dragonNeglected23=true;completeIgnored(DRAGON);
+    const text='年が暮れても王は蒼き竜へ軍を向けず、湖畔一帯は焼け跡と避難民だけを残した。民は、王が自分たちを見捨てた年としてこの災厄を記憶した。';
+    notes.push(`湖の蒼き竜を放置：${text}`);logNeglect(DRAGON,'湖の蒼き竜',text,count);
+  }else{
+    paramDelta('treasury',-3000);paramDelta('troops',-140);paramDelta('stability',-4);paramDelta('citySupport',-4);paramDelta('prestige',-3);
+    ensureFlags().dragonNeglectEscalated23=true;
+    const text='王が湖へ兵を向けぬ間に、蒼き竜は湖畔の村々を焼き、避難民が王都へ押し寄せた。災厄は収まらず、次の半期へ持ち越された。';
+    notes.push(`湖の蒼き竜を放置：${text}`);logNeglect(DRAGON,'湖の蒼き竜',text,count);
+  }
+}
+function noblePenalty(count,notes){
+  const g=ensureGF(),second=count>=2;
+  if(second){
+    paramDelta('treasury',-7000);paramDelta('troops',-350);paramDelta('stability',-12);paramDelta('nobleSupport',-14);paramDelta('prestige',-10);
+    addGF('nobleAnger',6);addGF('brotherRisk',3);
+    let tier='large';try{const t=typeof greatFlowRebellionTier==='function'?greatFlowRebellionTier():'';if(t==='brother')tier='brother';}catch(_){ }
+    g.nobleRebellionResolved=true;g.nobleRebellionSeverity='large';g.nobleRebellionScale=tier;g.nobleRebellionScaleLabel=tier==='brother'?'弟旗印つき大反乱':'大反乱';
+    g.nobleRebellionOutcome='completeLoss';g.nobleRebellionOutcomeTurn=State.turn;g.nobleRebellionSucceeded=false;g.nobleRebellionStrategy='neglected';g.nobleRebellionNeglectedDefeat=true;
+    State.nobleRebellionOutcome='completeLoss';
+    if(tier==='brother'){const f=ensureFlags();f.brotherRebellionUnlocked=true;g.nobleRebellionBrotherBonus=Math.max(Number(g.nobleRebellionBrotherBonus)||0,30);}
+    try{
+      State.caseResults=State.caseResults||{};State.caseResults[NOBLE]='completeLoss';
+      State.caseResultRanks=State.caseResultRanks||{};State.caseResultRanks[NOBLE]='completeLoss';
+      State.reignLog=State.reignLog||{};State.reignLog.caseResults=State.reignLog.caseResults||{};State.reignLog.caseResults[NOBLE]='completeLoss';
+      if(typeof completeCase==='function')completeCase(NOBLE);else{State.completedCases=State.completedCases||[];if(!State.completedCases.includes(NOBLE))State.completedCases.push(NOBLE);}
+    }catch(_){ }
+    const text='王が年内に軍を動かさぬまま、大貴族同盟は街道・砦・徴税権を次々と掌握した。王冠は残ったが、反乱軍に主導権を渡した事実は政治的敗北として残り、翌年から王国はその後始末を背負うことになった。';
+    notes.push(`大貴族同盟を放置：${text}`);logNeglect(NOBLE,'大貴族同盟の反乱',text,count);
+  }else{
+    paramDelta('treasury',-4000);paramDelta('troops',-180);paramDelta('stability',-7);paramDelta('nobleSupport',-8);paramDelta('prestige',-5);
+    addGF('nobleAnger',3);addGF('brotherRisk',1);
+    g.nobleRebellionResolved=false;g.nobleRebellionNeglectCount=1;g.nobleRebellionNeglectBattlePenalty=10;
+    const text='王が軍を動かさぬ間に、同盟軍は地方の砦と街道を押さえ、徴税と兵の召集まで始めた。反乱は未解決のまま次の半期へ拡大し、後から戦うほど不利になる。';
+    notes.push(`大貴族同盟を放置：${text}`);logNeglect(NOBLE,'大貴族同盟の反乱',text,count);
+  }
+}
+function deadKingPenalty(count,notes){
+  const second=count>=2;
+  if(second){
+    paramDelta('prestige',-5);paramDelta('stability',-4);
+    State.brotherCourtSuspicion=clampLocal((Number(State.brotherCourtSuspicion)||0)+3,0,100);
+    State.brotherTrust=clampLocal((Number(State.brotherTrust)||0)-2,-100,100);
+    ensureFlags().deadKingNeglected27=true;completeIgnored(DEADKING);
+    const text='王はついに古い玉座の間へ戻らなかった。だが夜ごと灯がともるという噂だけは城内から消えず、「王は父の影から逃げた」という囁きが長く残った。';
+    notes.push(`亡王の玉座を放置：${text}`);logNeglect(DEADKING,'亡王の玉座',text,count);
+  }else{
+    paramDelta('prestige',-2);paramDelta('stability',-2);
+    State.brotherCourtSuspicion=clampLocal((Number(State.brotherCourtSuspicion)||0)+1,0,100);
+    ensureFlags().deadKingNeglectEscalated27=true;
+    const text='王は古い玉座の間へ向かわなかった。しかし翌夜も灯はともり、死んだ先王を見たという噂が王宮の廊下を巡り続けた。';
+    notes.push(`亡王の玉座を放置：${text}`);logNeglect(DEADKING,'亡王の玉座',text,count);
+  }
+}
+function activeSkippedFixed(){
+  const age=ageNow(),sel=new Set(Array.isArray(State.selected)?State.selected:[]),out=[];
+  if(age===23&&!done(DRAGON)&&!sel.has(DRAGON))out.push(DRAGON);
+  const g=ensureGF();
+  if(age===25&&!g.nobleRebellionResolved&&!done(NOBLE)&&!sel.has(NOBLE))out.push(NOBLE);
+  if(age===27&&!done(DEADKING)&&!sel.has(DEADKING))out.push(DEADKING);
+  return out;
+}
+function applyFixedNeglect(notes){
+  const c=counters();
+  for(const id of activeSkippedFixed()){
+    c[id]=(Number(c[id])||0)+1;
+    if(id===DRAGON)dragonPenalty(c[id],notes);
+    else if(id===NOBLE)noblePenalty(c[id],notes);
+    else if(id===DEADKING)deadKingPenalty(c[id],notes);
+  }
+}
+/* These events have their own deterministic neglect consequences, so do not consume the generic one-case neglect slot. */
+try{
+  if(typeof selectNeglectCases==='function'&&!selectNeglectCases.v688FixedEvents){
+    const prev=selectNeglectCases;
+    selectNeglectCases=function(unselected){return prev((unselected||[]).filter(c=>!FIXED.has(String(c?.id||''))));};
+    selectNeglectCases.v688FixedEvents=true;window.selectNeglectCases=selectNeglectCases;
+  }
+}catch(e){console.warn('V688 select neglect',e);}
+try{
+  if(typeof applyNeglectedBattleCaseConsequences==='function'&&!applyNeglectedBattleCaseConsequences.v688FixedEvents){
+    const prev=applyNeglectedBattleCaseConsequences;
+    applyNeglectedBattleCaseConsequences=function(ignored,pressureNotes){
+      const ret=prev.apply(this,arguments);
+      try{applyFixedNeglect(Array.isArray(pressureNotes)?pressureNotes:[]);}catch(e){console.warn('V688 fixed neglect apply',e);}
+      return ret;
+    };
+    applyNeglectedBattleCaseConsequences.v688FixedEvents=true;window.applyNeglectedBattleCaseConsequences=applyNeglectedBattleCaseConsequences;
+  }
+}catch(e){console.warn('V688 neglect consequences',e);}
+/* If the 25-year rebellion was ignored once and fought in the second half, its expanded control worsens the opening position. */
+try{
+  if(typeof Battle==='object'&&Battle&&typeof Battle.makeLane==='function'&&!Battle.makeLane.v688NobleNeglect){
+    const prev=Battle.makeLane;
+    Battle.makeLane=function(c,i,assist){
+      const lane=prev.apply(this,arguments);
+      try{
+        if(c&&c.id===NOBLE&&lane&&Number(ensureGF().nobleRebellionNeglectCount||0)>=1){
+          lane.line=clampLocal((Number(lane.line)||0)-10,-100,100);
+          if(Number.isFinite(Number(lane.budgetIntroFromLine)))lane.budgetIntroFromLine=clampLocal(Number(lane.budgetIntroFromLine)-10,-100,100);
+          if(Number.isFinite(Number(lane.budgetIntroToLine)))lane.budgetIntroToLine=clampLocal(Number(lane.budgetIntroToLine)-10,-100,100);
+          lane.enemySpeed=(Number(lane.enemySpeed)||0)*1.05;
+          if(lane.enemyProfile&&Number.isFinite(Number(lane.enemyProfile.pressure)))lane.enemyProfile.pressure=Number(lane.enemyProfile.pressure)*1.06;
+          lane.v688NeglectEscalated=true;
+        }
+      }catch(_){ }
+      return lane;
+    };
+    Battle.makeLane.v688NobleNeglect=true;
+  }
+}catch(e){console.warn('V688 noble lane',e);}
+window.auditV688FixedEventNeglect=function(){
+  const g=ensureGF();
+  return{version:V,mandatory:false,counts:{...(State.v688FixedEventNeglect||{})},flags:{dragonNeglected:!!State.caseFlags?.dragonNeglected23,deadKingNeglected:!!State.caseFlags?.deadKingNeglected27},noble:{resolved:!!g.nobleRebellionResolved,neglectCount:Number(g.nobleRebellionNeglectCount)||0,neglectedDefeat:!!g.nobleRebellionNeglectedDefeat,outcome:g.nobleRebellionOutcome||null,scale:g.nobleRebellionScale||null},genericNeglectExcluded:[...FIXED]};
+};
+window.__V688_FIXED_EVENT_NEGLECT_META__={mandatory:false,dragon:'first skip damage; second skip abandonment damage',noble:'first skip expands rebellion and worsens second-half battle; second skip records political completeLoss and postwar state',deadKing:'light first skip; second skip leaves legitimacy/brother suspicion scar'};
+window.__VERSION__=V;
+})();
+</script>
+<script id="v688-final-version-marker">window.__VERSION__='V688';</script>
+
+
+<script id="v689-princess-domestic-family-effects-meta">
+window.__V689_PRINCESS_MINOR_EFFECTS__={domestic:'episode-specific +1',family:'stability +1',bedsideDomestic:'citySupport +1',bedsideFamily:'stability +1'};
+window.__VERSION__='V689';
+</script>
+<script id="v689-final-version-marker">window.__VERSION__='V689';</script>
 </body>
 </html>
